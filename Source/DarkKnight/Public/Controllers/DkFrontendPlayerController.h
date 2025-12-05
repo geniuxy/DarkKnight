@@ -13,4 +13,9 @@ UCLASS()
 class DARKKNIGHT_API ADkFrontendPlayerController : public APlayerController
 {
 	GENERATED_BODY()
+
+protected:
+	//~Begin APlayerController Fucntion
+	virtual void OnPossess(APawn* InPawn) override;
+	//~End APlayerController Fucntion
 };

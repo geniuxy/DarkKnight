@@ -5,8 +5,8 @@
 
 namespace DkGameplayTags
 {
-	UE_DEFINE_GAMEPLAY_TAG(Frontend_WidgetStack_Modal,"Frontend.WidgetStack.Modal");
-	UE_DEFINE_GAMEPLAY_TAG(Frontend_WidgetStack_GameMenu,"Frontend.WidgetStack.GameMenu");
-	UE_DEFINE_GAMEPLAY_TAG(Frontend_WidgetStack_GameHud,"Frontend.WidgetStack.GameHud");
-	UE_DEFINE_GAMEPLAY_TAG(Frontend_WidgetStack_Frontend,"Frontend.WidgetStack.Frontend");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_WidgetStack_Modal,"Dk.WidgetStack.Modal");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_WidgetStack_GameMenu,"Dk.WidgetStack.GameMenu");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_WidgetStack_GameHud,"Dk.WidgetStack.GameHud");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_WidgetStack_Frontend,"Dk.WidgetStack.Frontend");
 }

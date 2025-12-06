@@ -4,6 +4,7 @@
 #include "Widgets/DkWidgetPrimaryLayout.h"
 
 #include "DarkKnightDebugHelper.h"
+#include "Subsytems/DkUISubsystem.h"
 
 UCommonActivatableWidgetContainerBase* UDkWidgetPrimaryLayout::FindWidgetStackByTag(const FGameplayTag& InTag) const
 {
@@ -20,8 +21,6 @@ void UDkWidgetPrimaryLayout::RegisterWidgetStack(FGameplayTag InStackTag,
 		if (!RegisteredWidgetStackMap.Contains(InStackTag))
 		{
 			RegisteredWidgetStackMap.Add(InStackTag, InStack);
-
-			Debug::Print(FString::Printf(TEXT("Widget Stack 已通过 Tag(%s) 注册！"), *InStackTag.ToString()));
 		}
 	}
 }

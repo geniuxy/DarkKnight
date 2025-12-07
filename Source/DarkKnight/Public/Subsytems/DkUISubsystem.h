@@ -6,7 +6,16 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "DkUISubsystem.generated.h"
 
+class UDkWidgetActivatableBase;
+struct FGameplayTag;
 class UDkWidgetPrimaryLayout;
+
+enum class EAsyncPushWidgetState: uint8
+{
+	OnCreatedBeforePush,
+	AfterPush
+};
+
 /**
  * 
  */
@@ -24,6 +33,12 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void RegisterCreatedPrimaryLayoutWidget(UDkWidgetPrimaryLayout* InCreatedWidget);
+
+	void PushSoftWidgetToStackAsync(
+		const FGameplayTag& InWidgetStackTag,
+		TSoftClassPtr<UDkWidgetActivatableBase> InSoftWidgetClass,
+		TFunction<void(EAsyncPushWidgetState, UDkWidgetActivatableBase*)> AsyncPushStateCallback
+	);
 
 private:
 	UPROPERTY(Transient)

@@ -18,5 +18,5 @@ class DARKKNIGHT_API UDkUIDeveloperSettings : public UDeveloperSettings
 
 public:
 	UPROPERTY(Config, EditAnywhere, Category = "Widget Reference", meta = (ForceInlineRow, Categories = "Dk.Widget"))
-	TMap<FGameplayTag, TSoftClassPtr<UDkWidgetActivatableBase>> FrontendWidgetMap;
+	TMap<FGameplayTag, TSoftClassPtr<UDkWidgetActivatableBase>> UIWidgetMap;
 };

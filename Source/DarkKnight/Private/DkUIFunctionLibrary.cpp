@@ -10,10 +10,10 @@ TSoftClassPtr<UDkWidgetActivatableBase> UDkUIFunctionLibrary::GetUISoftWidgetCla
 	const UDkUIDeveloperSettings* UIDeveloperSettings = GetDefault<UDkUIDeveloperSettings>();
 
 	checkf(
-		UIDeveloperSettings->FrontendWidgetMap.Contains(InWidgetTag),
+		UIDeveloperSettings->UIWidgetMap.Contains(InWidgetTag),
 		TEXT("找不到对应的Widget(Tag为%s)"),
 		*InWidgetTag.ToString()
 	);
 
-	return UIDeveloperSettings->FrontendWidgetMap.FindRef(InWidgetTag);
+	return UIDeveloperSettings->UIWidgetMap.FindRef(InWidgetTag);
 }

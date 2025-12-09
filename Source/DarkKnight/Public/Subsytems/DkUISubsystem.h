@@ -6,6 +6,7 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "DkUISubsystem.generated.h"
 
+class UDkUICommonButtonBase;
 class UDkWidgetActivatableBase;
 struct FGameplayTag;
 class UDkWidgetPrimaryLayout;
@@ -15,6 +16,10 @@ enum class EAsyncPushWidgetState: uint8
 	OnCreatedBeforePush,
 	AfterPush
 };
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(
+	FOnButtonDescriptionTextUpdatedDelegate, UDkUICommonButtonBase*, Button, FText, DescriptionText
+);
 
 /**
  * 
@@ -39,6 +44,9 @@ public:
 		TSoftClassPtr<UDkWidgetActivatableBase> InSoftWidgetClass,
 		TFunction<void(EAsyncPushWidgetState, UDkWidgetActivatableBase*)> AsyncPushStateCallback
 	);
+
+	UPROPERTY(BlueprintAssignable)
+	FOnButtonDescriptionTextUpdatedDelegate OnButtonDescriptionTextUpdated;
 
 private:
 	UPROPERTY(Transient)

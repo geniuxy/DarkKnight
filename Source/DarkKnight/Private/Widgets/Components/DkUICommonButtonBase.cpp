@@ -3,6 +3,7 @@
 
 #include "Widgets/Components/DkUICommonButtonBase.h"
 #include "CommonTextBlock.h"
+#include "Subsytems/DkUISubsystem.h"
 
 void UDkUICommonButtonBase::SetButtonText(FText InText, EDkTextJustify InJustification)
 {
@@ -29,4 +30,31 @@ void UDkUICommonButtonBase::NativePreConstruct()
 	Super::NativePreConstruct();
 
 	SetButtonText(ButtonDisplayText, ButtonDisplayTextJustification);
+}
+
+void UDkUICommonButtonBase::NativeOnCurrentTextStyleChanged()
+{
+	Super::NativeOnCurrentTextStyleChanged();
+
+	if (CommonButtonTextBlock && GetCurrentTextStyleClass())
+	{
+		CommonButtonTextBlock->SetStyle(GetCurrentTextStyleClass());
+	}
+}
+
+void UDkUICommonButtonBase::NativeOnHovered()
+{
+	Super::NativeOnHovered();
+
+	if (!ButtonDescriptionText.IsEmpty())
+	{
+		UDkUISubsystem::Get(this)->OnButtonDescriptionTextUpdated.Broadcast(this, ButtonDescriptionText);
+	}
+}
+
+void UDkUICommonButtonBase::NativeOnUnhovered()
+{
+	Super::NativeOnUnhovered();
+
+	UDkUISubsystem::Get(this)->OnButtonDescriptionTextUpdated.Broadcast(this, FText::GetEmpty());
 }

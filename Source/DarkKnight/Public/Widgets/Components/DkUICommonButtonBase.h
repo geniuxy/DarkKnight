@@ -25,6 +25,12 @@ private:
 	virtual void NativePreConstruct() override;
 	//~End UUserWidget UFunction
 
+	//~Begin UUserWidget UFunction
+	virtual void NativeOnCurrentTextStyleChanged() override;
+	virtual void NativeOnHovered() override;
+	virtual void NativeOnUnhovered() override;
+	//~End UUserWidget UFunction
+	
 	/* Begin Bound Widgets */
 	UPROPERTY(meta=(BindWidgetOptional)) // 用于 C++ 与 UMG 蓝图之间的绑定
 	UCommonTextBlock* CommonButtonTextBlock;

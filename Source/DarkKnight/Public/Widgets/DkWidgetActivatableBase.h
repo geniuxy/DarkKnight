@@ -6,6 +6,7 @@
 #include "CommonActivatableWidget.h"
 #include "DkWidgetActivatableBase.generated.h"
 
+class ADkUIPlayerController;
 /**
  * 
  */
@@ -13,5 +14,11 @@ UCLASS(Abstract, BlueprintType, meta = (DisableNaiveTick))
 class DARKKNIGHT_API UDkWidgetActivatableBase : public UCommonActivatableWidget
 {
 	GENERATED_BODY()
-	
+
+protected:
+	UFUNCTION(BlueprintPure)
+	ADkUIPlayerController* GetOwningUIPlayerController();
+
+private:
+	TWeakObjectPtr<ADkUIPlayerController> CachedOwningUIPC;
 };

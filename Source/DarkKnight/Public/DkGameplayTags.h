@@ -6,13 +6,13 @@
 
 namespace DkGameplayTags
 {
-	// Frontend Widget Stack
+	// UI Widget Stack
 	DARKKNIGHT_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dk_WidgetStack_Modal);
 	DARKKNIGHT_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dk_WidgetStack_GameMenu);
 	DARKKNIGHT_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dk_WidgetStack_GameHud);
 	DARKKNIGHT_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dk_WidgetStack_Frontend);
 
-	// Frontend Widgets
+	// UI Widgets
 	DARKKNIGHT_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dk_Widget_PressAnyKeyScreen);
 	DARKKNIGHT_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dk_Widget_MainMenuScreen);
 }

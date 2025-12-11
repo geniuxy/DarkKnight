@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "CommonButtonBase.h"
-#include "DkEnums.h"
+#include "DkTypes/DkEnums.h"
 #include "DkUICommonButtonBase.generated.h"
 
 class UCommonTextBlock;

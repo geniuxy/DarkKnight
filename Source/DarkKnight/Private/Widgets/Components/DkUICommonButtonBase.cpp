@@ -3,6 +3,7 @@
 
 #include "Widgets/Components/DkUICommonButtonBase.h"
 #include "CommonTextBlock.h"
+#include "DkTypes/DkEnums.h"
 #include "Subsytems/DkUISubsystem.h"
 
 void UDkUICommonButtonBase::SetButtonText(FText InText, EDkTextJustify InJustification)

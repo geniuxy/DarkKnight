@@ -64,6 +64,8 @@ UDkAsyncActionPushSoftWidget* UDkAsyncActionPushSoftWidget::PushSoftWidget(
 			Node->CachedSoftWidgetClass = InSoftWidgetClass;
 			Node->CachedWidgetStackTag = InWidgetStackTag;
 			Node->bCachedFocusOnNewlyPushedWidget = bFocusOnNewlyPushedWidget;
+
+			// RegisterWithGameInstance使得动作可以一直保持存活状态，直到手动调用 `SetReadyToDestroy` 方法
 			Node->RegisterWithGameInstance(World);
 
 			return Node;

@@ -16,7 +16,8 @@ public class DarkKnight : ModuleRules
 			"InputCore",
 			"EnhancedInput",
 			"GameplayTags",
-			"UMG"
+			"UMG",
+			"CommonInput"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] { });

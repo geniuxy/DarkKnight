@@ -34,13 +34,14 @@ public:
 
 	UPROPERTY(Transient)
 	FText ScreenTitle;
-	
+
 	UPROPERTY(Transient)
 	FText ScreenMessage;
-	
+
 	UPROPERTY(Transient)
 	TArray<FConfirmScreenButtonInfo> AvailableScreenButtons;
 };
+
 /**
  * 
  */
@@ -48,6 +49,12 @@ UCLASS(Abstract, BlueprintType, meta = (DisableNaiveTick))
 class DARKKNIGHT_API UDkWidgetConfirmScreen : public UDkWidgetActivatableBase
 {
 	GENERATED_BODY()
+
+public:
+	// 此方法在类外部调用，调用时间点为该组件构造时、将其推入模态堆栈之前。
+	void InitConfirmScreen(
+		UConfirmScreenInfoObject* InScreenInfoObject, TFunction<void(EConfirmScreenButtonType)> ClickedButtonCallback
+	);
 
 private:
 	UPROPERTY(meta=(BindWidget))

@@ -18,7 +18,7 @@ class DARKKNIGHT_API UDkUICommonButtonBase : public UCommonButtonBase
 
 public:
 	UFUNCTION(BlueprintCallable)
-	void SetButtonText(FText InText, EDkTextJustify InJustification);
+	void SetButtonText(FText InText, EDkTextJustify InJustification = EDkTextJustify::Left);
 
 private:
 	//~Begin UUserWidget UFunction

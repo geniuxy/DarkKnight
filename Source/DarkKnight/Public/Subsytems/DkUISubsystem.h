@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "DkTypes/DkEnums.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "DkUISubsystem.generated.h"
 
@@ -43,6 +44,13 @@ public:
 		const FGameplayTag& InWidgetStackTag,
 		TSoftClassPtr<UDkWidgetActivatableBase> InSoftWidgetClass,
 		TFunction<void(EAsyncPushWidgetState, UDkWidgetActivatableBase*)> AsyncPushStateCallback
+	);
+
+	void PushConfirmScreenToModalStackAsync(
+		EConfirmScreenType InScreenType,
+		const FText& InScreenText,
+		const FText& InScreenMsg,
+		TFunction<void(EConfirmScreenButtonType)> ButtonClickedCallback
 	);
 
 	UPROPERTY(BlueprintAssignable)

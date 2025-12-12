@@ -4,10 +4,13 @@
 #include "Subsytems/DkUISubsystem.h"
 
 #include "DarkKnightDebugHelper.h"
+#include "DkGameplayTags.h"
+#include "FunctionLibrarys/DkUIFunctionLibrary.h"
 #include "Engine/AssetManager.h"
 #include "Widgets/CommonActivatableWidgetContainer.h"
 #include "Widgets/DkWidgetPrimaryLayout.h"
 #include "Widgets/DkWidgetActivatableBase.h"
+#include "Widgets/DkWidgetConfirmScreen.h"
 
 
 UDkUISubsystem* UDkUISubsystem::Get(const UObject* WorldContextObject)
@@ -72,5 +75,45 @@ void UDkUISubsystem::PushSoftWidgetToStackAsync(
 				AsyncPushStateCallback(EAsyncPushWidgetState::AfterPush, CreatedWidget);
 			}
 		)
+	);
+}
+
+void UDkUISubsystem::PushConfirmScreenToModalStackAsync(
+	EConfirmScreenType InScreenType,
+	const FText& InScreenText,
+	const FText& InScreenMsg,
+	TFunction<void(EConfirmScreenButtonType)> ButtonClickedCallback)
+{
+	UConfirmScreenInfoObject* ConfirmScreenInfoObject = nullptr;
+
+	switch (InScreenType)
+	{
+	case EConfirmScreenType::Ok:
+		ConfirmScreenInfoObject = UConfirmScreenInfoObject::CreateOKScreen(InScreenText, InScreenMsg);
+		break;
+	case EConfirmScreenType::YesOrNo:
+		ConfirmScreenInfoObject = UConfirmScreenInfoObject::CreateYesOrNoScreen(InScreenText, InScreenMsg);
+		break;
+	case EConfirmScreenType::OkOrCancel:
+		ConfirmScreenInfoObject = UConfirmScreenInfoObject::CreateOKOrCancelScreen(InScreenText, InScreenMsg);
+		break;
+	default:
+		break;
+	}
+
+	check(ConfirmScreenInfoObject);
+
+	PushSoftWidgetToStackAsync(
+		DkGameplayTags::Dk_WidgetStack_Modal,
+		UDkUIFunctionLibrary::GetUISoftWidgetClassByTag(DkGameplayTags::Dk_Widget_ConfirmScreen),
+		[ConfirmScreenInfoObject, ButtonClickedCallback](
+		EAsyncPushWidgetState InPushState, UDkWidgetActivatableBase* PushedWidget)
+		{
+			if (InPushState == EAsyncPushWidgetState::OnCreatedBeforePush)
+			{
+				UDkWidgetConfirmScreen* ConfirmScreen = CastChecked<UDkWidgetConfirmScreen>(PushedWidget);
+				ConfirmScreen->InitConfirmScreen(ConfirmScreenInfoObject, ButtonClickedCallback);
+			}
+		}
 	);
 }

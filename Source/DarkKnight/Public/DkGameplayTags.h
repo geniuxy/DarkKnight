@@ -15,4 +15,5 @@ namespace DkGameplayTags
 	// UI Widgets
 	DARKKNIGHT_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dk_Widget_PressAnyKeyScreen);
 	DARKKNIGHT_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dk_Widget_MainMenuScreen);
+	DARKKNIGHT_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dk_Widget_ConfirmScreen);
 }

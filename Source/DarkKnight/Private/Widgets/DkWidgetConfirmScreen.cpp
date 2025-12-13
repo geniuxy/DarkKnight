@@ -65,6 +65,16 @@ UConfirmScreenInfoObject* UConfirmScreenInfoObject::CreateOKOrCancelScreen(const
 	return InfoObject;
 }
 
+UWidget* UDkWidgetConfirmScreen::NativeGetDesiredFocusTarget() const
+{
+	if (DynamicEntryBox_Buttons->GetNumEntries() != 0)
+	{
+		return DynamicEntryBox_Buttons->GetAllEntries().Last();
+	}
+	
+	return Super::NativeGetDesiredFocusTarget();
+}
+
 void UDkWidgetConfirmScreen::InitConfirmScreen(
 	UConfirmScreenInfoObject* InScreenInfoObject, TFunction<void(EConfirmScreenButtonType)> ClickedButtonCallback)
 {
@@ -81,6 +91,7 @@ void UDkWidgetConfirmScreen::InitConfirmScreen(
 			[](UDkUICommonButtonBase& ExistingButton)
 			{
 				ExistingButton.OnClicked().Clear();
+				ExistingButton.SetTriggeringInputAction(FDataTableRowHandle()); // 防止切换确认窗口时会崩溃的问题
 			}
 		);
 	}
@@ -94,7 +105,6 @@ void UDkWidgetConfirmScreen::InitConfirmScreen(
 		switch (AvailableButtonInfo.ConfirmScreenButtonType)
 		{
 		case EConfirmScreenButtonType::Confirmed:
-			InputActionRowHandle = ICommonInputModule::GetSettings().GetDefaultClickAction();
 			break;
 		case EConfirmScreenButtonType::Cancelled:
 			InputActionRowHandle = ICommonInputModule::GetSettings().GetDefaultBackAction();
@@ -108,7 +118,7 @@ void UDkWidgetConfirmScreen::InitConfirmScreen(
 
 		UDkUICommonButtonBase* AddedButton = DynamicEntryBox_Buttons->CreateEntry<UDkUICommonButtonBase>();
 		AddedButton->SetButtonText(AvailableButtonInfo.ButtonTextToDisplay, EDkTextJustify::Center);
-		AddedButton->SetTriggeredInputAction(InputActionRowHandle);
+		AddedButton->SetTriggeringInputAction(InputActionRowHandle); // 用于按钮附带对应的输入动作
 		AddedButton->OnClicked().AddLambda(
 			[ClickedButtonCallback, AvailableButtonInfo, this]()
 			{

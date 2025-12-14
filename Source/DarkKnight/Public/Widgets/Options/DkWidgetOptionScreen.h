@@ -13,5 +13,18 @@ UCLASS(Abstract, BlueprintType, meta = (DisableNativeTick))
 class DARKKNIGHT_API UDkWidgetOptionScreen : public UDkWidgetActivatableBase
 {
 	GENERATED_BODY()
-	
+
+protected:
+	//~Begin UUserWidget Function
+	virtual void NativeOnInitialized() override;
+	//~End UUserWidget Function
+
+private:
+	void OnResetBoundActionTriggered();
+	void OnBackBoundActionTriggered();
+
+	UPROPERTY(EditDefaultsOnly, Category = "Dk Options Screen", meta=(RowType = "/Script/CommonUI.CommonInputActionDataBase"))
+	FDataTableRowHandle ResetAction;
+
+	FUIActionBindingHandle ResetActionHandle;
 };

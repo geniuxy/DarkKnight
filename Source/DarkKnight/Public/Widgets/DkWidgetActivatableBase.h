@@ -10,7 +10,7 @@ class ADkUIPlayerController;
 /**
  * 
  */
-UCLASS(Abstract, BlueprintType, meta = (DisableNaiveTick))
+UCLASS(Abstract, BlueprintType, meta = (DisableNativeTick))
 class DARKKNIGHT_API UDkWidgetActivatableBase : public UCommonActivatableWidget
 {
 	GENERATED_BODY()

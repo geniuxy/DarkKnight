@@ -45,7 +45,7 @@ public:
 /**
  * 
  */
-UCLASS(Abstract, BlueprintType, meta = (DisableNaiveTick))
+UCLASS(Abstract, BlueprintType, meta = (DisableNativeTick))
 class DARKKNIGHT_API UDkWidgetConfirmScreen : public UDkWidgetActivatableBase
 {
 	GENERATED_BODY()

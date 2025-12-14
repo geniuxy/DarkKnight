@@ -42,8 +42,6 @@ void UDkUISubsystem::RegisterCreatedPrimaryLayoutWidget(UDkWidgetPrimaryLayout* 
 {
 	check(InCreatedWidget);
 	CreatedPrimaryLayout = InCreatedWidget;
-
-	Debug::Print(TEXT("Primary Layout 已存于 UISubsystem 中！"));
 }
 
 void UDkUISubsystem::PushSoftWidgetToStackAsync(

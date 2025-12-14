@@ -14,6 +14,7 @@ namespace DkGameplayTags
 	// UI Widgets
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Widget_PressAnyKeyScreen,"Dk.Widget.PressAnyKeyScreen");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Widget_MainMenuScreen,"Dk.Widget.MainMenuScreen");
-	UE_DEFINE_GAMEPLAY_TAG(Dk_Widget_ConfirmScreen,"Dk.Widget.ConfirmScreen");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Widget_StartGameScreen,"Dk.Widget.StartGameScreen");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Widget_OptionScreen,"Dk.Widget.OptionScreen");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Widget_ConfirmScreen,"Dk.Widget.ConfirmScreen");
 }

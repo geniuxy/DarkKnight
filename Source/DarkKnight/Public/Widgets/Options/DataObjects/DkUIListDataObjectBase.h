@@ -26,9 +26,16 @@ public:
 	LIST_DATA_ACCESSOR(TSoftObjectPtr<UTexture2D>, SoftDescriptionImage);
 	LIST_DATA_ACCESSOR(UDkUIListDataObjectBase*, ParentData);
 
+	void InitDataObject();
+
 	// 基类中为空。子类ListDataObject_Collection应重写它。
 	// 该函数应返回选项卡中的所有子数据
-	virtual TArray<UDkUIListDataObjectBase*> GetChildSettingData() const { return TArray<UDkUIListDataObjectBase*>(); }
+	virtual TArray<UDkUIListDataObjectBase*> GetAllChildSettingData() const { return TArray<UDkUIListDataObjectBase*>(); }
+	virtual bool HasAnyChildListData() const { return false; }
+
+protected:
+	// 基类中为空。子类应重写它，以相应地处理所需的初始化
+	virtual void OnDataObjectInitialized();
 	
 private:
 	FName DataID;

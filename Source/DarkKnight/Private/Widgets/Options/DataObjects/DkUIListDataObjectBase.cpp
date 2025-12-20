@@ -2,3 +2,12 @@
 
 
 #include "Widgets/Options/DataObjects/DkUIListDataObjectBase.h"
+
+void UDkUIListDataObjectBase::InitDataObject()
+{
+	OnDataObjectInitialized();
+}
+
+void UDkUIListDataObjectBase::OnDataObjectInitialized()
+{
+}

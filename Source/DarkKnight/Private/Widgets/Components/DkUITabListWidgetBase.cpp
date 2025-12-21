@@ -8,6 +8,12 @@
 
 void UDkUITabListWidgetBase::RequestRegisterTab(const FName& InTabID, const FText& InTabDisplayName)
 {
+	RegisterTab(InTabID, TabButtonEntryWidgetClass, nullptr);
+	
+	if (UDkUICommonButtonBase* FoundButton = Cast<UDkUICommonButtonBase>(GetTabButtonBaseByID(InTabID)))
+	{
+		FoundButton->SetButtonText(InTabDisplayName);
+	}
 }
 
 void UDkUITabListWidgetBase::ValidateCompiledDefaults(class IWidgetCompilerLog& CompileLog) const

@@ -15,6 +15,9 @@ class DARKKNIGHT_API UDkUITabListWidgetBase : public UCommonTabListWidgetBase
 {
 	GENERATED_BODY()
 
+public:
+	void RequestRegisterTab(const FName& InTabID, const FText& InTabDisplayName);
+
 private:
 	//~ Begin UWidget Interface
 #if WITH_EDITOR

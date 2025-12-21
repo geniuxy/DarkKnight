@@ -6,6 +6,8 @@
 #include "Widgets/DkWidgetActivatableBase.h"
 #include "DkWidgetOptionScreen.generated.h"
 
+class UDkUITabListWidgetBase;
+class UDkUIOptionsDataRegistry;
 /**
  * 
  */
@@ -19,9 +21,24 @@ protected:
 	virtual void NativeOnInitialized() override;
 	//~End UUserWidget Function
 
+	//~ Begin UCommonActivatableWidget Function
+	virtual void NativeOnActivated() override;
+	//~ End UCommonActivatableWidget Function
+
 private:
+	UDkUIOptionsDataRegistry* GetOrCreateDataRegistry();
+	
 	void OnResetBoundActionTriggered();
 	void OnBackBoundActionTriggered();
+
+	//***** Bound Widgets *****//
+	UPROPERTY(meta = (BindWidget))
+	UDkUITabListWidgetBase* TabListWidget_OptionsTabs;
+	//***** Bound Widgets *****//
+
+	// 在OptionScreen中处理数据创建。禁止直接访问此变量。
+	UPROPERTY(Transient)
+	UDkUIOptionsDataRegistry* CreatedOwningDataRegistry;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Dk Options Screen", meta=(RowType = "/Script/CommonUI.CommonInputActionDataBase"))
 	FDataTableRowHandle ResetAction;

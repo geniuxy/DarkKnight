@@ -6,6 +6,9 @@
 #include "DarkKnightDebugHelper.h"
 #include "ICommonInputModule.h"
 #include "Input/CommonUIInputTypes.h"
+#include "Widgets/Components/DkUITabListWidgetBase.h"
+#include "Widgets/Options/DkUIOptionsDataRegistry.h"
+#include "Widgets/Options/DataObjects/DkUIListDataObjectCollection.h"
 
 void UDkWidgetOptionScreen::NativeOnInitialized()
 {
@@ -29,6 +32,38 @@ void UDkWidgetOptionScreen::NativeOnInitialized()
 			FSimpleDelegate::CreateUObject(this, &ThisClass::OnBackBoundActionTriggered)
 		)
 	);
+}
+
+void UDkWidgetOptionScreen::NativeOnActivated()
+{
+	Super::NativeOnActivated();
+
+	for (UDkUIListDataObjectCollection* TabCollection : GetOrCreateDataRegistry()->GetRegisteredOptionsTabCollections())
+	{
+		if (!TabCollection)
+		{
+			continue;
+		}
+
+		if (TabListWidget_OptionsTabs->GetTabButtonBaseByID(TabCollection->GetDataID()) != nullptr)
+		{
+			continue;
+		}
+
+		TabListWidget_OptionsTabs->RequestRegisterTab(TabCollection->GetDataID(), TabCollection->GetDataDisplayName());
+	}
+}
+
+UDkUIOptionsDataRegistry* UDkWidgetOptionScreen::GetOrCreateDataRegistry()
+{
+	if (!CreatedOwningDataRegistry)
+	{
+		CreatedOwningDataRegistry = NewObject<UDkUIOptionsDataRegistry>();
+		CreatedOwningDataRegistry->InitOptionsDataRegister(GetOwningLocalPlayer());
+	}
+
+	checkf(CreatedOwningDataRegistry, TEXT("OptionScreen的OptionsDataRegistry无效"));
+	return CreatedOwningDataRegistry;
 }
 
 void UDkWidgetOptionScreen::OnResetBoundActionTriggered()

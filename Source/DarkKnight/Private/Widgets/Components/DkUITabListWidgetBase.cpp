@@ -6,6 +6,10 @@
 #include "Editor/WidgetCompilerLog.h"
 #include "Widgets/Components/DkUICommonButtonBase.h"
 
+void UDkUITabListWidgetBase::RequestRegisterTab(const FName& InTabID, const FText& InTabDisplayName)
+{
+}
+
 void UDkUITabListWidgetBase::ValidateCompiledDefaults(class IWidgetCompilerLog& CompileLog) const
 {
 	Super::ValidateCompiledDefaults(CompileLog);

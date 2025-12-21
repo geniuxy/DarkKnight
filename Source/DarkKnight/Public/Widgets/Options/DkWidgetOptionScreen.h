@@ -31,6 +31,9 @@ private:
 	void OnResetBoundActionTriggered();
 	void OnBackBoundActionTriggered();
 
+	UFUNCTION()
+	void OnOptionsTabSelected(FName TabId);
+
 	//***** Bound Widgets *****//
 	UPROPERTY(meta = (BindWidget))
 	UDkUITabListWidgetBase* TabListWidget_OptionsTabs;

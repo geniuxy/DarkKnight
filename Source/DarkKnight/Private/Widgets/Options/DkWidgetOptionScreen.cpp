@@ -32,6 +32,8 @@ void UDkWidgetOptionScreen::NativeOnInitialized()
 			FSimpleDelegate::CreateUObject(this, &ThisClass::OnBackBoundActionTriggered)
 		)
 	);
+
+	TabListWidget_OptionsTabs->OnTabSelected.AddUniqueDynamic(this, &ThisClass::OnOptionsTabSelected);
 }
 
 void UDkWidgetOptionScreen::NativeOnActivated()
@@ -74,4 +76,9 @@ void UDkWidgetOptionScreen::OnResetBoundActionTriggered()
 void UDkWidgetOptionScreen::OnBackBoundActionTriggered()
 {
 	DeactivateWidget();
+}
+
+void UDkWidgetOptionScreen::OnOptionsTabSelected(FName TabId)
+{
+	Debug::Print(TEXT("选择了新的标签页. Tab ID: ") + TabId.ToString());
 }

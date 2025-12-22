@@ -13,7 +13,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(Abstract)
 class DARKKNIGHT_API UDkUIListDataObjectBase : public UObject
 {
 	GENERATED_BODY()

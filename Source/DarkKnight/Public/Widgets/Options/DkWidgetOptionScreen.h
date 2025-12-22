@@ -7,6 +7,7 @@
 #include "DkWidgetOptionScreen.generated.h"
 
 class UDkUITabListWidgetBase;
+class UDkUICommonListView;
 class UDkUIOptionsDataRegistry;
 /**
  * 
@@ -37,6 +38,9 @@ private:
 	//***** Bound Widgets *****//
 	UPROPERTY(meta = (BindWidget))
 	UDkUITabListWidgetBase* TabListWidget_OptionsTabs;
+	
+	UPROPERTY(meta = (BindWidget))
+	UDkUICommonListView* CommonListView_OptionsList;
 	//***** Bound Widgets *****//
 
 	// 在OptionScreen中处理数据创建。禁止直接访问此变量。

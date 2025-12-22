@@ -31,10 +31,10 @@ private:
 	virtual void NativeOnUnhovered() override;
 	//~End UUserWidget UFunction
 	
-	/* Begin Bound Widgets */
+	//***** Bound Widgets *****//
 	UPROPERTY(meta=(BindWidgetOptional)) // 用于 C++ 与 UMG 蓝图之间的绑定
 	UCommonTextBlock* CommonButtonTextBlock;
-	/* End Bound Widgets */
+	//***** Bound Widgets *****//
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="UI Button", meta=(AllowPrivateAccess="true"))
 	FText ButtonDisplayText;

@@ -6,6 +6,7 @@
 #include "DarkKnightDebugHelper.h"
 #include "ICommonInputModule.h"
 #include "Input/CommonUIInputTypes.h"
+#include "Widgets/Components/DkUICommonListView.h"
 #include "Widgets/Components/DkUITabListWidgetBase.h"
 #include "Widgets/Options/DkUIOptionsDataRegistry.h"
 #include "Widgets/Options/DataObjects/DkUIListDataObjectCollection.h"
@@ -80,5 +81,14 @@ void UDkWidgetOptionScreen::OnBackBoundActionTriggered()
 
 void UDkWidgetOptionScreen::OnOptionsTabSelected(FName TabId)
 {
-	Debug::Print(TEXT("选择了新的标签页. Tab ID: ") + TabId.ToString());
+	TArray<UDkUIListDataObjectBase*> FoundListSourceItems =
+		GetOrCreateDataRegistry()->GetListSourceItemsBySelectedTabID(TabId);
+	CommonListView_OptionsList->SetListItems(FoundListSourceItems);
+	CommonListView_OptionsList->RequestRefresh();
+
+	if (CommonListView_OptionsList->GetNumItems() != 0)
+	{
+		CommonListView_OptionsList->NavigateToIndex(0);
+		CommonListView_OptionsList->SetSelectedIndex(0);
+	}
 }

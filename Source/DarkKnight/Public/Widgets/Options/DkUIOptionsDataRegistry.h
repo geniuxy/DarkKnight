@@ -6,6 +6,7 @@
 #include "UObject/Object.h"
 #include "DkUIOptionsDataRegistry.generated.h"
 
+class UDkUIListDataObjectBase;
 class UDkUIListDataObjectCollection;
 /**
  * 
@@ -18,6 +19,8 @@ class DARKKNIGHT_API UDkUIOptionsDataRegistry : public UObject
 public:
 	// 在创建 UOptionsDataRegistry 类型的对象之后，OptionScreen会立即调用此方法。
 	void InitOptionsDataRegister(ULocalPlayer* InOwningLocalPlayer);
+
+	TArray<UDkUIListDataObjectBase*> GetListSourceItemsBySelectedTabID(const FName& InSelectedTabID) const;
 
 private:
 	void InitGameplayCollectionTab();

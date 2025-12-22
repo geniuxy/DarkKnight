@@ -14,6 +14,22 @@ void UDkUIOptionsDataRegistry::InitOptionsDataRegister(ULocalPlayer* InOwningLoc
 	InitControlCollectionTab();
 }
 
+TArray<UDkUIListDataObjectBase*> UDkUIOptionsDataRegistry::GetListSourceItemsBySelectedTabID(
+	const FName& InSelectedTabID) const
+{
+	UDkUIListDataObjectCollection* const* FoundTabCollectionPtr = RegisteredOptionsTabCollections.FindByPredicate(
+		[InSelectedTabID](UDkUIListDataObjectCollection* AvailableTabCollection)-> bool
+		{
+			return AvailableTabCollection->GetDataID() == InSelectedTabID;
+		}
+	);
+
+	checkf(FoundTabCollectionPtr, TEXT("找不到有效的Option Tab Collection, 通过ID（%s）"), *InSelectedTabID.ToString());
+
+	UDkUIListDataObjectCollection* FoundTabCollection = *FoundTabCollectionPtr;
+	return FoundTabCollection->GetAllChildSettingData();
+}
+
 void UDkUIOptionsDataRegistry::InitGameplayCollectionTab()
 {
 	UDkUIListDataObjectCollection* GameplayTabCollection = NewObject<UDkUIListDataObjectCollection>();

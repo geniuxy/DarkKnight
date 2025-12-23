@@ -3,6 +3,7 @@
 
 #include "Widgets/Options/DataObjects/DkUIListDataObjectString.h"
 
+#include "DarkKnightDebugHelper.h"
 #include "Widgets/Options/DkUIOptionsDataInteractionHelper.h"
 
 void UDkUIListDataObjectString::AddDynamicOption(const FString& InStringValue, const FText& InDisplayText)
@@ -37,6 +38,8 @@ void UDkUIListDataObjectString::SwitchToPreviousOption()
 	if (DataDynamicSetter)
 	{
 		DataDynamicSetter->SetValueFromString(CurrentStringValue);
+
+		Debug::Print(TEXT("DataDynamicSetter已使用. 最新可从Getter中得到的值为: ") + DataDynamicGetter->GetValueAsString());
 	}
 }
 
@@ -66,6 +69,8 @@ void UDkUIListDataObjectString::SwitchToNextOption()
 	if (DataDynamicSetter)
 	{
 		DataDynamicSetter->SetValueFromString(CurrentStringValue);
+		
+		Debug::Print(TEXT("DataDynamicSetter已使用. 最新可从Getter中得到的值为: ") + DataDynamicGetter->GetValueAsString());
 	}
 }
 

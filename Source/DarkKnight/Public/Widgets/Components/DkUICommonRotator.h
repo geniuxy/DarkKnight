@@ -13,5 +13,7 @@ UCLASS(Abstract, BlueprintType, meta = (DisableNativeTick))
 class DARKKNIGHT_API UDkUICommonRotator : public UCommonRotator
 {
 	GENERATED_BODY()
-	
+
+public:
+	void SetSelectedOptionByText(const FText& InTextOption);
 };

@@ -2,3 +2,9 @@
 
 
 #include "Widgets/Options/DataObjects/DkUIListDataObjectString.h"
+
+void UDkUIListDataObjectString::AddDynamicOption(const FString& InStringValue, const FText& InDisplayText)
+{
+	AvailableOptionsStringArray.Add(InStringValue);
+	AvailableOptionsTextArray.Add(InDisplayText);
+}

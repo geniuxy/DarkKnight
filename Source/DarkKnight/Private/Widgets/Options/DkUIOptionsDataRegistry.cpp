@@ -41,6 +41,10 @@ void UDkUIOptionsDataRegistry::InitGameplayCollectionTab()
 		UDkUIListDataObjectString* GameDifficulty = NewObject<UDkUIListDataObjectString>();
 		GameDifficulty->SetDataID(FName("GameDifficulty"));
 		GameDifficulty->SetDataDisplayName(FText::FromString(TEXT("游戏难度")));
+		GameDifficulty->AddDynamicOption(TEXT("Easy"), FText::FromString(TEXT("简单")));
+		GameDifficulty->AddDynamicOption(TEXT("Normal"), FText::FromString(TEXT("正常")));
+		GameDifficulty->AddDynamicOption(TEXT("Hard"), FText::FromString(TEXT("困难")));
+		GameDifficulty->AddDynamicOption(TEXT("Very Hard"), FText::FromString(TEXT("非常困难")));
 
 		GameplayTabCollection->AddChildListData(GameDifficulty);
 	}

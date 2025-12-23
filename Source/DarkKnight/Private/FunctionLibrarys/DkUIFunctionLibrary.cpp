@@ -3,7 +3,7 @@
 
 #include "FunctionLibrarys/DkUIFunctionLibrary.h"
 
-#include "DeveloperSettings/DkUIDeveloperSettings.h"
+#include "Settings/DkUIDeveloperSettings.h"
 
 TSoftClassPtr<UDkWidgetActivatableBase> UDkUIFunctionLibrary::GetUISoftWidgetClassByTag(FGameplayTag InWidgetTag)
 {

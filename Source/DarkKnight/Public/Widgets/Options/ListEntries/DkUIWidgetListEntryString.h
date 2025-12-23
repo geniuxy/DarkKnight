@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Widgets/Options/DkUIWidgetListEntryBase.h"
+#include "Widgets/Options/ListEntries/DkUIWidgetListEntryBase.h"
 #include "DkUIWidgetListEntryString.generated.h"
 
 class UDkUICommonRotator;

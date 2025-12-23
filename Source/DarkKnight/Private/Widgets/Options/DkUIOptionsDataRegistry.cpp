@@ -40,7 +40,7 @@ void UDkUIOptionsDataRegistry::InitGameplayCollectionTab()
 	{
 		UDkUIListDataObjectString* GameDifficulty = NewObject<UDkUIListDataObjectString>();
 		GameDifficulty->SetDataID(FName("GameDifficulty"));
-		GameDifficulty->SetDataDisplayName(FText::FromString("游戏难度"));
+		GameDifficulty->SetDataDisplayName(FText::FromString(TEXT("游戏难度")));
 
 		GameplayTabCollection->AddChildListData(GameDifficulty);
 	}
@@ -49,7 +49,7 @@ void UDkUIOptionsDataRegistry::InitGameplayCollectionTab()
 	{
 		UDkUIListDataObjectString* DisplayMode = NewObject<UDkUIListDataObjectString>();
 		DisplayMode->SetDataID(FName("DisplayMode"));
-		DisplayMode->SetDataDisplayName(FText::FromString("显示模式"));
+		DisplayMode->SetDataDisplayName(FText::FromString(TEXT("显示模式")));
 
 		GameplayTabCollection->AddChildListData(DisplayMode);
 	}

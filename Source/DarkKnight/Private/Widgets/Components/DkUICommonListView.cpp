@@ -5,7 +5,7 @@
 
 #include "Editor/WidgetCompilerLog.h"
 #include "Widgets/Options/DkUIOptionListEntryDataMapping.h"
-#include "Widgets/Options/DkUIWidgetListEntryBase.h"
+#include "Widgets/Options/ListEntries/DkUIWidgetListEntryBase.h"
 #include "Widgets/Options/DataObjects/DkUIListDataObjectBase.h"
 
 UUserWidget& UDkUICommonListView::OnGenerateEntryWidgetInternal(

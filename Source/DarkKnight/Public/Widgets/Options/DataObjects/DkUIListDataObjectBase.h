@@ -61,4 +61,12 @@ private:
 
 	UPROPERTY(Transient)
 	UDkUIListDataObjectBase* ParentData;
+
+	bool bShouldApplyChangeImmediately = false;
+
+public:
+	void SetShouldApplyChangeImmediately(bool bInShouldApplyChangeImmediately)
+	{
+		bShouldApplyChangeImmediately = bInShouldApplyChangeImmediately;
+	}
 };

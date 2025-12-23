@@ -6,6 +6,7 @@
 #include "DarkKnightDebugHelper.h"
 #include "ICommonInputModule.h"
 #include "Input/CommonUIInputTypes.h"
+#include "Settings/DkGameUserSettings.h"
 #include "Widgets/Components/DkUICommonListView.h"
 #include "Widgets/Components/DkUITabListWidgetBase.h"
 #include "Widgets/Options/DkUIOptionsDataRegistry.h"
@@ -55,6 +56,14 @@ void UDkWidgetOptionScreen::NativeOnActivated()
 
 		TabListWidget_OptionsTabs->RequestRegisterTab(TabCollection->GetDataID(), TabCollection->GetDataDisplayName());
 	}
+}
+
+void UDkWidgetOptionScreen::NativeOnDeactivated()
+{
+	Super::NativeOnDeactivated();
+
+	// 将更改写入config文件中
+	UDkGameUserSettings::Get()->ApplySettings(true);
 }
 
 UDkUIOptionsDataRegistry* UDkWidgetOptionScreen::GetOrCreateDataRegistry()

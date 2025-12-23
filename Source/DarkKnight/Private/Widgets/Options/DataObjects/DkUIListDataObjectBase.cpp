@@ -3,6 +3,8 @@
 
 #include "Widgets/Options/DataObjects/DkUIListDataObjectBase.h"
 
+#include "Settings/DkGameUserSettings.h"
+
 void UDkUIListDataObjectBase::InitDataObject()
 {
 	OnDataObjectInitialized();
@@ -16,4 +18,9 @@ void UDkUIListDataObjectBase::NotifyListDataModified(
 	UDkUIListDataObjectBase* ModifiedData, EOptionsListDataModifyReason ModifyReason)
 {
 	OnListDataModified.Broadcast(ModifiedData, ModifyReason);
+
+	if (bShouldApplyChangeImmediately)
+	{
+		UDkGameUserSettings::Get()->ApplySettings(true);
+	}
 }

@@ -33,14 +33,14 @@ void UDkUIListDataObjectString::SwitchToPreviousOption()
 
 	TrySetDisplayTextFromStringValue(CurrentStringValue);
 
-	NotifyListDataModified(this);
-
 	if (DataDynamicSetter)
 	{
 		DataDynamicSetter->SetValueFromString(CurrentStringValue);
 
 		Debug::Print(TEXT("DataDynamicSetter已使用. 最新可从Getter中得到的值为: ") + DataDynamicGetter->GetValueAsString());
 	}
+
+	NotifyListDataModified(this);
 }
 
 void UDkUIListDataObjectString::SwitchToNextOption()
@@ -64,14 +64,14 @@ void UDkUIListDataObjectString::SwitchToNextOption()
 
 	TrySetDisplayTextFromStringValue(CurrentStringValue);
 
-	NotifyListDataModified(this);
-
 	if (DataDynamicSetter)
 	{
 		DataDynamicSetter->SetValueFromString(CurrentStringValue);
-		
+
 		Debug::Print(TEXT("DataDynamicSetter已使用. 最新可从Getter中得到的值为: ") + DataDynamicGetter->GetValueAsString());
 	}
+
+	NotifyListDataModified(this);
 }
 
 void UDkUIListDataObjectString::OnDataObjectInitialized()
@@ -89,7 +89,7 @@ void UDkUIListDataObjectString::OnDataObjectInitialized()
 			CurrentStringValue = DataDynamicGetter->GetValueAsString();
 		}
 	}
-	
+
 	if (!TrySetDisplayTextFromStringValue(CurrentStringValue))
 	{
 		CurrentDisplayText = FText::FromString(TEXT("无效选项"));

@@ -24,6 +24,7 @@ protected:
 
 	//~ Begin UCommonActivatableWidget Function
 	virtual void NativeOnActivated() override;
+	virtual void NativeOnDeactivated() override;
 	//~ End UCommonActivatableWidget Function
 
 private:

@@ -18,11 +18,18 @@ class DARKKNIGHT_API UDkUIWidgetListEntryString : public UDkUIWidgetListEntryBas
 	GENERATED_BODY()
 
 protected:
+	//~Begin UUserWidget Function
+	virtual void NativeOnInitialized() override;
+	//~End UUserWidget Function
+	
 	//~Begin UDkUIWidgetListEntryBase Function
 	virtual void OnOwningListDataObjectSet(UDkUIListDataObjectBase* InOwningListDataObject) override;
 	//~End UDkUIWidgetListEntryBase Function
 
 private:
+	void OnPreviousButtonClicked();
+	void OnNextButtonClicked();
+	
 	//***** Bound Widgets *****//
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget, AllowPrivateAccess = "true"))
 	UDkUICommonButtonBase* CommonButton_Previous;

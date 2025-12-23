@@ -9,6 +9,50 @@ void UDkUIListDataObjectString::AddDynamicOption(const FString& InStringValue, c
 	AvailableOptionsTextArray.Add(InDisplayText);
 }
 
+void UDkUIListDataObjectString::SwitchToPreviousOption()
+{
+	if (AvailableOptionsStringArray.IsEmpty() || AvailableOptionsTextArray.IsEmpty())
+	{
+		return;
+	}
+
+	const int32 CurrentDisplayIndex = AvailableOptionsStringArray.IndexOfByKey(CurrentStringValue);
+	const int32 PreviousIndexToDisplay = CurrentDisplayIndex - 1;
+
+	if (AvailableOptionsStringArray.IsValidIndex(PreviousIndexToDisplay))
+	{
+		CurrentStringValue = AvailableOptionsStringArray[PreviousIndexToDisplay];
+	}
+	else
+	{
+		CurrentStringValue = AvailableOptionsStringArray.Last();
+	}
+
+	TrySetDisplayTextFromStringValue(CurrentStringValue);
+}
+
+void UDkUIListDataObjectString::SwitchToNextOption()
+{
+	if (AvailableOptionsStringArray.IsEmpty() || AvailableOptionsTextArray.IsEmpty())
+	{
+		return;
+	}
+
+	const int32 CurrentDisplayIndex = AvailableOptionsStringArray.IndexOfByKey(CurrentStringValue);
+	const int32 NextIndexToDisplay = CurrentDisplayIndex + 1;
+
+	if (AvailableOptionsStringArray.IsValidIndex(NextIndexToDisplay))
+	{
+		CurrentStringValue = AvailableOptionsStringArray[NextIndexToDisplay];
+	}
+	else
+	{
+		CurrentStringValue = AvailableOptionsStringArray[0];
+	}
+
+	TrySetDisplayTextFromStringValue(CurrentStringValue);
+}
+
 void UDkUIListDataObjectString::OnDataObjectInitialized()
 {
 	if (!AvailableOptionsStringArray.IsEmpty())

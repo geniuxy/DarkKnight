@@ -28,10 +28,16 @@ void UDkUIWidgetListEntryString::OnOwningListDataObjectSet(UDkUIListDataObjectBa
 
 void UDkUIWidgetListEntryString::OnPreviousButtonClicked()
 {
-	Debug::Print(TEXT("上一个选项按钮被点击"));
+	if (CachedOwningStringDataObject)
+	{
+		CachedOwningStringDataObject->SwitchToPreviousOption();
+	}
 }
 
 void UDkUIWidgetListEntryString::OnNextButtonClicked()
 {
-	Debug::Print(TEXT("下一个选项按钮被点击"));
+	if (CachedOwningStringDataObject)
+	{
+		CachedOwningStringDataObject->SwitchToNextOption();
+	}
 }

@@ -16,6 +16,8 @@ class DARKKNIGHT_API UDkUIListDataObjectString : public UDkUIListDataObjectValue
 
 public:
 	void AddDynamicOption(const FString& InStringValue, const FText& InDisplayText);
+	void SwitchToPreviousOption();
+	void SwitchToNextOption();
 
 protected:
 	//~Begin UDkUIListDataObjectBase Function

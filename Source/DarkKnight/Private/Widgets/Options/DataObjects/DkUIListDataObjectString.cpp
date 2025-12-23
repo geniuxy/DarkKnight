@@ -3,6 +3,8 @@
 
 #include "Widgets/Options/DataObjects/DkUIListDataObjectString.h"
 
+#include "Widgets/Options/DkUIOptionsDataInteractionHelper.h"
+
 void UDkUIListDataObjectString::AddDynamicOption(const FString& InStringValue, const FText& InDisplayText)
 {
 	AvailableOptionsStringArray.Add(InStringValue);
@@ -31,6 +33,11 @@ void UDkUIListDataObjectString::SwitchToPreviousOption()
 	TrySetDisplayTextFromStringValue(CurrentStringValue);
 
 	NotifyListDataModified(this);
+
+	if (DataDynamicSetter)
+	{
+		DataDynamicSetter->SetValueFromString(CurrentStringValue);
+	}
 }
 
 void UDkUIListDataObjectString::SwitchToNextOption()
@@ -55,6 +62,11 @@ void UDkUIListDataObjectString::SwitchToNextOption()
 	TrySetDisplayTextFromStringValue(CurrentStringValue);
 
 	NotifyListDataModified(this);
+
+	if (DataDynamicSetter)
+	{
+		DataDynamicSetter->SetValueFromString(CurrentStringValue);
+	}
 }
 
 void UDkUIListDataObjectString::OnDataObjectInitialized()
@@ -64,7 +76,15 @@ void UDkUIListDataObjectString::OnDataObjectInitialized()
 		CurrentStringValue = AvailableOptionsStringArray[0];
 	}
 
-	// TODO: 读取保存的StringValue and set CurrentStringValue
+	// 读取保存的StringValue and set CurrentStringValue
+	if (DataDynamicGetter)
+	{
+		if (!DataDynamicGetter->GetValueAsString().IsEmpty())
+		{
+			CurrentStringValue = DataDynamicGetter->GetValueAsString();
+		}
+	}
+	
 	if (!TrySetDisplayTextFromStringValue(CurrentStringValue))
 	{
 		CurrentDisplayText = FText::FromString(TEXT("无效选项"));

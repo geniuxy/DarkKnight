@@ -8,3 +8,31 @@ void UDkUIListDataObjectString::AddDynamicOption(const FString& InStringValue, c
 	AvailableOptionsStringArray.Add(InStringValue);
 	AvailableOptionsTextArray.Add(InDisplayText);
 }
+
+void UDkUIListDataObjectString::OnDataObjectInitialized()
+{
+	if (!AvailableOptionsStringArray.IsEmpty())
+	{
+		CurrentStringValue = AvailableOptionsStringArray[0];
+	}
+
+	// TODO: 读取保存的StringValue and set CurrentStringValue
+	if (!TrySetDisplayTextFromStringValue(CurrentStringValue))
+	{
+		CurrentDisplayText = FText::FromString(TEXT("无效选项"));
+	}
+}
+
+bool UDkUIListDataObjectString::TrySetDisplayTextFromStringValue(const FString& InStringValue)
+{
+	const int32 CurrentFoundIndex = AvailableOptionsStringArray.IndexOfByKey(InStringValue);
+
+	if (AvailableOptionsTextArray.IsValidIndex(CurrentFoundIndex))
+	{
+		CurrentDisplayText = AvailableOptionsTextArray[CurrentFoundIndex];
+
+		return true;
+	}
+
+	return false;
+}

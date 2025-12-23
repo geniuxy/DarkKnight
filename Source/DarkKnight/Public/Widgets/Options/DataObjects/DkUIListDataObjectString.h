@@ -18,6 +18,12 @@ public:
 	void AddDynamicOption(const FString& InStringValue, const FText& InDisplayText);
 
 protected:
+	//~Begin UDkUIListDataObjectBase Function
+	virtual void OnDataObjectInitialized() override;
+	//~End UDkUIListDataObjectBase Function
+
+	bool TrySetDisplayTextFromStringValue(const FString& InStringValue);
+	
 	FString CurrentStringValue;
 	FText CurrentDisplayText;
 	TArray<FString> AvailableOptionsStringArray;

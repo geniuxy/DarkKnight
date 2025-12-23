@@ -11,3 +11,9 @@ void UDkUIListDataObjectBase::InitDataObject()
 void UDkUIListDataObjectBase::OnDataObjectInitialized()
 {
 }
+
+void UDkUIListDataObjectBase::NotifyListDataModified(
+	UDkUIListDataObjectBase* ModifiedData, EOptionsListDataModifyReason ModifyReason)
+{
+	OnListDataModified.Broadcast(ModifiedData, ModifyReason);
+}

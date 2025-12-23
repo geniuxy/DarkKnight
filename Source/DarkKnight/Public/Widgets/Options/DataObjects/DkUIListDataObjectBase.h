@@ -3,8 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "DkTypes/DkEnums.h"
 #include "UObject/Object.h"
 #include "DkUIListDataObjectBase.generated.h"
+
 
 #define LIST_DATA_ACCESSOR(DataType, PropertyName) \
 	FORCEINLINE DataType Get##PropertyName() const { return PropertyName; } \
@@ -19,6 +21,10 @@ class DARKKNIGHT_API UDkUIListDataObjectBase : public UObject
 	GENERATED_BODY()
 
 public:
+	DECLARE_MULTICAST_DELEGATE_TwoParams(FOnListDataModifiedDelegate,
+	                                     UDkUIListDataObjectBase*, EOptionsListDataModifyReason)
+	FOnListDataModifiedDelegate OnListDataModified;
+
 	LIST_DATA_ACCESSOR(FName, DataID);
 	LIST_DATA_ACCESSOR(FText, DataDisplayName);
 	LIST_DATA_ACCESSOR(FText, DescriptionRichText);
@@ -30,13 +36,22 @@ public:
 
 	// 基类中为空。子类ListDataObject_Collection应重写它。
 	// 该函数应返回选项卡中的所有子数据
-	virtual TArray<UDkUIListDataObjectBase*> GetAllChildSettingData() const { return TArray<UDkUIListDataObjectBase*>(); }
+	virtual TArray<UDkUIListDataObjectBase*> GetAllChildSettingData() const
+	{
+		return TArray<UDkUIListDataObjectBase*>();
+	}
+
 	virtual bool HasAnyChildListData() const { return false; }
 
 protected:
 	// 基类中为空。子类应重写它，以相应地处理所需的初始化
 	virtual void OnDataObjectInitialized();
-	
+
+	virtual void NotifyListDataModified(
+		UDkUIListDataObjectBase* ModifiedData,
+		EOptionsListDataModifyReason ModifyReason = EOptionsListDataModifyReason::DirectlyModified
+	);
+
 private:
 	FName DataID;
 	FText DataDisplayName;

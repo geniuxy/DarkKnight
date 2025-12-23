@@ -26,6 +26,15 @@ void UDkUIWidgetListEntryString::OnOwningListDataObjectSet(UDkUIListDataObjectBa
 	CommonRotator_AvailableOptions->SetSelectedOptionByText(CachedOwningStringDataObject->GetCurrentDisplayText());
 }
 
+void UDkUIWidgetListEntryString::OnOwningListDataObjectModified(
+	UDkUIListDataObjectBase* OwningModifiedData, EOptionsListDataModifyReason ModifyReason)
+{
+	if (CachedOwningStringDataObject)
+	{
+		CommonRotator_AvailableOptions->SetSelectedOptionByText(CachedOwningStringDataObject->GetCurrentDisplayText());
+	}
+}
+
 void UDkUIWidgetListEntryString::OnPreviousButtonClicked()
 {
 	if (CachedOwningStringDataObject)

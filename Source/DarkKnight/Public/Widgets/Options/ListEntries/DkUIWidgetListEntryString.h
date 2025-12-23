@@ -21,15 +21,18 @@ protected:
 	//~Begin UUserWidget Function
 	virtual void NativeOnInitialized() override;
 	//~End UUserWidget Function
-	
+
 	//~Begin UDkUIWidgetListEntryBase Function
 	virtual void OnOwningListDataObjectSet(UDkUIListDataObjectBase* InOwningListDataObject) override;
+	virtual void OnOwningListDataObjectModified(
+		UDkUIListDataObjectBase* OwningModifiedData, EOptionsListDataModifyReason ModifyReason
+	) override;
 	//~End UDkUIWidgetListEntryBase Function
 
 private:
 	void OnPreviousButtonClicked();
 	void OnNextButtonClicked();
-	
+
 	//***** Bound Widgets *****//
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget, AllowPrivateAccess = "true"))
 	UDkUICommonButtonBase* CommonButton_Previous;

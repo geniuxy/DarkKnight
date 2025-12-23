@@ -19,4 +19,14 @@ void UDkUIWidgetListEntryBase::OnOwningListDataObjectSet(UDkUIListDataObjectBase
 	{
 		CommonText_SettingDisplayName->SetText(InOwningListDataObject->GetDataDisplayName());
 	}
+
+	if (!InOwningListDataObject->OnListDataModified.IsBoundToObject(this))
+	{
+		InOwningListDataObject->OnListDataModified.AddUObject(this, &ThisClass::OnOwningListDataObjectModified);
+	}
+}
+
+void UDkUIWidgetListEntryBase::OnOwningListDataObjectModified(
+	UDkUIListDataObjectBase* OwningModifiedData, EOptionsListDataModifyReason ModifyReason)
+{
 }

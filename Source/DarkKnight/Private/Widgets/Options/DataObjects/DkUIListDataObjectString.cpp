@@ -29,6 +29,8 @@ void UDkUIListDataObjectString::SwitchToPreviousOption()
 	}
 
 	TrySetDisplayTextFromStringValue(CurrentStringValue);
+
+	NotifyListDataModified(this);
 }
 
 void UDkUIListDataObjectString::SwitchToNextOption()
@@ -51,6 +53,8 @@ void UDkUIListDataObjectString::SwitchToNextOption()
 	}
 
 	TrySetDisplayTextFromStringValue(CurrentStringValue);
+
+	NotifyListDataModified(this);
 }
 
 void UDkUIListDataObjectString::OnDataObjectInitialized()

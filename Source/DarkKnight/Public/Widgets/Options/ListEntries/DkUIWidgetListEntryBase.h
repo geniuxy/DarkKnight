@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "CommonUserWidget.h"
 #include "Blueprint/IUserObjectListEntry.h"
+#include "DkTypes/DkEnums.h"
 #include "DkUIWidgetListEntryBase.generated.h"
 
 class UDkUIListDataObjectBase;
@@ -24,6 +25,11 @@ protected:
 
 	// 子类应该重写此函数以处理所需的初始化。需要调用 super 方法。
 	virtual void OnOwningListDataObjectSet(UDkUIListDataObjectBase* InOwningListDataObject);
+
+	// 子类应该重写此函数，以便在ListDataObject修改后更新 UI 值。无需调用super方法。
+	virtual void OnOwningListDataObjectModified(
+		UDkUIListDataObjectBase* OwningModifiedData, EOptionsListDataModifyReason ModifyReason
+	);
 
 private:
 	//***** Bound Widgets *****//

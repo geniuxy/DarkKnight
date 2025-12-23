@@ -14,7 +14,7 @@ void UDkUICommonRotator::SetSelectedOptionByText(const FText& InTextOption)
 		}
 	);
 
-	if (FoundIndex!=INDEX_NONE)
+	if (FoundIndex != INDEX_NONE)
 	{
 		SetSelectedItem(FoundIndex);
 	}

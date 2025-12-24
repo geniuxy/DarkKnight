@@ -14,6 +14,8 @@ void UDkUIWidgetListEntryString::NativeOnInitialized()
 
 	CommonButton_Previous->OnClicked().AddUObject(this, &ThisClass::OnPreviousButtonClicked);
 	CommonButton_Next->OnClicked().AddUObject(this, &ThisClass::OnNextButtonClicked);
+
+	CommonRotator_AvailableOptions->OnClicked().AddUObject(this, &ThisClass::SelectThisEntryWidget);
 }
 
 void UDkUIWidgetListEntryString::OnOwningListDataObjectSet(UDkUIListDataObjectBase* InOwningListDataObject)
@@ -41,6 +43,8 @@ void UDkUIWidgetListEntryString::OnPreviousButtonClicked()
 	{
 		CachedOwningStringDataObject->SwitchToPreviousOption();
 	}
+
+	SelectThisEntryWidget();
 }
 
 void UDkUIWidgetListEntryString::OnNextButtonClicked()
@@ -49,4 +53,6 @@ void UDkUIWidgetListEntryString::OnNextButtonClicked()
 	{
 		CachedOwningStringDataObject->SwitchToNextOption();
 	}
+
+	SelectThisEntryWidget();
 }

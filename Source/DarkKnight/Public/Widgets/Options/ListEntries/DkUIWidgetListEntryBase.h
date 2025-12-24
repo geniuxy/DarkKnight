@@ -37,6 +37,8 @@ protected:
 		UDkUIListDataObjectBase* OwningModifiedData, EOptionsListDataModifyReason ModifyReason
 	);
 
+	void SelectThisEntryWidget();
+
 private:
 	//***** Bound Widgets *****//
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional, AllowPrivateAccess="true"))

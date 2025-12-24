@@ -4,6 +4,7 @@
 #include "Widgets/Options/ListEntries/DkUIWidgetListEntryBase.h"
 
 #include "CommonTextBlock.h"
+#include "Components/ListView.h"
 #include "Widgets/Options/DataObjects/DkUIListDataObjectBase.h"
 
 void UDkUIWidgetListEntryBase::NativeOnListEntryWidgetHovered(bool bWasHovered)
@@ -36,4 +37,9 @@ void UDkUIWidgetListEntryBase::OnOwningListDataObjectSet(UDkUIListDataObjectBase
 void UDkUIWidgetListEntryBase::OnOwningListDataObjectModified(
 	UDkUIListDataObjectBase* OwningModifiedData, EOptionsListDataModifyReason ModifyReason)
 {
+}
+
+void UDkUIWidgetListEntryBase::SelectThisEntryWidget()
+{
+	CastChecked<UListView>(GetOwningListView())->SetSelectedItem(GetListItem());
 }

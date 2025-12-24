@@ -36,6 +36,9 @@ private:
 	UFUNCTION()
 	void OnOptionsTabSelected(FName TabId);
 
+	void OnListViewItemHovered(UObject* InHoveredItem, bool bWasHovered);
+	void OnListViewItemSelected(UObject* InSelectedItem);
+
 	//***** Bound Widgets *****//
 	UPROPERTY(meta = (BindWidget))
 	UDkUITabListWidgetBase* TabListWidget_OptionsTabs;

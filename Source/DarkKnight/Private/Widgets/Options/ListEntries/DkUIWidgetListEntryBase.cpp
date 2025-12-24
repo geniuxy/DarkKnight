@@ -10,6 +10,8 @@ void UDkUIWidgetListEntryBase::NativeOnListItemObjectSet(UObject* ListItemObject
 {
 	IUserObjectListEntry::NativeOnListItemObjectSet(ListItemObject);
 
+	SetVisibility(ESlateVisibility::Visible);
+
 	OnOwningListDataObjectSet(CastChecked<UDkUIListDataObjectBase>(ListItemObject));
 }
 

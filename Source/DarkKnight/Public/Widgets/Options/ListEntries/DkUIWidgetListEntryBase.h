@@ -18,6 +18,12 @@ class DARKKNIGHT_API UDkUIWidgetListEntryBase : public UCommonUserWidget, public
 {
 	GENERATED_BODY()
 
+public:
+	UFUNCTION(BlueprintImplementableEvent, meta=(DisplayName = "On List Entry Widget Hovered"))
+	void BP_OnListEntryWidgetHovered(bool bWasHovered, bool bIsEntryWidgetStillSelected);
+
+	void NativeOnListEntryWidgetHovered(bool bWasHovered);
+
 protected:
 	//~Begin IUserObjectListEntry Function
 	virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;

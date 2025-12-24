@@ -11,6 +11,7 @@
 #include "Widgets/Components/DkUITabListWidgetBase.h"
 #include "Widgets/Options/DkUIOptionsDataRegistry.h"
 #include "Widgets/Options/DataObjects/DkUIListDataObjectCollection.h"
+#include "Widgets/Options/ListEntries/DkUIWidgetListEntryBase.h"
 
 void UDkWidgetOptionScreen::NativeOnInitialized()
 {
@@ -112,10 +113,12 @@ void UDkWidgetOptionScreen::OnListViewItemHovered(UObject* InHoveredItem, bool b
 		return;
 	}
 
-	const FString DebugString = CastChecked<UDkUIListDataObjectBase>(InHoveredItem)->GetDataDisplayName().ToString() +
-		TEXT(" was ") + (bWasHovered ? TEXT("hovered") : TEXT("unhovered"));
+	UDkUIWidgetListEntryBase* HoveredEntryWidget =
+		CommonListView_OptionsList->GetEntryWidgetFromItem<UDkUIWidgetListEntryBase>(InHoveredItem);
 
-	Debug::Print(DebugString);
+	check(HoveredEntryWidget);
+
+	HoveredEntryWidget->NativeOnListEntryWidgetHovered(bWasHovered);
 }
 
 void UDkWidgetOptionScreen::OnListViewItemSelected(UObject* InSelectedItem)
@@ -124,9 +127,4 @@ void UDkWidgetOptionScreen::OnListViewItemSelected(UObject* InSelectedItem)
 	{
 		return;
 	}
-
-	const FString DebugString = CastChecked<UDkUIListDataObjectBase>(InSelectedItem)->GetDataDisplayName().ToString() +
-		TEXT(" was selected");
-
-	Debug::Print(DebugString);
 }

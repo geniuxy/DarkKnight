@@ -6,6 +6,11 @@
 #include "CommonTextBlock.h"
 #include "Widgets/Options/DataObjects/DkUIListDataObjectBase.h"
 
+void UDkUIWidgetListEntryBase::NativeOnListEntryWidgetHovered(bool bWasHovered)
+{
+	BP_OnListEntryWidgetHovered(bWasHovered, IsListItemSelected());
+}
+
 void UDkUIWidgetListEntryBase::NativeOnListItemObjectSet(UObject* ListItemObject)
 {
 	IUserObjectListEntry::NativeOnListItemObjectSet(ListItemObject);

@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "DkUIWidgetOptionDetailsView.generated.h"
 
+class UDkUIListDataObjectBase;
 class UCommonTextBlock;
 class UCommonLazyImage;
 class UCommonRichTextBlock;
@@ -16,6 +17,19 @@ UCLASS(Abstract, BlueprintType, meta = (DisableNativeTick))
 class DARKKNIGHT_API UDkUIWidgetOptionDetailsView : public UUserWidget
 {
 	GENERATED_BODY()
+
+public:
+	void UpdateDetailsViewInfo(
+		UDkUIListDataObjectBase* InDataObject,
+		const FString& InEntryWidgetClassName = FString()
+	);
+
+	void ClearDetailsViewInfo();
+
+protected:
+	//~ Begin UUserWidget Interface
+	virtual void NativeOnInitialized() override;
+	//~ End UUserWidget Interface
 
 private:
 	//***** Bound Widgets *****//

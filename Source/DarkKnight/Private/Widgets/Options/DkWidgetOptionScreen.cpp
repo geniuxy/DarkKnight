@@ -9,7 +9,9 @@
 #include "Settings/DkGameUserSettings.h"
 #include "Widgets/Components/DkUICommonListView.h"
 #include "Widgets/Components/DkUITabListWidgetBase.h"
+#include "Widgets/Options/DkUIOptionListEntryDataMapping.h"
 #include "Widgets/Options/DkUIOptionsDataRegistry.h"
+#include "Widgets/Options/DkUIWidgetOptionDetailsView.h"
 #include "Widgets/Options/DataObjects/DkUIListDataObjectCollection.h"
 #include "Widgets/Options/ListEntries/DkUIWidgetListEntryBase.h"
 
@@ -40,6 +42,8 @@ void UDkWidgetOptionScreen::NativeOnInitialized()
 
 	CommonListView_OptionsList->OnItemIsHoveredChanged().AddUObject(this, &ThisClass::OnListViewItemHovered);
 	CommonListView_OptionsList->OnItemSelectionChanged().AddUObject(this, &ThisClass::OnListViewItemSelected);
+	// 用于切换Tab后，将每一个设置项都先置为Unhovered状态
+	CommonListView_OptionsList->OnEntryWidgetReleased().AddUObject(this, &ThisClass::OnEntryWidgetReleased);
 }
 
 void UDkWidgetOptionScreen::NativeOnActivated()
@@ -97,7 +101,8 @@ void UDkWidgetOptionScreen::OnOptionsTabSelected(FName TabId)
 	TArray<UDkUIListDataObjectBase*> FoundListSourceItems =
 		GetOrCreateDataRegistry()->GetListSourceItemsBySelectedTabID(TabId);
 	CommonListView_OptionsList->SetListItems(FoundListSourceItems);
-	CommonListView_OptionsList->RequestRefresh();
+
+	DetailsView_ListEntryInfo->ClearDetailsViewInfo(); // 切换标签页时清空设置详情说明
 
 	if (CommonListView_OptionsList->GetNumItems() != 0)
 	{
@@ -127,4 +132,38 @@ void UDkWidgetOptionScreen::OnListViewItemSelected(UObject* InSelectedItem)
 	{
 		return;
 	}
+
+	DetailsView_ListEntryInfo->UpdateDetailsViewInfo(
+		CastChecked<UDkUIListDataObjectBase>(InSelectedItem),
+		TryGetEntryWidgetClassName(InSelectedItem)
+	);
+}
+
+void UDkWidgetOptionScreen::OnEntryWidgetReleased(UUserWidget& InReleasedWidget)
+{
+	if (!IsValid(&InReleasedWidget))
+	{
+		return;
+	}
+
+	if (UDkUIWidgetListEntryBase* EntryWidget = Cast<UDkUIWidgetListEntryBase>(&InReleasedWidget))
+	{
+		EntryWidget->NativeOnListEntryWidgetHovered(false);
+	}
+}
+
+FString UDkWidgetOptionScreen::TryGetEntryWidgetClassName(UObject* InOwningListItem) const
+{
+	if (UUserWidget* FoundEntryWidget = CommonListView_OptionsList->GetEntryWidgetFromItem(InOwningListItem))
+	{
+		return FoundEntryWidget->GetClass()->GetName();
+	}
+
+	if (TSubclassOf<UDkUIWidgetListEntryBase> FoundEntryWidget = CommonListView_OptionsList->GetListEntryDataMapping()->
+		FindEntryWidgetClassByDataObject(CastChecked<UDkUIListDataObjectBase>(InOwningListItem)))
+	{
+		return FoundEntryWidget->GetName();
+	}
+
+	return TEXT("无效的EntryWidget类名");
 }

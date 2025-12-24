@@ -46,6 +46,6 @@ private:
 	UCommonRichTextBlock* CommonRichText_DynamicDetails;
 
 	UPROPERTY(meta=(BindWidget))
-	UCommonRichTextBlock* CommonRichText_DisabledReason;
+	UCommonRichTextBlock* CommonRichText_Warnings;
 	//***** Bound Widgets *****//
 };

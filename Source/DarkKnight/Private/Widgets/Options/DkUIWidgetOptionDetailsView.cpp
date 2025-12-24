@@ -27,14 +27,14 @@ void UDkUIWidgetOptionDetailsView::UpdateDetailsViewInfo(
 	CommonRichText_Description->SetText(InDataObject->GetDescriptionRichText());
 
 	const FString DynamicDetails = FString::Printf(
-		TEXT("Data Object Class: <Bold>%s</>\n\nEntry Widget Class:<Bold>%s</>"),
+		TEXT("<Bold>Data Object类名: </>%s\n\n<Bold>Entry Widget类名: </>%s"),
 		*InDataObject->GetClass()->GetName(),
 		*InEntryWidgetClassName
 	);
 
 	CommonRichText_DynamicDetails->SetText(FText::FromString(DynamicDetails));
 
-	CommonRichText_DisabledReason->SetText(InDataObject->GetDisabledRichText());
+	CommonRichText_Warnings->SetText(InDataObject->GetWarningRichText());
 }
 
 void UDkUIWidgetOptionDetailsView::ClearDetailsViewInfo()
@@ -43,7 +43,7 @@ void UDkUIWidgetOptionDetailsView::ClearDetailsViewInfo()
 	CommonLazyImage_DescriptionImage->SetVisibility(ESlateVisibility::Collapsed);
 	CommonRichText_Description->SetText(FText::GetEmpty());
 	CommonRichText_DynamicDetails->SetText(FText::GetEmpty());
-	CommonRichText_DisabledReason->SetText(FText::GetEmpty());
+	CommonRichText_Warnings->SetText(FText::GetEmpty());
 }
 
 void UDkUIWidgetOptionDetailsView::NativeOnInitialized()

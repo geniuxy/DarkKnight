@@ -54,6 +54,13 @@ void UDkUIOptionsDataRegistry::InitGameplayCollectionTab()
 		UDkUIListDataObjectString* GameDifficulty = NewObject<UDkUIListDataObjectString>();
 		GameDifficulty->SetDataID(FName("GameDifficulty"));
 		GameDifficulty->SetDataDisplayName(FText::FromString(TEXT("游戏难度")));
+		GameDifficulty->SetDescriptionRichText(FText::FromString(TEXT(
+			"调整游戏体验的难易程度。\n\n"
+			"<Bold>简单：</> 专注于故事体验。提供最轻松的战斗。\n\n"
+			"<Bold>普通：</> 提供稍微困难一些的战斗体验\n\n"
+			"<Bold>困难：</> 提供更具挑战性的战斗体验\n\n"
+			"<Bold>非常困难：</> 提供最具挑战性的战斗体验，不推荐首次游玩选择。"
+		)));
 		GameDifficulty->AddDynamicOption(TEXT("Easy"), FText::FromString(TEXT("简单")));
 		GameDifficulty->AddDynamicOption(TEXT("Normal"), FText::FromString(TEXT("正常")));
 		GameDifficulty->AddDynamicOption(TEXT("Hard"), FText::FromString(TEXT("困难")));

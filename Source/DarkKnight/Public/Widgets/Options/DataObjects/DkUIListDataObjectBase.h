@@ -28,7 +28,7 @@ public:
 	LIST_DATA_ACCESSOR(FName, DataID);
 	LIST_DATA_ACCESSOR(FText, DataDisplayName);
 	LIST_DATA_ACCESSOR(FText, DescriptionRichText);
-	LIST_DATA_ACCESSOR(FText, DisabledRichText);
+	LIST_DATA_ACCESSOR(FText, WarningRichText);
 	LIST_DATA_ACCESSOR(TSoftObjectPtr<UTexture2D>, SoftDescriptionImage);
 	LIST_DATA_ACCESSOR(UDkUIListDataObjectBase*, ParentData);
 
@@ -56,7 +56,7 @@ private:
 	FName DataID;
 	FText DataDisplayName;
 	FText DescriptionRichText;
-	FText DisabledRichText;
+	FText WarningRichText;
 	TSoftObjectPtr<UTexture2D> SoftDescriptionImage;
 
 	UPROPERTY(Transient)

@@ -3,7 +3,6 @@
 
 #include "Widgets/Options/ListEntries/DkUIWidgetListEntryString.h"
 
-#include "DarkKnightDebugHelper.h"
 #include "Widgets/Components/DkUICommonButtonBase.h"
 #include "Widgets/Components/DkUICommonRotator.h"
 #include "Widgets/Options/DataObjects/DkUIListDataObjectString.h"

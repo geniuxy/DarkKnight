@@ -33,4 +33,7 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "UI List View Settings")
 	UDkUIOptionListEntryDataMapping* ListEntryDataMapping;
+
+public:
+	FORCEINLINE UDkUIOptionListEntryDataMapping* GetListEntryDataMapping() const { return ListEntryDataMapping; }
 };

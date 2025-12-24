@@ -6,6 +6,7 @@
 #include "Widgets/DkWidgetActivatableBase.h"
 #include "DkWidgetOptionScreen.generated.h"
 
+class UDkUIWidgetOptionDetailsView;
 class UDkUITabListWidgetBase;
 class UDkUICommonListView;
 class UDkUIOptionsDataRegistry;
@@ -38,6 +39,9 @@ private:
 
 	void OnListViewItemHovered(UObject* InHoveredItem, bool bWasHovered);
 	void OnListViewItemSelected(UObject* InSelectedItem);
+	void OnEntryWidgetReleased(UUserWidget& InReleasedWidget);
+
+	FString TryGetEntryWidgetClassName(UObject* InOwningListItem) const;
 
 	//***** Bound Widgets *****//
 	UPROPERTY(meta = (BindWidget))
@@ -45,6 +49,9 @@ private:
 	
 	UPROPERTY(meta = (BindWidget))
 	UDkUICommonListView* CommonListView_OptionsList;
+
+	UPROPERTY(meta = (BindWidget))
+	UDkUIWidgetOptionDetailsView* DetailsView_ListEntryInfo;
 	//***** Bound Widgets *****//
 
 	// 在OptionScreen中处理数据创建。禁止直接访问此变量。

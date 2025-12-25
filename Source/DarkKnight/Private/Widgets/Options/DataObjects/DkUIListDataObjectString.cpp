@@ -81,6 +81,11 @@ void UDkUIListDataObjectString::OnDataObjectInitialized()
 		CurrentStringValue = AvailableOptionsStringArray[0];
 	}
 
+	if (HasDefaultValue())
+	{
+		CurrentStringValue = GetDefaultValueAsString();
+	}
+
 	// 读取保存的StringValue and set CurrentStringValue
 	if (DataDynamicGetter)
 	{

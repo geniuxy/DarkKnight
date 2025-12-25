@@ -26,6 +26,15 @@ void UDkUICommonButtonBase::SetButtonText(FText InText, EDkTextJustify InJustifi
 	}
 }
 
+FText UDkUICommonButtonBase::GetButtonDisplayText() const
+{
+	if (CommonButtonTextBlock)
+	{
+		return CommonButtonTextBlock->GetText();
+	}
+	return FText();
+}
+
 void UDkUICommonButtonBase::NativePreConstruct()
 {
 	Super::NativePreConstruct();

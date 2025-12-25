@@ -20,6 +20,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetButtonText(FText InText, EDkTextJustify InJustification = EDkTextJustify::Left);
 
+	UFUNCTION(BlueprintCallable)
+	FText GetButtonDisplayText() const;
+
 private:
 	//~Begin UUserWidget UFunction
 	virtual void NativePreConstruct() override;

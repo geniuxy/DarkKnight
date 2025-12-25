@@ -3,6 +3,7 @@
 
 #include "Widgets/Options/ListEntries/DkUIWidgetListEntryBase.h"
 
+#include "CommonInputSubsystem.h"
 #include "CommonTextBlock.h"
 #include "Components/ListView.h"
 #include "Widgets/Options/DataObjects/DkUIListDataObjectBase.h"
@@ -19,6 +20,28 @@ void UDkUIWidgetListEntryBase::NativeOnListItemObjectSet(UObject* ListItemObject
 	SetVisibility(ESlateVisibility::Visible);
 
 	OnOwningListDataObjectSet(CastChecked<UDkUIListDataObjectBase>(ListItemObject));
+}
+
+FReply UDkUIWidgetListEntryBase::NativeOnFocusReceived(const FGeometry& InGeometry, const FFocusEvent& InFocusEvent)
+{
+	UCommonInputSubsystem* CommonInputSubsystem = GetInputSubsystem();
+	if (CommonInputSubsystem && CommonInputSubsystem->GetCurrentInputType() == ECommonInputType::Gamepad)
+	{
+		if (UWidget* WidgetToFocus = NativeGetWidgetToFocusForGamepad())
+		{
+			if (TSharedPtr<SWidget> SlateWidgetToFocus = WidgetToFocus->GetCachedWidget())
+			{
+				return FReply::Handled().SetUserFocus(SlateWidgetToFocus.ToSharedRef());
+			}
+		}
+	}
+	
+	return Super::NativeOnFocusReceived(InGeometry, InFocusEvent);
+}
+
+UWidget* UDkUIWidgetListEntryBase::NativeGetWidgetToFocusForGamepad() const
+{
+	return BP_GetWidgetToFocusForGamepad();
 }
 
 void UDkUIWidgetListEntryBase::OnOwningListDataObjectSet(UDkUIListDataObjectBase* InOwningListDataObject)

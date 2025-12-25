@@ -117,10 +117,15 @@ bool UDkUIListDataObjectString::TryResetBackToDefaultValue()
 		if (DataDynamicSetter)
 		{
 			DataDynamicSetter->SetValueFromString(CurrentStringValue);
+
+			Debug::Print(
+				TEXT("重置为默认值，DataDynamicSetter已使用. 最新可从Getter中得到的值为: ") +
+				DataDynamicGetter->GetValueAsString()
+			);
 		}
 
 		NotifyListDataModified(this, EOptionsListDataModifyReason::ResetToDefault);
-		
+
 		return true;
 	}
 	return false;

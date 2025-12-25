@@ -29,6 +29,15 @@ protected:
 	virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
 	//~End IUserObjectListEntry Function
 
+	//~Begin UUserWidget Function
+	virtual FReply NativeOnFocusReceived(const FGeometry& InGeometry, const FFocusEvent& InFocusEvent) override;
+	//~End UUserWidget Function
+
+	virtual UWidget* NativeGetWidgetToFocusForGamepad() const;
+	// 蓝图应该重写此函数，以便游戏手柄交互能够正常工作。
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "Get Widget To Focus For Gamepad"))
+	UWidget* BP_GetWidgetToFocusForGamepad() const;
+	
 	// 子类应该重写此函数以处理所需的初始化。需要调用 super 方法。
 	virtual void OnOwningListDataObjectSet(UDkUIListDataObjectBase* InOwningListDataObject);
 

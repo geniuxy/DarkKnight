@@ -27,6 +27,7 @@ protected:
 	virtual void OnOwningListDataObjectModified(
 		UDkUIListDataObjectBase* OwningModifiedData, EOptionsListDataModifyReason ModifyReason
 	) override;
+	virtual UWidget* NativeGetWidgetToFocusForGamepad() const override;
 	//~End UDkUIWidgetListEntryBase Function
 
 private:

@@ -36,6 +36,11 @@ void UDkUIWidgetListEntryString::OnOwningListDataObjectModified(
 	}
 }
 
+UWidget* UDkUIWidgetListEntryString::NativeGetWidgetToFocusForGamepad() const
+{
+	return CommonRotator_AvailableOptions;
+}
+
 void UDkUIWidgetListEntryString::OnPreviousButtonClicked()
 {
 	if (CachedOwningStringDataObject)

@@ -98,12 +98,11 @@ void UDkWidgetOptionScreen::OnBackBoundActionTriggered()
 
 void UDkWidgetOptionScreen::OnOptionsTabSelected(FName TabId)
 {
+	DetailsView_ListEntryInfo->ClearDetailsViewInfo(); // 切换标签页时清空设置详情说明
+	
 	TArray<UDkUIListDataObjectBase*> FoundListSourceItems =
 		GetOrCreateDataRegistry()->GetListSourceItemsBySelectedTabID(TabId);
 	CommonListView_OptionsList->SetListItems(FoundListSourceItems);
-
-	DetailsView_ListEntryInfo->ClearDetailsViewInfo(); // 切换标签页时清空设置详情说明
-
 	if (CommonListView_OptionsList->GetNumItems() != 0)
 	{
 		CommonListView_OptionsList->NavigateToIndex(0);

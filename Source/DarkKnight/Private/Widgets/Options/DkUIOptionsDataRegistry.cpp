@@ -65,6 +65,7 @@ void UDkUIOptionsDataRegistry::InitGameplayCollectionTab()
 		GameDifficulty->AddDynamicOption(TEXT("Normal"), FText::FromString(TEXT("正常")));
 		GameDifficulty->AddDynamicOption(TEXT("Hard"), FText::FromString(TEXT("困难")));
 		GameDifficulty->AddDynamicOption(TEXT("Very Hard"), FText::FromString(TEXT("非常困难")));
+		GameDifficulty->SetDefaultValueFromString(TEXT("Normal"));
 		GameDifficulty->SetDataDynamicGetter(MAKE_OPTIONS_DATA_CONTROL(GetCurrentGameDifficulty));
 		GameDifficulty->SetDataDynamicSetter(MAKE_OPTIONS_DATA_CONTROL(SetCurrentGameDifficulty));
 		GameDifficulty->SetShouldApplyChangeImmediately(true);

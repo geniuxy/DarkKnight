@@ -46,7 +46,7 @@ public:
 	// 子类应该重写这些方法，以实现重置数据
 	virtual bool HasDefaultValue() const { return false;}
 	virtual bool CanResetBackToDefaultValue() const { return false;}
-	virtual bool TryResetBackToDefaultValue() const { return false;}
+	virtual bool TryResetBackToDefaultValue() { return false;}
 
 protected:
 	// 基类中为空。子类应重写它，以相应地处理所需的初始化

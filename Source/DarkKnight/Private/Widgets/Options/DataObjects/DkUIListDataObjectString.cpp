@@ -96,6 +96,31 @@ void UDkUIListDataObjectString::OnDataObjectInitialized()
 	}
 }
 
+bool UDkUIListDataObjectString::CanResetBackToDefaultValue() const
+{
+	return HasDefaultValue() && CurrentStringValue != GetDefaultValueAsString();
+}
+
+bool UDkUIListDataObjectString::TryResetBackToDefaultValue()
+{
+	if (CanResetBackToDefaultValue())
+	{
+		CurrentStringValue = GetDefaultValueAsString();
+
+		TrySetDisplayTextFromStringValue(CurrentStringValue);
+
+		if (DataDynamicSetter)
+		{
+			DataDynamicSetter->SetValueFromString(CurrentStringValue);
+		}
+
+		NotifyListDataModified(this, EOptionsListDataModifyReason::ResetToDefault);
+		
+		return true;
+	}
+	return false;
+}
+
 bool UDkUIListDataObjectString::TrySetDisplayTextFromStringValue(const FString& InStringValue)
 {
 	const int32 CurrentFoundIndex = AvailableOptionsStringArray.IndexOfByKey(InStringValue);

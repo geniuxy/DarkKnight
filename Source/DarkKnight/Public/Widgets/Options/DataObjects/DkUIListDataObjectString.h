@@ -22,6 +22,8 @@ public:
 protected:
 	//~Begin UDkUIListDataObjectBase Function
 	virtual void OnDataObjectInitialized() override;
+	virtual bool CanResetBackToDefaultValue() const override;
+	virtual bool TryResetBackToDefaultValue() override;
 	//~End UDkUIListDataObjectBase Function
 
 	bool TrySetDisplayTextFromStringValue(const FString& InStringValue);

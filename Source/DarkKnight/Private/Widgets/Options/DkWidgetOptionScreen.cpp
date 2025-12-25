@@ -7,6 +7,8 @@
 #include "ICommonInputModule.h"
 #include "Input/CommonUIInputTypes.h"
 #include "Settings/DkGameUserSettings.h"
+#include "Subsytems/DkUISubsystem.h"
+#include "Widgets/Components/DkUICommonButtonBase.h"
 #include "Widgets/Components/DkUICommonListView.h"
 #include "Widgets/Components/DkUITabListWidgetBase.h"
 #include "Widgets/Options/DkUIOptionListEntryDataMapping.h"
@@ -88,7 +90,57 @@ UDkUIOptionsDataRegistry* UDkWidgetOptionScreen::GetOrCreateDataRegistry()
 
 void UDkWidgetOptionScreen::OnResetBoundActionTriggered()
 {
-	Debug::Print(TEXT("重置绑定按钮已触发"));
+	if (ResettableDataArray.IsEmpty())
+	{
+		return;
+	}
+
+	UCommonButtonBase* SelectedTabButton =
+		TabListWidget_OptionsTabs->GetTabButtonBaseByID(TabListWidget_OptionsTabs->GetActiveTab());
+	const FString SelectedTabButtonName =
+		CastChecked<UDkUICommonButtonBase>(SelectedTabButton)->GetButtonDisplayText().ToString();
+
+	UDkUISubsystem::Get(this)->PushConfirmScreenToModalStackAsync(
+		EConfirmScreenType::YesOrNo,
+		FText::FromString(TEXT("重置")),
+		FText::FromString(TEXT("你想要重置所有 ") + SelectedTabButtonName + TEXT(" 下的设置吗?")),
+		[this](EConfirmScreenButtonType ClickedButtonType)
+		{
+			if (ClickedButtonType != EConfirmScreenButtonType::Confirmed)
+			{
+				return;
+			}
+
+			bIsResettingData = true;
+			bool bHasDataFailedToReset = false;
+
+			for (UDkUIListDataObjectBase* DataToReset : ResettableDataArray)
+			{
+				if (!DataToReset)
+				{
+					continue;
+				}
+
+				if (DataToReset->TryResetBackToDefaultValue())
+				{
+					Debug::Print(DataToReset->GetDataDisplayName().ToString() + TEXT("被重置了！"));
+				}
+				else
+				{
+					bHasDataFailedToReset = true;
+					Debug::Print(DataToReset->GetDataDisplayName().ToString() + TEXT("重置失败！"));
+				}
+			}
+
+			if (!bHasDataFailedToReset)
+			{
+				ResettableDataArray.Empty();
+				RemoveActionBinding(ResetActionHandle);
+			}
+
+			bIsResettingData = false;
+		}
+	);
 }
 
 void UDkWidgetOptionScreen::OnBackBoundActionTriggered()
@@ -186,7 +238,7 @@ void UDkWidgetOptionScreen::OnEntryWidgetReleased(UUserWidget& InReleasedWidget)
 void UDkWidgetOptionScreen::OnListViewDataModified(
 	UDkUIListDataObjectBase* InModifiedData, EOptionsListDataModifyReason ModifyReason)
 {
-	if (!InModifiedData)
+	if (!InModifiedData || bIsResettingData)
 	{
 		return;
 	}

@@ -68,4 +68,6 @@ private:
 
 	UPROPERTY(Transient)
 	TArray<UDkUIListDataObjectBase*> ResettableDataArray;
+	
+	bool bIsResettingData = false;
 };

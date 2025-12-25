@@ -18,6 +18,7 @@ public:
 	void AddDynamicOption(const FString& InStringValue, const FText& InDisplayText);
 	void SwitchToPreviousOption();
 	void SwitchToNextOption();
+	void OnRotatorInitiatedValueChanged(const FText& InNewSelectedText);
 
 protected:
 	//~Begin UDkUIListDataObjectBase Function

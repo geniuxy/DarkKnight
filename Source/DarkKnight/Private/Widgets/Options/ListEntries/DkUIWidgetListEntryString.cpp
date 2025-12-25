@@ -3,6 +3,7 @@
 
 #include "Widgets/Options/ListEntries/DkUIWidgetListEntryString.h"
 
+#include "CommonInputSubsystem.h"
 #include "Widgets/Components/DkUICommonButtonBase.h"
 #include "Widgets/Components/DkUICommonRotator.h"
 #include "Widgets/Options/DataObjects/DkUIListDataObjectString.h"
@@ -15,6 +16,7 @@ void UDkUIWidgetListEntryString::NativeOnInitialized()
 	CommonButton_Next->OnClicked().AddUObject(this, &ThisClass::OnNextButtonClicked);
 
 	CommonRotator_AvailableOptions->OnClicked().AddUObject(this, &ThisClass::SelectThisEntryWidget);
+	CommonRotator_AvailableOptions->OnRotatedEvent.AddUObject(this, &ThisClass::OnRotatorValueChanged);
 }
 
 void UDkUIWidgetListEntryString::OnOwningListDataObjectSet(UDkUIListDataObjectBase* InOwningListDataObject)
@@ -59,4 +61,23 @@ void UDkUIWidgetListEntryString::OnNextButtonClicked()
 	}
 
 	SelectThisEntryWidget();
+}
+
+void UDkUIWidgetListEntryString::OnRotatorValueChanged(int32 Value, bool bUserInitiated)
+{
+	if (!CachedOwningStringDataObject)
+	{
+		return;
+	}
+
+	UCommonInputSubsystem* CommonInputSubsystem = GetInputSubsystem();
+	if (!CommonInputSubsystem || !bUserInitiated)
+	{
+		return;
+	}
+
+	if (CommonInputSubsystem->GetCurrentInputType() == ECommonInputType::Gamepad)
+	{
+		CachedOwningStringDataObject->OnRotatorInitiatedValueChanged(CommonRotator_AvailableOptions->GetSelectedText());
+	}
 }

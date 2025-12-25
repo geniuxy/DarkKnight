@@ -74,6 +74,34 @@ void UDkUIListDataObjectString::SwitchToNextOption()
 	NotifyListDataModified(this);
 }
 
+void UDkUIListDataObjectString::OnRotatorInitiatedValueChanged(const FText& InNewSelectedText)
+{
+	const int32 FoundIndex = AvailableOptionsTextArray.IndexOfByPredicate(
+		[InNewSelectedText](const FText& AvailableText)-> bool
+		{
+			return AvailableText.EqualTo(InNewSelectedText);
+		}
+	);
+
+	if (FoundIndex != INDEX_NONE && AvailableOptionsStringArray.IsValidIndex(FoundIndex))
+	{
+		CurrentStringValue = AvailableOptionsStringArray[FoundIndex];
+		CurrentDisplayText = InNewSelectedText;
+
+		if (DataDynamicSetter)
+		{
+			DataDynamicSetter->SetValueFromString(CurrentStringValue);
+
+			Debug::Print(
+				TEXT("手柄修改了设置选项，DataDynamicSetter已使用. 最新可从Getter中得到的值为: ") +
+				DataDynamicGetter->GetValueAsString()
+			);
+		}
+
+		NotifyListDataModified(this);
+	}
+}
+
 void UDkUIListDataObjectString::OnDataObjectInitialized()
 {
 	if (!AvailableOptionsStringArray.IsEmpty())

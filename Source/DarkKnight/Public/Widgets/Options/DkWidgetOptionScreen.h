@@ -3,9 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "DkTypes/DkEnums.h"
 #include "Widgets/DkWidgetActivatableBase.h"
 #include "DkWidgetOptionScreen.generated.h"
 
+class UDkUIListDataObjectBase;
 class UDkUIWidgetOptionDetailsView;
 class UDkUITabListWidgetBase;
 class UDkUICommonListView;
@@ -40,6 +42,7 @@ private:
 	void OnListViewItemHovered(UObject* InHoveredItem, bool bWasHovered);
 	void OnListViewItemSelected(UObject* InSelectedItem);
 	void OnEntryWidgetReleased(UUserWidget& InReleasedWidget);
+	void OnListViewDataModified(UDkUIListDataObjectBase* InModifiedData, EOptionsListDataModifyReason ModifyReason);
 
 	FString TryGetEntryWidgetClassName(UObject* InOwningListItem) const;
 
@@ -62,4 +65,7 @@ private:
 	FDataTableRowHandle ResetAction;
 
 	FUIActionBindingHandle ResetActionHandle;
+
+	UPROPERTY(Transient)
+	TArray<UDkUIListDataObjectBase*> ResettableDataArray;
 };

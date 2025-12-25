@@ -99,7 +99,7 @@ void UDkWidgetOptionScreen::OnBackBoundActionTriggered()
 void UDkWidgetOptionScreen::OnOptionsTabSelected(FName TabId)
 {
 	DetailsView_ListEntryInfo->ClearDetailsViewInfo(); // 切换标签页时清空设置详情说明
-	
+
 	TArray<UDkUIListDataObjectBase*> FoundListSourceItems =
 		GetOrCreateDataRegistry()->GetListSourceItemsBySelectedTabID(TabId);
 	CommonListView_OptionsList->SetListItems(FoundListSourceItems);
@@ -107,6 +107,38 @@ void UDkWidgetOptionScreen::OnOptionsTabSelected(FName TabId)
 	{
 		CommonListView_OptionsList->NavigateToIndex(0);
 		CommonListView_OptionsList->SetSelectedIndex(0);
+	}
+
+	ResettableDataArray.Empty();
+
+	for (UDkUIListDataObjectBase* FoundListSourceItem : FoundListSourceItems)
+	{
+		if (!FoundListSourceItem)
+		{
+			continue;
+		}
+
+		if (!FoundListSourceItem->OnListDataModified.IsBoundToObject(this))
+		{
+			FoundListSourceItem->OnListDataModified.AddUObject(this, &ThisClass::OnListViewDataModified);
+		}
+
+		if (FoundListSourceItem->CanResetBackToDefaultValue())
+		{
+			ResettableDataArray.AddUnique(FoundListSourceItem);
+		}
+	}
+
+	if (ResettableDataArray.IsEmpty())
+	{
+		RemoveActionBinding(ResetActionHandle);
+	}
+	else
+	{
+		if (!GetActionBindings().Contains(ResetActionHandle))
+		{
+			AddActionBinding(ResetActionHandle);
+		}
 	}
 }
 
@@ -148,6 +180,37 @@ void UDkWidgetOptionScreen::OnEntryWidgetReleased(UUserWidget& InReleasedWidget)
 	if (UDkUIWidgetListEntryBase* EntryWidget = Cast<UDkUIWidgetListEntryBase>(&InReleasedWidget))
 	{
 		EntryWidget->NativeOnListEntryWidgetHovered(false);
+	}
+}
+
+void UDkWidgetOptionScreen::OnListViewDataModified(
+	UDkUIListDataObjectBase* InModifiedData, EOptionsListDataModifyReason ModifyReason)
+{
+	if (!InModifiedData)
+	{
+		return;
+	}
+
+	if (InModifiedData->CanResetBackToDefaultValue())
+	{
+		ResettableDataArray.AddUnique(InModifiedData);
+
+		if (!GetActionBindings().Contains(ResetActionHandle))
+		{
+			AddActionBinding(ResetActionHandle);
+		}
+	}
+	else
+	{
+		if (ResettableDataArray.Contains(InModifiedData))
+		{
+			ResettableDataArray.Remove(InModifiedData);
+		}
+	}
+
+	if (ResettableDataArray.IsEmpty())
+	{
+		RemoveActionBinding(ResetActionHandle);
 	}
 }
 

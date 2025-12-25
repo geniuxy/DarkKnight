@@ -17,4 +17,7 @@ namespace DkGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Widget_StartGameScreen,"Dk.Widget.StartGameScreen");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Widget_OptionScreen,"Dk.Widget.OptionScreen");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Widget_ConfirmScreen,"Dk.Widget.ConfirmScreen");
+
+	// Images
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Image_TestImage,"Dk.Image.TestImage");
 }

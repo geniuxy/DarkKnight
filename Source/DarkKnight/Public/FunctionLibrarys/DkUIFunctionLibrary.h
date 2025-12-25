@@ -21,4 +21,7 @@ public:
 	static TSoftClassPtr<UDkWidgetActivatableBase> GetUISoftWidgetClassByTag(
 		UPARAM(meta=(Categories="Dk.Widget")) FGameplayTag InWidgetTag
 	);
+
+	UFUNCTION(BlueprintPure, Category="UI Function Library")
+	static TSoftObjectPtr<UTexture2D> GetSoftImageByTag(UPARAM(meta=(Categories="Dk.Image")) FGameplayTag InImageTag);
 };

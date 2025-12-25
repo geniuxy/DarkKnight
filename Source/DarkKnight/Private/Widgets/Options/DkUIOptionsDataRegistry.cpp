@@ -3,6 +3,8 @@
 
 #include "Widgets/Options/DkUIOptionsDataRegistry.h"
 
+#include "DkGameplayTags.h"
+#include "FunctionLibrarys/DkUIFunctionLibrary.h"
 #include "Settings/DkGameUserSettings.h"
 #include "Widgets/Options/DkUIOptionsDataInteractionHelper.h"
 #include "Widgets/Options/DataObjects/DkUIListDataObjectCollection.h"
@@ -78,6 +80,12 @@ void UDkUIOptionsDataRegistry::InitGameplayCollectionTab()
 		UDkUIListDataObjectString* DisplayMode = NewObject<UDkUIListDataObjectString>();
 		DisplayMode->SetDataID(FName("DisplayMode"));
 		DisplayMode->SetDataDisplayName(FText::FromString(TEXT("显示模式")));
+		DisplayMode->SetSoftDescriptionImage(
+			UDkUIFunctionLibrary::GetSoftImageByTag(DkGameplayTags::Dk_Image_TestImage)
+		);
+		DisplayMode->SetDescriptionRichText(FText::FromString(TEXT(
+			"要显示的图像可以在项目设置中指定。它可以是开发人员在其中指定的任何图像。"
+		)));
 
 		GameplayTabCollection->AddChildListData(DisplayMode);
 	}

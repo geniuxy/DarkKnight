@@ -23,6 +23,11 @@ void UDkUIWidgetOptionDetailsView::UpdateDetailsViewInfo(
 		CommonLazyImage_DescriptionImage->SetBrushFromLazyTexture(InDataObject->GetSoftDescriptionImage());
 		CommonLazyImage_DescriptionImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	}
+	else
+	{
+		CommonLazyImage_DescriptionImage->SetBrushFromLazyTexture(InDataObject->GetSoftDescriptionImage());  // 空 Brush
+		CommonLazyImage_DescriptionImage->SetVisibility(ESlateVisibility::Collapsed);
+	}
 
 	CommonRichText_Description->SetText(InDataObject->GetDescriptionRichText());
 

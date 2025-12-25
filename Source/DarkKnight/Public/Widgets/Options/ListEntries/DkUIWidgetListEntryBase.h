@@ -27,6 +27,7 @@ public:
 protected:
 	//~Begin IUserObjectListEntry Function
 	virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
+	virtual void NativeOnEntryReleased() override; // 用于切换Tab后，将每一个设置项都先置为Unhovered状态
 	//~End IUserObjectListEntry Function
 
 	//~Begin UUserWidget Function

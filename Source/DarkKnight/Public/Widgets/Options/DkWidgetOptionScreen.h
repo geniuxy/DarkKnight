@@ -28,6 +28,7 @@ protected:
 	//~ Begin UCommonActivatableWidget Function
 	virtual void NativeOnActivated() override;
 	virtual void NativeOnDeactivated() override;
+	virtual UWidget* NativeGetDesiredFocusTarget() const override;
 	//~ End UCommonActivatableWidget Function
 
 private:
@@ -41,7 +42,6 @@ private:
 
 	void OnListViewItemHovered(UObject* InHoveredItem, bool bWasHovered);
 	void OnListViewItemSelected(UObject* InSelectedItem);
-	void OnEntryWidgetReleased(UUserWidget& InReleasedWidget);
 	void OnListViewDataModified(UDkUIListDataObjectBase* InModifiedData, EOptionsListDataModifyReason ModifyReason);
 
 	FString TryGetEntryWidgetClassName(UObject* InOwningListItem) const;

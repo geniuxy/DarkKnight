@@ -44,8 +44,6 @@ void UDkWidgetOptionScreen::NativeOnInitialized()
 
 	CommonListView_OptionsList->OnItemIsHoveredChanged().AddUObject(this, &ThisClass::OnListViewItemHovered);
 	CommonListView_OptionsList->OnItemSelectionChanged().AddUObject(this, &ThisClass::OnListViewItemSelected);
-	// 用于切换Tab后，将每一个设置项都先置为Unhovered状态
-	CommonListView_OptionsList->OnEntryWidgetReleased().AddUObject(this, &ThisClass::OnEntryWidgetReleased);
 }
 
 void UDkWidgetOptionScreen::NativeOnActivated()
@@ -74,6 +72,19 @@ void UDkWidgetOptionScreen::NativeOnDeactivated()
 
 	// 将更改写入config文件中
 	UDkGameUserSettings::Get()->ApplySettings(true);
+}
+
+UWidget* UDkWidgetOptionScreen::NativeGetDesiredFocusTarget() const
+{
+	if (UObject* SelectedObject = CommonListView_OptionsList->GetSelectedItem())
+	{
+		if (UUserWidget* SelectedEntryWidget = CommonListView_OptionsList->GetEntryWidgetFromItem(SelectedObject))
+		{
+			return SelectedEntryWidget;
+		}
+	}
+	
+	return Super::NativeGetDesiredFocusTarget();
 }
 
 UDkUIOptionsDataRegistry* UDkWidgetOptionScreen::GetOrCreateDataRegistry()
@@ -220,19 +231,6 @@ void UDkWidgetOptionScreen::OnListViewItemSelected(UObject* InSelectedItem)
 		CastChecked<UDkUIListDataObjectBase>(InSelectedItem),
 		TryGetEntryWidgetClassName(InSelectedItem)
 	);
-}
-
-void UDkWidgetOptionScreen::OnEntryWidgetReleased(UUserWidget& InReleasedWidget)
-{
-	if (!IsValid(&InReleasedWidget))
-	{
-		return;
-	}
-
-	if (UDkUIWidgetListEntryBase* EntryWidget = Cast<UDkUIWidgetListEntryBase>(&InReleasedWidget))
-	{
-		EntryWidget->NativeOnListEntryWidgetHovered(false);
-	}
 }
 
 void UDkWidgetOptionScreen::OnListViewDataModified(

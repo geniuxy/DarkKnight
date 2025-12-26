@@ -7,6 +7,7 @@
 #include "Widgets/Options/DkUIOptionListEntryDataMapping.h"
 #include "Widgets/Options/ListEntries/DkUIWidgetListEntryBase.h"
 #include "Widgets/Options/DataObjects/DkUIListDataObjectBase.h"
+#include "Widgets/Options/DataObjects/DkUIListDataObjectCollection.h"
 
 UUserWidget& UDkUICommonListView::OnGenerateEntryWidgetInternal(
 	UObject* Item,
@@ -25,6 +26,11 @@ UUserWidget& UDkUICommonListView::OnGenerateEntryWidgetInternal(
 	}
 	
 	return Super::OnGenerateEntryWidgetInternal(Item, DesiredEntryClass, OwnerTable);
+}
+
+bool UDkUICommonListView::OnIsSelectableOrNavigableInternal(UObject* FirstSelectedItem)
+{
+	return !FirstSelectedItem->IsA<UDkUIListDataObjectCollection>();
 }
 
 void UDkUICommonListView::ValidateCompiledDefaults(class IWidgetCompilerLog& CompileLog) const

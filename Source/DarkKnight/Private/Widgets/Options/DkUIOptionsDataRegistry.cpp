@@ -34,7 +34,48 @@ TArray<UDkUIListDataObjectBase*> UDkUIOptionsDataRegistry::GetListSourceItemsByS
 	checkf(FoundTabCollectionPtr, TEXT("找不到有效的Option Tab Collection, 通过ID（%s）"), *InSelectedTabID.ToString());
 
 	UDkUIListDataObjectCollection* FoundTabCollection = *FoundTabCollectionPtr;
-	return FoundTabCollection->GetAllChildSettingData();
+
+	TArray<UDkUIListDataObjectBase*> AllChildSettingData;
+
+	for (UDkUIListDataObjectBase* ChildListData : FoundTabCollection->GetAllChildSettingData())
+	{
+		if (!ChildListData)
+		{
+			continue;
+		}
+
+		AllChildSettingData.Add(ChildListData);
+
+		if (ChildListData->HasAnyChildListData())
+		{
+			FindChildListDataRecursively(ChildListData, AllChildSettingData);
+		}
+	}
+	return AllChildSettingData;
+}
+
+void UDkUIOptionsDataRegistry::FindChildListDataRecursively(
+	UDkUIListDataObjectBase* InParentData, TArray<UDkUIListDataObjectBase*>& OutFoundChildListData) const
+{
+	if (!InParentData || !InParentData->HasAnyChildListData())
+	{
+		return;
+	}
+	
+	for (UDkUIListDataObjectBase* SubChildListData : InParentData->GetAllChildSettingData())
+	{
+		if (!SubChildListData)
+		{
+			continue;
+		}
+
+		OutFoundChildListData.Add(SubChildListData);
+
+		if (SubChildListData->HasAnyChildListData())
+		{
+			FindChildListDataRecursively(SubChildListData, OutFoundChildListData);
+		}
+	}
 }
 
 void UDkUIOptionsDataRegistry::InitGameplayCollectionTab()
@@ -106,6 +147,15 @@ void UDkUIOptionsDataRegistry::InitAudioCollectionTab()
 		VolumeCategoryCollection->SetDataDisplayName(FText::FromString(TEXT("音量")));
 
 		AudioTabCollection->AddChildListData(VolumeCategoryCollection);
+
+		// Test Item
+		{
+			UDkUIListDataObjectString* TestItem = NewObject<UDkUIListDataObjectString>();
+			TestItem->SetDataID(FName("TestItem"));
+			TestItem->SetDataDisplayName(FText::FromString(TEXT("测试项")));
+
+			VolumeCategoryCollection->AddChildListData(TestItem);
+		}
 	}
 
 	RegisteredOptionsTabCollections.Add(AudioTabCollection);

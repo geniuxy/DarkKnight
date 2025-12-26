@@ -23,6 +23,10 @@ public:
 	TArray<UDkUIListDataObjectBase*> GetListSourceItemsBySelectedTabID(const FName& InSelectedTabID) const;
 
 private:
+	void FindChildListDataRecursively(
+		UDkUIListDataObjectBase* InParentData, TArray<UDkUIListDataObjectBase*>& OutFoundChildListData
+	) const; // 递归找到所有子设置数据
+
 	void InitGameplayCollectionTab();
 	void InitAudioCollectionTab();
 	void InitVideoCollectionTab();

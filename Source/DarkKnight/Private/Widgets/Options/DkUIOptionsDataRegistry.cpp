@@ -99,6 +99,15 @@ void UDkUIOptionsDataRegistry::InitAudioCollectionTab()
 	AudioTabCollection->SetDataID(FName("AudioTabCollection"));
 	AudioTabCollection->SetDataDisplayName(FText::FromString(TEXT("音频")));
 
+	// 音量类别
+	{
+		UDkUIListDataObjectCollection* VolumeCategoryCollection = NewObject<UDkUIListDataObjectCollection>();
+		VolumeCategoryCollection->SetDataID(FName("VolumeCategory"));
+		VolumeCategoryCollection->SetDataDisplayName(FText::FromString(TEXT("音量")));
+
+		AudioTabCollection->AddChildListData(VolumeCategoryCollection);
+	}
+
 	RegisteredOptionsTabCollections.Add(AudioTabCollection);
 }
 

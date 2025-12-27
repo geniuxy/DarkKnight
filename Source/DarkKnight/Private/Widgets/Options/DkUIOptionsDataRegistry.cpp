@@ -3,11 +3,13 @@
 
 #include "Widgets/Options/DkUIOptionsDataRegistry.h"
 
+#include "CommonNumericTextBlock.h"
 #include "DkGameplayTags.h"
 #include "FunctionLibrarys/DkUIFunctionLibrary.h"
 #include "Settings/DkGameUserSettings.h"
 #include "Widgets/Options/DkUIOptionsDataInteractionHelper.h"
 #include "Widgets/Options/DataObjects/DkUIListDataObjectCollection.h"
+#include "Widgets/Options/DataObjects/DkUIListDataObjectScalar.h"
 #include "Widgets/Options/DataObjects/DkUIListDataObjectString.h"
 
 #define MAKE_OPTIONS_DATA_CONTROL(SetterOrGetterFuncName) \
@@ -148,13 +150,21 @@ void UDkUIOptionsDataRegistry::InitAudioCollectionTab()
 
 		AudioTabCollection->AddChildListData(VolumeCategoryCollection);
 
-		// Test Item
+		// 总音量
 		{
-			UDkUIListDataObjectString* TestItem = NewObject<UDkUIListDataObjectString>();
-			TestItem->SetDataID(FName("TestItem"));
-			TestItem->SetDataDisplayName(FText::FromString(TEXT("测试项")));
+			UDkUIListDataObjectScalar* OverallVolume = NewObject<UDkUIListDataObjectScalar>();
+			OverallVolume->SetDataID(FName("OverallVolume"));
+			OverallVolume->SetDataDisplayName(FText::FromString(TEXT("总音量")));
+			OverallVolume->SetDescriptionRichText(FText::FromString(TEXT("调整总体的音量输出")));
+			OverallVolume->SetDisplayValueRange(TRange<float>(0.f,1.f));
+			OverallVolume->SetOutputValueRange(TRange<float>(0.f,2.f));
+			OverallVolume->SetSliderStepSize(0.01f);
+			OverallVolume->SetDefaultValueFromString(LexToString(1.f));
+			OverallVolume->SetDisplayNumericType(ECommonNumericType::Percentage);
+			OverallVolume->SetNumberFormattingOptions(UDkUIListDataObjectScalar::NoDecimal());
+			//TODO:: Set data dynamic getter and setter for the data object
 
-			VolumeCategoryCollection->AddChildListData(TestItem);
+			VolumeCategoryCollection->AddChildListData(OverallVolume);
 		}
 	}
 

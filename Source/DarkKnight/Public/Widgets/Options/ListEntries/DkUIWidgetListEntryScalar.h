@@ -29,6 +29,9 @@ protected:
 	) override;
 	//~End UDkUIWidgetListEntryBase Function
 private:
+	UFUNCTION()
+	void OnSliderValueChanged(float InNewSliderValue);
+
 	//***** Bound Widgets *****//
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional, AllowPrivateAccess="true"))
 	UCommonNumericTextBlock* CommonNumeric_SettingValue;

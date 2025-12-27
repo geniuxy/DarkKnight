@@ -26,6 +26,7 @@ public:
 	static FCommonNumberFormattingOptions WithDecimal(int32 NumFracDigit);
 
 	float GetCurrentDisplayValue() const;
+	void SetCurrentOutputValue(const float& InNewDisplayValue);
 
 private:
 	float StringToFloat(const FString& InString) const;

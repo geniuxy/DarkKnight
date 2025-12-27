@@ -9,6 +9,8 @@
 void UDkUIWidgetListEntryScalar::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
+
+	AnalogSlider_SettingSlider->OnValueChanged.AddUniqueDynamic(this, &ThisClass::OnSliderValueChanged);
 }
 
 void UDkUIWidgetListEntryScalar::OnOwningListDataObjectSet(UDkUIListDataObjectBase* InOwningListDataObject)
@@ -35,4 +37,12 @@ void UDkUIWidgetListEntryScalar::OnOwningListDataObjectModified(
 		CommonNumeric_SettingValue->SetCurrentValue(CachedOwningScalarDataObject->GetCurrentDisplayValue());
 		AnalogSlider_SettingSlider->SetValue(CachedOwningScalarDataObject->GetCurrentDisplayValue());
 	}
+}
+
+void UDkUIWidgetListEntryScalar::OnSliderValueChanged(float InNewSliderValue)
+{
+	if (CachedOwningScalarDataObject)
+	{
+		CachedOwningScalarDataObject->SetCurrentOutputValue(InNewSliderValue);
+	}	
 }

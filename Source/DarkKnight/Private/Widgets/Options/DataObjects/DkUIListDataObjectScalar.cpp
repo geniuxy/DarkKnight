@@ -34,6 +34,22 @@ float UDkUIListDataObjectScalar::GetCurrentDisplayValue() const
 	return 0.f;
 }
 
+void UDkUIListDataObjectScalar::SetCurrentOutputValue(const float& InNewDisplayValue)
+{
+	if (DataDynamicSetter)
+	{
+		float NewOutputValue = FMath::GetMappedRangeValueClamped(
+			DisplayValueRange,
+			OutputValueRange,
+			InNewDisplayValue
+		);
+
+		DataDynamicSetter->SetValueFromString(LexToString(NewOutputValue));
+
+		NotifyListDataModified(this);
+	}
+}
+
 float UDkUIListDataObjectScalar::StringToFloat(const FString& InString) const
 {
 	float OutConvertedValue = 0.f;

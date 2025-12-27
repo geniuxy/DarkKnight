@@ -4,7 +4,7 @@
 #include "Settings/DkGameUserSettings.h"
 
 UDkGameUserSettings::UDkGameUserSettings()
-	: OverallVolume(0.8f)
+	: OverallVolume(1.f)
 {
 }
 

@@ -6,6 +6,7 @@
 #include "Widgets/Options/ListEntries/DkUIWidgetListEntryBase.h"
 #include "DkUIWidgetListEntryScalar.generated.h"
 
+class UDkUIListDataObjectScalar;
 class UCommonNumericTextBlock;
 class UAnalogSlider;
 /**
@@ -35,4 +36,7 @@ private:
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional, AllowPrivateAccess="true"))
 	UAnalogSlider* AnalogSlider_SettingSlider;
 	//***** Bound Widgets *****//
+
+	UPROPERTY(Transient)
+	UDkUIListDataObjectScalar* CachedOwningScalarDataObject;
 };

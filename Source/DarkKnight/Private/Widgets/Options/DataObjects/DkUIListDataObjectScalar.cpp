@@ -3,6 +3,8 @@
 
 #include "Widgets/Options/DataObjects/DkUIListDataObjectScalar.h"
 
+#include "Widgets/Options/DkUIOptionsDataInteractionHelper.h"
+
 FCommonNumberFormattingOptions UDkUIListDataObjectScalar::NoDecimal()
 {
 	FCommonNumberFormattingOptions Options;
@@ -17,4 +19,26 @@ FCommonNumberFormattingOptions UDkUIListDataObjectScalar::WithDecimal(int32 NumF
 	Options.MaximumFractionalDigits = NumFracDigit;
 
 	return Options;
+}
+
+float UDkUIListDataObjectScalar::GetCurrentDisplayValue() const
+{
+	if (DataDynamicGetter)
+	{
+		return FMath::GetMappedRangeValueClamped(
+			OutputValueRange,
+			DisplayValueRange,
+			StringToFloat(DataDynamicGetter->GetValueAsString())
+		);
+	}
+	return 0.f;
+}
+
+float UDkUIListDataObjectScalar::StringToFloat(const FString& InString) const
+{
+	float OutConvertedValue = 0.f;
+
+	LexFromString(OutConvertedValue, InString);
+
+	return OutConvertedValue;
 }

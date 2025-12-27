@@ -18,7 +18,8 @@ public class DarkKnight : ModuleRules
 			"GameplayTags",
 			"UMG",
 			"CommonInput",
-			"PropertyPath"
+			"PropertyPath",
+			"CommonUI"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] { });

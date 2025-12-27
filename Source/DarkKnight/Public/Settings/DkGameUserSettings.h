@@ -15,10 +15,11 @@ class DARKKNIGHT_API UDkGameUserSettings : public UGameUserSettings
 	GENERATED_BODY()
 
 public:
+	UDkGameUserSettings();
+
 	static UDkGameUserSettings* Get();
 
 	//***** Gameplay Collection Tab ***** //
-
 	UFUNCTION()
 	FString GetCurrentGameDifficulty() const { return CurrentGameDifficulty; }
 
@@ -27,7 +28,22 @@ public:
 
 	//***** Gameplay Collection Tab ***** //
 
+	//***** Audio Collection Tab ***** //
+	UFUNCTION()
+	float GetOverallVolume() const { return OverallVolume; }
+
+	UFUNCTION()
+	void SetOverallVolume(float InVolume);
+	//***** Audio Collection Tab ***** //
+
 private:
+	//***** Gameplay Collection Tab ***** //
 	UPROPERTY(Config)
 	FString CurrentGameDifficulty;
+	//***** Gameplay Collection Tab ***** //
+
+	//***** Audio Collection Tab ***** //
+	UPROPERTY(Config)
+	float OverallVolume;
+	//***** Audio Collection Tab ***** //
 };

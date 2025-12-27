@@ -63,7 +63,7 @@ void UDkUIOptionsDataRegistry::FindChildListDataRecursively(
 	{
 		return;
 	}
-	
+
 	for (UDkUIListDataObjectBase* SubChildListData : InParentData->GetAllChildSettingData())
 	{
 		if (!SubChildListData)
@@ -156,8 +156,8 @@ void UDkUIOptionsDataRegistry::InitAudioCollectionTab()
 			OverallVolume->SetDataID(FName("OverallVolume"));
 			OverallVolume->SetDataDisplayName(FText::FromString(TEXT("总音量")));
 			OverallVolume->SetDescriptionRichText(FText::FromString(TEXT("调整总体的音量输出")));
-			OverallVolume->SetDisplayValueRange(TRange<float>(0.f,1.f));
-			OverallVolume->SetOutputValueRange(TRange<float>(0.f,2.f));
+			OverallVolume->SetDisplayValueRange(TRange<float>(0.f, 1.f));
+			OverallVolume->SetOutputValueRange(TRange<float>(0.f, 2.f));
 			OverallVolume->SetSliderStepSize(0.01f);
 			OverallVolume->SetDefaultValueFromString(LexToString(1.f));
 			OverallVolume->SetDisplayNumericType(ECommonNumericType::Percentage);
@@ -167,6 +167,20 @@ void UDkUIOptionsDataRegistry::InitAudioCollectionTab()
 			OverallVolume->SetShouldApplyChangeImmediately(true);
 
 			VolumeCategoryCollection->AddChildListData(OverallVolume);
+		}
+
+		//Test Item
+		{
+			UDkUIListDataObjectString* TestItem = NewObject<UDkUIListDataObjectString>();
+			TestItem->SetDataID(FName("TestItem"));
+			TestItem->SetDataDisplayName(FText::FromString(TEXT("Test Image Item")));
+			TestItem->SetSoftDescriptionImage(
+				UDkUIFunctionLibrary::GetSoftImageByTag(DkGameplayTags::Dk_Image_TestImage)
+			);
+			TestItem->SetDescriptionRichText(FText::FromString(TEXT(
+				"The image to display can be specified in the project settings. It can be anything the developer assigned in there")));
+
+			VolumeCategoryCollection->AddChildListData(TestItem);
 		}
 	}
 

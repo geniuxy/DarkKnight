@@ -32,6 +32,9 @@ private:
 	UFUNCTION()
 	void OnSliderValueChanged(float InNewSliderValue);
 
+	UFUNCTION()
+	void OnSliderMouseCaptureBegin();
+
 	//***** Bound Widgets *****//
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional, AllowPrivateAccess="true"))
 	UCommonNumericTextBlock* CommonNumeric_SettingValue;
@@ -43,3 +46,4 @@ private:
 	UPROPERTY(Transient)
 	UDkUIListDataObjectScalar* CachedOwningScalarDataObject;
 };
+

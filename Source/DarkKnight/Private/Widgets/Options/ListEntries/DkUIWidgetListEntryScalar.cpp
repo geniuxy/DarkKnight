@@ -11,6 +11,7 @@ void UDkUIWidgetListEntryScalar::NativeOnInitialized()
 	Super::NativeOnInitialized();
 
 	AnalogSlider_SettingSlider->OnValueChanged.AddUniqueDynamic(this, &ThisClass::OnSliderValueChanged);
+	AnalogSlider_SettingSlider->OnMouseCaptureBegin.AddUniqueDynamic(this, &ThisClass::OnSliderMouseCaptureBegin);
 }
 
 void UDkUIWidgetListEntryScalar::OnOwningListDataObjectSet(UDkUIListDataObjectBase* InOwningListDataObject)
@@ -44,5 +45,10 @@ void UDkUIWidgetListEntryScalar::OnSliderValueChanged(float InNewSliderValue)
 	if (CachedOwningScalarDataObject)
 	{
 		CachedOwningScalarDataObject->SetCurrentOutputValue(InNewSliderValue);
-	}	
+	}
+}
+
+void UDkUIWidgetListEntryScalar::OnSliderMouseCaptureBegin()
+{
+	SelectThisEntryWidget();
 }

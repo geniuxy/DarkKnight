@@ -169,18 +169,23 @@ void UDkUIOptionsDataRegistry::InitAudioCollectionTab()
 			VolumeCategoryCollection->AddChildListData(OverallVolume);
 		}
 
-		//Test Item
+		// 音乐大小
 		{
-			UDkUIListDataObjectString* TestItem = NewObject<UDkUIListDataObjectString>();
-			TestItem->SetDataID(FName("TestItem"));
-			TestItem->SetDataDisplayName(FText::FromString(TEXT("Test Image Item")));
-			TestItem->SetSoftDescriptionImage(
-				UDkUIFunctionLibrary::GetSoftImageByTag(DkGameplayTags::Dk_Image_TestImage)
-			);
-			TestItem->SetDescriptionRichText(FText::FromString(TEXT(
-				"The image to display can be specified in the project settings. It can be anything the developer assigned in there")));
+			UDkUIListDataObjectScalar* MusicVolume = NewObject<UDkUIListDataObjectScalar>();
+			MusicVolume->SetDataID(FName("MusicVolume"));
+			MusicVolume->SetDataDisplayName(FText::FromString(TEXT("音乐大小")));
+			MusicVolume->SetDescriptionRichText(FText::FromString(TEXT("调整游戏的音乐输出")));
+			MusicVolume->SetDisplayValueRange(TRange<float>(0.f, 1.f));
+			MusicVolume->SetOutputValueRange(TRange<float>(0.f, 2.f));
+			MusicVolume->SetSliderStepSize(0.01f);
+			MusicVolume->SetDefaultValueFromString(LexToString(1.f));
+			MusicVolume->SetDisplayNumericType(ECommonNumericType::Percentage);
+			MusicVolume->SetNumberFormattingOptions(UDkUIListDataObjectScalar::NoDecimal());
+			MusicVolume->SetDataDynamicGetter(MAKE_OPTIONS_DATA_CONTROL(GetMusicVolume));
+			MusicVolume->SetDataDynamicSetter(MAKE_OPTIONS_DATA_CONTROL(SetMusicVolume));
+			MusicVolume->SetShouldApplyChangeImmediately(true);
 
-			VolumeCategoryCollection->AddChildListData(TestItem);
+			VolumeCategoryCollection->AddChildListData(MusicVolume);
 		}
 	}
 

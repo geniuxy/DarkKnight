@@ -4,7 +4,7 @@
 #include "Settings/DkGameUserSettings.h"
 
 UDkGameUserSettings::UDkGameUserSettings()
-	: OverallVolume(1.f), MusicVolume(1.f), SoundFXVolume(1.f), bAllowBackgroundAudio(false)
+	: OverallVolume(1.f), MusicVolume(1.f), SoundFXVolume(1.f), bAllowBackgroundAudio(false), bUseHDRAudioMode(false)
 {
 }
 
@@ -37,4 +37,9 @@ void UDkGameUserSettings::SetSoundFXVolume(float InVolume)
 void UDkGameUserSettings::SetAllowBackgroundAudio(bool InbAllowBackgroundAudio)
 {
 	bAllowBackgroundAudio = InbAllowBackgroundAudio;
+}
+
+void UDkGameUserSettings::SetUseHDRAudioMode(bool InbUseHDRAudioMode)
+{
+	bUseHDRAudioMode = InbUseHDRAudioMode;
 }

@@ -231,6 +231,20 @@ void UDkUIOptionsDataRegistry::InitAudioCollectionTab()
 
 			SoundCategoryCollection->AddChildListData(AllowBackgroundAudio);
 		}
+
+		// 开启高动态音频
+		{
+			UDkUIListDataObjectStringBool* UseHDRAudioMode = NewObject<UDkUIListDataObjectStringBool>();
+			UseHDRAudioMode->SetDataID(FName("UseHDRAudioMode"));
+			UseHDRAudioMode->SetDataDisplayName(FText::FromString(TEXT("开启高动态音频")));
+			UseHDRAudioMode->SetDescriptionRichText(FText::FromString(TEXT("决定是否启用HDR Audio(高动态音频)")));
+			UseHDRAudioMode->SetFalseAsDefaultValue();
+			UseHDRAudioMode->SetDataDynamicGetter(MAKE_OPTIONS_DATA_CONTROL(GetUseHDRAudioMode));
+			UseHDRAudioMode->SetDataDynamicSetter(MAKE_OPTIONS_DATA_CONTROL(SetUseHDRAudioMode));
+			UseHDRAudioMode->SetShouldApplyChangeImmediately(true);
+
+			SoundCategoryCollection->AddChildListData(UseHDRAudioMode);
+		}
 	}
 
 	RegisteredOptionsTabCollections.Add(AudioTabCollection);

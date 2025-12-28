@@ -208,6 +208,31 @@ void UDkUIOptionsDataRegistry::InitAudioCollectionTab()
 		}
 	}
 
+	// 声音设置
+	{
+		UDkUIListDataObjectCollection* SoundCategoryCollection = NewObject<UDkUIListDataObjectCollection>();
+		SoundCategoryCollection->SetDataID(FName("SoundCategory"));
+		SoundCategoryCollection->SetDataDisplayName(FText::FromString(TEXT("声音")));
+
+		AudioTabCollection->AddChildListData(SoundCategoryCollection);
+
+		// 允许后台播放声音
+		{
+			UDkUIListDataObjectStringBool* AllowBackgroundAudio = NewObject<UDkUIListDataObjectStringBool>();
+			AllowBackgroundAudio->SetDataID(FName("AllowBackgroundAudio"));
+			AllowBackgroundAudio->SetDataDisplayName(FText::FromString(TEXT("允许后台播放声音")));
+			AllowBackgroundAudio->SetDescriptionRichText(FText::FromString(TEXT("决定是否允许游戏切换到后台之后继续播放声音")));
+			AllowBackgroundAudio->OverrideTrueDisplayText(FText::FromString(TEXT("允许")));
+			AllowBackgroundAudio->OverrideFalseDisplayText(FText::FromString(TEXT("不允许")));
+			AllowBackgroundAudio->SetFalseAsDefaultValue();
+			AllowBackgroundAudio->SetDataDynamicGetter(MAKE_OPTIONS_DATA_CONTROL(GetAllowBackgroundAudio));
+			AllowBackgroundAudio->SetDataDynamicSetter(MAKE_OPTIONS_DATA_CONTROL(SetAllowBackgroundAudio));
+			AllowBackgroundAudio->SetShouldApplyChangeImmediately(true);
+
+			SoundCategoryCollection->AddChildListData(AllowBackgroundAudio);
+		}
+	}
+
 	RegisteredOptionsTabCollections.Add(AudioTabCollection);
 }
 

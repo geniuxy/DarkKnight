@@ -34,7 +34,7 @@ public:
 
 	UFUNCTION()
 	void SetOverallVolume(float InVolume);
-	
+
 	UFUNCTION()
 	float GetMusicVolume() const { return MusicVolume; }
 
@@ -46,6 +46,12 @@ public:
 
 	UFUNCTION()
 	void SetSoundFXVolume(float InVolume);
+
+	UFUNCTION()
+	bool GetAllowBackgroundAudio() const { return bAllowBackgroundAudio; }
+
+	UFUNCTION()
+	void SetAllowBackgroundAudio(bool InbAllowBackgroundAudio);
 	//***** Audio Collection Tab ***** //
 
 private:
@@ -63,5 +69,8 @@ private:
 
 	UPROPERTY(Config)
 	float SoundFXVolume;
+
+	UPROPERTY(Config)
+	bool bAllowBackgroundAudio;
 	//***** Audio Collection Tab ***** //
 };

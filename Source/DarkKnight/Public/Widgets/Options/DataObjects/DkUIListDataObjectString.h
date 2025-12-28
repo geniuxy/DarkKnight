@@ -38,3 +38,26 @@ public:
 	FORCEINLINE const TArray<FText>& GetAvailableOptionsTextArray() const { return AvailableOptionsTextArray; }
 	FORCEINLINE FText GetCurrentDisplayText() const { return CurrentDisplayText; }
 };
+
+UCLASS()
+class DARKKNIGHT_API UDkUIListDataObjectStringBool : public UDkUIListDataObjectString
+{
+	GENERATED_BODY()
+
+public:
+	void OverrideTrueDisplayText(const FText& InNewTrueDisplayText);
+	void OverrideFalseDisplayText(const FText& InNewFalseDisplayText);
+	void SetTrueAsDefaultValue();
+	void SetFalseAsDefaultValue();
+
+protected:
+	//~Begin UDkUIListDataObjectBase Function
+	virtual void OnDataObjectInitialized() override;
+	//~End UDkUIListDataObjectBase Function
+
+private:
+	void TryInitBoolValues();
+
+	const FString TrueString = TEXT("true");
+	const FString FalseString = TEXT("false");
+};

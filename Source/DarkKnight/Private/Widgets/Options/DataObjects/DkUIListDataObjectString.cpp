@@ -172,3 +172,53 @@ bool UDkUIListDataObjectString::TrySetDisplayTextFromStringValue(const FString& 
 
 	return false;
 }
+
+//************ UDkUIListDataObjectStringBool ************//
+
+void UDkUIListDataObjectStringBool::OverrideTrueDisplayText(const FText& InNewTrueDisplayText)
+{
+	if (!AvailableOptionsStringArray.Contains(TrueString))
+	{
+		AddDynamicOption(TrueString, InNewTrueDisplayText);
+	}
+}
+
+void UDkUIListDataObjectStringBool::OverrideFalseDisplayText(const FText& InNewFalseDisplayText)
+{
+	if (!AvailableOptionsStringArray.Contains(FalseString))
+	{
+		AddDynamicOption(FalseString, InNewFalseDisplayText);
+	}
+}
+
+void UDkUIListDataObjectStringBool::SetTrueAsDefaultValue()
+{
+	SetDefaultValueFromString(TrueString);
+}
+
+void UDkUIListDataObjectStringBool::SetFalseAsDefaultValue()
+{
+	SetDefaultValueFromString(FalseString);
+}
+
+void UDkUIListDataObjectStringBool::OnDataObjectInitialized()
+{
+	TryInitBoolValues();
+	
+	Super::OnDataObjectInitialized();
+}
+
+void UDkUIListDataObjectStringBool::TryInitBoolValues()
+{
+	if (!AvailableOptionsStringArray.Contains(TrueString))
+	{
+		AddDynamicOption(TrueString, FText::FromString(TEXT("开")));
+	}
+
+	if (!AvailableOptionsStringArray.Contains(FalseString))
+	{
+		AddDynamicOption(FalseString, FText::FromString(TEXT("关")));
+	}
+}
+
+//************ UDkUIListDataObjectStringBool ************//

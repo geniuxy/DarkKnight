@@ -28,6 +28,12 @@ public:
 	float GetCurrentDisplayValue() const;
 	void SetCurrentOutputValue(const float& InNewDisplayValue);
 
+protected:
+	//~Begin UDkUIListDataObjectBase Function
+	virtual bool CanResetBackToDefaultValue() const override;
+	virtual bool TryResetBackToDefaultValue() override;
+	//~End UDkUIListDataObjectBase Function
+
 private:
 	float StringToFloat(const FString& InString) const;
 	

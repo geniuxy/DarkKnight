@@ -50,6 +50,34 @@ void UDkUIListDataObjectScalar::SetCurrentOutputValue(const float& InNewDisplayV
 	}
 }
 
+bool UDkUIListDataObjectScalar::CanResetBackToDefaultValue() const
+{
+	if (HasDefaultValue() && DataDynamicGetter)
+	{
+		const float DefaultValue = StringToFloat(GetDefaultValueAsString());
+		const float CurrentValue = StringToFloat(DataDynamicGetter->GetValueAsString());
+
+		return !FMath::IsNearlyEqual(DefaultValue, CurrentValue, 0.01f);
+	}
+	return false;
+}
+
+bool UDkUIListDataObjectScalar::TryResetBackToDefaultValue()
+{
+	if (CanResetBackToDefaultValue())
+	{
+		if (DataDynamicSetter)
+		{
+			DataDynamicSetter->SetValueFromString(GetDefaultValueAsString());
+
+			NotifyListDataModified(this, EOptionsListDataModifyReason::ResetToDefault);
+
+			return true;
+		}
+	}
+	return false;
+}
+
 float UDkUIListDataObjectScalar::StringToFloat(const FString& InString) const
 {
 	float OutConvertedValue = 0.f;

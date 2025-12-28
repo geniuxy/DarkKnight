@@ -93,7 +93,9 @@ void UDkUIListDataObjectString::OnRotatorInitiatedValueChanged(const FText& InNe
 			DataDynamicSetter->SetValueFromString(CurrentStringValue);
 
 			Debug::Print(
-				TEXT("手柄修改了设置选项，DataDynamicSetter已使用. 最新可从Getter中得到的值为: ") +
+				TEXT("手柄修改了设置选项 ") +
+				GetDataDisplayName().ToString() + 
+				 TEXT(" ，DataDynamicSetter已使用. 最新可从Getter中得到的值为: ") +
 				DataDynamicGetter->GetValueAsString()
 			);
 		}

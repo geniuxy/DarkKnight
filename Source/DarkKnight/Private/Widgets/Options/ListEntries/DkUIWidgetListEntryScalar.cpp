@@ -40,6 +40,11 @@ void UDkUIWidgetListEntryScalar::OnOwningListDataObjectModified(
 	}
 }
 
+UWidget* UDkUIWidgetListEntryScalar::NativeGetWidgetToFocusForGamepad() const
+{
+	return AnalogSlider_SettingSlider;
+}
+
 void UDkUIWidgetListEntryScalar::OnSliderValueChanged(float InNewSliderValue)
 {
 	if (CachedOwningScalarDataObject)

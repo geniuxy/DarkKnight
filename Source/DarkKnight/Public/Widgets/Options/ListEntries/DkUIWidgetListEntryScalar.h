@@ -27,7 +27,9 @@ protected:
 	virtual void OnOwningListDataObjectModified(
 		UDkUIListDataObjectBase* OwningModifiedData, EOptionsListDataModifyReason ModifyReason
 	) override;
+	virtual UWidget* NativeGetWidgetToFocusForGamepad() const override;
 	//~End UDkUIWidgetListEntryBase Function
+	
 private:
 	UFUNCTION()
 	void OnSliderValueChanged(float InNewSliderValue);
@@ -46,4 +48,3 @@ private:
 	UPROPERTY(Transient)
 	UDkUIListDataObjectScalar* CachedOwningScalarDataObject;
 };
-

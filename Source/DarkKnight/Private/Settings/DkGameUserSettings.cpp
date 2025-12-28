@@ -4,7 +4,7 @@
 #include "Settings/DkGameUserSettings.h"
 
 UDkGameUserSettings::UDkGameUserSettings()
-	: OverallVolume(1.f), MusicVolume(1.f)
+	: OverallVolume(1.f), MusicVolume(1.f), SoundFXVolume(1.f)
 {
 }
 
@@ -27,4 +27,9 @@ void UDkGameUserSettings::SetOverallVolume(float InVolume)
 void UDkGameUserSettings::SetMusicVolume(float InVolume)
 {
 	MusicVolume =  InVolume;
+}
+
+void UDkGameUserSettings::SetSoundFXVolume(float InVolume)
+{
+	SoundFXVolume = InVolume;
 }

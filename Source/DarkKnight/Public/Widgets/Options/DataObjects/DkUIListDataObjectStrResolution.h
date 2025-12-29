@@ -21,4 +21,10 @@ protected:
 	//~Begin UDkUIListDataObjectBase Function
 	virtual void OnDataObjectInitialized() override;
 	//~End UDkUIListDataObjectBase Function
+
+private:
+	FString ResToStringValue(const FIntPoint& InResolution) const;
+	FText ResToDisplayText(const FIntPoint& InResolution) const;
+
+	FString MaxAllowedResolution;
 };

@@ -11,6 +11,7 @@
 #include "Widgets/Options/DataObjects/DkUIListDataObjectCollection.h"
 #include "Widgets/Options/DataObjects/DkUIListDataObjectScalar.h"
 #include "Widgets/Options/DataObjects/DkUIListDataObjectString.h"
+#include "Widgets/Options/DataObjects/DkUIListDataObjectStrResolution.h"
 
 #define MAKE_OPTIONS_DATA_CONTROL(SetterOrGetterFuncName) \
 	MakeShared<FDkUIOptionsDataInteractionHelper>(GET_FUNCTION_NAME_STRING_CHECKED(UDkGameUserSettings, SetterOrGetterFuncName))
@@ -285,9 +286,25 @@ void UDkUIOptionsDataRegistry::InitVideoCollectionTab()
 
 			DisplayCategoryCollection->AddChildListData(WindowMode);
 		}
+
+		// 屏幕分辨率
+		{
+			UDkUIListDataObjectStrResolution* ScreenResolution = NewObject<UDkUIListDataObjectStrResolution>();
+			ScreenResolution->SetDataID(FName("ScreenResolution"));
+			ScreenResolution->SetDataDisplayName(FText::FromString(TEXT("分辨率")));
+			ScreenResolution->SetDescriptionRichText(FText::FromString(TEXT(
+				"可用于更改屏幕的显示分辨率，主要体现于更改窗口化的大小。"
+			)));
+			ScreenResolution->InitResolutionValues();
+			ScreenResolution->SetDataDynamicGetter(MAKE_OPTIONS_DATA_CONTROL(GetScreenResolution));
+			ScreenResolution->SetDataDynamicSetter(MAKE_OPTIONS_DATA_CONTROL(SetScreenResolution));
+			ScreenResolution->SetShouldApplyChangeImmediately(true);
+
+			DisplayCategoryCollection->AddChildListData(ScreenResolution);
+		}
 	}
 
-	RegisteredOptionsTabCollections.Add(VideoTabCollection); 
+	RegisteredOptionsTabCollections.Add(VideoTabCollection);
 }
 
 void UDkUIOptionsDataRegistry::InitControlCollectionTab()

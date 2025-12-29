@@ -16,6 +16,7 @@ void UDkUITabListWidgetBase::RequestRegisterTab(const FName& InTabID, const FTex
 	}
 }
 
+#if WITH_EDITOR	
 void UDkUITabListWidgetBase::ValidateCompiledDefaults(class IWidgetCompilerLog& CompileLog) const
 {
 	Super::ValidateCompiledDefaults(CompileLog);
@@ -29,3 +30,4 @@ void UDkUITabListWidgetBase::ValidateCompiledDefaults(class IWidgetCompilerLog& 
 		));
 	}
 }
+#endif

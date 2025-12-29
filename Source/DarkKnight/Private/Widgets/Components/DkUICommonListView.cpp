@@ -33,6 +33,7 @@ bool UDkUICommonListView::OnIsSelectableOrNavigableInternal(UObject* FirstSelect
 	return !FirstSelectedItem->IsA<UDkUIListDataObjectCollection>();
 }
 
+#if WITH_EDITOR	
 void UDkUICommonListView::ValidateCompiledDefaults(class IWidgetCompilerLog& CompileLog) const
 {
 	Super::ValidateCompiledDefaults(CompileLog);
@@ -46,3 +47,4 @@ void UDkUICommonListView::ValidateCompiledDefaults(class IWidgetCompilerLog& Com
 		));
 	}
 }
+#endif

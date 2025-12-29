@@ -118,19 +118,19 @@ void UDkUIOptionsDataRegistry::InitGameplayCollectionTab()
 		GameplayTabCollection->AddChildListData(GameDifficulty);
 	}
 
-	// 显示模式
+	// Test
 	{
-		UDkUIListDataObjectString* DisplayMode = NewObject<UDkUIListDataObjectString>();
-		DisplayMode->SetDataID(FName("DisplayMode"));
-		DisplayMode->SetDataDisplayName(FText::FromString(TEXT("显示模式")));
-		DisplayMode->SetSoftDescriptionImage(
+		UDkUIListDataObjectString* TestItem = NewObject<UDkUIListDataObjectString>();
+		TestItem->SetDataID(FName("TestItem"));
+		TestItem->SetDataDisplayName(FText::FromString(TEXT("测试项")));
+		TestItem->SetSoftDescriptionImage(
 			UDkUIFunctionLibrary::GetSoftImageByTag(DkGameplayTags::Dk_Image_TestImage)
 		);
-		DisplayMode->SetDescriptionRichText(FText::FromString(TEXT(
-			"要显示的图像可以在项目设置中指定。它可以是开发人员在其中指定的任何图像。"
+		TestItem->SetDescriptionRichText(FText::FromString(TEXT(
+			"测试项测试项测试项测试项测试项测试项测试项测试项测试项测试项测试项测试项"
 		)));
 
-		GameplayTabCollection->AddChildListData(DisplayMode);
+		GameplayTabCollection->AddChildListData(TestItem);
 	}
 
 	RegisteredOptionsTabCollections.Add(GameplayTabCollection);
@@ -256,7 +256,38 @@ void UDkUIOptionsDataRegistry::InitVideoCollectionTab()
 	VideoTabCollection->SetDataID(FName("VideoTabCollection"));
 	VideoTabCollection->SetDataDisplayName(FText::FromString(TEXT("图像")));
 
-	RegisteredOptionsTabCollections.Add(VideoTabCollection);
+	// 显示类别
+	{
+		UDkUIListDataObjectCollection* DisplayCategoryCollection = NewObject<UDkUIListDataObjectCollection>();
+		DisplayCategoryCollection->SetDataID(FName("DisplayCategory"));
+		DisplayCategoryCollection->SetDataDisplayName(FText::FromString(TEXT("显示")));
+
+		VideoTabCollection->AddChildListData(DisplayCategoryCollection);
+
+		// 窗口模式
+		{
+			UDkUIListDataObjectStringEnum* WindowMode = NewObject<UDkUIListDataObjectStringEnum>();
+			WindowMode->SetDataID(FName("WindowMode"));
+			WindowMode->SetDataDisplayName(FText::FromString(TEXT("窗口模式")));
+			WindowMode->SetSoftDescriptionImage(
+				UDkUIFunctionLibrary::GetSoftImageByTag(DkGameplayTags::Dk_Image_TestImage)
+			);
+			WindowMode->SetDescriptionRichText(FText::FromString(TEXT(
+				"要显示的图像可以在项目设置中指定。它可以是开发人员在其中指定的任何图像。"
+			)));
+			WindowMode->AddEnumOption(EWindowMode::Fullscreen, FText::FromString(TEXT("全屏")));
+			WindowMode->AddEnumOption(EWindowMode::WindowedFullscreen, FText::FromString(TEXT("无边框窗口")));
+			WindowMode->AddEnumOption(EWindowMode::Windowed, FText::FromString(TEXT("窗口化")));
+			WindowMode->SetDefaultValueFromEnumOption(EWindowMode::WindowedFullscreen);
+			WindowMode->SetDataDynamicGetter(MAKE_OPTIONS_DATA_CONTROL(GetFullscreenMode));
+			WindowMode->SetDataDynamicSetter(MAKE_OPTIONS_DATA_CONTROL(SetFullscreenMode));
+			WindowMode->SetShouldApplyChangeImmediately(true);
+
+			DisplayCategoryCollection->AddChildListData(WindowMode);
+		}
+	}
+
+	RegisteredOptionsTabCollections.Add(VideoTabCollection); 
 }
 
 void UDkUIOptionsDataRegistry::InitControlCollectionTab()

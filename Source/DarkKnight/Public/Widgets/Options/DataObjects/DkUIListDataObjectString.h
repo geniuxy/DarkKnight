@@ -74,7 +74,7 @@ public:
 		const UEnum* StaticEnumOption = StaticEnum<EnumType>();
 		const FString ConvertedEnumString = StaticEnumOption->GetNameStringByValue(InEnumOption);
 
-		AddDynamicOption(ConvertedEnumString, InEnumOption);
+		AddDynamicOption(ConvertedEnumString, InDisplayText);
 	}
 
 	template<typename EnumType>

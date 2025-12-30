@@ -47,6 +47,11 @@ protected:
 		UDkUIListDataObjectBase* OwningModifiedData, EOptionsListDataModifyReason ModifyReason
 	);
 
+	// 子类应该重写此函数，以便在DependencyData修改后更新 UI 值。需要调用 super 方法。
+	virtual void OnOwningDependencyDataObjectModified(
+		UDkUIListDataObjectBase* OwningModifiedDependencyData, EOptionsListDataModifyReason ModifyReason
+	);
+
 	// 子类应该重写此函数，以更改其拥有的控件的可编辑状态,需要调用 super 方法。
 	virtual void OnToggleEditableState(bool bIsEditable);
 
@@ -57,4 +62,7 @@ private:
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional, AllowPrivateAccess="true"))
 	UCommonTextBlock* CommonText_SettingDisplayName;
 	//***** Bound Widgets *****//
+
+	UPROPERTY(Transient)
+	UDkUIListDataObjectBase* CachedOwningDataObject;
 };

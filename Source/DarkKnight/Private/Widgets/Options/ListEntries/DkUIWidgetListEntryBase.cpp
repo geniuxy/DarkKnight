@@ -40,7 +40,7 @@ FReply UDkUIWidgetListEntryBase::NativeOnFocusReceived(const FGeometry& InGeomet
 			}
 		}
 	}
-	
+
 	return Super::NativeOnFocusReceived(InGeometry, InFocusEvent);
 }
 
@@ -61,12 +61,29 @@ void UDkUIWidgetListEntryBase::OnOwningListDataObjectSet(UDkUIListDataObjectBase
 		InOwningListDataObject->OnListDataModified.AddUObject(this, &ThisClass::OnOwningListDataObjectModified);
 	}
 
+	if (!InOwningListDataObject->OnDependencyDataModified.IsBoundToObject(this))
+	{
+		InOwningListDataObject->
+			OnDependencyDataModified.AddUObject(this, &ThisClass::OnOwningDependencyDataObjectModified);
+	}
+
 	OnToggleEditableState(InOwningListDataObject->IsDataCurrentlyEditable());
+
+	CachedOwningDataObject = InOwningListDataObject;
 }
 
 void UDkUIWidgetListEntryBase::OnOwningListDataObjectModified(
 	UDkUIListDataObjectBase* OwningModifiedData, EOptionsListDataModifyReason ModifyReason)
 {
+}
+
+void UDkUIWidgetListEntryBase::OnOwningDependencyDataObjectModified(
+	UDkUIListDataObjectBase* OwningModifiedDependencyData, EOptionsListDataModifyReason ModifyReason)
+{
+	if (CachedOwningDataObject)
+	{
+		OnToggleEditableState(CachedOwningDataObject->IsDataCurrentlyEditable());
+	}
 }
 
 void UDkUIWidgetListEntryBase::OnToggleEditableState(bool bIsEditable)

@@ -27,14 +27,14 @@ public:
 		return true;
 	}
 
-	FString GetDisabledRichReason() const
+	FString GetDisabledWarningReason() const
 	{
-		return DisabledRichReason;
+		return DisabledWarningReason;
 	}
 
-	void SetDisabledRichReason(const FString& InRichReason)
+	void SetDisabledWarningReason(const FString& InRichReason)
 	{
-		DisabledRichReason = InRichReason;
+		DisabledWarningReason = InRichReason;
 	}
 
 	bool HasForcedStringValue() const
@@ -54,6 +54,6 @@ public:
 
 private:
 	TFunction<bool()> EditConditionFunc;
-	FString DisabledRichReason;
-	TOptional<FString> DisabledForcedStringValue;
+	FString DisabledWarningReason; // 禁用后，设置详情中的提示警告词
+	TOptional<FString> DisabledForcedStringValue; // 禁用后，强制切换的StringValue
 };

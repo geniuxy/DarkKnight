@@ -265,7 +265,9 @@ void UDkUIOptionsDataRegistry::InitVideoCollectionTab()
 			return !bIsInEditor;
 		}
 	);
-	PackagedBuildOnlyCondition.SetDisabledRichReason(TEXT("\n\n<Warning>该设置仅在打包客户端中可编辑</>"));
+	PackagedBuildOnlyCondition.SetDisabledWarningReason(TEXT("\n\n<Warning>该设置仅在打包客户端中可编辑</>"));
+
+	UDkUIListDataObjectStringEnum* CreatedWindowMode = nullptr;
 
 	// 显示类别
 	{
@@ -295,6 +297,8 @@ void UDkUIOptionsDataRegistry::InitVideoCollectionTab()
 			WindowMode->SetShouldApplyChangeImmediately(true);
 			WindowMode->AddEditionCondition(PackagedBuildOnlyCondition);
 
+			CreatedWindowMode = WindowMode;
+
 			DisplayCategoryCollection->AddChildListData(WindowMode);
 		}
 
@@ -311,6 +315,21 @@ void UDkUIOptionsDataRegistry::InitVideoCollectionTab()
 			ScreenResolution->SetDataDynamicSetter(MAKE_OPTIONS_DATA_CONTROL(SetScreenResolution));
 			ScreenResolution->SetShouldApplyChangeImmediately(true);
 			ScreenResolution->AddEditionCondition(PackagedBuildOnlyCondition);
+
+			FOptionsDataEditConditionDescriptor WindowModeEditCondition;
+			WindowModeEditCondition.SetEditConditionFunc(
+				[CreatedWindowMode]()-> bool
+				{
+					const bool bIsBorderlessWindow = CreatedWindowMode->
+						GetCurrentValueAsEnum<EWindowMode::Type>() == EWindowMode::WindowedFullscreen;
+					return !bIsBorderlessWindow;
+				}
+			);
+			WindowModeEditCondition.SetDisabledWarningReason(
+				TEXT("\n\n<Warning>当无边框窗口模式时，无法调节屏幕分辨率，默认会设置为当前屏幕最大允许分辨率。</>")
+			);
+			WindowModeEditCondition.SetDisabledForcedStringValue(ScreenResolution->GetMaxAllowedResolution());
+			ScreenResolution->AddEditionCondition(WindowModeEditCondition);
 
 			DisplayCategoryCollection->AddChildListData(ScreenResolution);
 		}

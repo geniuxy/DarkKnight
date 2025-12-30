@@ -94,8 +94,8 @@ void UDkUIListDataObjectString::OnRotatorInitiatedValueChanged(const FText& InNe
 
 			Debug::Print(
 				TEXT("手柄修改了设置选项 ") +
-				GetDataDisplayName().ToString() + 
-				 TEXT(" ，DataDynamicSetter已使用. 最新可从Getter中得到的值为: ") +
+				GetDataDisplayName().ToString() +
+				TEXT(" ，DataDynamicSetter已使用. 最新可从Getter中得到的值为: ") +
 				DataDynamicGetter->GetValueAsString()
 			);
 		}
@@ -161,6 +161,24 @@ bool UDkUIListDataObjectString::TryResetBackToDefaultValue()
 	return false;
 }
 
+bool UDkUIListDataObjectString::CanSetToForcedStringValue(const FString& InForcedValue) const
+{
+	return CurrentStringValue != InForcedValue;
+}
+
+void UDkUIListDataObjectString::OnSetToForcedStringValue(const FString& InForcedValue)
+{
+	CurrentStringValue = InForcedValue;
+	TrySetDisplayTextFromStringValue(CurrentStringValue);
+
+	if (DataDynamicSetter)
+	{
+		DataDynamicSetter->SetValueFromString(CurrentStringValue);
+	}
+
+	NotifyListDataModified(this, EOptionsListDataModifyReason::DependencyModified);
+}
+
 bool UDkUIListDataObjectString::TrySetDisplayTextFromStringValue(const FString& InStringValue)
 {
 	const int32 CurrentFoundIndex = AvailableOptionsStringArray.IndexOfByKey(InStringValue);
@@ -206,7 +224,7 @@ void UDkUIListDataObjectStringBool::SetFalseAsDefaultValue()
 void UDkUIListDataObjectStringBool::OnDataObjectInitialized()
 {
 	TryInitBoolValues();
-	
+
 	Super::OnDataObjectInitialized();
 }
 

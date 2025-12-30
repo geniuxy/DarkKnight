@@ -35,7 +35,7 @@ bool UDkUIListDataObjectBase::IsDataCurrentlyEditable()
 
 		bIsEditable = false;
 		
-		CachedDisabledRichReason.Append(Condition.GetDisabledRichReason());
+		CachedDisabledRichReason.Append(Condition.GetDisabledWarningReason());
 		SetWarningRichText(FText::FromString(CachedDisabledRichReason));
 		
 		if (Condition.HasForcedStringValue())

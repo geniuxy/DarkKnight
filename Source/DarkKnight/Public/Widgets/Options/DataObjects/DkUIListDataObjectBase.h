@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "DkTypes/DkEnums.h"
+#include "DkTypes/DkStructs.h"
 #include "UObject/Object.h"
 #include "DkUIListDataObjectBase.generated.h"
 
@@ -44,9 +45,14 @@ public:
 	virtual bool HasAnyChildListData() const { return false; }
 
 	// 子类应该重写这些方法，以实现重置数据
-	virtual bool HasDefaultValue() const { return false;}
-	virtual bool CanResetBackToDefaultValue() const { return false;}
-	virtual bool TryResetBackToDefaultValue() { return false;}
+	virtual bool HasDefaultValue() const { return false; }
+	virtual bool CanResetBackToDefaultValue() const { return false; }
+	virtual bool TryResetBackToDefaultValue() { return false; }
+
+	// 由 OptionsDataRegister 调用，用于为构造的 list data objects 添加 edit conditions
+	void AddEditionCondition(const FOptionsDataEditConditionDescriptor& InEditCondition);
+
+	bool IsDataCurrentEditable();
 
 protected:
 	// 基类中为空。子类应重写它，以相应地处理所需的初始化
@@ -57,6 +63,12 @@ protected:
 		EOptionsListDataModifyReason ModifyReason = EOptionsListDataModifyReason::DirectlyModified
 	);
 
+	// 子类应该重写此方法，以允许将值设置为ForcedStringValue
+	virtual bool CanSetToForcedStringValue(const FString& InForcedValue) const { return false; }
+
+	// 子类应该重写此方法，以指定如何将当前值设置为ForcedStringValue
+	virtual void OnSetToForcedStringValue(const FString& InForcedValue);
+
 private:
 	FName DataID;
 	FText DataDisplayName;
@@ -66,6 +78,9 @@ private:
 
 	UPROPERTY(Transient)
 	UDkUIListDataObjectBase* ParentData;
+
+	UPROPERTY(Transient)
+	TArray<FOptionsDataEditConditionDescriptor> EditConditionDescArray;
 
 	bool bShouldApplyChangeImmediately = false;
 

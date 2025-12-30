@@ -28,6 +28,7 @@ protected:
 		UDkUIListDataObjectBase* OwningModifiedData, EOptionsListDataModifyReason ModifyReason
 	) override;
 	virtual UWidget* NativeGetWidgetToFocusForGamepad() const override;
+	virtual void OnToggleEditableState(bool bIsEditable) override;
 	//~End UDkUIWidgetListEntryBase Function
 
 private:

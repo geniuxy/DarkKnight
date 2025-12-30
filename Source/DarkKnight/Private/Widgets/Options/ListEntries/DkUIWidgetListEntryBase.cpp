@@ -60,11 +60,21 @@ void UDkUIWidgetListEntryBase::OnOwningListDataObjectSet(UDkUIListDataObjectBase
 	{
 		InOwningListDataObject->OnListDataModified.AddUObject(this, &ThisClass::OnOwningListDataObjectModified);
 	}
+
+	OnToggleEditableState(InOwningListDataObject->IsDataCurrentlyEditable());
 }
 
 void UDkUIWidgetListEntryBase::OnOwningListDataObjectModified(
 	UDkUIListDataObjectBase* OwningModifiedData, EOptionsListDataModifyReason ModifyReason)
 {
+}
+
+void UDkUIWidgetListEntryBase::OnToggleEditableState(bool bIsEditable)
+{
+	if (CommonText_SettingDisplayName)
+	{
+		CommonText_SettingDisplayName->SetIsEnabled(bIsEditable);
+	}
 }
 
 void UDkUIWidgetListEntryBase::SelectThisEntryWidget()

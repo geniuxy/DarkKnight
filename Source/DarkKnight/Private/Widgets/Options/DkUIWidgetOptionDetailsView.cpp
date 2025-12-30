@@ -25,7 +25,7 @@ void UDkUIWidgetOptionDetailsView::UpdateDetailsViewInfo(
 	}
 	else
 	{
-		CommonLazyImage_DescriptionImage->SetBrushFromLazyTexture(InDataObject->GetSoftDescriptionImage());  // 空 Brush
+		CommonLazyImage_DescriptionImage->SetBrushFromLazyTexture(InDataObject->GetSoftDescriptionImage()); // 空 Brush
 		CommonLazyImage_DescriptionImage->SetVisibility(ESlateVisibility::Collapsed);
 	}
 
@@ -39,7 +39,8 @@ void UDkUIWidgetOptionDetailsView::UpdateDetailsViewInfo(
 
 	CommonRichText_DynamicDetails->SetText(FText::FromString(DynamicDetails));
 
-	CommonRichText_Warnings->SetText(InDataObject->GetWarningRichText());
+	CommonRichText_Warnings
+		->SetText(InDataObject->IsDataCurrentlyEditable() ? FText::GetEmpty() : InDataObject->GetWarningRichText());
 }
 
 void UDkUIWidgetOptionDetailsView::ClearDetailsViewInfo()

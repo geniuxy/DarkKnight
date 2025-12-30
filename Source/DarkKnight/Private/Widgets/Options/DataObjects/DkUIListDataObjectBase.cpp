@@ -15,7 +15,7 @@ void UDkUIListDataObjectBase::AddEditionCondition(const FOptionsDataEditConditio
 	EditConditionDescArray.Add(InEditCondition);
 }
 
-bool UDkUIListDataObjectBase::IsDataCurrentEditable()
+bool UDkUIListDataObjectBase::IsDataCurrentlyEditable()
 {
 	bool bIsEditable = true;
 

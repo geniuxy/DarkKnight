@@ -52,7 +52,7 @@ public:
 	// 由 OptionsDataRegister 调用，用于为构造的 list data objects 添加 edit conditions
 	void AddEditionCondition(const FOptionsDataEditConditionDescriptor& InEditCondition);
 
-	bool IsDataCurrentEditable();
+	bool IsDataCurrentlyEditable();
 
 protected:
 	// 基类中为空。子类应重写它，以相应地处理所需的初始化

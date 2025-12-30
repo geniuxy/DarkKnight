@@ -47,6 +47,9 @@ protected:
 		UDkUIListDataObjectBase* OwningModifiedData, EOptionsListDataModifyReason ModifyReason
 	);
 
+	// 子类应该重写此函数，以更改其拥有的控件的可编辑状态,需要调用 super 方法。
+	virtual void OnToggleEditableState(bool bIsEditable);
+
 	void SelectThisEntryWidget();
 
 private:

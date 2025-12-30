@@ -43,6 +43,15 @@ UWidget* UDkUIWidgetListEntryString::NativeGetWidgetToFocusForGamepad() const
 	return CommonRotator_AvailableOptions;
 }
 
+void UDkUIWidgetListEntryString::OnToggleEditableState(bool bIsEditable)
+{
+	Super::OnToggleEditableState(bIsEditable);
+
+	CommonButton_Previous->SetIsEnabled(bIsEditable);
+	CommonRotator_AvailableOptions->SetIsEnabled(bIsEditable);
+	CommonButton_Next->SetIsEnabled(bIsEditable);
+}
+
 void UDkUIWidgetListEntryString::OnPreviousButtonClicked()
 {
 	if (CachedOwningStringDataObject)

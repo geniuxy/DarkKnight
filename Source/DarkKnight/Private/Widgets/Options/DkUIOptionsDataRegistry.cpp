@@ -257,6 +257,16 @@ void UDkUIOptionsDataRegistry::InitVideoCollectionTab()
 	VideoTabCollection->SetDataID(FName("VideoTabCollection"));
 	VideoTabCollection->SetDataDisplayName(FText::FromString(TEXT("图像")));
 
+	FOptionsDataEditConditionDescriptor PackagedBuildOnlyCondition;
+	PackagedBuildOnlyCondition.SetEditConditionFunc(
+		[]()-> bool
+		{
+			const bool bIsInEditor = GIsEditor || GIsPlayInEditorWorld;
+			return !bIsInEditor;
+		}
+	);
+	PackagedBuildOnlyCondition.SetDisabledRichReason(TEXT("\n\n<Warning>该设置仅在打包客户端中可编辑</>"));
+
 	// 显示类别
 	{
 		UDkUIListDataObjectCollection* DisplayCategoryCollection = NewObject<UDkUIListDataObjectCollection>();
@@ -283,6 +293,7 @@ void UDkUIOptionsDataRegistry::InitVideoCollectionTab()
 			WindowMode->SetDataDynamicGetter(MAKE_OPTIONS_DATA_CONTROL(GetFullscreenMode));
 			WindowMode->SetDataDynamicSetter(MAKE_OPTIONS_DATA_CONTROL(SetFullscreenMode));
 			WindowMode->SetShouldApplyChangeImmediately(true);
+			WindowMode->AddEditionCondition(PackagedBuildOnlyCondition);
 
 			DisplayCategoryCollection->AddChildListData(WindowMode);
 		}
@@ -299,6 +310,7 @@ void UDkUIOptionsDataRegistry::InitVideoCollectionTab()
 			ScreenResolution->SetDataDynamicGetter(MAKE_OPTIONS_DATA_CONTROL(GetScreenResolution));
 			ScreenResolution->SetDataDynamicSetter(MAKE_OPTIONS_DATA_CONTROL(SetScreenResolution));
 			ScreenResolution->SetShouldApplyChangeImmediately(true);
+			ScreenResolution->AddEditionCondition(PackagedBuildOnlyCondition);
 
 			DisplayCategoryCollection->AddChildListData(ScreenResolution);
 		}

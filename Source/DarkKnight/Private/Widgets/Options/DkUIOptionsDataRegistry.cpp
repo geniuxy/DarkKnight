@@ -331,6 +331,8 @@ void UDkUIOptionsDataRegistry::InitVideoCollectionTab()
 			WindowModeEditCondition.SetDisabledForcedStringValue(ScreenResolution->GetMaxAllowedResolution());
 			ScreenResolution->AddEditionCondition(WindowModeEditCondition);
 
+			ScreenResolution->AddEditionDependencyData(CreatedWindowMode);
+
 			DisplayCategoryCollection->AddChildListData(ScreenResolution);
 		}
 	}

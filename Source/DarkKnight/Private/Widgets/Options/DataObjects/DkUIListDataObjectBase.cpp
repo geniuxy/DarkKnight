@@ -15,6 +15,14 @@ void UDkUIListDataObjectBase::AddEditionCondition(const FOptionsDataEditConditio
 	EditConditionDescArray.Add(InEditCondition);
 }
 
+void UDkUIListDataObjectBase::AddEditionDependencyData(UDkUIListDataObjectBase* InDependencyData)
+{
+	if (!InDependencyData->OnListDataModified.IsBoundToObject(this))
+	{
+		InDependencyData->OnListDataModified.AddUObject(this, &UDkUIListDataObjectBase::OnEditDependencyDataModified);
+	}
+}
+
 bool UDkUIListDataObjectBase::IsDataCurrentlyEditable()
 {
 	bool bIsEditable = true;
@@ -34,10 +42,10 @@ bool UDkUIListDataObjectBase::IsDataCurrentlyEditable()
 		}
 
 		bIsEditable = false;
-		
+
 		CachedDisabledRichReason.Append(Condition.GetDisabledWarningReason());
 		SetWarningRichText(FText::FromString(CachedDisabledRichReason));
-		
+
 		if (Condition.HasForcedStringValue())
 		{
 			const FString ForcedStringValue = Condition.GetDisabledForcedStringValue();
@@ -65,6 +73,12 @@ void UDkUIListDataObjectBase::NotifyListDataModified(
 	{
 		UDkGameUserSettings::Get()->ApplySettings(true);
 	}
+}
+
+void UDkUIListDataObjectBase::OnEditDependencyDataModified(
+	UDkUIListDataObjectBase* ModifiedDependencyData, EOptionsListDataModifyReason ModifyReason)
+{
+	OnDependencyDataModified.Broadcast(ModifiedDependencyData, ModifyReason);
 }
 
 void UDkUIListDataObjectBase::OnSetToForcedStringValue(const FString& InForcedValue)

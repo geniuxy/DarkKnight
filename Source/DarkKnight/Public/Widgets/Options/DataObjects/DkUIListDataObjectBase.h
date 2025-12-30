@@ -25,6 +25,7 @@ public:
 	DECLARE_MULTICAST_DELEGATE_TwoParams(FOnListDataModifiedDelegate,
 	                                     UDkUIListDataObjectBase*, EOptionsListDataModifyReason)
 	FOnListDataModifiedDelegate OnListDataModified;
+	FOnListDataModifiedDelegate OnDependencyDataModified;
 
 	LIST_DATA_ACCESSOR(FName, DataID);
 	LIST_DATA_ACCESSOR(FText, DataDisplayName);
@@ -49,8 +50,11 @@ public:
 	virtual bool CanResetBackToDefaultValue() const { return false; }
 	virtual bool TryResetBackToDefaultValue() { return false; }
 
-	// 由 OptionsDataRegister 调用，用于为构造的 list data objects 添加 edit conditions
+	// 由 OptionsDataRegistry 调用，用于为构造的 list data objects 添加 edit conditions
 	void AddEditionCondition(const FOptionsDataEditConditionDescriptor& InEditCondition);
+
+	// 由 OptionsDataRegistry 调用，用于添加依赖的DependencyData以及作出相应的处理操作
+	void AddEditionDependencyData(UDkUIListDataObjectBase* InDependencyData);
 
 	bool IsDataCurrentlyEditable();
 
@@ -61,6 +65,11 @@ protected:
 	virtual void NotifyListDataModified(
 		UDkUIListDataObjectBase* ModifiedData,
 		EOptionsListDataModifyReason ModifyReason = EOptionsListDataModifyReason::DirectlyModified
+	);
+
+	virtual void OnEditDependencyDataModified(
+		UDkUIListDataObjectBase* ModifiedDependencyData,
+		EOptionsListDataModifyReason ModifyReason = EOptionsListDataModifyReason::DependencyModified
 	);
 
 	// 子类应该重写此方法，以允许将值设置为ForcedStringValue

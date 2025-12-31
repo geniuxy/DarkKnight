@@ -362,6 +362,24 @@ void UDkUIOptionsDataRegistry::InitVideoCollectionTab()
 
 			GraphicsCategoryCollection->AddChildListData(DisplayGamma);
 		}
+
+		// 整体质量
+		{
+			UDkUIListDataObjectStringInteger* OverallQuality = NewObject<UDkUIListDataObjectStringInteger>();
+			OverallQuality->SetDataID(FName("OverallQuality"));
+			OverallQuality->SetDataDisplayName(FText::FromString(TEXT("整体质量")));
+			OverallQuality->SetDescriptionRichText(FText::FromString(TEXT("可用于更改图形的整体质量。")));
+			OverallQuality->AddIntegerOption(0,FText::FromString(TEXT("低")));
+			OverallQuality->AddIntegerOption(1,FText::FromString(TEXT("中")));
+			OverallQuality->AddIntegerOption(2,FText::FromString(TEXT("高")));
+			OverallQuality->AddIntegerOption(3,FText::FromString(TEXT("极高")));
+			OverallQuality->AddIntegerOption(4,FText::FromString(TEXT("最佳")));
+			OverallQuality->SetDataDynamicGetter(MAKE_OPTIONS_DATA_CONTROL(GetOverallScalabilityLevel));
+			OverallQuality->SetDataDynamicSetter(MAKE_OPTIONS_DATA_CONTROL(SetOverallScalabilityLevel));
+			OverallQuality->SetShouldApplyChangeImmediately(true);
+
+			GraphicsCategoryCollection->AddChildListData(OverallQuality);
+		}
 	}
 
 	RegisteredOptionsTabCollections.Add(VideoTabCollection);

@@ -60,6 +60,14 @@ public:
 	void SetUseHDRAudioMode(bool InbUseHDRAudioMode);
 	//***** Audio Collection Tab ***** //
 
+	//***** Video Collection Tab ***** //
+	UFUNCTION()
+	float GetCurrentDisplayGamma() const;
+
+	UFUNCTION()
+	void SetCurrentDisplayGamma(float InNewGamma);
+	//***** Video Collection Tab ***** //
+
 private:
 	//***** Gameplay Collection Tab ***** //
 	UPROPERTY(Config)

@@ -43,3 +43,21 @@ void UDkGameUserSettings::SetUseHDRAudioMode(bool InbUseHDRAudioMode)
 {
 	bUseHDRAudioMode = InbUseHDRAudioMode;
 }
+
+float UDkGameUserSettings::GetCurrentDisplayGamma() const
+{
+	if (GEngine)
+	{
+		return GEngine->GetDisplayGamma();
+	}
+
+	return 0.0f;
+}
+
+void UDkGameUserSettings::SetCurrentDisplayGamma(float InNewGamma)
+{
+	if (GEngine)
+	{
+		GEngine->DisplayGamma = InNewGamma;
+	}
+}

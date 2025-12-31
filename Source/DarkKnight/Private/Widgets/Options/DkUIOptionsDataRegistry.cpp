@@ -337,6 +337,33 @@ void UDkUIOptionsDataRegistry::InitVideoCollectionTab()
 		}
 	}
 
+	// 图形类别
+	{
+		UDkUIListDataObjectCollection* GraphicsCategoryCollection = NewObject<UDkUIListDataObjectCollection>();
+		GraphicsCategoryCollection->SetDataID(FName("GraphicsCategory"));
+		GraphicsCategoryCollection->SetDataDisplayName(FText::FromString(TEXT("图形")));
+
+		VideoTabCollection->AddChildListData(GraphicsCategoryCollection);
+
+		// 显示亮度(Display Gamma)
+		{
+			UDkUIListDataObjectScalar* DisplayGamma = NewObject<UDkUIListDataObjectScalar>();
+			DisplayGamma->SetDataID(FName("DisplayGamma"));
+			DisplayGamma->SetDataDisplayName(FText::FromString(TEXT("亮度")));
+			DisplayGamma->SetDescriptionRichText(FText::FromString(TEXT("可用于更改屏幕的显示亮度。")));
+			DisplayGamma->SetDisplayValueRange(TRange<float>(0.f, 1.f));
+			DisplayGamma->SetOutputValueRange(TRange<float>(1.7f, 2.7f)); // 虚幻默认的Gamma值为2.2f
+			DisplayGamma->SetDefaultValueFromString(LexToString(2.2f));
+			DisplayGamma->SetDisplayNumericType(ECommonNumericType::Percentage);
+			DisplayGamma->SetNumberFormattingOptions(UDkUIListDataObjectScalar::NoDecimal());
+			DisplayGamma->SetDataDynamicGetter(MAKE_OPTIONS_DATA_CONTROL(GetCurrentDisplayGamma));
+			DisplayGamma->SetDataDynamicSetter(MAKE_OPTIONS_DATA_CONTROL(SetCurrentDisplayGamma));
+			DisplayGamma->SetShouldApplyChangeImmediately(true);
+
+			GraphicsCategoryCollection->AddChildListData(DisplayGamma);
+		}
+	}
+
 	RegisteredOptionsTabCollections.Add(VideoTabCollection);
 }
 

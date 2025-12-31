@@ -67,6 +67,7 @@ protected:
 		EOptionsListDataModifyReason ModifyReason = EOptionsListDataModifyReason::DirectlyModified
 	);
 
+	// 当依赖项数据的值发生变化时，将调用此函数。子类可以重写此函数以处理所需的自定义逻辑。需要调用父类。
 	virtual void OnEditDependencyDataModified(
 		UDkUIListDataObjectBase* ModifiedDependencyData,
 		EOptionsListDataModifyReason ModifyReason = EOptionsListDataModifyReason::DependencyModified

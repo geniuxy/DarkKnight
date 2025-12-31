@@ -70,7 +70,7 @@ class DARKKNIGHT_API UDkUIListDataObjectStringEnum : public UDkUIListDataObjectS
 	GENERATED_BODY()
 
 public:
-	template<typename EnumType>
+	template <typename EnumType>
 	void AddEnumOption(EnumType InEnumOption, const FText& InDisplayText)
 	{
 		const UEnum* StaticEnumOption = StaticEnum<EnumType>();
@@ -79,7 +79,7 @@ public:
 		AddDynamicOption(ConvertedEnumString, InDisplayText);
 	}
 
-	template<typename EnumType>
+	template <typename EnumType>
 	EnumType GetCurrentValueAsEnum() const
 	{
 		const UEnum* StaticEnumOption = StaticEnum<EnumType>();
@@ -87,12 +87,30 @@ public:
 		return static_cast<EnumType>(StaticEnumOption->GetValueByNameString(CurrentStringValue));
 	}
 
-	template<typename EnumType>
+	template <typename EnumType>
 	void SetDefaultValueFromEnumOption(EnumType InEnumOption)
 	{
 		const UEnum* StaticEnumOption = StaticEnum<EnumType>();
 		const FString ConvertedEnumString = StaticEnumOption->GetNameStringByValue(InEnumOption);
-		
+
 		SetDefaultValueFromString(ConvertedEnumString);
 	}
+};
+
+UCLASS()
+class DARKKNIGHT_API UDkUIListDataObjectStringInteger : public UDkUIListDataObjectString
+{
+	GENERATED_BODY()
+
+public:
+	void AddIntegerOption(int32 InIntegerValue, const FText& InDisplayText);
+
+protected:
+	//~Begin UDkUIListDataObjectBase Function
+	virtual void OnDataObjectInitialized() override;
+	virtual void OnEditDependencyDataModified(
+		UDkUIListDataObjectBase* ModifiedDependencyData,
+		EOptionsListDataModifyReason ModifyReason = EOptionsListDataModifyReason::DependencyModified
+	) override;
+	//~End UDkUIListDataObjectBase Function
 };

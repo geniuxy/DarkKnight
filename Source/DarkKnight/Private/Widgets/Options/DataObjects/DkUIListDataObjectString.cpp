@@ -242,3 +242,40 @@ void UDkUIListDataObjectStringBool::TryInitBoolValues()
 }
 
 //************ UDkUIListDataObjectStringBool ************//
+
+//************ UDkUIListDataObjectStringInteger ************//
+
+void UDkUIListDataObjectStringInteger::AddIntegerOption(int32 InIntegerValue, const FText& InDisplayText)
+{
+	AddDynamicOption(LexToString(InIntegerValue), InDisplayText);
+}
+
+void UDkUIListDataObjectStringInteger::OnDataObjectInitialized()
+{
+	Super::OnDataObjectInitialized();
+
+	if (!TrySetDisplayTextFromStringValue(CurrentStringValue))
+	{
+		CurrentDisplayText = FText::FromString(TEXT("Custom"));
+	}
+}
+
+void UDkUIListDataObjectStringInteger::OnEditDependencyDataModified(
+	UDkUIListDataObjectBase* ModifiedDependencyData, EOptionsListDataModifyReason ModifyReason)
+{
+	if (DataDynamicGetter)
+	{
+		CurrentStringValue = DataDynamicGetter->GetValueAsString();
+
+		if (!TrySetDisplayTextFromStringValue(CurrentStringValue))
+		{
+			CurrentDisplayText = FText::FromString(TEXT("Custom"));
+		}
+
+		NotifyListDataModified(this, EOptionsListDataModifyReason::DependencyModified);
+	}
+	
+	Super::OnEditDependencyDataModified(ModifiedDependencyData, ModifyReason);
+}
+
+//************ UDkUIListDataObjectStringInteger ************//

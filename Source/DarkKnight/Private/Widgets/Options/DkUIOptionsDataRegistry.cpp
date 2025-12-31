@@ -363,22 +363,47 @@ void UDkUIOptionsDataRegistry::InitVideoCollectionTab()
 			GraphicsCategoryCollection->AddChildListData(DisplayGamma);
 		}
 
+		UDkUIListDataObjectStringInteger* CreatedOverallQuality = nullptr;
+
 		// 整体质量
 		{
 			UDkUIListDataObjectStringInteger* OverallQuality = NewObject<UDkUIListDataObjectStringInteger>();
 			OverallQuality->SetDataID(FName("OverallQuality"));
 			OverallQuality->SetDataDisplayName(FText::FromString(TEXT("整体质量")));
 			OverallQuality->SetDescriptionRichText(FText::FromString(TEXT("可用于更改图形的整体质量。")));
-			OverallQuality->AddIntegerOption(0,FText::FromString(TEXT("低")));
-			OverallQuality->AddIntegerOption(1,FText::FromString(TEXT("中")));
-			OverallQuality->AddIntegerOption(2,FText::FromString(TEXT("高")));
-			OverallQuality->AddIntegerOption(3,FText::FromString(TEXT("极高")));
-			OverallQuality->AddIntegerOption(4,FText::FromString(TEXT("最佳")));
+			OverallQuality->AddIntegerOption(0, FText::FromString(TEXT("低")));
+			OverallQuality->AddIntegerOption(1, FText::FromString(TEXT("中")));
+			OverallQuality->AddIntegerOption(2, FText::FromString(TEXT("高")));
+			OverallQuality->AddIntegerOption(3, FText::FromString(TEXT("极高")));
+			OverallQuality->AddIntegerOption(4, FText::FromString(TEXT("最佳")));
 			OverallQuality->SetDataDynamicGetter(MAKE_OPTIONS_DATA_CONTROL(GetOverallScalabilityLevel));
 			OverallQuality->SetDataDynamicSetter(MAKE_OPTIONS_DATA_CONTROL(SetOverallScalabilityLevel));
 			OverallQuality->SetShouldApplyChangeImmediately(true);
 
 			GraphicsCategoryCollection->AddChildListData(OverallQuality);
+
+			CreatedOverallQuality = OverallQuality;
+		}
+
+		// 渲染比例
+		{
+			UDkUIListDataObjectScalar* ResolutionScale = NewObject<UDkUIListDataObjectScalar>();
+			ResolutionScale->SetDataID(FName("ResolutionScale"));
+			ResolutionScale->SetDataDisplayName(FText::FromString(TEXT("渲染比例")));
+			ResolutionScale->SetDescriptionRichText(FText::FromString(
+				TEXT("表示引擎实际以多少百分比的画面分辨率来做 3D 渲染，再把结果放大/缩小到最终输出分辨率")
+			));
+			ResolutionScale->SetDisplayValueRange(TRange<float>(0.f, 1.f));
+			ResolutionScale->SetOutputValueRange(TRange<float>(0.f, 1.f));
+			ResolutionScale->SetDisplayNumericType(ECommonNumericType::Percentage);
+			ResolutionScale->SetNumberFormattingOptions(UDkUIListDataObjectScalar::NoDecimal());
+			ResolutionScale->SetDataDynamicGetter(MAKE_OPTIONS_DATA_CONTROL(GetResolutionScaleNormalized));
+			ResolutionScale->SetDataDynamicSetter(MAKE_OPTIONS_DATA_CONTROL(SetResolutionScaleNormalized));
+			ResolutionScale->SetShouldApplyChangeImmediately(true);
+
+			ResolutionScale->AddEditionDependencyData(CreatedOverallQuality);
+
+			GraphicsCategoryCollection->AddChildListData(ResolutionScale);
 		}
 	}
 

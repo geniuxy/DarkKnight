@@ -78,6 +78,14 @@ bool UDkUIListDataObjectScalar::TryResetBackToDefaultValue()
 	return false;
 }
 
+void UDkUIListDataObjectScalar::OnEditDependencyDataModified(
+	UDkUIListDataObjectBase* ModifiedDependencyData, EOptionsListDataModifyReason ModifyReason)
+{
+	NotifyListDataModified(this, ModifyReason);
+	
+	Super::OnEditDependencyDataModified(ModifiedDependencyData, ModifyReason);
+}
+
 float UDkUIListDataObjectScalar::StringToFloat(const FString& InString) const
 {
 	float OutConvertedValue = 0.f;

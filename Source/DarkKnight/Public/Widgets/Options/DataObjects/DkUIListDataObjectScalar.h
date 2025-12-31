@@ -32,6 +32,10 @@ protected:
 	//~Begin UDkUIListDataObjectBase Function
 	virtual bool CanResetBackToDefaultValue() const override;
 	virtual bool TryResetBackToDefaultValue() override;
+	virtual void OnEditDependencyDataModified(
+		UDkUIListDataObjectBase* ModifiedDependencyData,
+		EOptionsListDataModifyReason ModifyReason = EOptionsListDataModifyReason::DependencyModified
+	) override;
 	//~End UDkUIListDataObjectBase Function
 
 private:

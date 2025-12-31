@@ -256,7 +256,7 @@ void UDkUIListDataObjectStringInteger::OnDataObjectInitialized()
 
 	if (!TrySetDisplayTextFromStringValue(CurrentStringValue))
 	{
-		CurrentDisplayText = FText::FromString(TEXT("Custom"));
+		CurrentDisplayText = FText::FromString(TEXT("自定义"));
 	}
 }
 
@@ -265,11 +265,18 @@ void UDkUIListDataObjectStringInteger::OnEditDependencyDataModified(
 {
 	if (DataDynamicGetter)
 	{
+		// 防止相互影响的数据之间，反复调用OnEditDependencyDataModified方法，造成内存溢出
+		if (CurrentStringValue == DataDynamicGetter->GetValueAsString())
+		{
+			return;
+		}
+		
 		CurrentStringValue = DataDynamicGetter->GetValueAsString();
 
 		if (!TrySetDisplayTextFromStringValue(CurrentStringValue))
 		{
-			CurrentDisplayText = FText::FromString(TEXT("Custom"));
+			// 当图形细节设置项被单独区别设置，OverallQuality的CurrentStringValue为-1，显示文字即为“自定义”
+			CurrentDisplayText = FText::FromString(TEXT("自定义"));
 		}
 
 		NotifyListDataModified(this, EOptionsListDataModifyReason::DependencyModified);

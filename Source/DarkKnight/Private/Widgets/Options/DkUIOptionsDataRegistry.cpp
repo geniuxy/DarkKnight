@@ -380,8 +380,6 @@ void UDkUIOptionsDataRegistry::InitVideoCollectionTab()
 			OverallQuality->SetDataDynamicSetter(MAKE_OPTIONS_DATA_CONTROL(SetOverallScalabilityLevel));
 			OverallQuality->SetShouldApplyChangeImmediately(true);
 
-			GraphicsCategoryCollection->AddChildListData(OverallQuality);
-
 			CreatedOverallQuality = OverallQuality;
 		}
 
@@ -404,6 +402,32 @@ void UDkUIOptionsDataRegistry::InitVideoCollectionTab()
 			ResolutionScale->AddEditionDependencyData(CreatedOverallQuality);
 
 			GraphicsCategoryCollection->AddChildListData(ResolutionScale);
+		}
+
+		GraphicsCategoryCollection->AddChildListData(CreatedOverallQuality); // 为了将整体质量放到渲染比例后面显示
+
+		// 全局光照质量
+		{
+			UDkUIListDataObjectStringInteger* GlobalIlluminationQuality = NewObject<UDkUIListDataObjectStringInteger>();
+			GlobalIlluminationQuality->SetDataID(FName("GlobalIlluminationQuality"));
+			GlobalIlluminationQuality->SetDataDisplayName(FText::FromString(TEXT("全局光照")));
+			GlobalIlluminationQuality->SetDescriptionRichText(FText::FromString(
+				TEXT("把直接光和间接光(光线在场景里多次反弹后形成的漫反射、颜色溢出、软阴影等)一起计算出来，让画面看起来更真实、整体感更强")
+			));
+			GlobalIlluminationQuality->AddIntegerOption(0, FText::FromString(TEXT("低")));
+			GlobalIlluminationQuality->AddIntegerOption(1, FText::FromString(TEXT("中")));
+			GlobalIlluminationQuality->AddIntegerOption(2, FText::FromString(TEXT("高")));
+			GlobalIlluminationQuality->AddIntegerOption(3, FText::FromString(TEXT("极高")));
+			GlobalIlluminationQuality->AddIntegerOption(4, FText::FromString(TEXT("最佳")));
+			GlobalIlluminationQuality->SetDataDynamicGetter(MAKE_OPTIONS_DATA_CONTROL(GetGlobalIlluminationQuality));
+			GlobalIlluminationQuality->SetDataDynamicSetter(MAKE_OPTIONS_DATA_CONTROL(SetGlobalIlluminationQuality));
+			GlobalIlluminationQuality->SetShouldApplyChangeImmediately(true);
+
+			GlobalIlluminationQuality->AddEditionDependencyData(CreatedOverallQuality);
+
+			CreatedOverallQuality->AddEditionDependencyData(GlobalIlluminationQuality);
+
+			GraphicsCategoryCollection->AddChildListData(GlobalIlluminationQuality);
 		}
 	}
 

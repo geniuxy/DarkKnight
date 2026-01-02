@@ -457,26 +457,146 @@ void UDkUIOptionsDataRegistry::InitVideoCollectionTab()
 
 		// 抗锯齿质量
 		{
-			UDkUIListDataObjectStringInteger* ShadowQuality = NewObject<UDkUIListDataObjectStringInteger>();
-			ShadowQuality->SetDataID(FName("ShadowQuality"));
-			ShadowQuality->SetDataDisplayName(FText::FromString(TEXT("抗锯齿")));
-			ShadowQuality->SetDescriptionRichText(FText::FromString(
+			UDkUIListDataObjectStringInteger* AntiAliasingQuality = NewObject<UDkUIListDataObjectStringInteger>();
+			AntiAliasingQuality->SetDataID(FName("AntiAliasingQuality"));
+			AntiAliasingQuality->SetDataDisplayName(FText::FromString(TEXT("抗锯齿")));
+			AntiAliasingQuality->SetDescriptionRichText(FText::FromString(
 				TEXT("把直线、边缘或高光处因像素网格有限而产生的“锯齿”或“阶梯”状走样(Aliasing)尽量抹平，让画面看起来更光滑、更干净")
 			));
-			ShadowQuality->AddIntegerOption(0, FText::FromString(TEXT("低")));
-			ShadowQuality->AddIntegerOption(1, FText::FromString(TEXT("中")));
-			ShadowQuality->AddIntegerOption(2, FText::FromString(TEXT("高")));
-			ShadowQuality->AddIntegerOption(3, FText::FromString(TEXT("极高")));
-			ShadowQuality->AddIntegerOption(4, FText::FromString(TEXT("最佳")));
-			ShadowQuality->SetDataDynamicGetter(MAKE_OPTIONS_DATA_CONTROL(GetShadowQuality));
-			ShadowQuality->SetDataDynamicSetter(MAKE_OPTIONS_DATA_CONTROL(SetShadowQuality));
-			ShadowQuality->SetShouldApplyChangeImmediately(true);
+			AntiAliasingQuality->AddIntegerOption(0, FText::FromString(TEXT("低")));
+			AntiAliasingQuality->AddIntegerOption(1, FText::FromString(TEXT("中")));
+			AntiAliasingQuality->AddIntegerOption(2, FText::FromString(TEXT("高")));
+			AntiAliasingQuality->AddIntegerOption(3, FText::FromString(TEXT("极高")));
+			AntiAliasingQuality->AddIntegerOption(4, FText::FromString(TEXT("最佳")));
+			AntiAliasingQuality->SetDataDynamicGetter(MAKE_OPTIONS_DATA_CONTROL(GetAntiAliasingQuality));
+			AntiAliasingQuality->SetDataDynamicSetter(MAKE_OPTIONS_DATA_CONTROL(SetAntiAliasingQuality));
+			AntiAliasingQuality->SetShouldApplyChangeImmediately(true);
 
-			ShadowQuality->AddEditionDependencyData(CreatedOverallQuality);
+			AntiAliasingQuality->AddEditionDependencyData(CreatedOverallQuality);
 
-			CreatedOverallQuality->AddEditionDependencyData(ShadowQuality);
+			CreatedOverallQuality->AddEditionDependencyData(AntiAliasingQuality);
 
-			GraphicsCategoryCollection->AddChildListData(ShadowQuality);
+			GraphicsCategoryCollection->AddChildListData(AntiAliasingQuality);
+		}
+
+		// 可视距离
+		{
+			UDkUIListDataObjectStringInteger* ViewDistanceQuality = NewObject<UDkUIListDataObjectStringInteger>();
+			ViewDistanceQuality->SetDataID(FName("ViewDistanceQuality"));
+			ViewDistanceQuality->SetDataDisplayName(FText::FromString(TEXT("可视距离")));
+			ViewDistanceQuality->SetDescriptionRichText(FText::FromString(
+				TEXT("指场景里静态/动态物体在多远距离内才会被渲染")
+			));
+			ViewDistanceQuality->AddIntegerOption(0, FText::FromString(TEXT("近")));
+			ViewDistanceQuality->AddIntegerOption(1, FText::FromString(TEXT("中")));
+			ViewDistanceQuality->AddIntegerOption(2, FText::FromString(TEXT("远")));
+			ViewDistanceQuality->AddIntegerOption(3, FText::FromString(TEXT("极远")));
+			ViewDistanceQuality->AddIntegerOption(4, FText::FromString(TEXT("真实")));
+			ViewDistanceQuality->SetDataDynamicGetter(MAKE_OPTIONS_DATA_CONTROL(GetViewDistanceQuality));
+			ViewDistanceQuality->SetDataDynamicSetter(MAKE_OPTIONS_DATA_CONTROL(SetViewDistanceQuality));
+			ViewDistanceQuality->SetShouldApplyChangeImmediately(true);
+
+			ViewDistanceQuality->AddEditionDependencyData(CreatedOverallQuality);
+
+			CreatedOverallQuality->AddEditionDependencyData(ViewDistanceQuality);
+
+			GraphicsCategoryCollection->AddChildListData(ViewDistanceQuality);
+		}
+
+		// 纹理质量
+		{
+			UDkUIListDataObjectStringInteger* TextureQuality = NewObject<UDkUIListDataObjectStringInteger>();
+			TextureQuality->SetDataID(FName("TextureQuality"));
+			TextureQuality->SetDataDisplayName(FText::FromString(TEXT("纹理")));
+			TextureQuality->SetDescriptionRichText(FText::FromString(
+				TEXT("决定游戏运行时真正载入显存的那张纹理贴图有多大，调得越高，贴图越清晰")
+			));
+			TextureQuality->AddIntegerOption(0, FText::FromString(TEXT("低")));
+			TextureQuality->AddIntegerOption(1, FText::FromString(TEXT("中")));
+			TextureQuality->AddIntegerOption(2, FText::FromString(TEXT("高")));
+			TextureQuality->AddIntegerOption(3, FText::FromString(TEXT("极高")));
+			TextureQuality->AddIntegerOption(4, FText::FromString(TEXT("最佳")));
+			TextureQuality->SetDataDynamicGetter(MAKE_OPTIONS_DATA_CONTROL(GetTextureQuality));
+			TextureQuality->SetDataDynamicSetter(MAKE_OPTIONS_DATA_CONTROL(SetTextureQuality));
+			TextureQuality->SetShouldApplyChangeImmediately(true);
+
+			TextureQuality->AddEditionDependencyData(CreatedOverallQuality);
+
+			CreatedOverallQuality->AddEditionDependencyData(TextureQuality);
+
+			GraphicsCategoryCollection->AddChildListData(TextureQuality);
+		}
+
+		// 特效质量
+		{
+			UDkUIListDataObjectStringInteger* VisualEffectQuality = NewObject<UDkUIListDataObjectStringInteger>();
+			VisualEffectQuality->SetDataID(FName("VisualEffectQuality"));
+			VisualEffectQuality->SetDataDisplayName(FText::FromString(TEXT("特效")));
+			VisualEffectQuality->SetDescriptionRichText(FText::FromString(
+				TEXT("档位越高，爆炸、烟雾、魔法光效越浓密细腻，但 Draw Call、填充率、显存占用同步上涨；调低可快速减轻 GPU 压力。")
+			));
+			VisualEffectQuality->AddIntegerOption(0, FText::FromString(TEXT("低")));
+			VisualEffectQuality->AddIntegerOption(1, FText::FromString(TEXT("中")));
+			VisualEffectQuality->AddIntegerOption(2, FText::FromString(TEXT("高")));
+			VisualEffectQuality->AddIntegerOption(3, FText::FromString(TEXT("极高")));
+			VisualEffectQuality->AddIntegerOption(4, FText::FromString(TEXT("最佳")));
+			VisualEffectQuality->SetDataDynamicGetter(MAKE_OPTIONS_DATA_CONTROL(GetVisualEffectQuality));
+			VisualEffectQuality->SetDataDynamicSetter(MAKE_OPTIONS_DATA_CONTROL(SetVisualEffectQuality));
+			VisualEffectQuality->SetShouldApplyChangeImmediately(true);
+
+			VisualEffectQuality->AddEditionDependencyData(CreatedOverallQuality);
+
+			CreatedOverallQuality->AddEditionDependencyData(VisualEffectQuality);
+
+			GraphicsCategoryCollection->AddChildListData(VisualEffectQuality);
+		}
+
+		// 反射质量
+		{
+			UDkUIListDataObjectStringInteger* ReflectionQuality = NewObject<UDkUIListDataObjectStringInteger>();
+			ReflectionQuality->SetDataID(FName("ReflectionQuality"));
+			ReflectionQuality->SetDataDisplayName(FText::FromString(TEXT("纹理")));
+			ReflectionQuality->SetDescriptionRichText(FText::FromString(
+				TEXT("控制能看到多清晰、多完整的实时反射。档位越高，倒影越锐利、越接近真实，但渲染成本也成倍增加，调低可明显省帧。")
+			));
+			ReflectionQuality->AddIntegerOption(0, FText::FromString(TEXT("低")));
+			ReflectionQuality->AddIntegerOption(1, FText::FromString(TEXT("中")));
+			ReflectionQuality->AddIntegerOption(2, FText::FromString(TEXT("高")));
+			ReflectionQuality->AddIntegerOption(3, FText::FromString(TEXT("极高")));
+			ReflectionQuality->AddIntegerOption(4, FText::FromString(TEXT("最佳")));
+			ReflectionQuality->SetDataDynamicGetter(MAKE_OPTIONS_DATA_CONTROL(GetReflectionQuality));
+			ReflectionQuality->SetDataDynamicSetter(MAKE_OPTIONS_DATA_CONTROL(SetReflectionQuality));
+			ReflectionQuality->SetShouldApplyChangeImmediately(true);
+
+			ReflectionQuality->AddEditionDependencyData(CreatedOverallQuality);
+
+			CreatedOverallQuality->AddEditionDependencyData(ReflectionQuality);
+
+			GraphicsCategoryCollection->AddChildListData(ReflectionQuality);
+		}
+		
+		// 后处理质量
+		{
+			UDkUIListDataObjectStringInteger* PostProcessingQuality = NewObject<UDkUIListDataObjectStringInteger>();
+			PostProcessingQuality->SetDataID(FName("PostProcessingQuality"));
+			PostProcessingQuality->SetDataDisplayName(FText::FromString(TEXT("后处理")));
+			PostProcessingQuality->SetDescriptionRichText(FText::FromString(
+				TEXT("画面拍完以后那一整帧还要做哪些锦上添花的效果、做到多精细。档位越高，画面更柔和干净、色彩层次更细腻")
+			));
+			PostProcessingQuality->AddIntegerOption(0, FText::FromString(TEXT("低")));
+			PostProcessingQuality->AddIntegerOption(1, FText::FromString(TEXT("中")));
+			PostProcessingQuality->AddIntegerOption(2, FText::FromString(TEXT("高")));
+			PostProcessingQuality->AddIntegerOption(3, FText::FromString(TEXT("极高")));
+			PostProcessingQuality->AddIntegerOption(4, FText::FromString(TEXT("最佳")));
+			PostProcessingQuality->SetDataDynamicGetter(MAKE_OPTIONS_DATA_CONTROL(GetPostProcessingQuality));
+			PostProcessingQuality->SetDataDynamicSetter(MAKE_OPTIONS_DATA_CONTROL(SetPostProcessingQuality));
+			PostProcessingQuality->SetShouldApplyChangeImmediately(true);
+
+			PostProcessingQuality->AddEditionDependencyData(CreatedOverallQuality);
+
+			CreatedOverallQuality->AddEditionDependencyData(PostProcessingQuality);
+
+			GraphicsCategoryCollection->AddChildListData(PostProcessingQuality);
 		}
 	}
 

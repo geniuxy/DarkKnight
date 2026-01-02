@@ -376,6 +376,7 @@ void UDkUIOptionsDataRegistry::InitVideoCollectionTab()
 			OverallQuality->AddIntegerOption(2, FText::FromString(TEXT("高")));
 			OverallQuality->AddIntegerOption(3, FText::FromString(TEXT("极高")));
 			OverallQuality->AddIntegerOption(4, FText::FromString(TEXT("最佳")));
+			OverallQuality->SetDefaultValueFromString(LexToString(3));
 			OverallQuality->SetDataDynamicGetter(MAKE_OPTIONS_DATA_CONTROL(GetOverallScalabilityLevel));
 			OverallQuality->SetDataDynamicSetter(MAKE_OPTIONS_DATA_CONTROL(SetOverallScalabilityLevel));
 			OverallQuality->SetShouldApplyChangeImmediately(true);
@@ -428,6 +429,54 @@ void UDkUIOptionsDataRegistry::InitVideoCollectionTab()
 			CreatedOverallQuality->AddEditionDependencyData(GlobalIlluminationQuality);
 
 			GraphicsCategoryCollection->AddChildListData(GlobalIlluminationQuality);
+		}
+
+		// 阴影质量
+		{
+			UDkUIListDataObjectStringInteger* ShadowQuality = NewObject<UDkUIListDataObjectStringInteger>();
+			ShadowQuality->SetDataID(FName("ShadowQuality"));
+			ShadowQuality->SetDataDisplayName(FText::FromString(TEXT("阴影")));
+			ShadowQuality->SetDescriptionRichText(FText::FromString(
+				TEXT("决定了场景中阴影的清晰度、边缘柔和度、噪点以及性能开销")
+			));
+			ShadowQuality->AddIntegerOption(0, FText::FromString(TEXT("低")));
+			ShadowQuality->AddIntegerOption(1, FText::FromString(TEXT("中")));
+			ShadowQuality->AddIntegerOption(2, FText::FromString(TEXT("高")));
+			ShadowQuality->AddIntegerOption(3, FText::FromString(TEXT("极高")));
+			ShadowQuality->AddIntegerOption(4, FText::FromString(TEXT("最佳")));
+			ShadowQuality->SetDataDynamicGetter(MAKE_OPTIONS_DATA_CONTROL(GetShadowQuality));
+			ShadowQuality->SetDataDynamicSetter(MAKE_OPTIONS_DATA_CONTROL(SetShadowQuality));
+			ShadowQuality->SetShouldApplyChangeImmediately(true);
+
+			ShadowQuality->AddEditionDependencyData(CreatedOverallQuality);
+
+			CreatedOverallQuality->AddEditionDependencyData(ShadowQuality);
+
+			GraphicsCategoryCollection->AddChildListData(ShadowQuality);
+		}
+
+		// 抗锯齿质量
+		{
+			UDkUIListDataObjectStringInteger* ShadowQuality = NewObject<UDkUIListDataObjectStringInteger>();
+			ShadowQuality->SetDataID(FName("ShadowQuality"));
+			ShadowQuality->SetDataDisplayName(FText::FromString(TEXT("抗锯齿")));
+			ShadowQuality->SetDescriptionRichText(FText::FromString(
+				TEXT("把直线、边缘或高光处因像素网格有限而产生的“锯齿”或“阶梯”状走样(Aliasing)尽量抹平，让画面看起来更光滑、更干净")
+			));
+			ShadowQuality->AddIntegerOption(0, FText::FromString(TEXT("低")));
+			ShadowQuality->AddIntegerOption(1, FText::FromString(TEXT("中")));
+			ShadowQuality->AddIntegerOption(2, FText::FromString(TEXT("高")));
+			ShadowQuality->AddIntegerOption(3, FText::FromString(TEXT("极高")));
+			ShadowQuality->AddIntegerOption(4, FText::FromString(TEXT("最佳")));
+			ShadowQuality->SetDataDynamicGetter(MAKE_OPTIONS_DATA_CONTROL(GetShadowQuality));
+			ShadowQuality->SetDataDynamicSetter(MAKE_OPTIONS_DATA_CONTROL(SetShadowQuality));
+			ShadowQuality->SetShouldApplyChangeImmediately(true);
+
+			ShadowQuality->AddEditionDependencyData(CreatedOverallQuality);
+
+			CreatedOverallQuality->AddEditionDependencyData(ShadowQuality);
+
+			GraphicsCategoryCollection->AddChildListData(ShadowQuality);
 		}
 	}
 

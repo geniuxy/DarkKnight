@@ -600,6 +600,43 @@ void UDkUIOptionsDataRegistry::InitVideoCollectionTab()
 		}
 	}
 
+	// 高级类别
+	{
+		UDkUIListDataObjectCollection* AdvancedGraphicsCategoryCollection = NewObject<UDkUIListDataObjectCollection>();
+		AdvancedGraphicsCategoryCollection->SetDataID(FName("GraphicsCategory"));
+		AdvancedGraphicsCategoryCollection->SetDataDisplayName(FText::FromString(TEXT("高级")));
+
+		VideoTabCollection->AddChildListData(AdvancedGraphicsCategoryCollection);
+
+		// 垂直同步
+		{
+			UDkUIListDataObjectStringBool* VerticalSync = NewObject<UDkUIListDataObjectStringBool>();
+			VerticalSync->SetDataID(FName("VerticalSync"));
+			VerticalSync->SetDataDisplayName(FText::FromString(TEXT("垂直同步")));
+			VerticalSync->SetDescriptionRichText(FText::FromString(TEXT(
+				"显卡必须在显示器每一次从上到下的电子束扫描完成后，才允许把下一帧画面送出去"
+			)));
+			VerticalSync->SetDataDynamicGetter(MAKE_OPTIONS_DATA_CONTROL(IsVSyncEnabled));
+			VerticalSync->SetDataDynamicSetter(MAKE_OPTIONS_DATA_CONTROL(SetVSyncEnabled));
+			VerticalSync->SetFalseAsDefaultValue();
+			VerticalSync->SetShouldApplyChangeImmediately(true);
+
+			FOptionsDataEditConditionDescriptor FullscreenOnlyCondition;
+			FullscreenOnlyCondition.SetEditConditionFunc(
+				[CreatedWindowMode]()-> bool
+				{
+					return CreatedWindowMode->GetCurrentValueAsEnum<EWindowMode::Type>() == EWindowMode::Fullscreen;
+				}
+			);
+			FullscreenOnlyCondition.SetDisabledWarningReason(TEXT("\n\n<Warning>只有在全屏模式时，才能启用垂直同步。</>"));
+			FullscreenOnlyCondition.SetDisabledForcedStringValue(TEXT("false"));
+			
+			VerticalSync->AddEditionCondition(FullscreenOnlyCondition);
+
+			AdvancedGraphicsCategoryCollection->AddChildListData(VerticalSync);
+		}
+	}
+
 	RegisteredOptionsTabCollections.Add(VideoTabCollection);
 }
 

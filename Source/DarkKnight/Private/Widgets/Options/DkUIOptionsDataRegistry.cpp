@@ -12,9 +12,13 @@
 #include "Widgets/Options/DataObjects/DkUIListDataObjectScalar.h"
 #include "Widgets/Options/DataObjects/DkUIListDataObjectString.h"
 #include "Widgets/Options/DataObjects/DkUIListDataObjectStrResolution.h"
+#include "Internationalization/StringTableRegistry.h"
 
 #define MAKE_OPTIONS_DATA_CONTROL(SetterOrGetterFuncName) \
 	MakeShared<FDkUIOptionsDataInteractionHelper>(GET_FUNCTION_NAME_STRING_CHECKED(UDkGameUserSettings, SetterOrGetterFuncName))
+
+#define GET_DESCRIPTION(InKey) \
+	LOCTABLE("/Game/_Blueprints/UI/StringTable/ST_OptionScreenDescription.ST_OptionScreenDescription", InKey)
 
 void UDkUIOptionsDataRegistry::InitOptionsDataRegister(ULocalPlayer* InOwningLocalPlayer)
 {
@@ -100,13 +104,7 @@ void UDkUIOptionsDataRegistry::InitGameplayCollectionTab()
 		UDkUIListDataObjectString* GameDifficulty = NewObject<UDkUIListDataObjectString>();
 		GameDifficulty->SetDataID(FName("GameDifficulty"));
 		GameDifficulty->SetDataDisplayName(FText::FromString(TEXT("游戏难度")));
-		GameDifficulty->SetDescriptionRichText(FText::FromString(TEXT(
-			"调整游戏体验的难易程度。\n\n"
-			"<Bold>简单：</> 专注于故事体验。提供最轻松的战斗。\n\n"
-			"<Bold>普通：</> 提供稍微困难一些的战斗体验\n\n"
-			"<Bold>困难：</> 提供更具挑战性的战斗体验\n\n"
-			"<Bold>非常困难：</> 提供最具挑战性的战斗体验，不推荐首次游玩选择。"
-		)));
+		GameDifficulty->SetDescriptionRichText(GET_DESCRIPTION("GameDifficultyDescKey"));
 		GameDifficulty->AddDynamicOption(TEXT("Easy"), FText::FromString(TEXT("简单")));
 		GameDifficulty->AddDynamicOption(TEXT("Normal"), FText::FromString(TEXT("正常")));
 		GameDifficulty->AddDynamicOption(TEXT("Hard"), FText::FromString(TEXT("困难")));
@@ -127,9 +125,7 @@ void UDkUIOptionsDataRegistry::InitGameplayCollectionTab()
 		TestItem->SetSoftDescriptionImage(
 			UDkUIFunctionLibrary::GetSoftImageByTag(DkGameplayTags::Dk_Image_TestImage)
 		);
-		TestItem->SetDescriptionRichText(FText::FromString(TEXT(
-			"测试项测试项测试项测试项测试项测试项测试项测试项测试项测试项测试项测试项"
-		)));
+		TestItem->SetDescriptionRichText(GET_DESCRIPTION("TestItemDescKey"));
 
 		GameplayTabCollection->AddChildListData(TestItem);
 	}
@@ -156,7 +152,7 @@ void UDkUIOptionsDataRegistry::InitAudioCollectionTab()
 			UDkUIListDataObjectScalar* OverallVolume = NewObject<UDkUIListDataObjectScalar>();
 			OverallVolume->SetDataID(FName("OverallVolume"));
 			OverallVolume->SetDataDisplayName(FText::FromString(TEXT("总音量")));
-			OverallVolume->SetDescriptionRichText(FText::FromString(TEXT("调整总体的音量输出")));
+			OverallVolume->SetDescriptionRichText(GET_DESCRIPTION("OverallVolumeDescKey"));
 			OverallVolume->SetDisplayValueRange(TRange<float>(0.f, 1.f));
 			OverallVolume->SetOutputValueRange(TRange<float>(0.f, 2.f));
 			OverallVolume->SetSliderStepSize(0.01f);
@@ -175,7 +171,7 @@ void UDkUIOptionsDataRegistry::InitAudioCollectionTab()
 			UDkUIListDataObjectScalar* MusicVolume = NewObject<UDkUIListDataObjectScalar>();
 			MusicVolume->SetDataID(FName("MusicVolume"));
 			MusicVolume->SetDataDisplayName(FText::FromString(TEXT("音乐大小")));
-			MusicVolume->SetDescriptionRichText(FText::FromString(TEXT("调整游戏的音乐输出")));
+			MusicVolume->SetDescriptionRichText(GET_DESCRIPTION("MusicVolumeDescKey"));
 			MusicVolume->SetDisplayValueRange(TRange<float>(0.f, 1.f));
 			MusicVolume->SetOutputValueRange(TRange<float>(0.f, 2.f));
 			MusicVolume->SetSliderStepSize(0.01f);
@@ -194,7 +190,7 @@ void UDkUIOptionsDataRegistry::InitAudioCollectionTab()
 			UDkUIListDataObjectScalar* SoundFXVolume = NewObject<UDkUIListDataObjectScalar>();
 			SoundFXVolume->SetDataID(FName("SoundFXVolume"));
 			SoundFXVolume->SetDataDisplayName(FText::FromString(TEXT("音效大小")));
-			SoundFXVolume->SetDescriptionRichText(FText::FromString(TEXT("调整游戏的音效大小")));
+			SoundFXVolume->SetDescriptionRichText(GET_DESCRIPTION("SoundFXVolumeDescKey"));
 			SoundFXVolume->SetDisplayValueRange(TRange<float>(0.f, 1.f));
 			SoundFXVolume->SetOutputValueRange(TRange<float>(0.f, 2.f));
 			SoundFXVolume->SetSliderStepSize(0.01f);
@@ -222,7 +218,7 @@ void UDkUIOptionsDataRegistry::InitAudioCollectionTab()
 			UDkUIListDataObjectStringBool* AllowBackgroundAudio = NewObject<UDkUIListDataObjectStringBool>();
 			AllowBackgroundAudio->SetDataID(FName("AllowBackgroundAudio"));
 			AllowBackgroundAudio->SetDataDisplayName(FText::FromString(TEXT("允许后台播放声音")));
-			AllowBackgroundAudio->SetDescriptionRichText(FText::FromString(TEXT("决定是否允许游戏切换到后台之后继续播放声音")));
+			AllowBackgroundAudio->SetDescriptionRichText(GET_DESCRIPTION("AllowBackgroundAudioDescKey"));
 			AllowBackgroundAudio->OverrideTrueDisplayText(FText::FromString(TEXT("允许")));
 			AllowBackgroundAudio->OverrideFalseDisplayText(FText::FromString(TEXT("不允许")));
 			AllowBackgroundAudio->SetFalseAsDefaultValue();
@@ -238,7 +234,7 @@ void UDkUIOptionsDataRegistry::InitAudioCollectionTab()
 			UDkUIListDataObjectStringBool* UseHDRAudioMode = NewObject<UDkUIListDataObjectStringBool>();
 			UseHDRAudioMode->SetDataID(FName("UseHDRAudioMode"));
 			UseHDRAudioMode->SetDataDisplayName(FText::FromString(TEXT("开启高动态音频")));
-			UseHDRAudioMode->SetDescriptionRichText(FText::FromString(TEXT("决定是否启用HDR Audio(高动态音频)")));
+			UseHDRAudioMode->SetDescriptionRichText(GET_DESCRIPTION("UseHDRAudioModeDescKey"));
 			UseHDRAudioMode->SetFalseAsDefaultValue();
 			UseHDRAudioMode->SetDataDynamicGetter(MAKE_OPTIONS_DATA_CONTROL(GetUseHDRAudioMode));
 			UseHDRAudioMode->SetDataDynamicSetter(MAKE_OPTIONS_DATA_CONTROL(SetUseHDRAudioMode));
@@ -285,9 +281,7 @@ void UDkUIOptionsDataRegistry::InitVideoCollectionTab()
 			WindowMode->SetSoftDescriptionImage(
 				UDkUIFunctionLibrary::GetSoftImageByTag(DkGameplayTags::Dk_Image_TestImage)
 			);
-			WindowMode->SetDescriptionRichText(FText::FromString(TEXT(
-				"要显示的图像可以在项目设置中指定。它可以是开发人员在其中指定的任何图像。"
-			)));
+			WindowMode->SetDescriptionRichText(GET_DESCRIPTION("WindowModeDescKey"));
 			WindowMode->AddEnumOption(EWindowMode::Fullscreen, FText::FromString(TEXT("全屏")));
 			WindowMode->AddEnumOption(EWindowMode::WindowedFullscreen, FText::FromString(TEXT("无边框窗口")));
 			WindowMode->AddEnumOption(EWindowMode::Windowed, FText::FromString(TEXT("窗口化")));
@@ -307,9 +301,7 @@ void UDkUIOptionsDataRegistry::InitVideoCollectionTab()
 			UDkUIListDataObjectStrResolution* ScreenResolution = NewObject<UDkUIListDataObjectStrResolution>();
 			ScreenResolution->SetDataID(FName("ScreenResolution"));
 			ScreenResolution->SetDataDisplayName(FText::FromString(TEXT("分辨率")));
-			ScreenResolution->SetDescriptionRichText(FText::FromString(TEXT(
-				"可用于更改屏幕的显示分辨率，主要体现于更改窗口化的大小。"
-			)));
+			ScreenResolution->SetDescriptionRichText(GET_DESCRIPTION("ScreenResolutionDescKey"));
 			ScreenResolution->InitResolutionValues();
 			ScreenResolution->SetDataDynamicGetter(MAKE_OPTIONS_DATA_CONTROL(GetScreenResolution));
 			ScreenResolution->SetDataDynamicSetter(MAKE_OPTIONS_DATA_CONTROL(SetScreenResolution));
@@ -350,7 +342,7 @@ void UDkUIOptionsDataRegistry::InitVideoCollectionTab()
 			UDkUIListDataObjectScalar* DisplayGamma = NewObject<UDkUIListDataObjectScalar>();
 			DisplayGamma->SetDataID(FName("DisplayGamma"));
 			DisplayGamma->SetDataDisplayName(FText::FromString(TEXT("亮度")));
-			DisplayGamma->SetDescriptionRichText(FText::FromString(TEXT("可用于更改屏幕的显示亮度。")));
+			DisplayGamma->SetDescriptionRichText(GET_DESCRIPTION("DisplayGammaDescKey"));
 			DisplayGamma->SetDisplayValueRange(TRange<float>(0.f, 1.f));
 			DisplayGamma->SetOutputValueRange(TRange<float>(1.7f, 2.7f)); // 虚幻默认的Gamma值为2.2f
 			DisplayGamma->SetDefaultValueFromString(LexToString(2.2f));
@@ -370,7 +362,7 @@ void UDkUIOptionsDataRegistry::InitVideoCollectionTab()
 			UDkUIListDataObjectStringInteger* OverallQuality = NewObject<UDkUIListDataObjectStringInteger>();
 			OverallQuality->SetDataID(FName("OverallQuality"));
 			OverallQuality->SetDataDisplayName(FText::FromString(TEXT("整体质量")));
-			OverallQuality->SetDescriptionRichText(FText::FromString(TEXT("可用于更改图形的整体质量。")));
+			OverallQuality->SetDescriptionRichText(GET_DESCRIPTION("OverallQualityDescKey"));
 			OverallQuality->AddIntegerOption(0, FText::FromString(TEXT("低")));
 			OverallQuality->AddIntegerOption(1, FText::FromString(TEXT("中")));
 			OverallQuality->AddIntegerOption(2, FText::FromString(TEXT("高")));
@@ -389,9 +381,7 @@ void UDkUIOptionsDataRegistry::InitVideoCollectionTab()
 			UDkUIListDataObjectScalar* ResolutionScale = NewObject<UDkUIListDataObjectScalar>();
 			ResolutionScale->SetDataID(FName("ResolutionScale"));
 			ResolutionScale->SetDataDisplayName(FText::FromString(TEXT("渲染比例")));
-			ResolutionScale->SetDescriptionRichText(FText::FromString(
-				TEXT("表示引擎实际以多少百分比的画面分辨率来做 3D 渲染，再把结果放大/缩小到最终输出分辨率")
-			));
+			ResolutionScale->SetDescriptionRichText(GET_DESCRIPTION("ResolutionScaleDescKey"));
 			ResolutionScale->SetDisplayValueRange(TRange<float>(0.f, 1.f));
 			ResolutionScale->SetOutputValueRange(TRange<float>(0.f, 1.f));
 			ResolutionScale->SetDisplayNumericType(ECommonNumericType::Percentage);
@@ -412,9 +402,7 @@ void UDkUIOptionsDataRegistry::InitVideoCollectionTab()
 			UDkUIListDataObjectStringInteger* GlobalIlluminationQuality = NewObject<UDkUIListDataObjectStringInteger>();
 			GlobalIlluminationQuality->SetDataID(FName("GlobalIlluminationQuality"));
 			GlobalIlluminationQuality->SetDataDisplayName(FText::FromString(TEXT("全局光照")));
-			GlobalIlluminationQuality->SetDescriptionRichText(FText::FromString(
-				TEXT("把直接光和间接光(光线在场景里多次反弹后形成的漫反射、颜色溢出、软阴影等)一起计算出来，让画面看起来更真实、整体感更强")
-			));
+			GlobalIlluminationQuality->SetDescriptionRichText(GET_DESCRIPTION("GlobalIlluminationQualityDescKey"));
 			GlobalIlluminationQuality->AddIntegerOption(0, FText::FromString(TEXT("低")));
 			GlobalIlluminationQuality->AddIntegerOption(1, FText::FromString(TEXT("中")));
 			GlobalIlluminationQuality->AddIntegerOption(2, FText::FromString(TEXT("高")));
@@ -436,9 +424,7 @@ void UDkUIOptionsDataRegistry::InitVideoCollectionTab()
 			UDkUIListDataObjectStringInteger* ShadowQuality = NewObject<UDkUIListDataObjectStringInteger>();
 			ShadowQuality->SetDataID(FName("ShadowQuality"));
 			ShadowQuality->SetDataDisplayName(FText::FromString(TEXT("阴影")));
-			ShadowQuality->SetDescriptionRichText(FText::FromString(
-				TEXT("决定了场景中阴影的清晰度、边缘柔和度、噪点以及性能开销")
-			));
+			ShadowQuality->SetDescriptionRichText(GET_DESCRIPTION("ShadowQualityDescKey"));
 			ShadowQuality->AddIntegerOption(0, FText::FromString(TEXT("低")));
 			ShadowQuality->AddIntegerOption(1, FText::FromString(TEXT("中")));
 			ShadowQuality->AddIntegerOption(2, FText::FromString(TEXT("高")));
@@ -460,9 +446,7 @@ void UDkUIOptionsDataRegistry::InitVideoCollectionTab()
 			UDkUIListDataObjectStringInteger* AntiAliasingQuality = NewObject<UDkUIListDataObjectStringInteger>();
 			AntiAliasingQuality->SetDataID(FName("AntiAliasingQuality"));
 			AntiAliasingQuality->SetDataDisplayName(FText::FromString(TEXT("抗锯齿")));
-			AntiAliasingQuality->SetDescriptionRichText(FText::FromString(
-				TEXT("把直线、边缘或高光处因像素网格有限而产生的“锯齿”或“阶梯”状走样(Aliasing)尽量抹平，让画面看起来更光滑、更干净")
-			));
+			AntiAliasingQuality->SetDescriptionRichText(GET_DESCRIPTION("AntiAliasingQualityDescKey"));
 			AntiAliasingQuality->AddIntegerOption(0, FText::FromString(TEXT("低")));
 			AntiAliasingQuality->AddIntegerOption(1, FText::FromString(TEXT("中")));
 			AntiAliasingQuality->AddIntegerOption(2, FText::FromString(TEXT("高")));
@@ -484,9 +468,7 @@ void UDkUIOptionsDataRegistry::InitVideoCollectionTab()
 			UDkUIListDataObjectStringInteger* ViewDistanceQuality = NewObject<UDkUIListDataObjectStringInteger>();
 			ViewDistanceQuality->SetDataID(FName("ViewDistanceQuality"));
 			ViewDistanceQuality->SetDataDisplayName(FText::FromString(TEXT("可视距离")));
-			ViewDistanceQuality->SetDescriptionRichText(FText::FromString(
-				TEXT("指场景里静态/动态物体在多远距离内才会被渲染")
-			));
+			ViewDistanceQuality->SetDescriptionRichText(GET_DESCRIPTION("ViewDistanceQualityDescKey"));
 			ViewDistanceQuality->AddIntegerOption(0, FText::FromString(TEXT("近")));
 			ViewDistanceQuality->AddIntegerOption(1, FText::FromString(TEXT("中")));
 			ViewDistanceQuality->AddIntegerOption(2, FText::FromString(TEXT("远")));
@@ -508,9 +490,7 @@ void UDkUIOptionsDataRegistry::InitVideoCollectionTab()
 			UDkUIListDataObjectStringInteger* TextureQuality = NewObject<UDkUIListDataObjectStringInteger>();
 			TextureQuality->SetDataID(FName("TextureQuality"));
 			TextureQuality->SetDataDisplayName(FText::FromString(TEXT("纹理")));
-			TextureQuality->SetDescriptionRichText(FText::FromString(
-				TEXT("决定游戏运行时真正载入显存的那张纹理贴图有多大，调得越高，贴图越清晰")
-			));
+			TextureQuality->SetDescriptionRichText(GET_DESCRIPTION("TextureQualityDescKey"));
 			TextureQuality->AddIntegerOption(0, FText::FromString(TEXT("低")));
 			TextureQuality->AddIntegerOption(1, FText::FromString(TEXT("中")));
 			TextureQuality->AddIntegerOption(2, FText::FromString(TEXT("高")));
@@ -532,9 +512,7 @@ void UDkUIOptionsDataRegistry::InitVideoCollectionTab()
 			UDkUIListDataObjectStringInteger* VisualEffectQuality = NewObject<UDkUIListDataObjectStringInteger>();
 			VisualEffectQuality->SetDataID(FName("VisualEffectQuality"));
 			VisualEffectQuality->SetDataDisplayName(FText::FromString(TEXT("特效")));
-			VisualEffectQuality->SetDescriptionRichText(FText::FromString(
-				TEXT("档位越高，爆炸、烟雾、魔法光效越浓密细腻，但 Draw Call、填充率、显存占用同步上涨；调低可快速减轻 GPU 压力。")
-			));
+			VisualEffectQuality->SetDescriptionRichText(GET_DESCRIPTION("VisualEffectQualityDescKey"));
 			VisualEffectQuality->AddIntegerOption(0, FText::FromString(TEXT("低")));
 			VisualEffectQuality->AddIntegerOption(1, FText::FromString(TEXT("中")));
 			VisualEffectQuality->AddIntegerOption(2, FText::FromString(TEXT("高")));
@@ -555,10 +533,8 @@ void UDkUIOptionsDataRegistry::InitVideoCollectionTab()
 		{
 			UDkUIListDataObjectStringInteger* ReflectionQuality = NewObject<UDkUIListDataObjectStringInteger>();
 			ReflectionQuality->SetDataID(FName("ReflectionQuality"));
-			ReflectionQuality->SetDataDisplayName(FText::FromString(TEXT("纹理")));
-			ReflectionQuality->SetDescriptionRichText(FText::FromString(
-				TEXT("控制能看到多清晰、多完整的实时反射。档位越高，倒影越锐利、越接近真实，但渲染成本也成倍增加，调低可明显省帧。")
-			));
+			ReflectionQuality->SetDataDisplayName(FText::FromString(TEXT("反射")));
+			ReflectionQuality->SetDescriptionRichText(GET_DESCRIPTION("ReflectionQualityDescKey"));
 			ReflectionQuality->AddIntegerOption(0, FText::FromString(TEXT("低")));
 			ReflectionQuality->AddIntegerOption(1, FText::FromString(TEXT("中")));
 			ReflectionQuality->AddIntegerOption(2, FText::FromString(TEXT("高")));
@@ -580,9 +556,7 @@ void UDkUIOptionsDataRegistry::InitVideoCollectionTab()
 			UDkUIListDataObjectStringInteger* PostProcessingQuality = NewObject<UDkUIListDataObjectStringInteger>();
 			PostProcessingQuality->SetDataID(FName("PostProcessingQuality"));
 			PostProcessingQuality->SetDataDisplayName(FText::FromString(TEXT("后处理")));
-			PostProcessingQuality->SetDescriptionRichText(FText::FromString(
-				TEXT("画面拍完以后那一整帧还要做哪些锦上添花的效果、做到多精细。档位越高，画面更柔和干净、色彩层次更细腻")
-			));
+			PostProcessingQuality->SetDescriptionRichText(GET_DESCRIPTION("PostProcessingQualityDescKey"));
 			PostProcessingQuality->AddIntegerOption(0, FText::FromString(TEXT("低")));
 			PostProcessingQuality->AddIntegerOption(1, FText::FromString(TEXT("中")));
 			PostProcessingQuality->AddIntegerOption(2, FText::FromString(TEXT("高")));
@@ -613,9 +587,7 @@ void UDkUIOptionsDataRegistry::InitVideoCollectionTab()
 			UDkUIListDataObjectStringBool* VerticalSync = NewObject<UDkUIListDataObjectStringBool>();
 			VerticalSync->SetDataID(FName("VerticalSync"));
 			VerticalSync->SetDataDisplayName(FText::FromString(TEXT("垂直同步")));
-			VerticalSync->SetDescriptionRichText(FText::FromString(TEXT(
-				"显卡必须在显示器每一次从上到下的电子束扫描完成后，才允许把下一帧画面送出去"
-			)));
+			VerticalSync->SetDescriptionRichText(GET_DESCRIPTION("VerticalSyncDescKey"));
 			VerticalSync->SetDataDynamicGetter(MAKE_OPTIONS_DATA_CONTROL(IsVSyncEnabled));
 			VerticalSync->SetDataDynamicSetter(MAKE_OPTIONS_DATA_CONTROL(SetVSyncEnabled));
 			VerticalSync->SetFalseAsDefaultValue();
@@ -641,9 +613,7 @@ void UDkUIOptionsDataRegistry::InitVideoCollectionTab()
 			UDkUIListDataObjectString* FrameRateLimit = NewObject<UDkUIListDataObjectString>();
 			FrameRateLimit->SetDataID(FName("FrameRateLimit"));
 			FrameRateLimit->SetDataDisplayName(FText::FromString(TEXT("帧率上限")));
-			FrameRateLimit->SetDescriptionRichText(FText::FromString(TEXT(
-				"每秒最高生成的帧数，降低功耗/温度/噪音，稳定帧时间"
-			)));
+			FrameRateLimit->SetDescriptionRichText(GET_DESCRIPTION("FrameRateLimitDescKey"));
 			FrameRateLimit->AddDynamicOption(LexToString(30.f), FText::FromString(TEXT("30 FPS")));
 			FrameRateLimit->AddDynamicOption(LexToString(60.f), FText::FromString(TEXT("60 FPS")));
 			FrameRateLimit->AddDynamicOption(LexToString(90.f), FText::FromString(TEXT("90 FPS")));

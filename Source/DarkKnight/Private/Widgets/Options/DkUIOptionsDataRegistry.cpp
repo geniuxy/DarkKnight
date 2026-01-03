@@ -574,7 +574,7 @@ void UDkUIOptionsDataRegistry::InitVideoCollectionTab()
 
 			GraphicsCategoryCollection->AddChildListData(ReflectionQuality);
 		}
-		
+
 		// 后处理质量
 		{
 			UDkUIListDataObjectStringInteger* PostProcessingQuality = NewObject<UDkUIListDataObjectStringInteger>();
@@ -630,10 +630,31 @@ void UDkUIOptionsDataRegistry::InitVideoCollectionTab()
 			);
 			FullscreenOnlyCondition.SetDisabledWarningReason(TEXT("\n\n<Warning>只有在全屏模式时，才能启用垂直同步。</>"));
 			FullscreenOnlyCondition.SetDisabledForcedStringValue(TEXT("false"));
-			
+
 			VerticalSync->AddEditionCondition(FullscreenOnlyCondition);
 
 			AdvancedGraphicsCategoryCollection->AddChildListData(VerticalSync);
+		}
+
+		// 帧率限制
+		{
+			UDkUIListDataObjectString* FrameRateLimit = NewObject<UDkUIListDataObjectString>();
+			FrameRateLimit->SetDataID(FName("FrameRateLimit"));
+			FrameRateLimit->SetDataDisplayName(FText::FromString(TEXT("帧率上限")));
+			FrameRateLimit->SetDescriptionRichText(FText::FromString(TEXT(
+				"每秒最高生成的帧数，降低功耗/温度/噪音，稳定帧时间"
+			)));
+			FrameRateLimit->AddDynamicOption(LexToString(30.f), FText::FromString(TEXT("30 FPS")));
+			FrameRateLimit->AddDynamicOption(LexToString(60.f), FText::FromString(TEXT("60 FPS")));
+			FrameRateLimit->AddDynamicOption(LexToString(90.f), FText::FromString(TEXT("90 FPS")));
+			FrameRateLimit->AddDynamicOption(LexToString(120.f), FText::FromString(TEXT("120 FPS")));
+			FrameRateLimit->AddDynamicOption(LexToString(0.f), FText::FromString(TEXT("无限制")));
+			FrameRateLimit->SetDefaultValueFromString(LexToString(0.f));
+			FrameRateLimit->SetDataDynamicGetter(MAKE_OPTIONS_DATA_CONTROL(GetFrameRateLimit));
+			FrameRateLimit->SetDataDynamicSetter(MAKE_OPTIONS_DATA_CONTROL(SetFrameRateLimit));
+			FrameRateLimit->SetShouldApplyChangeImmediately(true);
+
+			AdvancedGraphicsCategoryCollection->AddChildListData(FrameRateLimit);
 		}
 	}
 

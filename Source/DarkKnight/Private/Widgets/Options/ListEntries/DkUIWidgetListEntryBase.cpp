@@ -10,7 +10,7 @@
 
 void UDkUIWidgetListEntryBase::NativeOnListEntryWidgetHovered(bool bWasHovered)
 {
-	BP_OnListEntryWidgetHovered(bWasHovered, IsListItemSelected());
+	BP_OnListEntryWidgetHovered(bWasHovered, GetListItem() ? IsListItemSelected() : false);
 }
 
 void UDkUIWidgetListEntryBase::NativeOnListItemObjectSet(UObject* ListItemObject)

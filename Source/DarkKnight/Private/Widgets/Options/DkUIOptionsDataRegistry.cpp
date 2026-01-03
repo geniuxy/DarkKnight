@@ -345,6 +345,7 @@ void UDkUIOptionsDataRegistry::InitVideoCollectionTab()
 			DisplayGamma->SetDescriptionRichText(GET_DESCRIPTION("DisplayGammaDescKey"));
 			DisplayGamma->SetDisplayValueRange(TRange<float>(0.f, 1.f));
 			DisplayGamma->SetOutputValueRange(TRange<float>(1.7f, 2.7f)); // 虚幻默认的Gamma值为2.2f
+			DisplayGamma->SetSliderStepSize(0.025f);
 			DisplayGamma->SetDefaultValueFromString(LexToString(2.2f));
 			DisplayGamma->SetDisplayNumericType(ECommonNumericType::Percentage);
 			DisplayGamma->SetNumberFormattingOptions(UDkUIListDataObjectScalar::NoDecimal());
@@ -384,6 +385,7 @@ void UDkUIOptionsDataRegistry::InitVideoCollectionTab()
 			ResolutionScale->SetDescriptionRichText(GET_DESCRIPTION("ResolutionScaleDescKey"));
 			ResolutionScale->SetDisplayValueRange(TRange<float>(0.f, 1.f));
 			ResolutionScale->SetOutputValueRange(TRange<float>(0.f, 1.f));
+			ResolutionScale->SetSliderStepSize(0.01f);
 			ResolutionScale->SetDisplayNumericType(ECommonNumericType::Percentage);
 			ResolutionScale->SetNumberFormattingOptions(UDkUIListDataObjectScalar::NoDecimal());
 			ResolutionScale->SetDataDynamicGetter(MAKE_OPTIONS_DATA_CONTROL(GetResolutionScaleNormalized));

@@ -16,6 +16,7 @@
 #include "Widgets/Options/DataObjects/DkUIListDataObjectString.h"
 #include "Widgets/Options/DataObjects/DkUIListDataObjectStrResolution.h"
 #include "Internationalization/StringTableRegistry.h"
+#include "Widgets/Options/DataObjects/DkUIListDataObjectKeyRemap.h"
 
 #define MAKE_OPTIONS_DATA_CONTROL(SetterOrGetterFuncName) \
 	MakeShared<FDkUIOptionsDataInteractionHelper>(GET_FUNCTION_NAME_STRING_CHECKED(UDkGameUserSettings, SetterOrGetterFuncName))
@@ -654,9 +655,9 @@ void UDkUIOptionsDataRegistry::InitControlCollectionTab(ULocalPlayer* InOwningLo
 		KeyboardMouseOnly.KeyToMatch = EKeys::S;
 		KeyboardMouseOnly.bMatchBasicKeyTypes = true;
 
-		/*FPlayerMappableKeyQueryOptions GamepadOnly;
-		GamepadOnly.KeyToMatch = EKeys::Gamepad_FaceButton_Bottom;
-		GamepadOnly.bMatchBasicKeyTypes = true;*/
+		// FPlayerMappableKeyQueryOptions GamepadOnly;
+		// GamepadOnly.KeyToMatch = EKeys::Gamepad_FaceButton_Bottom;
+		// GamepadOnly.bMatchBasicKeyTypes = true;
 
 		UDkUIListDataObjectCollection* KeyboardAndMouseCategoryCollection = NewObject<UDkUIListDataObjectCollection>();
 		KeyboardAndMouseCategoryCollection->SetDataID(FName("KeyboardAndMouseCategory"));
@@ -677,11 +678,19 @@ void UDkUIOptionsDataRegistry::InitControlCollectionTab(ULocalPlayer* InOwningLo
 					{
 						if (MappableKeyProfile->DoesMappingPassQueryOptions(KeyMapping, KeyboardMouseOnly))
 						{
-							Debug::Print(
-								TEXT("Mapping ID: ") + KeyMapping.GetMappingName().ToString() +
-								TEXT("Display Name: ") + KeyMapping.GetDisplayName().ToString() +
-								TEXT("Bound Key: ") + KeyMapping.GetCurrentKey().GetDisplayName().ToString()
-							);
+							// Debug::Print(
+							// 	TEXT("Mapping ID: ") + KeyMapping.GetMappingName().ToString() +
+							// 	TEXT("Display Name: ") + KeyMapping.GetDisplayName().ToString() +
+							// 	TEXT("Bound Key: ") + KeyMapping.GetCurrentKey().GetDisplayName().ToString()
+							// );
+
+							UDkUIListDataObjectKeyRemap* KeyRemapDataObject = NewObject<UDkUIListDataObjectKeyRemap>();
+							KeyRemapDataObject->SetDataID(KeyMapping.GetMappingName());
+							KeyRemapDataObject->SetDataDisplayName(KeyMapping.GetDisplayName());
+							KeyRemapDataObject->InitKeyRemapData(
+								EIUserSettings, MappableKeyProfile, ECommonInputType::MouseAndKeyboard, KeyMapping);
+
+							KeyboardAndMouseCategoryCollection->AddChildListData(KeyRemapDataObject);
 						}
 					}
 				}

@@ -650,9 +650,17 @@ void UDkUIOptionsDataRegistry::InitControlCollectionTab(ULocalPlayer* InOwningLo
 
 	// 鼠标&键盘 类别
 	{
+		FPlayerMappableKeyQueryOptions KeyboardMouseOnly;
+		KeyboardMouseOnly.KeyToMatch = EKeys::S;
+		KeyboardMouseOnly.bMatchBasicKeyTypes = true;
+
+		/*FPlayerMappableKeyQueryOptions GamepadOnly;
+		GamepadOnly.KeyToMatch = EKeys::Gamepad_FaceButton_Bottom;
+		GamepadOnly.bMatchBasicKeyTypes = true;*/
+
 		UDkUIListDataObjectCollection* KeyboardAndMouseCategoryCollection = NewObject<UDkUIListDataObjectCollection>();
-		KeyboardAndMouseCategoryCollection->SetDataID(FName("GraphicsCategory"));
-		KeyboardAndMouseCategoryCollection->SetDataDisplayName(FText::FromString(TEXT("高级")));
+		KeyboardAndMouseCategoryCollection->SetDataID(FName("KeyboardAndMouseCategory"));
+		KeyboardAndMouseCategoryCollection->SetDataDisplayName(FText::FromString(TEXT("鼠标&键盘")));
 
 		ControlTabCollection->AddChildListData(KeyboardAndMouseCategoryCollection);
 
@@ -667,11 +675,14 @@ void UDkUIOptionsDataRegistry::InitControlCollectionTab(ULocalPlayer* InOwningLo
 				{
 					for (const FPlayerKeyMapping& KeyMapping : MappingRowPair.Value.Mappings)
 					{
-						Debug::Print(
-							TEXT("Mapping ID: ") + KeyMapping.GetMappingName().ToString() +
-							TEXT("Display Name: ") + KeyMapping.GetDisplayName().ToString() +
-							TEXT("Bound Key: ") + KeyMapping.GetCurrentKey().GetDisplayName().ToString()
-						);
+						if (MappableKeyProfile->DoesMappingPassQueryOptions(KeyMapping, KeyboardMouseOnly))
+						{
+							Debug::Print(
+								TEXT("Mapping ID: ") + KeyMapping.GetMappingName().ToString() +
+								TEXT("Display Name: ") + KeyMapping.GetDisplayName().ToString() +
+								TEXT("Bound Key: ") + KeyMapping.GetCurrentKey().GetDisplayName().ToString()
+							);
+						}
 					}
 				}
 			}

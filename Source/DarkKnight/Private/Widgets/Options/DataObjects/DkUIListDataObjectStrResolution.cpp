@@ -34,10 +34,10 @@ void UDkUIListDataObjectStrResolution::OnDataObjectInitialized()
 {
 	Super::OnDataObjectInitialized();
 
-	if (DataDynamicGetter)
-	{
-		Debug::Print(TEXT("从 DynamicGetter 中读取的当前分辨率值：") + DataDynamicGetter->GetValueAsString());
-	}
+	// if (DataDynamicGetter)
+	// {
+	// 	Debug::Print(TEXT("从 DynamicGetter 中读取的当前分辨率值：") + DataDynamicGetter->GetValueAsString());
+	// }
 }
 
 FString UDkUIListDataObjectStrResolution::ResToStringValue(const FIntPoint& InResolution) const

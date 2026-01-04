@@ -42,7 +42,7 @@ private:
 	UPROPERTY(meta=(BindWidgetOptional)) // 用于 C++ 与 UMG 蓝图之间的绑定
 	UCommonTextBlock* CommonButtonTextBlock;
 
-	UPROPERTY(meta=(BindWidgetOptional)) // 用于 C++ 与 UMG 蓝图之间的绑定
+	UPROPERTY(BlueprintReadOnly, meta=(BindWidgetOptional, AllowPrivateAccess = "true")) // 用于 C++ 与 UMG 蓝图之间的绑定
 	UCommonLazyImage* CommonLazyImage_ButtonImage;
 	//***** Bound Widgets *****//
 

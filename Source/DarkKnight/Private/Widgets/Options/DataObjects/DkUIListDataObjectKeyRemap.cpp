@@ -15,3 +15,8 @@ void UDkUIListDataObjectKeyRemap::InitKeyRemapData(
 	CachedOwningMappingName = InOwningPlayerKeyMapping.GetMappingName();
 	CachedOwningMappableKeySlot = InOwningPlayerKeyMapping.GetSlot();
 }
+
+FSlateBrush UDkUIListDataObjectKeyRemap::GetIconFromCurrentKey() const
+{
+	return FSlateBrush();
+}

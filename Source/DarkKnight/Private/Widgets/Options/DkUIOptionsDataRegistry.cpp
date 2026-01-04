@@ -4,7 +4,10 @@
 #include "Widgets/Options/DkUIOptionsDataRegistry.h"
 
 #include "CommonNumericTextBlock.h"
+#include "DarkKnightDebugHelper.h"
 #include "DkGameplayTags.h"
+#include "EnhancedInputSubsystems.h"
+#include "UserSettings/EnhancedInputUserSettings.h"
 #include "FunctionLibrarys/DkUIFunctionLibrary.h"
 #include "Settings/DkGameUserSettings.h"
 #include "Widgets/Options/DkUIOptionsDataInteractionHelper.h"
@@ -25,7 +28,7 @@ void UDkUIOptionsDataRegistry::InitOptionsDataRegister(ULocalPlayer* InOwningLoc
 	InitGameplayCollectionTab();
 	InitAudioCollectionTab();
 	InitVideoCollectionTab();
-	InitControlCollectionTab();
+	InitControlCollectionTab(InOwningLocalPlayer);
 }
 
 TArray<UDkUIListDataObjectBase*> UDkUIOptionsDataRegistry::GetListSourceItemsBySelectedTabID(
@@ -633,11 +636,47 @@ void UDkUIOptionsDataRegistry::InitVideoCollectionTab()
 	RegisteredOptionsTabCollections.Add(VideoTabCollection);
 }
 
-void UDkUIOptionsDataRegistry::InitControlCollectionTab()
+void UDkUIOptionsDataRegistry::InitControlCollectionTab(ULocalPlayer* InOwningLocalPlayer)
 {
 	UDkUIListDataObjectCollection* ControlTabCollection = NewObject<UDkUIListDataObjectCollection>();
 	ControlTabCollection->SetDataID(FName("ControlTabCollection"));
 	ControlTabCollection->SetDataDisplayName(FText::FromString(TEXT("控制")));
+
+	UEnhancedInputLocalPlayerSubsystem* EISubsystem =
+		InOwningLocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
+	check(EISubsystem);
+	UEnhancedInputUserSettings* EIUserSettings = EISubsystem->GetUserSettings();
+	check(EIUserSettings);
+
+	// 鼠标&键盘 类别
+	{
+		UDkUIListDataObjectCollection* KeyboardAndMouseCategoryCollection = NewObject<UDkUIListDataObjectCollection>();
+		KeyboardAndMouseCategoryCollection->SetDataID(FName("GraphicsCategory"));
+		KeyboardAndMouseCategoryCollection->SetDataDisplayName(FText::FromString(TEXT("高级")));
+
+		ControlTabCollection->AddChildListData(KeyboardAndMouseCategoryCollection);
+
+		// 鼠标&键盘 输入
+		{
+			for (const TPair<FGameplayTag, UEnhancedPlayerMappableKeyProfile*> ProfilePair :
+			     EIUserSettings->GetAllSavedKeyProfiles())
+			{
+				UEnhancedPlayerMappableKeyProfile* MappableKeyProfile = ProfilePair.Value;
+				check(MappableKeyProfile);
+				for (const TPair<FName, FKeyMappingRow>& MappingRowPair : MappableKeyProfile->GetPlayerMappingRows())
+				{
+					for (const FPlayerKeyMapping& KeyMapping : MappingRowPair.Value.Mappings)
+					{
+						Debug::Print(
+							TEXT("Mapping ID: ") + KeyMapping.GetMappingName().ToString() +
+							TEXT("Display Name: ") + KeyMapping.GetDisplayName().ToString() +
+							TEXT("Bound Key: ") + KeyMapping.GetCurrentKey().GetDisplayName().ToString()
+						);
+					}
+				}
+			}
+		}
+	}
 
 	RegisteredOptionsTabCollections.Add(ControlTabCollection);
 }

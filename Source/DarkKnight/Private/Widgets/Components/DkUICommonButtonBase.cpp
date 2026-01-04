@@ -35,6 +35,14 @@ FText UDkUICommonButtonBase::GetButtonDisplayText() const
 	return FText();
 }
 
+void UDkUICommonButtonBase::SetButtonDisplayImage(const FSlateBrush& InBrush)
+{
+	if (CommonLazyImage_ButtonImage)
+	{
+		CommonLazyImage_ButtonImage->SetBrush(InBrush);
+	}
+}
+
 void UDkUICommonButtonBase::NativePreConstruct()
 {
 	Super::NativePreConstruct();

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "CommonButtonBase.h"
+#include "CommonLazyImage.h"
 #include "DkTypes/DkEnums.h"
 #include "DkUICommonButtonBase.generated.h"
 
@@ -23,6 +24,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FText GetButtonDisplayText() const;
 
+	UFUNCTION(BlueprintCallable)
+	void SetButtonDisplayImage(const FSlateBrush& InBrush);
+
 private:
 	//~Begin UUserWidget UFunction
 	virtual void NativePreConstruct() override;
@@ -37,6 +41,9 @@ private:
 	//***** Bound Widgets *****//
 	UPROPERTY(meta=(BindWidgetOptional)) // 用于 C++ 与 UMG 蓝图之间的绑定
 	UCommonTextBlock* CommonButtonTextBlock;
+
+	UPROPERTY(meta=(BindWidgetOptional)) // 用于 C++ 与 UMG 蓝图之间的绑定
+	UCommonLazyImage* CommonLazyImage_ButtonImage;
 	//***** Bound Widgets *****//
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="UI Button", meta=(AllowPrivateAccess="true"))

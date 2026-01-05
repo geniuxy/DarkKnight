@@ -17,6 +17,10 @@ class DARKKNIGHT_API UDkUIWidgetListEntryKeyRemap : public UDkUIWidgetListEntryB
 	GENERATED_BODY()
 
 protected:
+	//~Begin UUserWidget Function
+	virtual void NativeOnInitialized() override;
+	//~End UUserWidget Function
+	
 	//~Begin UDkUIWidgetListEntryBase Function
 	virtual void OnOwningListDataObjectSet(UDkUIListDataObjectBase* InOwningListDataObject) override;
 	virtual void OnOwningListDataObjectModified(
@@ -25,6 +29,9 @@ protected:
 	//~End UDkUIWidgetListEntryBase Function
 
 private:
+	void OnRemapKeyButtonClicked();
+	void OnResetKeyBindingButtonClicked();
+	
 	//***** Bound Widgets *****//
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget, AllowPrivateAccess = "true"))
 	UDkUICommonButtonBase* CommonButton_RemapKey;

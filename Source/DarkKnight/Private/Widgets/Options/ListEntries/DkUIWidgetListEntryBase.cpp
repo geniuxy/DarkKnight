@@ -10,7 +10,14 @@
 
 void UDkUIWidgetListEntryBase::NativeOnListEntryWidgetHovered(bool bWasHovered)
 {
-	BP_OnListEntryWidgetHovered(bWasHovered, GetListItem() ? IsListItemSelected() : false);
+	if (bWasHovered)
+	{
+		BP_OnToggleEntryWidgetHighlightState(true);
+	}
+	else
+	{
+		BP_OnToggleEntryWidgetHighlightState(GetListItem() && IsListItemSelected());
+	}
 }
 
 void UDkUIWidgetListEntryBase::NativeOnListItemObjectSet(UObject* ListItemObject)
@@ -18,6 +25,13 @@ void UDkUIWidgetListEntryBase::NativeOnListItemObjectSet(UObject* ListItemObject
 	IUserObjectListEntry::NativeOnListItemObjectSet(ListItemObject);
 
 	OnOwningListDataObjectSet(CastChecked<UDkUIListDataObjectBase>(ListItemObject));
+}
+
+void UDkUIWidgetListEntryBase::NativeOnItemSelectionChanged(bool bIsSelected)
+{
+	IUserObjectListEntry::NativeOnItemSelectionChanged(bIsSelected);
+
+	BP_OnToggleEntryWidgetHighlightState(bIsSelected);
 }
 
 void UDkUIWidgetListEntryBase::NativeOnEntryReleased()

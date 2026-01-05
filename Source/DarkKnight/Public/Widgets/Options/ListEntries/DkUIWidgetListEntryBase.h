@@ -19,14 +19,12 @@ class DARKKNIGHT_API UDkUIWidgetListEntryBase : public UCommonUserWidget, public
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintImplementableEvent, meta=(DisplayName = "On List Entry Widget Hovered"))
-	void BP_OnListEntryWidgetHovered(bool bWasHovered, bool bIsEntryWidgetStillSelected);
-
 	void NativeOnListEntryWidgetHovered(bool bWasHovered);
 
 protected:
 	//~Begin IUserObjectListEntry Function
 	virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
+	virtual void NativeOnItemSelectionChanged(bool bIsSelected) override;
 	virtual void NativeOnEntryReleased() override; // 用于切换Tab后，将每一个设置项都先置为Unhovered状态
 	//~End IUserObjectListEntry Function
 
@@ -38,6 +36,10 @@ protected:
 	// 蓝图应该重写此函数，以便游戏手柄交互能够正常工作。
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "Get Widget To Focus For Gamepad"))
 	UWidget* BP_GetWidgetToFocusForGamepad() const;
+
+	// 蓝图应该重写此函数，以便在鼠标悬停或选中此条目控件时处理高亮状态。
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "On Toggle Entry Widget Highlight State"))
+	void BP_OnToggleEntryWidgetHighlightState(bool bShouldHighlight) const;
 	
 	// 子类应该重写此函数以处理所需的初始化。需要调用 super 方法。
 	virtual void OnOwningListDataObjectSet(UDkUIListDataObjectBase* InOwningListDataObject);

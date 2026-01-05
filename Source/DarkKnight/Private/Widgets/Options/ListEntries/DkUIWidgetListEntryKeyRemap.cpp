@@ -4,6 +4,9 @@
 #include "Widgets/Options/ListEntries/DkUIWidgetListEntryKeyRemap.h"
 
 #include "DarkKnightDebugHelper.h"
+#include "DkGameplayTags.h"
+#include "FunctionLibrarys/DkUIFunctionLibrary.h"
+#include "Subsytems/DkUISubsystem.h"
 #include "Widgets/Components/DkUICommonButtonBase.h"
 #include "Widgets/Options/DataObjects/DkUIListDataObjectKeyRemap.h"
 
@@ -43,4 +46,13 @@ void UDkUIWidgetListEntryKeyRemap::OnResetKeyBindingButtonClicked()
 {
 	SelectThisEntryWidget();
 	Debug::Print(TEXT("Reset Key Binding Button Clicked"));
+
+	UDkUISubsystem::Get(this)->PushSoftWidgetToStackAsync(
+		DkGameplayTags::Dk_WidgetStack_Modal,
+		UDkUIFunctionLibrary::GetUISoftWidgetClassByTag(DkGameplayTags::Dk_Widget_KeyRemapScreen),
+		[](EAsyncPushWidgetState InPushState, UDkWidgetActivatableBase* PushedWidget)
+		{
+			
+		}
+	);
 }

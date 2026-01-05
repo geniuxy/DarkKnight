@@ -42,4 +42,7 @@ private:
 	FName CachedOwningMappingName;
 
 	EPlayerMappableKeySlot CachedOwningMappableKeySlot;
+
+public:
+	FORCEINLINE ECommonInputType GetDesiredInputKeyType() const { return CachedDesiredInputKeyType;}
 };

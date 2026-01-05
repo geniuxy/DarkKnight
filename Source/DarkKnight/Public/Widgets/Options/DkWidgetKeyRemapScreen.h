@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "CommonInputTypeEnum.h"
 #include "Widgets/DkWidgetActivatableBase.h"
 #include "DkWidgetKeyRemapScreen.generated.h"
 
@@ -15,6 +16,9 @@ UCLASS(Abstract, BlueprintType, meta = (DisableNativeTick))
 class DARKKNIGHT_API UDkWidgetKeyRemapScreen : public UDkWidgetActivatableBase
 {
 	GENERATED_BODY()
+
+public:
+	void SetDesiredInputTypeToFilter(ECommonInputType InDesiredInputType);
 
 protected:
 	//~ Begin UCommonActivatableWidget Function
@@ -29,4 +33,6 @@ private:
 	//***** Bound Widgets *****//
 
 	TSharedPtr<FKeyRemapScreenInputPreprocessor> CachedInputPreprocessor;
+
+	ECommonInputType CachedDesiredInputType;
 };

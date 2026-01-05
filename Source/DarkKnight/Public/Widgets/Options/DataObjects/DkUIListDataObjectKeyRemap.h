@@ -29,6 +29,8 @@ public:
 	FSlateBrush GetIconFromCurrentKey() const;
 
 private:
+	FPlayerKeyMapping* GetOwningKeyMapping() const;
+	
 	UPROPERTY(Transient)
 	UEnhancedInputUserSettings* CachedOwningInputUserSettings;
 

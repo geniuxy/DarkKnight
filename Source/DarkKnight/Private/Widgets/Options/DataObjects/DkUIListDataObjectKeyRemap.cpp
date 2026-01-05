@@ -3,6 +3,9 @@
 
 #include "Widgets/Options/DataObjects/DkUIListDataObjectKeyRemap.h"
 
+#include "CommonInputSubsystem.h"
+#include "DarkKnightDebugHelper.h"
+
 void UDkUIListDataObjectKeyRemap::InitKeyRemapData(
 	UEnhancedInputUserSettings* InOwningInputUserSettings,
 	UEnhancedPlayerMappableKeyProfile* InKeyProfile,
@@ -18,5 +21,38 @@ void UDkUIListDataObjectKeyRemap::InitKeyRemapData(
 
 FSlateBrush UDkUIListDataObjectKeyRemap::GetIconFromCurrentKey() const
 {
-	return FSlateBrush();
+	check(CachedOwningInputUserSettings);
+
+	FSlateBrush FoundBrush;
+	UCommonInputSubsystem* CommonInputSubsystem =
+		UCommonInputSubsystem::Get(CachedOwningInputUserSettings->GetLocalPlayer());
+	check(CommonInputSubsystem);
+
+	const bool bHasFoundBrush = UCommonInputPlatformSettings::Get()->TryGetInputBrush(
+		FoundBrush,
+		GetOwningKeyMapping()->GetCurrentKey(),
+		CachedDesiredInputKeyType,
+		CommonInputSubsystem->GetCurrentGamepadName()
+	);
+
+	if (!bHasFoundBrush)
+	{
+		Debug::Print(
+			TEXT("找不到输入键(") +
+			GetOwningKeyMapping()->GetCurrentKey().GetDisplayName().ToString() +
+			TEXT(")对应的图标")
+		);
+	}
+	return FoundBrush;
+}
+
+FPlayerKeyMapping* UDkUIListDataObjectKeyRemap::GetOwningKeyMapping() const
+{
+	check(CachedOwningKeyProfile);
+
+	FMapPlayerKeyArgs KeyArgs;
+	KeyArgs.MappingName = CachedOwningMappingName;
+	KeyArgs.Slot = CachedOwningMappableKeySlot;
+
+	return CachedOwningKeyProfile->FindKeyMapping(KeyArgs);
 }

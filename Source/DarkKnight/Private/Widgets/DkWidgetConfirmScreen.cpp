@@ -100,25 +100,25 @@ void UDkWidgetConfirmScreen::InitConfirmScreen(
 
 	for (const FConfirmScreenButtonInfo& AvailableButtonInfo : InScreenInfoObject->AvailableScreenButtons)
 	{
-		FDataTableRowHandle InputActionRowHandle;
-
-		switch (AvailableButtonInfo.ConfirmScreenButtonType)
-		{
-		case EConfirmScreenButtonType::Confirmed:
-			break;
-		case EConfirmScreenButtonType::Cancelled:
-			InputActionRowHandle = ICommonInputModule::GetSettings().GetDefaultBackAction();
-			break;
-		case EConfirmScreenButtonType::Closed:
-			InputActionRowHandle = ICommonInputModule::GetSettings().GetDefaultBackAction();
-			break;
-		default:
-			break;
-		}
+		// FDataTableRowHandle InputActionRowHandle;
+		//
+		// switch (AvailableButtonInfo.ConfirmScreenButtonType)
+		// {
+		// case EConfirmScreenButtonType::Confirmed:
+		// 	break;
+		// case EConfirmScreenButtonType::Cancelled:
+		// 	InputActionRowHandle = ICommonInputModule::GetSettings().GetDefaultBackAction();
+		// 	break;
+		// case EConfirmScreenButtonType::Closed:
+		// 	InputActionRowHandle = ICommonInputModule::GetSettings().GetDefaultBackAction();
+		// 	break;
+		// default:
+		// 	break;
+		// }
 
 		UDkUICommonButtonBase* AddedButton = DynamicEntryBox_Buttons->CreateEntry<UDkUICommonButtonBase>();
 		AddedButton->SetButtonText(AvailableButtonInfo.ButtonTextToDisplay, EDkTextJustify::Center);
-		AddedButton->SetTriggeringInputAction(InputActionRowHandle); // 用于按钮附带对应的输入动作
+		// AddedButton->SetTriggeringInputAction(InputActionRowHandle); // 用于按钮附带对应的输入动作
 		AddedButton->OnClicked().AddLambda(
 			[ClickedButtonCallback, AvailableButtonInfo, this]()
 			{

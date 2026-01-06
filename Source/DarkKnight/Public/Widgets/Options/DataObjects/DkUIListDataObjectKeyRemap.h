@@ -30,7 +30,6 @@ public:
 
 	void BindNewInputKey(const FKey& InNewKey);
 
-protected:
 	//~Begin UDkUIListDataObjectBase Function
 	virtual bool HasDefaultValue() const override;;
 	virtual bool CanResetBackToDefaultValue() const override;

@@ -71,9 +71,41 @@ void UDkUIWidgetListEntryKeyRemap::OnResetKeyBindingButtonClicked()
 {
 	SelectThisEntryWidget();
 
+	if (!CachedOwningKeyRemapDataObject)
+	{
+		return;
+	}
+
 	// 检查当前按键是否已是默认按键。如果已是默认按键，则向玩家显示“确定”屏幕，提示该按键已是默认按键。
+	if (!CachedOwningKeyRemapDataObject->CanResetBackToDefaultValue())
+	{
+		UDkUISubsystem::Get(this)->PushConfirmScreenToModalStackAsync(
+			EConfirmScreenType::Ok,
+			FText::FromString(TEXT("重置控制按键")),
+			FText::FromString(TEXT("当前按键已是默认按键")),
+			[](EConfirmScreenButtonType ClickedButtonType)
+			{
+			}
+		);
+
+		return;
+	}
 
 	// 将按键绑定重置为默认值
+	UDkUISubsystem::Get(this)->PushConfirmScreenToModalStackAsync(
+		EConfirmScreenType::YesOrNo,
+		FText::FromString(TEXT("重置控制按键")),
+		FText::FromString(
+			TEXT("你想要重置 ") + CachedOwningKeyRemapDataObject->GetDataDisplayName().ToString() + TEXT(" 所绑定的按键吗?")
+		),
+		[this](EConfirmScreenButtonType ClickedButtonType)
+		{
+			if (ClickedButtonType == EConfirmScreenButtonType::Confirmed)
+			{
+				CachedOwningKeyRemapDataObject->TryResetBackToDefaultValue();
+			}
+		}
+	);
 }
 
 void UDkUIWidgetListEntryKeyRemap::OnKeyToRemapPressed(const FKey& PressedKey)

@@ -40,14 +40,7 @@ void UDkUIWidgetListEntryKeyRemap::OnOwningListDataObjectModified(
 void UDkUIWidgetListEntryKeyRemap::OnRemapKeyButtonClicked()
 {
 	SelectThisEntryWidget();
-	Debug::Print(TEXT("Remap Key Button Clicked"));
-}
-
-void UDkUIWidgetListEntryKeyRemap::OnResetKeyBindingButtonClicked()
-{
-	SelectThisEntryWidget();
-	Debug::Print(TEXT("Reset Key Binding Button Clicked"));
-
+	
 	UDkUISubsystem::Get(this)->PushSoftWidgetToStackAsync(
 		DkGameplayTags::Dk_WidgetStack_Modal,
 		UDkUIFunctionLibrary::GetUISoftWidgetClassByTag(DkGameplayTags::Dk_Widget_KeyRemapScreen),
@@ -66,4 +59,10 @@ void UDkUIWidgetListEntryKeyRemap::OnResetKeyBindingButtonClicked()
 			}
 		}
 	);
+}
+
+void UDkUIWidgetListEntryKeyRemap::OnResetKeyBindingButtonClicked()
+{
+	SelectThisEntryWidget();
+	Debug::Print(TEXT("Reset Key Binding Button Clicked"));
 }

@@ -3,6 +3,7 @@
 
 #include "Widgets/Options/DkWidgetKeyRemapScreen.h"
 
+#include "CommonRichTextBlock.h"
 #include "DarkKnightDebugHelper.h"
 #include "Framework/Application/IInputProcessor.h"
 
@@ -80,9 +81,30 @@ void UDkWidgetKeyRemapScreen::NativeOnActivated()
 	Super::NativeOnActivated();
 
 	CachedInputPreprocessor = MakeShared<FKeyRemapScreenInputPreprocessor>(CachedDesiredInputType);
+	CachedInputPreprocessor->OnInputPreProcessorKeyPressed.BindUObject(this, &ThisClass::OnValidKeyPressedDetected);
+	CachedInputPreprocessor->OnInputPreProcessorKeySelectCanceled.BindUObject(this, &ThisClass::OnKeySelectedCanceled);
 
 	//数字越小越靠前，-1 表示“尽可能早地抢在所有默认预处理器之前拿到输入事件”
 	FSlateApplication::Get().RegisterInputPreProcessor(CachedInputPreprocessor, -1);
+
+	FString InputDeviceName;
+	switch (CachedDesiredInputType)
+	{
+	case ECommonInputType::MouseAndKeyboard:
+		InputDeviceName = TEXT("鼠标&键盘");
+		break;
+	case ECommonInputType::Gamepad:
+		InputDeviceName = TEXT("手柄");
+		break;
+	default:
+		break;
+	}
+
+	const FString DisplayRichMessage = FString::Printf(
+		TEXT("<KeyRemapDefault>请按下想要绑定的</><KeyRemapHighlight>%s</><KeyRemapDefault>按键</>"), *InputDeviceName
+	);
+
+	CommonRichText_RemapMessage->SetText(FText::FromString(DisplayRichMessage));
 }
 
 void UDkWidgetKeyRemapScreen::NativeOnDeactivated()
@@ -95,4 +117,12 @@ void UDkWidgetKeyRemapScreen::NativeOnDeactivated()
 
 		CachedInputPreprocessor.Reset();
 	}
+}
+
+void UDkWidgetKeyRemapScreen::OnValidKeyPressedDetected(const FKey& PressedKey)
+{
+}
+
+void UDkWidgetKeyRemapScreen::OnKeySelectedCanceled(const FString& CanceledReason)
+{
 }

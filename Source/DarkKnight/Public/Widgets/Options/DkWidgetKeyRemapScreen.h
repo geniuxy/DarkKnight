@@ -27,6 +27,9 @@ protected:
 	//~ End UCommonActivatableWidget Function
 
 private:
+	void OnValidKeyPressedDetected(const FKey& PressedKey);
+	void OnKeySelectedCanceled(const FString& CanceledReason);
+	
 	//***** Bound Widgets *****//
 	UPROPERTY(meta = (BindWidget))
 	UCommonRichTextBlock* CommonRichText_RemapMessage;

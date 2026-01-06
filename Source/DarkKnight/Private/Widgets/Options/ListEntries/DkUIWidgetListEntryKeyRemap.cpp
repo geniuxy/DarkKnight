@@ -75,7 +75,10 @@ void UDkUIWidgetListEntryKeyRemap::OnResetKeyBindingButtonClicked()
 
 void UDkUIWidgetListEntryKeyRemap::OnKeyToRemapPressed(const FKey& PressedKey)
 {
-	Debug::Print(TEXT("按下的按键为: ") + PressedKey.GetDisplayName().ToString());
+	if (CachedOwningKeyRemapDataObject)
+	{
+		CachedOwningKeyRemapDataObject->BindNewInputKey(PressedKey);
+	}
 }
 
 void UDkUIWidgetListEntryKeyRemap::OnKeyRemapCanceled(const FString& CanceledReason)

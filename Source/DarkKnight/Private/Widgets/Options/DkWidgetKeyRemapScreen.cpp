@@ -124,7 +124,6 @@ void UDkWidgetKeyRemapScreen::OnValidKeyPressedDetected(const FKey& PressedKey)
 	RequestDeactiveWidget(
 		[this, PressedKey]()
 		{
-			Debug::Print(TEXT("按下的按键为: ") + PressedKey.GetDisplayName().ToString());
 			OnKeyRemapScreenKeyPressed.ExecuteIfBound(PressedKey);
 		}	
 	);
@@ -135,7 +134,6 @@ void UDkWidgetKeyRemapScreen::OnKeySelectedCanceled(const FString& CanceledReaso
 	RequestDeactiveWidget(
 		[this, CanceledReason]()
 		{
-			Debug::Print(CanceledReason);
 			OnKeyRemapScreenKeySelectCanceled.ExecuteIfBound(CanceledReason);
 		}	
 	);

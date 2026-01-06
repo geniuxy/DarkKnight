@@ -40,7 +40,7 @@ void UDkUIWidgetListEntryKeyRemap::OnOwningListDataObjectModified(
 void UDkUIWidgetListEntryKeyRemap::OnRemapKeyButtonClicked()
 {
 	SelectThisEntryWidget();
-	
+
 	UDkUISubsystem::Get(this)->PushSoftWidgetToStackAsync(
 		DkGameplayTags::Dk_WidgetStack_Modal,
 		UDkUIFunctionLibrary::GetUISoftWidgetClassByTag(DkGameplayTags::Dk_Widget_KeyRemapScreen),
@@ -49,6 +49,12 @@ void UDkUIWidgetListEntryKeyRemap::OnRemapKeyButtonClicked()
 			if (InPushState == EAsyncPushWidgetState::OnCreatedBeforePush)
 			{
 				UDkWidgetKeyRemapScreen* CreatedKeyRemapScreen = CastChecked<UDkWidgetKeyRemapScreen>(PushedWidget);
+				CreatedKeyRemapScreen->OnKeyRemapScreenKeyPressed.BindUObject(
+					this, &ThisClass::OnKeyToRemapPressed
+				);
+				CreatedKeyRemapScreen->OnKeyRemapScreenKeySelectCanceled.BindUObject(
+					this, &ThisClass::OnKeyRemapCanceled
+				);
 
 				if (CachedOwningKeyRemapDataObject)
 				{
@@ -65,4 +71,21 @@ void UDkUIWidgetListEntryKeyRemap::OnResetKeyBindingButtonClicked()
 {
 	SelectThisEntryWidget();
 	Debug::Print(TEXT("Reset Key Binding Button Clicked"));
+}
+
+void UDkUIWidgetListEntryKeyRemap::OnKeyToRemapPressed(const FKey& PressedKey)
+{
+	Debug::Print(TEXT("按下的按键为: ") + PressedKey.GetDisplayName().ToString());
+}
+
+void UDkUIWidgetListEntryKeyRemap::OnKeyRemapCanceled(const FString& CanceledReason)
+{
+	UDkUISubsystem::Get(this)->PushConfirmScreenToModalStackAsync(
+		EConfirmScreenType::Ok,
+		FText::FromString(TEXT("自定义按键取消")),
+		FText::FromString(CanceledReason),
+		[](EConfirmScreenButtonType ClickedButtonType)
+		{
+		}
+	);
 }

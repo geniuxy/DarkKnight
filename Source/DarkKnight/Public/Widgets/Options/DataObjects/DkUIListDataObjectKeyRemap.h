@@ -30,6 +30,13 @@ public:
 
 	void BindNewInputKey(const FKey& InNewKey);
 
+protected:
+	//~Begin UDkUIListDataObjectBase Function
+	virtual bool HasDefaultValue() const override;;
+	virtual bool CanResetBackToDefaultValue() const override;
+	virtual bool TryResetBackToDefaultValue() override;
+	//~End UDkUIListDataObjectBase Function
+
 private:
 	FPlayerKeyMapping* GetOwningKeyMapping() const;
 	

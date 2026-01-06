@@ -70,7 +70,10 @@ void UDkUIWidgetListEntryKeyRemap::OnRemapKeyButtonClicked()
 void UDkUIWidgetListEntryKeyRemap::OnResetKeyBindingButtonClicked()
 {
 	SelectThisEntryWidget();
-	Debug::Print(TEXT("Reset Key Binding Button Clicked"));
+
+	// 检查当前按键是否已是默认按键。如果已是默认按键，则向玩家显示“确定”屏幕，提示该按键已是默认按键。
+
+	// 将按键绑定重置为默认值
 }
 
 void UDkUIWidgetListEntryKeyRemap::OnKeyToRemapPressed(const FKey& PressedKey)

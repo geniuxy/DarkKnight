@@ -62,6 +62,34 @@ void UDkUIListDataObjectKeyRemap::BindNewInputKey(const FKey& InNewKey)
 	NotifyListDataModified(this);
 }
 
+bool UDkUIListDataObjectKeyRemap::HasDefaultValue() const
+{
+	return GetOwningKeyMapping()->GetDefaultKey().IsValid();
+}
+
+bool UDkUIListDataObjectKeyRemap::CanResetBackToDefaultValue() const
+{
+	return HasDefaultValue() && GetOwningKeyMapping()->IsCustomized();
+}
+
+bool UDkUIListDataObjectKeyRemap::TryResetBackToDefaultValue()
+{
+	if (CanResetBackToDefaultValue())
+	{
+		check(CachedOwningInputUserSettings);
+
+		GetOwningKeyMapping()->ResetToDefault();
+
+		CachedOwningInputUserSettings->SaveSettings();
+
+		NotifyListDataModified(this, EOptionsListDataModifyReason::ResetToDefault);
+
+		return true;
+	}
+
+	return false;
+}
+
 FPlayerKeyMapping* UDkUIListDataObjectKeyRemap::GetOwningKeyMapping() const
 {
 	check(CachedOwningKeyProfile);

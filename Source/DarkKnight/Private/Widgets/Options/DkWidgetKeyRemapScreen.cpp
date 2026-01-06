@@ -3,15 +3,18 @@
 
 #include "Widgets/Options/DkWidgetKeyRemapScreen.h"
 
+#include "CommonInputSubsystem.h"
 #include "CommonRichTextBlock.h"
 #include "DarkKnightDebugHelper.h"
+#include "ICommonInputModule.h"
 #include "Framework/Application/IInputProcessor.h"
+#include "CommonUITypes.h"
 
 class FKeyRemapScreenInputPreprocessor : public IInputProcessor
 {
 public:
-	FKeyRemapScreenInputPreprocessor(ECommonInputType InInputTypeToListenTo)
-		: CachedInputTypeToListenTo(InInputTypeToListenTo)
+	FKeyRemapScreenInputPreprocessor(ECommonInputType InInputTypeToListenTo, ULocalPlayer* InLocalPlayer)
+		: CachedInputTypeToListenTo(InInputTypeToListenTo), CachedWeakOwningLocalPlayer(InLocalPlayer)
 	{
 	}
 
@@ -45,16 +48,36 @@ protected:
 			return;
 		}
 
+		UCommonInputSubsystem* CommonInputSubsystem = UCommonInputSubsystem::Get(CachedWeakOwningLocalPlayer.Get());
+
+		check(CommonInputSubsystem);
+
+		ECommonInputType CurrentInputType = CommonInputSubsystem->GetCurrentInputType();
+
 		switch (CachedInputTypeToListenTo)
 		{
 		case ECommonInputType::MouseAndKeyboard:
-			if (InPressedKey.IsGamepadKey())
+			// 防止按下手柄的确定键，却误认为是鼠标左键(这是ue的bug)
+			if (InPressedKey.IsGamepadKey() || CurrentInputType == ECommonInputType::Gamepad)
 			{
 				OnInputPreProcessorKeySelectCanceled.ExecuteIfBound(TEXT("检测到手柄按键按下，无法绑定到鼠标键盘按键，自定义按键操作已取消"));
 				return;
 			}
 			break;
 		case ECommonInputType::Gamepad:
+			// 防止按下手柄的确定键，却误认为是鼠标左键(这是ue的bug)
+			if (CurrentInputType == ECommonInputType::Gamepad && InPressedKey == EKeys::LeftMouseButton)
+			{
+				FCommonInputActionDataBase* InputActionData = ICommonInputModule::GetSettings().GetDefaultClickAction().
+					GetRow<FCommonInputActionDataBase>(TEXT(""));
+
+				check(InputActionData);
+
+				OnInputPreProcessorKeyPressed.ExecuteIfBound(InputActionData->GetDefaultGamepadInputTypeInfo().GetKey());
+
+				return;
+			}
+
 			if (!InPressedKey.IsGamepadKey())
 			{
 				OnInputPreProcessorKeySelectCanceled.ExecuteIfBound(TEXT("检测到非手柄按键按下，无法绑定到手柄按键，自定义按键操作已取消"));
@@ -69,6 +92,7 @@ protected:
 
 private:
 	ECommonInputType CachedInputTypeToListenTo;
+	TWeakObjectPtr<ULocalPlayer> CachedWeakOwningLocalPlayer;
 };
 
 void UDkWidgetKeyRemapScreen::SetDesiredInputTypeToFilter(ECommonInputType InDesiredInputType)
@@ -80,7 +104,9 @@ void UDkWidgetKeyRemapScreen::NativeOnActivated()
 {
 	Super::NativeOnActivated();
 
-	CachedInputPreprocessor = MakeShared<FKeyRemapScreenInputPreprocessor>(CachedDesiredInputType);
+	CachedInputPreprocessor = MakeShared<FKeyRemapScreenInputPreprocessor>(
+		CachedDesiredInputType, GetOwningLocalPlayer()
+	);
 	CachedInputPreprocessor->OnInputPreProcessorKeyPressed.BindUObject(this, &ThisClass::OnValidKeyPressedDetected);
 	CachedInputPreprocessor->OnInputPreProcessorKeySelectCanceled.BindUObject(this, &ThisClass::OnKeySelectedCanceled);
 
@@ -125,7 +151,7 @@ void UDkWidgetKeyRemapScreen::OnValidKeyPressedDetected(const FKey& PressedKey)
 		[this, PressedKey]()
 		{
 			OnKeyRemapScreenKeyPressed.ExecuteIfBound(PressedKey);
-		}	
+		}
 	);
 }
 
@@ -135,7 +161,7 @@ void UDkWidgetKeyRemapScreen::OnKeySelectedCanceled(const FString& CanceledReaso
 		[this, CanceledReason]()
 		{
 			OnKeyRemapScreenKeySelectCanceled.ExecuteIfBound(CanceledReason);
-		}	
+		}
 	);
 }
 
@@ -148,9 +174,9 @@ void UDkWidgetKeyRemapScreen::RequestDeactiveWidget(TFunction<void()> PreDeactiv
 			[this, PreDeactivateCallback](float DeltaTime)-> bool
 			{
 				PreDeactivateCallback();
-				
+
 				DeactivateWidget();
-				
+
 				return false; // false 表示从Tick列表里移除
 			}
 		)

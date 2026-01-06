@@ -51,14 +51,15 @@ class DARKKNIGHT_API UDkWidgetConfirmScreen : public UDkWidgetActivatableBase
 	GENERATED_BODY()
 
 public:
-	//~Begin UCommonActivatableWidget Function
-	virtual UWidget* NativeGetDesiredFocusTarget() const override;
-	//~End UCommonActivatableWidget Function
-	
 	// 此方法在类外部调用，调用时间点为该组件构造时、将其推入模态堆栈之前。
 	void InitConfirmScreen(
 		UConfirmScreenInfoObject* InScreenInfoObject, TFunction<void(EConfirmScreenButtonType)> ClickedButtonCallback
 	);
+
+protected:
+	//~ Begin UCommonActivatableWidget Function
+	virtual UWidget* NativeGetDesiredFocusTarget() const override;
+	//~ End UCommonActivatableWidget Function
 
 private:
 	UPROPERTY(meta=(BindWidget))

@@ -37,6 +37,11 @@ void UDkUIWidgetListEntryKeyRemap::OnOwningListDataObjectModified(
 	}
 }
 
+UWidget* UDkUIWidgetListEntryKeyRemap::NativeGetWidgetToFocusForGamepad() const
+{
+	return CommonButton_RemapKey;
+}
+
 void UDkUIWidgetListEntryKeyRemap::OnRemapKeyButtonClicked()
 {
 	SelectThisEntryWidget();

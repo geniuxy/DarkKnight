@@ -65,16 +65,6 @@ UConfirmScreenInfoObject* UConfirmScreenInfoObject::CreateOKOrCancelScreen(const
 	return InfoObject;
 }
 
-UWidget* UDkWidgetConfirmScreen::NativeGetDesiredFocusTarget() const
-{
-	if (DynamicEntryBox_Buttons->GetNumEntries() != 0)
-	{
-		return DynamicEntryBox_Buttons->GetAllEntries().Last();
-	}
-	
-	return Super::NativeGetDesiredFocusTarget();
-}
-
 void UDkWidgetConfirmScreen::InitConfirmScreen(
 	UConfirmScreenInfoObject* InScreenInfoObject, TFunction<void(EConfirmScreenButtonType)> ClickedButtonCallback)
 {
@@ -128,10 +118,15 @@ void UDkWidgetConfirmScreen::InitConfirmScreen(
 			}
 		);
 	}
+}
 
+UWidget* UDkWidgetConfirmScreen::NativeGetDesiredFocusTarget() const
+{
 	if (DynamicEntryBox_Buttons->GetNumEntries() != 0)
 	{
 		// 将焦点设置在最后一个按钮上。例如，如果有两个按钮，一个是“是”，一个是“否”，那么将聚焦在“否”按钮上。
 		DynamicEntryBox_Buttons->GetAllEntries().Last()->SetFocus();
 	}
+	
+	return Super::NativeGetDesiredFocusTarget();
 }

@@ -667,6 +667,9 @@ void UDkUIOptionsDataRegistry::InitControlCollectionTab(ULocalPlayer* InOwningLo
 
 		// 鼠标&键盘 输入
 		{
+			// 定义临时列表用于存储所有符合条件的按键映射数据
+			TArray<UDkUIListDataObjectKeyRemap*> TempKeyRemapList;
+
 			for (const TPair<FGameplayTag, UEnhancedPlayerMappableKeyProfile*> ProfilePair :
 			     EIUserSettings->GetAllSavedKeyProfiles())
 			{
@@ -690,10 +693,29 @@ void UDkUIOptionsDataRegistry::InitControlCollectionTab(ULocalPlayer* InOwningLo
 							KeyRemapDataObject->InitKeyRemapData(
 								EIUserSettings, MappableKeyProfile, ECommonInputType::MouseAndKeyboard, KeyMapping);
 
-							KeyboardAndMouseCategoryCollection->AddChildListData(KeyRemapDataObject);
+							// 先添加到临时列表，不直接添加到UI集合
+							TempKeyRemapList.Add(KeyRemapDataObject);
 						}
 					}
 				}
+			}
+
+			// 方案1：按MappingID（FName）排序（推荐，唯一且稳定）
+			TempKeyRemapList.Sort([](const UDkUIListDataObjectKeyRemap& A, const UDkUIListDataObjectKeyRemap& B)
+			{
+				return A.GetDataID().ToString().Compare(B.GetDataID().ToString()) < 0;
+			});
+
+			// 方案2：按DisplayName排序（如果需要按显示名称排序，取消下面注释并注释方案1）
+			// TempKeyRemapList.Sort([](const UDkUIListDataObjectKeyRemap& A, const UDkUIListDataObjectKeyRemap& B)
+			// {
+			//     return A.GetDataDisplayName().ToString().Compare(B.GetDataDisplayName().ToString()) < 0;
+			// });
+
+			// 将排序后的结果添加到UI集合
+			for (UDkUIListDataObjectKeyRemap* SortedDataObject : TempKeyRemapList)
+			{
+				KeyboardAndMouseCategoryCollection->AddChildListData(SortedDataObject);
 			}
 		}
 	}

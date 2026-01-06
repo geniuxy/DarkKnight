@@ -655,10 +655,6 @@ void UDkUIOptionsDataRegistry::InitControlCollectionTab(ULocalPlayer* InOwningLo
 		KeyboardMouseOnly.KeyToMatch = EKeys::S;
 		KeyboardMouseOnly.bMatchBasicKeyTypes = true;
 
-		// FPlayerMappableKeyQueryOptions GamepadOnly;
-		// GamepadOnly.KeyToMatch = EKeys::Gamepad_FaceButton_Bottom;
-		// GamepadOnly.bMatchBasicKeyTypes = true;
-
 		UDkUIListDataObjectCollection* KeyboardAndMouseCategoryCollection = NewObject<UDkUIListDataObjectCollection>();
 		KeyboardAndMouseCategoryCollection->SetDataID(FName("KeyboardAndMouseCategory"));
 		KeyboardAndMouseCategoryCollection->SetDataDisplayName(FText::FromString(TEXT("鼠标&键盘")));
@@ -716,6 +712,73 @@ void UDkUIOptionsDataRegistry::InitControlCollectionTab(ULocalPlayer* InOwningLo
 			for (UDkUIListDataObjectKeyRemap* SortedDataObject : TempKeyRemapList)
 			{
 				KeyboardAndMouseCategoryCollection->AddChildListData(SortedDataObject);
+			}
+		}
+	}
+
+	// 手柄 类别
+	{
+		FPlayerMappableKeyQueryOptions GamepadOnly;
+		GamepadOnly.KeyToMatch = EKeys::Gamepad_FaceButton_Bottom;
+		GamepadOnly.bMatchBasicKeyTypes = true;
+
+		UDkUIListDataObjectCollection* GamepadCategoryCollection = NewObject<UDkUIListDataObjectCollection>();
+		GamepadCategoryCollection->SetDataID(FName("GamepadCategory"));
+		GamepadCategoryCollection->SetDataDisplayName(FText::FromString(TEXT("手柄")));
+
+		ControlTabCollection->AddChildListData(GamepadCategoryCollection);
+
+		// 手柄 输入
+		{
+			// 定义临时列表用于存储所有符合条件的按键映射数据
+			TArray<UDkUIListDataObjectKeyRemap*> TempKeyRemapList;
+
+			for (const TPair<FGameplayTag, UEnhancedPlayerMappableKeyProfile*> ProfilePair :
+			     EIUserSettings->GetAllSavedKeyProfiles())
+			{
+				UEnhancedPlayerMappableKeyProfile* MappableKeyProfile = ProfilePair.Value;
+				check(MappableKeyProfile);
+				for (const TPair<FName, FKeyMappingRow>& MappingRowPair : MappableKeyProfile->GetPlayerMappingRows())
+				{
+					for (const FPlayerKeyMapping& KeyMapping : MappingRowPair.Value.Mappings)
+					{
+						if (MappableKeyProfile->DoesMappingPassQueryOptions(KeyMapping, GamepadOnly))
+						{
+							// Debug::Print(
+							// 	TEXT("Mapping ID: ") + KeyMapping.GetMappingName().ToString() +
+							// 	TEXT("Display Name: ") + KeyMapping.GetDisplayName().ToString() +
+							// 	TEXT("Bound Key: ") + KeyMapping.GetCurrentKey().GetDisplayName().ToString()
+							// );
+
+							UDkUIListDataObjectKeyRemap* KeyRemapDataObject = NewObject<UDkUIListDataObjectKeyRemap>();
+							KeyRemapDataObject->SetDataID(KeyMapping.GetMappingName());
+							KeyRemapDataObject->SetDataDisplayName(KeyMapping.GetDisplayName());
+							KeyRemapDataObject->InitKeyRemapData(
+								EIUserSettings, MappableKeyProfile, ECommonInputType::Gamepad, KeyMapping);
+
+							// 先添加到临时列表，不直接添加到UI集合
+							TempKeyRemapList.Add(KeyRemapDataObject);
+						}
+					}
+				}
+			}
+
+			// 方案1：按MappingID（FName）排序（推荐，唯一且稳定）
+			TempKeyRemapList.Sort([](const UDkUIListDataObjectKeyRemap& A, const UDkUIListDataObjectKeyRemap& B)
+			{
+				return A.GetDataID().ToString().Compare(B.GetDataID().ToString()) < 0;
+			});
+
+			// 方案2：按DisplayName排序（如果需要按显示名称排序，取消下面注释并注释方案1）
+			// TempKeyRemapList.Sort([](const UDkUIListDataObjectKeyRemap& A, const UDkUIListDataObjectKeyRemap& B)
+			// {
+			//     return A.GetDataDisplayName().ToString().Compare(B.GetDataDisplayName().ToString()) < 0;
+			// });
+
+			// 将排序后的结果添加到UI集合
+			for (UDkUIListDataObjectKeyRemap* SortedDataObject : TempKeyRemapList)
+			{
+				GamepadCategoryCollection->AddChildListData(SortedDataObject);
 			}
 		}
 	}

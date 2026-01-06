@@ -7,6 +7,9 @@
 #include "Widgets/DkWidgetActivatableBase.h"
 #include "DkWidgetKeyRemapScreen.generated.h"
 
+DECLARE_DELEGATE_OneParam(FOnKeyRemapScreenKeyPressedDelegate, const FKey& /* PressedKey */)
+DECLARE_DELEGATE_OneParam(FOnKeyRemapScreenKeySelectCanceledDelegate, const FString& /* CanceledReason */)
+
 class UCommonRichTextBlock;
 class FKeyRemapScreenInputPreprocessor;
 /**
@@ -20,6 +23,9 @@ class DARKKNIGHT_API UDkWidgetKeyRemapScreen : public UDkWidgetActivatableBase
 public:
 	void SetDesiredInputTypeToFilter(ECommonInputType InDesiredInputType);
 
+	FOnKeyRemapScreenKeyPressedDelegate OnKeyRemapScreenKeyPressed;
+	FOnKeyRemapScreenKeySelectCanceledDelegate OnKeyRemapScreenKeySelectCanceled;
+	
 protected:
 	//~ Begin UCommonActivatableWidget Function
 	virtual void NativeOnActivated() override;
@@ -29,6 +35,9 @@ protected:
 private:
 	void OnValidKeyPressedDetected(const FKey& PressedKey);
 	void OnKeySelectedCanceled(const FString& CanceledReason);
+
+	// 延迟一帧以确保正确捕获输入键，然后再调用 PreDeactivateCallback 并停用控件。
+	void RequestDeactiveWidget(TFunction<void()> PreDeactivateCallback);
 	
 	//***** Bound Widgets *****//
 	UPROPERTY(meta = (BindWidget))

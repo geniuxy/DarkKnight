@@ -121,8 +121,40 @@ void UDkWidgetKeyRemapScreen::NativeOnDeactivated()
 
 void UDkWidgetKeyRemapScreen::OnValidKeyPressedDetected(const FKey& PressedKey)
 {
+	RequestDeactiveWidget(
+		[this, PressedKey]()
+		{
+			Debug::Print(TEXT("按下的按键为: ") + PressedKey.GetDisplayName().ToString());
+			OnKeyRemapScreenKeyPressed.ExecuteIfBound(PressedKey);
+		}	
+	);
 }
 
 void UDkWidgetKeyRemapScreen::OnKeySelectedCanceled(const FString& CanceledReason)
 {
+	RequestDeactiveWidget(
+		[this, CanceledReason]()
+		{
+			Debug::Print(CanceledReason);
+			OnKeyRemapScreenKeySelectCanceled.ExecuteIfBound(CanceledReason);
+		}	
+	);
+}
+
+void UDkWidgetKeyRemapScreen::RequestDeactiveWidget(TFunction<void()> PreDeactivateCallback)
+{
+	// 延迟一帧以确保输入被正确处理。
+	// 注册一个只跑一次的 Tick，跑完就自尽，确保 PreDeactivateCallback 和 DeactivateWidget 都在下一帧执行，而不是立即执行。
+	FTSTicker::GetCoreTicker().AddTicker(
+		FTickerDelegate::CreateLambda(
+			[this, PreDeactivateCallback](float DeltaTime)-> bool
+			{
+				PreDeactivateCallback();
+				
+				DeactivateWidget();
+				
+				return false; // false 表示从Tick列表里移除
+			}
+		)
+	);
 }

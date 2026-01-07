@@ -66,13 +66,46 @@ TStatId UDkLoadingScreenSubsystem::GetStatId() const
 {
 	// GetStatId() 本身不“干”业务逻辑，只是向 UE 的性能监控器报个到
 	// 固定写法
-	RETURN_QUICK_DECLARE_CYCLE_STAT(UFrontendLoadingScreenSubsystem,STATGROUP_Tickables);
+	RETURN_QUICK_DECLARE_CYCLE_STAT(UFrontendLoadingScreenSubsystem, STATGROUP_Tickables);
 }
 
 void UDkLoadingScreenSubsystem::OnMapPreLoaded(const FWorldContext& WorldContext, const FString& MapName)
 {
+	if (WorldContext.OwningGameInstance != GetGameInstance())
+	{
+		return;
+	}
+	
+	SetTickableTickType(ETickableTickType::Conditional);
+	bIsCurrentlyLoadingMap = true;
+	TryUpdateLoadingScreen();
 }
 
 void UDkLoadingScreenSubsystem::OnMapPostLoaded(UWorld* LoadedWorld)
 {
+	if (LoadedWorld && LoadedWorld->GetGameInstance() == GetGameInstance())
+	{
+		bIsCurrentlyLoadingMap = false;
+	}
+}
+
+void UDkLoadingScreenSubsystem::TryUpdateLoadingScreen()
+{
+	// 检查目前是否有加载界面正在展示
+
+
+	// 检查是否应该展示加载界面
+	if (true)
+	{
+		// 尝试展示加载界面
+	}
+	else
+	{
+		// 移除正在显示的加载界面
+
+		// 通知加载已完成
+
+		// 禁止Tick操作
+		SetTickableTickType(ETickableTickType::Never);
+	}
 }

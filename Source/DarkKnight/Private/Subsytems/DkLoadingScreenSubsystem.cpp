@@ -2,7 +2,7 @@
 
 
 #include "Subsytems/DkLoadingScreenSubsystem.h"
-
+#include "PreLoadScreenManager.h"
 #include "DarkKnightDebugHelper.h"
 
 bool UDkLoadingScreenSubsystem::ShouldCreateSubsystem(UObject* Outer) const
@@ -41,7 +41,7 @@ UWorld* UDkLoadingScreenSubsystem::GetTickableGameObjectWorld() const
 
 void UDkLoadingScreenSubsystem::Tick(float DeltaTime)
 {
-	Debug::Print(TEXT("Ticking"));
+	TryUpdateLoadingScreen();
 }
 
 ETickableTickType UDkLoadingScreenSubsystem::GetTickableTickType() const
@@ -75,9 +75,12 @@ void UDkLoadingScreenSubsystem::OnMapPreLoaded(const FWorldContext& WorldContext
 	{
 		return;
 	}
-	
+
+	// 开启tick
 	SetTickableTickType(ETickableTickType::Conditional);
+	
 	bIsCurrentlyLoadingMap = true;
+	
 	TryUpdateLoadingScreen();
 }
 
@@ -92,7 +95,10 @@ void UDkLoadingScreenSubsystem::OnMapPostLoaded(UWorld* LoadedWorld)
 void UDkLoadingScreenSubsystem::TryUpdateLoadingScreen()
 {
 	// 检查目前是否有加载界面正在展示
-
+	if (IsPreLoadScreenActive())
+	{
+		return;
+	}
 
 	// 检查是否应该展示加载界面
 	if (true)
@@ -108,4 +114,13 @@ void UDkLoadingScreenSubsystem::TryUpdateLoadingScreen()
 		// 禁止Tick操作
 		SetTickableTickType(ETickableTickType::Never);
 	}
+}
+
+bool UDkLoadingScreenSubsystem::IsPreLoadScreenActive() const
+{
+	if (FPreLoadScreenManager* PreLoadScreenManager = FPreLoadScreenManager::Get())
+	{
+		return PreLoadScreenManager->HasValidActivePreLoadScreen();
+	}
+	return false;
 }

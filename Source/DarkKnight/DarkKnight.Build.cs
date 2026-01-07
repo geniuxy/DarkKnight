@@ -19,7 +19,8 @@ public class DarkKnight : ModuleRules
 			"UMG",
 			"CommonInput",
 			"PropertyPath",
-			"CommonUI"
+			"CommonUI",
+			"PreLoadScreen"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] { });

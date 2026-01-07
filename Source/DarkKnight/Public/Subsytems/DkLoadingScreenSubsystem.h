@@ -10,7 +10,7 @@
  * 
  */
 UCLASS()
-class DARKKNIGHT_API UDkLoadingScreenSubsystem : public UGameInstanceSubsystem
+class DARKKNIGHT_API UDkLoadingScreenSubsystem : public UGameInstanceSubsystem, public FTickableGameObject
 {
 	GENERATED_BODY()
 public:
@@ -19,6 +19,14 @@ public:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void Deinitialize() override;
 	//~End USubsystem Function
+
+	//~Begin FTickableGameObject Interface
+	virtual UWorld* GetTickableGameObjectWorld() const override;
+	virtual void Tick( float DeltaTime ) override;
+	virtual ETickableTickType GetTickableTickType() const override;
+	virtual bool IsTickable() const override;
+	virtual TStatId GetStatId() const override; // 生成一个全局唯一的统计 ID
+	//~End FTickableGameObject Interface
 
 private:
 	void OnMapPreLoaded(const FWorldContext& WorldContext, const FString& MapName);

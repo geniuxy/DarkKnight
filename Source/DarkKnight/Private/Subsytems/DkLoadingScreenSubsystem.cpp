@@ -4,6 +4,7 @@
 #include "Subsytems/DkLoadingScreenSubsystem.h"
 #include "PreLoadScreenManager.h"
 #include "DarkKnightDebugHelper.h"
+#include "Settings/DkLoadingScreenSettings.h"
 
 bool UDkLoadingScreenSubsystem::ShouldCreateSubsystem(UObject* Outer) const
 {
@@ -101,7 +102,7 @@ void UDkLoadingScreenSubsystem::TryUpdateLoadingScreen()
 	}
 
 	// 检查是否应该展示加载界面
-	if (true)
+	if (ShouldShowLoadingScreen())
 	{
 		// 尝试展示加载界面
 	}
@@ -122,5 +123,47 @@ bool UDkLoadingScreenSubsystem::IsPreLoadScreenActive() const
 	{
 		return PreLoadScreenManager->HasValidActivePreLoadScreen();
 	}
+	return false;
+}
+
+bool UDkLoadingScreenSubsystem::ShouldShowLoadingScreen()
+{
+	const UDkLoadingScreenSettings* LoadingScreenSettings = GetDefault<UDkLoadingScreenSettings>();
+
+	if (GIsEditor && !LoadingScreenSettings->bShouldShowLoadingScreenInEditor)
+	{
+		return false;
+	}
+
+	// 检查下个World中的Objects是否需要LoadingScreen
+	if (CheckTheNeedToShowLoadingScreen())
+	{
+		// 停止渲染，即将进入加载界面
+		GetGameInstance()->GetGameViewportClient()->bDisableWorldRendering = true;
+
+		return true;
+	}
+
+	// 如果没有必要进入加载界面，允许世界渲染
+	GetGameInstance()->GetGameViewportClient()->bDisableWorldRendering = false;
+
+	const float CurrentTime = FPlatformTime::Seconds();
+	if (CachedLoadingScreenStartUpTime < 0.f)
+	{
+		CachedLoadingScreenStartUpTime = CurrentTime;
+	}
+
+	// 额外再在加载界面保持一会
+	const float ElapsedTime = CurrentTime - CachedLoadingScreenStartUpTime;
+	if (ElapsedTime < LoadingScreenSettings->HoldingLoadingScreenExtraSeconds)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+bool UDkLoadingScreenSubsystem::CheckTheNeedToShowLoadingScreen()
+{
 	return false;
 }

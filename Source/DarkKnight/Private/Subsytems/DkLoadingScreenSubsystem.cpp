@@ -81,8 +81,6 @@ void UDkLoadingScreenSubsystem::OnMapPreLoaded(const FWorldContext& WorldContext
 	SetTickableTickType(ETickableTickType::Conditional);
 	
 	bIsCurrentlyLoadingMap = true;
-	
-	TryUpdateLoadingScreen();
 }
 
 void UDkLoadingScreenSubsystem::OnMapPostLoaded(UWorld* LoadedWorld)
@@ -105,6 +103,8 @@ void UDkLoadingScreenSubsystem::TryUpdateLoadingScreen()
 	if (ShouldShowLoadingScreen())
 	{
 		// 尝试展示加载界面
+
+		OnLoadingReasonUpdated.Broadcast(CurrentLoadingReason);
 	}
 	else
 	{
@@ -138,13 +138,15 @@ bool UDkLoadingScreenSubsystem::ShouldShowLoadingScreen()
 	// 检查下个World中的Objects是否需要LoadingScreen
 	if (CheckTheNeedToShowLoadingScreen())
 	{
-		// 停止渲染，即将进入加载界面
+		// 停止渲染视图
 		GetGameInstance()->GetGameViewportClient()->bDisableWorldRendering = true;
 
 		return true;
 	}
 
-	// 如果没有必要进入加载界面，允许世界渲染
+	CurrentLoadingReason = TEXT("等待图片加载中");
+
+	// 如果Objects都加载好了，允许渲染视图
 	GetGameInstance()->GetGameViewportClient()->bDisableWorldRendering = false;
 
 	const float CurrentTime = FPlatformTime::Seconds();
@@ -165,5 +167,36 @@ bool UDkLoadingScreenSubsystem::ShouldShowLoadingScreen()
 
 bool UDkLoadingScreenSubsystem::CheckTheNeedToShowLoadingScreen()
 {
+	if (bIsCurrentlyLoadingMap)
+	{
+		CurrentLoadingReason = TEXT("加载地图中");
+
+		return true;
+	}
+
+	UWorld* OwningWorld = GetGameInstance()->GetWorld();
+	if (!OwningWorld)
+	{
+		CurrentLoadingReason = TEXT("初始化世界中");
+
+		return true;
+	}
+
+	if (!OwningWorld->HasBegunPlay())
+	{
+		CurrentLoadingReason = TEXT("世界还没开始运行");
+
+		return true;
+	}
+
+	if (!OwningWorld->GetFirstPlayerController())
+	{
+		CurrentLoadingReason = TEXT("玩家控制器还没加载好");
+
+		return true;
+	}
+
+	// 还可以检查 game states, player states, or player character, actor component是否准备好
+	
 	return false;
 }

@@ -6,6 +6,8 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "DkLoadingScreenSubsystem.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLoadingReasonUpdatedDelegate, const FString&, CurrentLoadingReason);
+
 /**
  * 
  */
@@ -14,6 +16,9 @@ class DARKKNIGHT_API UDkLoadingScreenSubsystem : public UGameInstanceSubsystem, 
 {
 	GENERATED_BODY()
 public:
+	UPROPERTY(BlueprintAssignable)
+	FOnLoadingReasonUpdatedDelegate OnLoadingReasonUpdated;
+	
 	//~Begin USubsystem Function
 	virtual bool ShouldCreateSubsystem(UObject* Outer) const override;
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
@@ -43,4 +48,6 @@ private:
 	bool bIsCurrentlyLoadingMap = false;
 
 	float CachedLoadingScreenStartUpTime = -1.f;
+
+	FString CurrentLoadingReason;
 };

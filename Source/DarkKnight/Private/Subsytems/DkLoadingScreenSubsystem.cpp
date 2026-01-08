@@ -4,6 +4,7 @@
 #include "Subsytems/DkLoadingScreenSubsystem.h"
 #include "PreLoadScreenManager.h"
 #include "DarkKnightDebugHelper.h"
+#include "Blueprint/UserWidget.h"
 #include "Settings/DkLoadingScreenSettings.h"
 
 bool UDkLoadingScreenSubsystem::ShouldCreateSubsystem(UObject* Outer) const
@@ -79,7 +80,7 @@ void UDkLoadingScreenSubsystem::OnMapPreLoaded(const FWorldContext& WorldContext
 
 	// 开启tick
 	SetTickableTickType(ETickableTickType::Conditional);
-	
+
 	bIsCurrentlyLoadingMap = true;
 }
 
@@ -103,6 +104,7 @@ void UDkLoadingScreenSubsystem::TryUpdateLoadingScreen()
 	if (ShouldShowLoadingScreen())
 	{
 		// 尝试展示加载界面
+		TryDisplayLoadingScreenIfNone();
 
 		OnLoadingReasonUpdated.Broadcast(CurrentLoadingReason);
 	}
@@ -197,6 +199,28 @@ bool UDkLoadingScreenSubsystem::CheckTheNeedToShowLoadingScreen()
 	}
 
 	// 还可以检查 game states, player states, or player character, actor component是否准备好
-	
+
 	return false;
+}
+
+void UDkLoadingScreenSubsystem::TryDisplayLoadingScreenIfNone()
+{
+	if (CachedCreatedLoadingScreenWidget)
+	{
+		return;
+	}
+
+	const UDkLoadingScreenSettings* LoadingScreenSettings = GetDefault<UDkLoadingScreenSettings>();
+
+	TSubclassOf<UUserWidget> LoadedWidgetClass = LoadingScreenSettings->GetLoadingScreenWidgetClassChecked();
+
+	UUserWidget* CreatedWidget = UUserWidget::CreateWidgetInstance(*GetGameInstance(), LoadedWidgetClass, NAME_None);
+
+	check(CreatedWidget);
+
+	CachedCreatedLoadingScreenWidget = CreatedWidget->TakeWidget();
+
+	GetGameInstance()->GetGameViewportClient()->AddViewportWidgetContent(
+		CachedCreatedLoadingScreenWidget.ToSharedRef(), 1000 // 1000是为了确保加载界面在最上层
+	);
 }

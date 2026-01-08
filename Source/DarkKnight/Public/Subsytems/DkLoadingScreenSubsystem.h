@@ -45,9 +45,13 @@ private:
 
 	bool CheckTheNeedToShowLoadingScreen();
 
+	void TryDisplayLoadingScreenIfNone();
+
 	bool bIsCurrentlyLoadingMap = false;
 
 	float CachedLoadingScreenStartUpTime = -1.f;
 
 	FString CurrentLoadingReason;
+
+	TSharedPtr<SWidget> CachedCreatedLoadingScreenWidget; // TSharedRef 是“不能为空”的 TSharedPtr
 };

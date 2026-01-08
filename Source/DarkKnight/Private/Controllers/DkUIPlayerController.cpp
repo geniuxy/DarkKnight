@@ -11,12 +11,12 @@ void ADkUIPlayerController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 
-	TArray<AActor*> FoundCameras;
-	UGameplayStatics::GetAllActorsOfClassWithTag(this, ACameraActor::StaticClass(), FName("Default"), FoundCameras);
-	if (!FoundCameras.IsEmpty())
-	{
-		SetViewTarget(FoundCameras[0]);
-	}
+	// TArray<AActor*> FoundCameras;
+	// UGameplayStatics::GetAllActorsOfClassWithTag(this, ACameraActor::StaticClass(), FName("Default"), FoundCameras);
+	// if (!FoundCameras.IsEmpty())
+	// {
+	// 	SetViewTarget(FoundCameras[0]);
+	// }
 
 	UDkGameUserSettings* GameUserSettings = UDkGameUserSettings::Get();
 	// 如果没有做过硬件基准测试，则结果为-1.f

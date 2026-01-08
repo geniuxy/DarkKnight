@@ -115,7 +115,9 @@ void UDkLoadingScreenSubsystem::TryUpdateLoadingScreen()
 
 		CachedLoadingScreenStartUpTime = -1.f;
 		// 通知加载已完成
-
+		// 放在这是为了防止在编辑器中如果跳过加载界面，也能正常进行后面的流程和渲染
+		NotifyLoadingScreenVisibilityChanged(false);
+		
 		// 禁止Tick操作
 		SetTickableTickType(ETickableTickType::Never);
 	}
@@ -225,6 +227,8 @@ void UDkLoadingScreenSubsystem::TryDisplayLoadingScreenIfNone()
 	GetGameInstance()->GetGameViewportClient()->AddViewportWidgetContent(
 		CachedCreatedLoadingScreenWidget.ToSharedRef(), 1000 // 1000是为了确保加载界面在最上层
 	);
+	
+	NotifyLoadingScreenVisibilityChanged(true);
 }
 
 void UDkLoadingScreenSubsystem::TryRemoveLoadingScreen()
@@ -239,4 +243,20 @@ void UDkLoadingScreenSubsystem::TryRemoveLoadingScreen()
 	);
 
 	CachedCreatedLoadingScreenWidget.Reset();
+}
+
+void UDkLoadingScreenSubsystem::NotifyLoadingScreenVisibilityChanged(bool bIsVisible)
+{
+	for (ULocalPlayer* ExistingLocalPlayer : GetGameInstance()->GetLocalPlayers())
+	{
+		if (!ExistingLocalPlayer)
+		{
+			continue;
+		}
+
+		if (APlayerController* PC = ExistingLocalPlayer->GetPlayerController(GetGameInstance()->GetWorld()))
+		{
+			// 查询玩家控制器是否实现了该接口。如果是，则通过接口调用函数以通知加载状态。
+		}
+	}
 }

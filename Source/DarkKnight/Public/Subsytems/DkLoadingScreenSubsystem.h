@@ -15,10 +15,11 @@ UCLASS()
 class DARKKNIGHT_API UDkLoadingScreenSubsystem : public UGameInstanceSubsystem, public FTickableGameObject
 {
 	GENERATED_BODY()
+
 public:
 	UPROPERTY(BlueprintAssignable)
 	FOnLoadingReasonUpdatedDelegate OnLoadingReasonUpdated;
-	
+
 	//~Begin USubsystem Function
 	virtual bool ShouldCreateSubsystem(UObject* Outer) const override;
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
@@ -27,7 +28,7 @@ public:
 
 	//~Begin FTickableGameObject Interface
 	virtual UWorld* GetTickableGameObjectWorld() const override;
-	virtual void Tick( float DeltaTime ) override;
+	virtual void Tick(float DeltaTime) override;
 	virtual ETickableTickType GetTickableTickType() const override;
 	virtual bool IsTickable() const override;
 	virtual TStatId GetStatId() const override; // 生成一个全局唯一的统计 ID
@@ -46,6 +47,8 @@ private:
 	bool CheckTheNeedToShowLoadingScreen();
 
 	void TryDisplayLoadingScreenIfNone();
+
+	void TryRemoveLoadingScreen();
 
 	bool bIsCurrentlyLoadingMap = false;
 

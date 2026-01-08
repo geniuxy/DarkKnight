@@ -111,7 +111,9 @@ void UDkLoadingScreenSubsystem::TryUpdateLoadingScreen()
 	else
 	{
 		// 移除正在显示的加载界面
+		TryRemoveLoadingScreen();
 
+		CachedLoadingScreenStartUpTime = -1.f;
 		// 通知加载已完成
 
 		// 禁止Tick操作
@@ -223,4 +225,18 @@ void UDkLoadingScreenSubsystem::TryDisplayLoadingScreenIfNone()
 	GetGameInstance()->GetGameViewportClient()->AddViewportWidgetContent(
 		CachedCreatedLoadingScreenWidget.ToSharedRef(), 1000 // 1000是为了确保加载界面在最上层
 	);
+}
+
+void UDkLoadingScreenSubsystem::TryRemoveLoadingScreen()
+{
+	if (!CachedCreatedLoadingScreenWidget)
+	{
+		return;
+	}
+
+	GetGameInstance()->GetGameViewportClient()->RemoveViewportWidgetContent(
+		CachedCreatedLoadingScreenWidget.ToSharedRef()
+	);
+
+	CachedCreatedLoadingScreenWidget.Reset();
 }

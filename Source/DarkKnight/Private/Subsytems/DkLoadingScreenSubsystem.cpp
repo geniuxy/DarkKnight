@@ -5,6 +5,7 @@
 #include "PreLoadScreenManager.h"
 #include "DarkKnightDebugHelper.h"
 #include "Blueprint/UserWidget.h"
+#include "Interfaces/LoadingScreenInterface.h"
 #include "Settings/DkLoadingScreenSettings.h"
 
 bool UDkLoadingScreenSubsystem::ShouldCreateSubsystem(UObject* Outer) const
@@ -117,7 +118,7 @@ void UDkLoadingScreenSubsystem::TryUpdateLoadingScreen()
 		// 通知加载已完成
 		// 放在这是为了防止在编辑器中如果跳过加载界面，也能正常进行后面的流程和渲染
 		NotifyLoadingScreenVisibilityChanged(false);
-		
+
 		// 禁止Tick操作
 		SetTickableTickType(ETickableTickType::Never);
 	}
@@ -227,7 +228,7 @@ void UDkLoadingScreenSubsystem::TryDisplayLoadingScreenIfNone()
 	GetGameInstance()->GetGameViewportClient()->AddViewportWidgetContent(
 		CachedCreatedLoadingScreenWidget.ToSharedRef(), 1000 // 1000是为了确保加载界面在最上层
 	);
-	
+
 	NotifyLoadingScreenVisibilityChanged(true);
 }
 
@@ -257,6 +258,33 @@ void UDkLoadingScreenSubsystem::NotifyLoadingScreenVisibilityChanged(bool bIsVis
 		if (APlayerController* PC = ExistingLocalPlayer->GetPlayerController(GetGameInstance()->GetWorld()))
 		{
 			// 查询玩家控制器是否实现了该接口。如果是，则通过接口调用函数以通知加载状态。
+			if (PC->Implements<ULoadingScreenInterface>())
+			{
+				if (bIsVisible)
+				{
+					ILoadingScreenInterface::Execute_OnLoadingScreenActivated(PC);
+				}
+				else
+				{
+					ILoadingScreenInterface::Execute_OnLoadingScreenDeactivated(PC);
+				}
+			}
+			if (APawn* OwningPawn = PC->GetPawn())
+			{
+				if (OwningPawn->Implements<ULoadingScreenInterface>())
+				{
+					if (bIsVisible)
+					{
+						ILoadingScreenInterface::Execute_OnLoadingScreenActivated(OwningPawn);
+					}
+					else
+					{
+						ILoadingScreenInterface::Execute_OnLoadingScreenDeactivated(OwningPawn);
+					}
+				}
+			}
 		}
+
+		// 如果需要通知其它Objects，则可以再继续补充
 	}
 }

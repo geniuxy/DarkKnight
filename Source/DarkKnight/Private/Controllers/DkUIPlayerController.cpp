@@ -12,7 +12,7 @@ void ADkUIPlayerController::OnPossess(APawn* InPawn)
 	Super::OnPossess(InPawn);
 
 	TArray<AActor*> FoundCameras;
-	UGameplayStatics::GetAllActorsOfClassWithTag(this, ACameraActor::StaticClass(), FName("Default"), FoundCameras);
+	UGameplayStatics::GetAllActorsOfClassWithTag(this, ACameraActor::StaticClass(), FName("PressAnyKey"), FoundCameras);
 	if (!FoundCameras.IsEmpty())
 	{
 		SetViewTarget(FoundCameras[0]);

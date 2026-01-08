@@ -62,15 +62,18 @@ void UDkUISubsystem::PushSoftWidgetToStackAsync(
 
 				UCommonActivatableWidgetContainerBase* FoundWidgetStack =
 					CreatedPrimaryLayout->FindWidgetStackByTag(InWidgetStackTag);
-				UDkWidgetActivatableBase* CreatedWidget = FoundWidgetStack->AddWidget<UDkWidgetActivatableBase>(
-					LoadedWidgetClass,
-					[AsyncPushStateCallback](UDkWidgetActivatableBase& CreatedWidgetInstance)
-					{
-						AsyncPushStateCallback(EAsyncPushWidgetState::OnCreatedBeforePush, &CreatedWidgetInstance);
-					}
-				);
+				if (FoundWidgetStack)
+				{
+					UDkWidgetActivatableBase* CreatedWidget = FoundWidgetStack->AddWidget<UDkWidgetActivatableBase>(
+						LoadedWidgetClass,
+						[AsyncPushStateCallback](UDkWidgetActivatableBase& CreatedWidgetInstance)
+						{
+							AsyncPushStateCallback(EAsyncPushWidgetState::OnCreatedBeforePush, &CreatedWidgetInstance);
+						}
+					);
 
-				AsyncPushStateCallback(EAsyncPushWidgetState::AfterPush, CreatedWidget);
+					AsyncPushStateCallback(EAsyncPushWidgetState::AfterPush, CreatedWidget);
+				}
 			}
 		)
 	);

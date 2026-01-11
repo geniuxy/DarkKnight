@@ -17,6 +17,10 @@ class DARKKNIGHT_API ADkInventoryPlayerController : public APlayerController, pu
 {
 	GENERATED_BODY()
 
+public:
+	ADkInventoryPlayerController();
+	virtual void Tick(float DeltaSeconds) override;
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -24,6 +28,16 @@ protected:
 
 private:
 	void OnInteract();
+
+	/* 捡拾物品 */
+	void TraceForItem();
+	FHitResult CursorHit;
+	TWeakObjectPtr<AActor> ThisActor;
+	TWeakObjectPtr<AActor> LastActor;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Inventory")
+	double TraceLength;
+	/********/
 
 	UPROPERTY(EditDefaultsOnly, Category="Inventory")
 	TObjectPtr<UInputMappingContext> IMCInventory;

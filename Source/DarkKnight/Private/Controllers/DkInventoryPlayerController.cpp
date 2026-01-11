@@ -11,6 +11,7 @@
 #include "Components/DkItemComponent.h"
 #include "DarkKnight/DarkKnight.h"
 #include "FunctionLibrarys/DkUIFunctionLibrary.h"
+#include "Interfaces/HighlightInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "Subsytems/DkUISubsystem.h"
 #include "Widgets/DkWidgetPrimaryLayout.h"
@@ -41,7 +42,7 @@ void ADkInventoryPlayerController::OnLoadingScreenDeactivated_Implementation()
 	UDkUISubsystem* UISubsystem = UDkUISubsystem::Get(this);
 	checkf(UISubsystem, TEXT("UISubsystem为空！"));
 	UISubsystem->RegisterCreatedPrimaryLayoutWidget(PrimaryLayoutWidget);
-	
+
 	UISubsystem->PushSoftWidgetToStackAsync(
 		DkGameplayTags::Dk_WidgetStack_GameHud,
 		UDkUIFunctionLibrary::GetUISoftWidgetClassByTag(DkGameplayTags::Dk_Widget_GameHUD),
@@ -130,6 +131,15 @@ void ADkInventoryPlayerController::TraceForItem()
 
 	if (ThisActor.IsValid())
 	{
+		if (UActorComponent* HighlightableActorComponent =
+				ThisActor->FindComponentByInterface(UHighlightInterface::StaticClass()))
+		{
+			if (IsValid(HighlightableActorComponent))
+			{
+				IHighlightInterface::Execute_Highlight(HighlightableActorComponent);
+			}
+		}
+
 		UDkItemComponent* ItemComponent = ThisActor->FindComponentByClass<UDkItemComponent>();
 		if (!IsValid(ItemComponent)) return;
 
@@ -141,6 +151,13 @@ void ADkInventoryPlayerController::TraceForItem()
 
 	if (LastActor.IsValid())
 	{
-		Debug::Print(TEXT("结束定位之前的Item"));
+		if (UActorComponent* HighlightableActorComponent =
+				LastActor->FindComponentByInterface(UHighlightInterface::StaticClass()))
+		{
+			if (IsValid(HighlightableActorComponent))
+			{
+				IHighlightInterface::Execute_UnHighlight(HighlightableActorComponent);
+			}
+		}
 	}
 }

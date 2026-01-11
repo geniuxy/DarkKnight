@@ -4,13 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+#include "Interfaces/LoadingScreenInterface.h"
 #include "DkUIPlayerController.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class DARKKNIGHT_API ADkUIPlayerController : public APlayerController
+class DARKKNIGHT_API ADkUIPlayerController : public APlayerController, public ILoadingScreenInterface
 {
 	GENERATED_BODY()
 

@@ -8,6 +8,7 @@ namespace DkGameplayTags
 	// UI Widget Stack
 	UE_DEFINE_GAMEPLAY_TAG(Dk_WidgetStack_Modal,"Dk.WidgetStack.Modal");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_WidgetStack_GameMenu,"Dk.WidgetStack.GameMenu");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_WidgetStack_Interact,"Dk.WidgetStack.Interact");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_WidgetStack_GameHud,"Dk.WidgetStack.GameHud");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_WidgetStack_Frontend,"Dk.WidgetStack.Frontend");
 
@@ -20,6 +21,8 @@ namespace DkGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Widget_KeyRemapScreen,"Dk.Widget.KeyRemapScreen");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Widget_CreditScreen,"Dk.Widget.CreditScreen");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Widget_InventoryScreen,"Dk.Widget.InventoryScreen");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Widget_GameHUD,"Dk.Widget.GameHUD");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Widget_PickUpBox,"Dk.Widget.PickUpBox");
 
 	// Images
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Image_TestImage,"Dk.Image.TestImage");

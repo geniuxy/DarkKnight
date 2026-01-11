@@ -7,6 +7,7 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "DkUISubsystem.generated.h"
 
+class UCommonActivatableWidget;
 class UDkUICommonButtonBase;
 class UDkWidgetActivatableBase;
 struct FGameplayTag;

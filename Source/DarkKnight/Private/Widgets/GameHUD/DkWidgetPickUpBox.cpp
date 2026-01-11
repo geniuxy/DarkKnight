@@ -16,3 +16,10 @@ void UDkWidgetPickUpBox::HidePickUpMessage()
 {
 	SetVisibility(ESlateVisibility::Collapsed);
 }
+
+void UDkWidgetPickUpBox::NativeOnInitialized()
+{
+	Super::NativeOnInitialized();
+
+	bSupportsActivationFocus = false; // 该设置可使Widget不会阻止鼠标等输入
+}

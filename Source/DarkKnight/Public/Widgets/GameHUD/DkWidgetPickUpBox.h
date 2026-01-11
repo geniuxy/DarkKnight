@@ -19,6 +19,11 @@ public:
 	void ShowPickUpMessage(const FString& Message);
 	void HidePickUpMessage();
 
+protected:
+	//~Begin UUserWidget Function
+	virtual void NativeOnInitialized() override;
+	//~End UUserWidget Function
+
 private:
 	//***** Bound Widgets *****//
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget, AllowPrivateAccess="true"))

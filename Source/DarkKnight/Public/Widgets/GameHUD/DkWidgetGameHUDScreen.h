@@ -14,4 +14,9 @@ UCLASS(Abstract, BlueprintType, meta = (DisableNativeTick))
 class DARKKNIGHT_API UDkWidgetGameHUDScreen : public UDkWidgetActivatableBase
 {
 	GENERATED_BODY()
+
+protected:
+	//~Begin UUserWidget Function
+	virtual void NativeOnInitialized() override;
+	//~End UUserWidget Function
 };

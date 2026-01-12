@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "Widgets/DkWidgetActivatableBase.h"
-#include "DkWidgetInventoryScreen.generated.h"
+#include "DkWidgetInventoryMenu.generated.h"
 
 /**
  * 
  */
 UCLASS(Abstract, BlueprintType, meta = (DisableNativeTick))
-class DARKKNIGHT_API UDkWidgetInventoryScreen : public UDkWidgetActivatableBase
+class DARKKNIGHT_API UDkWidgetInventoryMenu : public UDkWidgetActivatableBase
 {
 	GENERATED_BODY()
 };

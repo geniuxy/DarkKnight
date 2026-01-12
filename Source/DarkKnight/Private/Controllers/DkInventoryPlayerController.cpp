@@ -16,7 +16,7 @@
 #include "Subsytems/DkUISubsystem.h"
 #include "Widgets/DkWidgetPrimaryLayout.h"
 #include "Widgets/GameHUD/DkWidgetPickUpBox.h"
-#include "Widgets/Inventory/DkWidgetInventoryScreen.h"
+#include "Widgets/Inventory/DkWidgetInventoryMenu.h"
 
 ADkInventoryPlayerController::ADkInventoryPlayerController()
 {

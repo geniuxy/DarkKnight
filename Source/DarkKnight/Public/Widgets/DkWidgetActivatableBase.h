@@ -17,8 +17,8 @@ class DARKKNIGHT_API UDkWidgetActivatableBase : public UCommonActivatableWidget
 
 protected:
 	UFUNCTION(BlueprintPure)
-	ADkUIPlayerController* GetOwningUIPlayerController();
+	APlayerController* GetOwningPlayerController();
 
 private:
-	TWeakObjectPtr<ADkUIPlayerController> CachedOwningUIPC;
+	TWeakObjectPtr<APlayerController> CachedOwningPC;
 };

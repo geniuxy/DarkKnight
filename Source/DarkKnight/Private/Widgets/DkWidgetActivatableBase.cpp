@@ -4,12 +4,12 @@
 #include "Widgets/DkWidgetActivatableBase.h"
 #include "Controllers/DkUIPlayerController.h"
 
-ADkUIPlayerController* UDkWidgetActivatableBase::GetOwningUIPlayerController()
+APlayerController* UDkWidgetActivatableBase::GetOwningPlayerController()
 {
-	if (!CachedOwningUIPC.IsValid())
+	if (!CachedOwningPC.IsValid())
 	{
-		CachedOwningUIPC = GetOwningPlayer<ADkUIPlayerController>();
+		CachedOwningPC = GetOwningPlayer();
 	}
 
-	return CachedOwningUIPC.IsValid() ? CachedOwningUIPC.Get() : nullptr;
+	return CachedOwningPC.IsValid() ? CachedOwningPC.Get() : nullptr;
 }

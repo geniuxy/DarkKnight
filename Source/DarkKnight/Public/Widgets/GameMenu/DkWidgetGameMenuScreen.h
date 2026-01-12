@@ -13,9 +13,16 @@ UCLASS()
 class DARKKNIGHT_API UDkWidgetGameMenuScreen : public UDkWidgetActivatableBase
 {
 	GENERATED_BODY()
-	
+
 protected:
+	//~Begin UUserWidget Function
+	virtual void NativeOnInitialized() override;
+	//~End UUserWidget Function
+
 	//~ Begin UCommonActivatableWidget Function
 	virtual void NativeOnDeactivated() override;
 	//~ End UCommonActivatableWidget Function
+
+private:
+	void OnBackBoundActionTriggered();
 };

@@ -33,3 +33,10 @@ enum class EOptionsListDataModifyReason : uint8
 	DependencyModified,
 	ResetToDefault
 };
+
+UENUM(BlueprintType)
+enum class EDkInputMode : uint8
+{
+	GameOnly,
+	UIOnly
+};

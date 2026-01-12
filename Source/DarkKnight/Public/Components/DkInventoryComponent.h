@@ -9,20 +9,19 @@
 
 class ADkCharacterHero;
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), Blueprintable)
+UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), Blueprintable)
 class DARKKNIGHT_API UDkInventoryComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:	
+public:
 	UDkInventoryComponent();
+
+	void ConstructInventoryMenu();
 
 protected:
 	virtual void BeginPlay() override;
 
-
 private:
 	TWeakObjectPtr<ADkCharacterHero> OwningCharacter;
-	
-	void ConstructInventoryMenu();
 };

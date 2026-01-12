@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "Interfaces/LoadingScreenInterface.h"
-#include "DkInventoryPlayerController.generated.h"
+#include "DkGamePlayerController.generated.h"
 
 class UDkWidgetPickUpBox;
 class UDkWidgetPrimaryLayout;
@@ -15,12 +15,12 @@ class UInputMappingContext;
  * 
  */
 UCLASS()
-class DARKKNIGHT_API ADkInventoryPlayerController : public APlayerController, public ILoadingScreenInterface
+class DARKKNIGHT_API ADkGamePlayerController : public APlayerController, public ILoadingScreenInterface
 {
 	GENERATED_BODY()
 
 public:
-	ADkInventoryPlayerController();
+	ADkGamePlayerController();
 	virtual void Tick(float DeltaSeconds) override;
 
 	//~Begin ILoadingScreenInterface Interface
@@ -36,7 +36,7 @@ private:
 	/* 交互 */
 	void OnInteract();
 
-	UPROPERTY(EditDefaultsOnly, Category="Inventory")
+	UPROPERTY(EditDefaultsOnly, Category="Interact")
 	TObjectPtr<UInputAction> InteractAction;
 	/********/
 
@@ -53,8 +53,15 @@ private:
 	TObjectPtr<UDkWidgetPickUpBox> CachedPickUpBox;
 	/********/
 
+	/* 仓库 */
+	void OnInventoryActionTriggered();
+	
 	UPROPERTY(EditDefaultsOnly, Category="Inventory")
-	TObjectPtr<UInputMappingContext> IMCInventory;
+	TObjectPtr<UInputAction> InventoryAction;
+	/********/
+
+	UPROPERTY(EditDefaultsOnly, Category="Inventory")
+	TObjectPtr<UInputMappingContext> IMCGamePlay;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Inventory")
 	TSubclassOf<UDkWidgetPrimaryLayout> PrimaryLayoutClass;

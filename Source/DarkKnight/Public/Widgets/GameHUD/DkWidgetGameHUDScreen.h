@@ -19,4 +19,8 @@ protected:
 	//~Begin UUserWidget Function
 	virtual void NativeOnInitialized() override;
 	//~End UUserWidget Function
+
+	//~ Begin UCommonActivatableWidget Function
+	virtual void NativeOnActivated() override;
+	//~ End UCommonActivatableWidget Function
 };

@@ -7,5 +7,5 @@ UDkItemComponent::UDkItemComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
 
-	PickUpMessage = TEXT("E - 捡起");
+	PickUpMessage = TEXT("F - 捡起");
 }

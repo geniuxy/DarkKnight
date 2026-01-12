@@ -1,13 +1,14 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Controllers/DkInventoryPlayerController.h"
+#include "Controllers/DkGamePlayerController.h"
 
 #include "DarkKnightDebugHelper.h"
 #include "DkGameplayTags.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/DkInventoryComponent.h"
 #include "Components/DkItemComponent.h"
 #include "DarkKnight/DarkKnight.h"
 #include "FunctionLibrarys/DkUIFunctionLibrary.h"
@@ -18,19 +19,19 @@
 #include "Widgets/GameHUD/DkWidgetPickUpBox.h"
 #include "Widgets/Inventory/DkWidgetInventoryMenu.h"
 
-ADkInventoryPlayerController::ADkInventoryPlayerController()
+ADkGamePlayerController::ADkGamePlayerController()
 {
 	PrimaryActorTick.bCanEverTick = true;
 }
 
-void ADkInventoryPlayerController::Tick(float DeltaSeconds)
+void ADkGamePlayerController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
 	TraceForItem();
 }
 
-void ADkInventoryPlayerController::OnLoadingScreenDeactivated_Implementation()
+void ADkGamePlayerController::OnLoadingScreenDeactivated_Implementation()
 {
 	if (!IsLocalController()) return;
 	PrimaryLayoutWidget = CreateWidget<UDkWidgetPrimaryLayout>(this, PrimaryLayoutClass);
@@ -61,8 +62,6 @@ void ADkInventoryPlayerController::OnLoadingScreenDeactivated_Implementation()
 			case EAsyncPushWidgetState::OnCreatedBeforePush:
 				{
 					PushedWidget->SetOwningPlayer(this);
-					FInputModeGameOnly InputModeData;
-					SetInputMode(InputModeData);
 					break;
 				}
 			case EAsyncPushWidgetState::AfterPush:
@@ -73,7 +72,7 @@ void ADkInventoryPlayerController::OnLoadingScreenDeactivated_Implementation()
 	);
 }
 
-void ADkInventoryPlayerController::BeginPlay()
+void ADkGamePlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
@@ -81,25 +80,28 @@ void ADkInventoryPlayerController::BeginPlay()
 		ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
 	if (IsValid(InputSubsystem))
 	{
-		InputSubsystem->AddMappingContext(IMCInventory, 0);
+		InputSubsystem->AddMappingContext(IMCGamePlay, 0);
 	}
 }
 
-void ADkInventoryPlayerController::SetupInputComponent()
+void ADkGamePlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
 
 	UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent);
 
 	EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &ThisClass::OnInteract);
+	EnhancedInputComponent->BindAction(
+		InventoryAction, ETriggerEvent::Completed, this, &ThisClass::OnInventoryActionTriggered
+	);
 }
 
-void ADkInventoryPlayerController::OnInteract()
+void ADkGamePlayerController::OnInteract()
 {
 	Debug::Print(TEXT("我正在交互！"));
 }
 
-void ADkInventoryPlayerController::TraceForItem()
+void ADkGamePlayerController::TraceForItem()
 {
 	if (!IsValid(GEngine) || !IsValid(GEngine->GameViewport)) return;
 	FVector2D ViewportSize;
@@ -132,7 +134,7 @@ void ADkInventoryPlayerController::TraceForItem()
 	if (ThisActor.IsValid())
 	{
 		if (UActorComponent* HighlightableActorComponent =
-				ThisActor->FindComponentByInterface(UHighlightInterface::StaticClass()))
+			ThisActor->FindComponentByInterface(UHighlightInterface::StaticClass()))
 		{
 			if (IsValid(HighlightableActorComponent))
 			{
@@ -152,7 +154,7 @@ void ADkInventoryPlayerController::TraceForItem()
 	if (LastActor.IsValid())
 	{
 		if (UActorComponent* HighlightableActorComponent =
-				LastActor->FindComponentByInterface(UHighlightInterface::StaticClass()))
+			LastActor->FindComponentByInterface(UHighlightInterface::StaticClass()))
 		{
 			if (IsValid(HighlightableActorComponent))
 			{
@@ -160,4 +162,14 @@ void ADkInventoryPlayerController::TraceForItem()
 			}
 		}
 	}
+}
+
+void ADkGamePlayerController::OnInventoryActionTriggered()
+{
+	UDkInventoryComponent* InventoryComponent = GetPawn()->FindComponentByClass<UDkInventoryComponent>();
+	checkf(IsValid(InventoryComponent), TEXT("打开库存失败，InventoryComponent未有效"));
+
+	Debug::Print(TEXT("我正在打开库存！"));
+
+	InventoryComponent->ConstructInventoryMenu();
 }

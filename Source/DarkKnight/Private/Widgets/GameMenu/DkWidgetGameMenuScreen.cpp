@@ -3,11 +3,31 @@
 
 #include "Widgets/GameMenu/DkWidgetGameMenuScreen.h"
 
+#include "ICommonInputModule.h"
+#include "FunctionLibrarys/DkUIFunctionLibrary.h"
+#include "Input/CommonUIInputTypes.h"
+
+void UDkWidgetGameMenuScreen::NativeOnInitialized()
+{
+	Super::NativeOnInitialized();
+
+	RegisterUIActionBinding(
+		FBindUIActionArgs(
+			ICommonInputModule::GetSettings().GetDefaultBackAction(),
+			true,
+			FSimpleDelegate::CreateUObject(this, &ThisClass::OnBackBoundActionTriggered)
+		)
+	);
+}
+
 void UDkWidgetGameMenuScreen::NativeOnDeactivated()
 {
 	Super::NativeOnDeactivated();
 
-	FInputModeGameOnly InputModeData;
-	GetOwningPlayerController()->SetInputMode(InputModeData);
-	GetOwningPlayerController()->bShowMouseCursor = false;
+	UDkUIFunctionLibrary::ToggleInputMode(this, EDkInputMode::GameOnly);
+}
+
+void UDkWidgetGameMenuScreen::OnBackBoundActionTriggered()
+{
+	DeactivateWidget();
 }

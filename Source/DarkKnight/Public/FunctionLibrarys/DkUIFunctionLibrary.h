@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
+#include "DkTypes/DkEnums.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "DkUIFunctionLibrary.generated.h"
 
@@ -24,4 +25,7 @@ public:
 
 	UFUNCTION(BlueprintPure, Category="UI Function Library")
 	static TSoftObjectPtr<UTexture2D> GetSoftImageByTag(UPARAM(meta=(Categories="Dk.Image")) FGameplayTag InImageTag);
+
+	UFUNCTION(BlueprintCallable, Category="FunctionLibrary", meta=(WorldContext = "WorldContextObject"))
+	static void ToggleInputMode(const UObject* WorldContextObject, EDkInputMode InInputMode);
 };

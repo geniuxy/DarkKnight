@@ -7,6 +7,7 @@
 #include "Characters/DkCharacterHero.h"
 #include "FunctionLibrarys/DkUIFunctionLibrary.h"
 #include "Subsytems/DkUISubsystem.h"
+#include "Widgets/DkWidgetActivatableBase.h"
 
 UDkInventoryComponent::UDkInventoryComponent()
 {
@@ -16,8 +17,6 @@ UDkInventoryComponent::UDkInventoryComponent()
 void UDkInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	ConstructInventoryMenu();
 }
 
 void UDkInventoryComponent::ConstructInventoryMenu()
@@ -33,8 +32,9 @@ void UDkInventoryComponent::ConstructInventoryMenu()
 		UDkUIFunctionLibrary::GetUISoftWidgetClassByTag(DkGameplayTags::Dk_Widget_GameMenu),
 		[this](EAsyncPushWidgetState InPushState, UDkWidgetActivatableBase* PushedWidget)
 		{
-			if (InPushState == EAsyncPushWidgetState::OnCreatedBeforePush)
+			if (InPushState == EAsyncPushWidgetState::AfterPush)
 			{
+				UDkUIFunctionLibrary::ToggleInputMode(this, EDkInputMode::UIOnly);
 			}
 		}
 	);

@@ -11,6 +11,10 @@ void UDkInventoryItemGrid::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
 
+	GridPanel->SetMinDesiredSlotWidth(TileSize);
+	GridPanel->SetMinDesiredSlotHeight(TileSize);
+	GridPanel->SetSlotPadding(FMargin(SlotDistance));
+
 	ConstructGrid();
 }
 

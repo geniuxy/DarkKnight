@@ -62,6 +62,7 @@ private:
 	//***** Bound Widgets *****//
 
 	/* 切换ItemCategory */
+	TMap<EInventoryItemCategory, TObjectPtr<UDkUICommonButtonBase>> CategoryButtonMap;
 	TMap<EInventoryItemCategory, TObjectPtr<UCommonLazyImage>> SelectedUnderlineMap;
 	
 	void ShowEquipments();

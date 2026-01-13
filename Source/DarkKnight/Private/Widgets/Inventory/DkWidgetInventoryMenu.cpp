@@ -5,7 +5,7 @@
 
 #include "CommonTextBlock.h"
 #include "Components/WidgetSwitcher.h"
-#include "Widgets/Components/DkInventoryItemGrid.h"
+#include "Widgets/Inventory/DkInventoryItemGrid.h"
 #include "Widgets/Components/DkUICommonButtonBase.h"
 
 void UDkWidgetInventoryMenu::NativeOnInitialized()
@@ -15,6 +15,10 @@ void UDkWidgetInventoryMenu::NativeOnInitialized()
 	Button_Equipment->OnClicked().AddUObject(this, &ThisClass::ShowEquipments);
 	Button_Consumable->OnClicked().AddUObject(this, &ThisClass::ShowConsumables);
 	Button_CraftingMaterial->OnClicked().AddUObject(this, &ThisClass::ShowCraftingMaterials);
+
+	CategoryButtonMap.Add(EInventoryItemCategory::Equipment, Button_Equipment);
+	CategoryButtonMap.Add(EInventoryItemCategory::Consumable, Button_Consumable);
+	CategoryButtonMap.Add(EInventoryItemCategory::CraftingMaterial, Button_CraftingMaterial);
 
 	SelectedUnderlineMap.Add(EInventoryItemCategory::Equipment, SelectedEquipmentUnderline);
 	SelectedUnderlineMap.Add(EInventoryItemCategory::Consumable, SelectedConsumableUnderline);
@@ -40,10 +44,10 @@ void UDkWidgetInventoryMenu::ShowCraftingMaterials()
 
 void UDkWidgetInventoryMenu::SelectButton(UDkUICommonButtonBase* Button)
 {
-	Button_Equipment->ToggleHighlightState(false);
-	Button_Consumable->ToggleHighlightState(false);
-	Button_CraftingMaterial->ToggleHighlightState(false);
-
+	for (TTuple<EInventoryItemCategory, TObjectPtr<UDkUICommonButtonBase>> Pair : CategoryButtonMap)
+	{
+		Pair.Value->ToggleHighlightState(false);
+	}
 	Button->ToggleHighlightState(true);
 }
 

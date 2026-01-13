@@ -23,10 +23,13 @@ protected:
 	//~End UUserWidget Function
 
 private:
+	//***** Bound Widgets *****//
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UUniformGridPanel> GridPanel;
+	//***** Bound Widgets *****//
+
+	/* 构造Grid */
 	void ConstructGrid();
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category="Inventory")
-	EInventoryItemCategory ItemCategory;
 
 	UPROPERTY()
 	TArray<TObjectPtr<UDkInventoryGridSlot>> GridSlots;
@@ -34,17 +37,21 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Inventory")
 	TSubclassOf<UDkInventoryGridSlot> GridSlotClass;
 
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UUniformGridPanel> GridPanel;
+	UPROPERTY(EditAnywhere, Category = "Inventory")
+	int32 Rows = 8;
 
 	UPROPERTY(EditAnywhere, Category = "Inventory")
-	int32 Rows;
+	int32 Columns = 8;
 
 	UPROPERTY(EditAnywhere, Category = "Inventory")
-	int32 Columns;
-
+	float TileSize = 50.f;
+	
 	UPROPERTY(EditAnywhere, Category = "Inventory")
-	float TileSize;
+	float SlotDistance = 8.f;
+	/********/
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category="Inventory")
+	EInventoryItemCategory ItemCategory;
 
 public:
 	FORCEINLINE EInventoryItemCategory GetItemCategory() const { return ItemCategory; }

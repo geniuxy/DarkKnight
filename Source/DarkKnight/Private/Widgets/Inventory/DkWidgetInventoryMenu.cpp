@@ -2,3 +2,80 @@
 
 
 #include "Widgets/Inventory/DkWidgetInventoryMenu.h"
+
+#include "CommonTextBlock.h"
+#include "Components/WidgetSwitcher.h"
+#include "Widgets/Components/DkInventoryItemGrid.h"
+#include "Widgets/Components/DkUICommonButtonBase.h"
+
+void UDkWidgetInventoryMenu::NativeOnInitialized()
+{
+	Super::NativeOnInitialized();
+
+	Button_Equipment->OnClicked().AddUObject(this, &ThisClass::ShowEquipments);
+	Button_Consumable->OnClicked().AddUObject(this, &ThisClass::ShowConsumables);
+	Button_CraftingMaterial->OnClicked().AddUObject(this, &ThisClass::ShowCraftingMaterials);
+
+	SelectedUnderlineMap.Add(EInventoryItemCategory::Equipment, SelectedEquipmentUnderline);
+	SelectedUnderlineMap.Add(EInventoryItemCategory::Consumable, SelectedConsumableUnderline);
+	SelectedUnderlineMap.Add(EInventoryItemCategory::CraftingMaterial, SelectedCraftingMaterialUnderline);
+
+	ShowEquipments();
+}
+
+void UDkWidgetInventoryMenu::ShowEquipments()
+{
+	SetActiveGrid(GridEquipments, Button_Equipment);
+}
+
+void UDkWidgetInventoryMenu::ShowConsumables()
+{
+	SetActiveGrid(GridConsumables, Button_Consumable);
+}
+
+void UDkWidgetInventoryMenu::ShowCraftingMaterials()
+{
+	SetActiveGrid(GridCraftingMaterials, Button_CraftingMaterial);
+}
+
+void UDkWidgetInventoryMenu::SelectButton(UDkUICommonButtonBase* Button)
+{
+	Button_Equipment->ToggleHighlightState(false);
+	Button_Consumable->ToggleHighlightState(false);
+	Button_CraftingMaterial->ToggleHighlightState(false);
+
+	Button->ToggleHighlightState(true);
+}
+
+void UDkWidgetInventoryMenu::ShowSelectedUnderline(UDkInventoryItemGrid* Grid)
+{
+	for (TTuple<EInventoryItemCategory, TObjectPtr<UCommonLazyImage>> Pair : SelectedUnderlineMap)
+	{
+		Pair.Value->SetVisibility(ESlateVisibility::Hidden);
+	}
+	SelectedUnderlineMap[Grid->GetItemCategory()]->SetVisibility(ESlateVisibility::Visible);
+}
+
+void UDkWidgetInventoryMenu::SetActiveGrid(UDkInventoryItemGrid* Grid, UDkUICommonButtonBase* Button)
+{
+	SelectButton(Button);
+	
+	ShowSelectedUnderline(Grid);
+	
+	Switcher->SetActiveWidget(Grid);
+	
+	switch (Grid->GetItemCategory())
+	{
+	case EInventoryItemCategory::Equipment:
+		InventoryTitleTxt->SetText(FText::FromString(TEXT("装备")));
+		break;
+	case EInventoryItemCategory::Consumable:
+		InventoryTitleTxt->SetText(FText::FromString(TEXT("消耗品")));
+		break;
+	case EInventoryItemCategory::CraftingMaterial:
+		InventoryTitleTxt->SetText(FText::FromString(TEXT("合成材料")));
+		break;
+	case EInventoryItemCategory::Uncategorized:
+		break;
+	}
+}

@@ -40,3 +40,12 @@ enum class EDkInputMode : uint8
 	GameOnly,
 	UIOnly
 };
+
+UENUM(BlueprintType)
+enum class EInventoryItemCategory: uint8
+{
+	Equipment,
+	Consumable,
+	CraftingMaterial,
+	Uncategorized
+};

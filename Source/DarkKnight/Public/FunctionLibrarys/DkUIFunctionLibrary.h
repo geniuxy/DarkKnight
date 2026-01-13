@@ -26,6 +26,9 @@ public:
 	UFUNCTION(BlueprintPure, Category="UI Function Library")
 	static TSoftObjectPtr<UTexture2D> GetSoftImageByTag(UPARAM(meta=(Categories="Dk.Image")) FGameplayTag InImageTag);
 
-	UFUNCTION(BlueprintCallable, Category="FunctionLibrary", meta=(WorldContext = "WorldContextObject"))
+	UFUNCTION(BlueprintCallable, Category="UI Function Library", meta=(WorldContext = "WorldContextObject"))
 	static void ToggleInputMode(const UObject* WorldContextObject, EDkInputMode InInputMode);
+	
+	UFUNCTION(BlueprintCallable, Category="UI Function Library")
+	static int32 GetIndexFromPosition(const FIntPoint& Position, const int32 Columns);
 };

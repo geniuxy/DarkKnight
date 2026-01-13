@@ -27,9 +27,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetButtonDisplayImage(const FSlateBrush& InBrush);
 
+	UFUNCTION(BlueprintCallable)
+	void ToggleHighlightState(bool bShouldHighlight);
+	
 private:
 	//~Begin UUserWidget UFunction
 	virtual void NativePreConstruct() override;
+	virtual void NativeOnInitialized() override;
 	//~End UUserWidget UFunction
 
 	//~Begin UUserWidget UFunction
@@ -57,4 +61,10 @@ private:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="UI Button", meta=(AllowPrivateAccess="true"))
 	bool bUseUpperCaseForButtonText = false;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="UI Button", meta=(AllowPrivateAccess="true"))
+	FLinearColor DefaultButtonImageColor = FLinearColor(0.4f,0.4f,0.4f,1.f);
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="UI Button", meta=(AllowPrivateAccess="true"))
+	FLinearColor HighlightButtonImageColor = FLinearColor(1.f,1.f, 1.f,1.f);
 };

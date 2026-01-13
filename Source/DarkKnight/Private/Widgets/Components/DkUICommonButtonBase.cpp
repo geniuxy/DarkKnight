@@ -43,11 +43,35 @@ void UDkUICommonButtonBase::SetButtonDisplayImage(const FSlateBrush& InBrush)
 	}
 }
 
+void UDkUICommonButtonBase::ToggleHighlightState(bool bShouldHighlight)
+{
+	if (!CommonLazyImage_ButtonImage) return;
+	
+	if (bShouldHighlight)
+	{
+		CommonLazyImage_ButtonImage->SetColorAndOpacity(HighlightButtonImageColor);
+	}
+	else
+	{
+		CommonLazyImage_ButtonImage->SetColorAndOpacity(DefaultButtonImageColor);
+	}
+}
+
 void UDkUICommonButtonBase::NativePreConstruct()
 {
 	Super::NativePreConstruct();
 
 	SetButtonText(ButtonDisplayText, ButtonDisplayTextJustification);
+}
+
+void UDkUICommonButtonBase::NativeOnInitialized()
+{
+	Super::NativeOnInitialized();
+
+	if (CommonLazyImage_ButtonImage)
+	{
+		CommonLazyImage_ButtonImage->SetColorAndOpacity(DefaultButtonImageColor);
+	}
 }
 
 void UDkUICommonButtonBase::NativeOnCurrentTextStyleChanged()

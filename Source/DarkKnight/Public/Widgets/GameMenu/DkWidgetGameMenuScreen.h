@@ -6,6 +6,7 @@
 #include "Widgets/DkWidgetActivatableBase.h"
 #include "DkWidgetGameMenuScreen.generated.h"
 
+class UDkWidgetInventoryMenu;
 /**
  * 
  */
@@ -24,5 +25,10 @@ protected:
 	//~ End UCommonActivatableWidget Function
 
 private:
+	//***** Bound Widgets *****//
+	UPROPERTY(BlueprintReadOnly, meta=(BindWidget, AllowPrivateAccess="true"))
+	TObjectPtr<UDkWidgetInventoryMenu> WBP_InventoryMenu;
+	//***** Bound Widgets *****//
+	
 	void OnBackBoundActionTriggered();
 };

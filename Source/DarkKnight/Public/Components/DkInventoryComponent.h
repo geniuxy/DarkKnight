@@ -7,6 +7,7 @@
 #include "DkInventoryComponent.generated.h"
 
 
+class UDkWidgetInventoryMenu;
 class UDkItemComponent;
 class UDkInventoryItem;
 class ADkCharacterHero;
@@ -36,4 +37,6 @@ protected:
 
 private:
 	TWeakObjectPtr<ADkCharacterHero> OwningCharacter;
+
+	TWeakObjectPtr<UDkWidgetInventoryMenu> CachedInventoryMenu;
 };

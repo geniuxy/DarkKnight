@@ -29,6 +29,9 @@ private:
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget, AllowPrivateAccess="true"))
 	TObjectPtr<UDkWidgetInventoryMenu> WBP_InventoryMenu;
 	//***** Bound Widgets *****//
-	
+
 	void OnBackBoundActionTriggered();
+
+public:
+	FORCEINLINE UDkWidgetInventoryMenu* GetInventoryMenu() const { return WBP_InventoryMenu; }
 };

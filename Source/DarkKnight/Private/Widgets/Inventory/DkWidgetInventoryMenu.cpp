@@ -8,6 +8,11 @@
 #include "Widgets/Inventory/DkInventoryItemGrid.h"
 #include "Widgets/Components/DkUICommonButtonBase.h"
 
+FDkInventorySlotAvailabilityResult UDkWidgetInventoryMenu::HasRoomForItem(UDkItemComponent* ItemComponent) const
+{
+	return FDkInventorySlotAvailabilityResult();
+}
+
 void UDkWidgetInventoryMenu::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();

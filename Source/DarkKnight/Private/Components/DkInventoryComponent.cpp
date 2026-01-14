@@ -8,6 +8,8 @@
 #include "FunctionLibrarys/DkUIFunctionLibrary.h"
 #include "Subsytems/DkUISubsystem.h"
 #include "Widgets/DkWidgetActivatableBase.h"
+#include "Widgets/GameMenu/DkWidgetGameMenuScreen.h"
+#include "Widgets/Inventory/DkWidgetInventoryMenu.h"
 
 UDkInventoryComponent::UDkInventoryComponent()
 {
@@ -16,7 +18,15 @@ UDkInventoryComponent::UDkInventoryComponent()
 
 void UDkInventoryComponent::TryAddItem(UDkItemComponent* ItemComponent)
 {
-	OnNoRoomInInventory.Broadcast();
+	FDkInventorySlotAvailabilityResult AddItemResult = CachedInventoryMenu->HasRoomForItem(ItemComponent);
+	if (AddItemResult.TotalRoomToFill == 0)
+	{
+		OnNoRoomInInventory.Broadcast();
+		return; 
+	}
+
+	// TODO: 将Item添加到Inventory中
+	
 }
 
 void UDkInventoryComponent::BeginPlay()
@@ -40,6 +50,7 @@ void UDkInventoryComponent::ConstructInventoryMenu()
 			if (InPushState == EAsyncPushWidgetState::AfterPush)
 			{
 				UDkUIFunctionLibrary::ToggleInputMode(this, EDkInputMode::UIOnly);
+				CachedInventoryMenu = CastChecked<UDkWidgetGameMenuScreen>(PushedWidget)->GetInventoryMenu();
 			}
 		}
 	);

@@ -11,18 +11,17 @@ class UCommonTextBlock;
  * 
  */
 UCLASS()
-class DARKKNIGHT_API UDkWidgetPickUpBox : public UDkWidgetActivatableBase
+class DARKKNIGHT_API UDkWidgetPickUpBox : public UCommonUserWidget
 {
 	GENERATED_BODY()
 
 public:
-	void ShowPickUpMessage(const FString& Message);
-	void HidePickUpMessage();
+	void SetMessage(const FString& Message);
 
 protected:
-	//~Begin UUserWidget Function
+	//~Begin UUserWidget
 	virtual void NativeOnInitialized() override;
-	//~End UUserWidget Function
+	//~End UUserWidget
 
 private:
 	//***** Bound Widgets *****//

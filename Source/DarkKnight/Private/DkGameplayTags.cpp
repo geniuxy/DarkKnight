@@ -22,7 +22,7 @@ namespace DkGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Widget_CreditScreen,"Dk.Widget.CreditScreen");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Widget_GameHUD,"Dk.Widget.GameHUD");
 	
-	UE_DEFINE_GAMEPLAY_TAG(Dk_Widget_PickUpBox,"Dk.Widget.PickUpBox");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Widget_InteractScreen,"Dk.Widget.InteractScreen");
 	
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Widget_GameMenu,"Dk.Widget.GameMenu");
 

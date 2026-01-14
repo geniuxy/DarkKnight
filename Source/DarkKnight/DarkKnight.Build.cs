@@ -11,6 +11,7 @@ public class DarkKnight : ModuleRules
 		PublicDependencyModuleNames.AddRange(new string[]
 		{
 			"Core",
+			"NetCore", // FFastArraySerializer 定义在 NetCore 模块
 			"CoreUObject",
 			"Engine",
 			"InputCore",

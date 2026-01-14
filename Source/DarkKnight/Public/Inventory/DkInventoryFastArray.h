@@ -11,11 +11,11 @@ class UDkInventoryComponent;
 
 /** Inventory中的单个条目 */
 USTRUCT()
-struct FDkInventoryFastArraySerializerItem : public FFastArraySerializerItem
+struct FDkInventoryFastArrayEntry : public FFastArraySerializerItem
 {
 	GENERATED_BODY()
 
-	FDkInventoryFastArraySerializerItem()
+	FDkInventoryFastArrayEntry()
 	{
 	}
 
@@ -50,20 +50,20 @@ struct FDkInventoryFastArray : public FFastArraySerializer
 
 	bool NetDeltaSerialize(FNetDeltaSerializeInfo& DeltaParams)
 	{
-		return FastArrayDeltaSerialize<FDkInventoryFastArraySerializerItem, FDkInventoryFastArray>(
-			SerializerItems, DeltaParams, *this);
+		return FastArrayDeltaSerialize<FDkInventoryFastArrayEntry, FDkInventoryFastArray>(
+			Entrys, DeltaParams, *this);
 	}
 
-	UDkInventoryItem* AddSerializerItem(UDkItemComponent* ItemComponent);
-	UDkInventoryItem* AddSerializerItem(UDkInventoryItem* Item);
-	void RemoveSerializerItem(UDkInventoryItem* Item);
+	UDkInventoryItem* AddEntry(UDkItemComponent* ItemComponent);
+	UDkInventoryItem* AddEntry(UDkInventoryItem* Item);
+	void RemoveEntry(UDkInventoryItem* Item);
 
 private:
 	friend UDkInventoryComponent;
 
 	// 复制的Items列表
 	UPROPERTY()
-	TArray<FDkInventoryFastArraySerializerItem> SerializerItems;
+	TArray<FDkInventoryFastArrayEntry> Entrys;
 
 	UPROPERTY(NotReplicated)
 	TObjectPtr<UActorComponent> OwnerComponent;

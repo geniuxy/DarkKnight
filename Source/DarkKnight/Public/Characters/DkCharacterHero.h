@@ -19,6 +19,9 @@ public:
 protected:
 	/* Actor Components */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Inventory")
-	UDkInventoryComponent* DkInventoryComponent;
+	UDkInventoryComponent* InventoryComponent;
 	/*********/
+
+public:
+	FORCEINLINE UDkInventoryComponent* GetInventoryComponent() const {return InventoryComponent;}
 };

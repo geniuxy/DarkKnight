@@ -10,6 +10,6 @@ ADkCharacterHero::ADkCharacterHero()
 {
 	PrimaryActorTick.bCanEverTick = false;
 
-	DkInventoryComponent = CreateDefaultSubobject<UDkInventoryComponent>(TEXT("DkInventoryComponent"));
+	InventoryComponent = CreateDefaultSubobject<UDkInventoryComponent>(TEXT("DkInventoryComponent"));
 }
 

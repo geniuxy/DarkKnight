@@ -14,6 +14,11 @@ UDkInventoryComponent::UDkInventoryComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
+void UDkInventoryComponent::TryAddItem(UDkItemComponent* ItemComponent)
+{
+	OnNoRoomInInventory.Broadcast();
+}
+
 void UDkInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();

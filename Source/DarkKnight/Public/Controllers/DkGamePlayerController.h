@@ -7,7 +7,8 @@
 #include "Interfaces/LoadingScreenInterface.h"
 #include "DkGamePlayerController.generated.h"
 
-class UDkWidgetPickUpBox;
+class UDkInventoryComponent;
+class UDkWidgetInteractScreen;
 class UDkWidgetPrimaryLayout;
 class UInputAction;
 class UInputMappingContext;
@@ -50,7 +51,7 @@ private:
 	double TraceLength;
 
 	UPROPERTY()
-	TObjectPtr<UDkWidgetPickUpBox> CachedPickUpBox;
+	TObjectPtr<UDkWidgetInteractScreen> CachedInteractScreen;
 	/********/
 
 	/* 仓库 */
@@ -58,6 +59,8 @@ private:
 	
 	UPROPERTY(EditDefaultsOnly, Category="Inventory")
 	TObjectPtr<UInputAction> InventoryAction;
+
+	TWeakObjectPtr<UDkInventoryComponent> InventoryComponent;
 	/********/
 
 	UPROPERTY(EditDefaultsOnly, Category="Inventory")

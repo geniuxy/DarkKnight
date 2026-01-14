@@ -7,11 +7,11 @@
 TArray<UDkInventoryItem*> FDkInventoryFastArray::GetAllItems() const
 {
 	TArray<UDkInventoryItem*> Results;
-	Results.Reserve(SerializerItems.Num());
-	for (const auto& SerializerItem : SerializerItems)
+	Results.Reserve(Entrys.Num());
+	for (const auto& Entry : Entrys)
 	{
-		if (!IsValid(SerializerItem.Item)) continue;
-		Results.Add(SerializerItem.Item);
+		if (!IsValid(Entry.Item)) continue;
+		Results.Add(Entry.Item);
 	}
 	return Results;
 }
@@ -23,7 +23,7 @@ void FDkInventoryFastArray::PreReplicatedRemove(const TArrayView<int32>& Removed
 
 	for (int32 Index : RemovedIndices)
 	{
-		InventoryComponent->OnItemRemoved.Broadcast(SerializerItems[Index].Item);
+		InventoryComponent->OnItemRemoved.Broadcast(Entrys[Index].Item);
 	}
 }
 
@@ -34,36 +34,36 @@ void FDkInventoryFastArray::PostReplicatedAdd(const TArrayView<int32>& AddedIndi
 
 	for (int32 Index : AddedIndices)
 	{
-		InventoryComponent->OnItemAdded.Broadcast(SerializerItems[Index].Item);
+		InventoryComponent->OnItemAdded.Broadcast(Entrys[Index].Item);
 	}
 }
 
-UDkInventoryItem* FDkInventoryFastArray::AddSerializerItem(UDkItemComponent* ItemComponent)
+UDkInventoryItem* FDkInventoryFastArray::AddEntry(UDkItemComponent* ItemComponent)
 {
 	return nullptr;
 }
 
-UDkInventoryItem* FDkInventoryFastArray::AddSerializerItem(UDkInventoryItem* Item)
+UDkInventoryItem* FDkInventoryFastArray::AddEntry(UDkInventoryItem* Item)
 {
 	check(OwnerComponent);
 	AActor* OwningActor = OwnerComponent->GetOwner();
 	check(OwningActor->HasAuthority());
 
-	FDkInventoryFastArraySerializerItem& NewSerializerItem = SerializerItems.AddDefaulted_GetRef();
-	NewSerializerItem.Item = Item;
+	FDkInventoryFastArrayEntry& NewEntry = Entrys.AddDefaulted_GetRef();
+	NewEntry.Item = Item;
 
-	MarkItemDirty(NewSerializerItem);
+	MarkItemDirty(NewEntry);
 	return Item;
 }
 
-void FDkInventoryFastArray::RemoveSerializerItem(UDkInventoryItem* Item)
+void FDkInventoryFastArray::RemoveEntry(UDkInventoryItem* Item)
 {
-	for (auto SerializerItemIter = SerializerItems.CreateIterator(); SerializerItemIter; ++SerializerItemIter)
+	for (auto EntryIter = Entrys.CreateIterator(); EntryIter; ++EntryIter)
 	{
-		FDkInventoryFastArraySerializerItem& SerializerItem = *SerializerItemIter;
-		if (SerializerItem.Item == Item)
+		FDkInventoryFastArrayEntry& Entry = *EntryIter;
+		if (Entry.Item == Item)
 		{
-			SerializerItemIter.RemoveCurrent();
+			EntryIter.RemoveCurrent();
 			MarkArrayDirty();
 		}
 	}

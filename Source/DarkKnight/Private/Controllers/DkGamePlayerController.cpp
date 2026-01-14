@@ -8,6 +8,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Blueprint/UserWidget.h"
+#include "Characters/DkCharacterHero.h"
 #include "Components/DkInventoryComponent.h"
 #include "Components/DkItemComponent.h"
 #include "DarkKnight/DarkKnight.h"
@@ -16,8 +17,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "Subsytems/DkUISubsystem.h"
 #include "Widgets/DkWidgetPrimaryLayout.h"
-#include "Widgets/GameHUD/DkWidgetPickUpBox.h"
-#include "Widgets/Inventory/DkWidgetInventoryMenu.h"
+#include "Widgets/Interact/DkWidgetInteractScreen.h"
+#include "Widgets/Interact/DkWidgetPickUpBox.h"
 
 ADkGamePlayerController::ADkGamePlayerController()
 {
@@ -54,7 +55,7 @@ void ADkGamePlayerController::OnLoadingScreenDeactivated_Implementation()
 
 	UISubsystem->PushSoftWidgetToStackAsync(
 		DkGameplayTags::Dk_WidgetStack_Interact,
-		UDkUIFunctionLibrary::GetUISoftWidgetClassByTag(DkGameplayTags::Dk_Widget_PickUpBox),
+		UDkUIFunctionLibrary::GetUISoftWidgetClassByTag(DkGameplayTags::Dk_Widget_InteractScreen),
 		[this](EAsyncPushWidgetState InPushState, UDkWidgetActivatableBase* PushedWidget)
 		{
 			switch (InPushState)
@@ -65,7 +66,7 @@ void ADkGamePlayerController::OnLoadingScreenDeactivated_Implementation()
 					break;
 				}
 			case EAsyncPushWidgetState::AfterPush:
-				CachedPickUpBox = CastChecked<UDkWidgetPickUpBox>(PushedWidget);
+				CachedInteractScreen = CastChecked<UDkWidgetInteractScreen>(PushedWidget);
 				break;
 			}
 		}
@@ -82,6 +83,8 @@ void ADkGamePlayerController::BeginPlay()
 	{
 		InputSubsystem->AddMappingContext(IMCGamePlay, 0);
 	}
+
+	InventoryComponent = CastChecked<ADkCharacterHero>(GetPawn())->FindComponentByClass<UDkInventoryComponent>();
 }
 
 void ADkGamePlayerController::SetupInputComponent()
@@ -98,7 +101,12 @@ void ADkGamePlayerController::SetupInputComponent()
 
 void ADkGamePlayerController::OnInteract()
 {
-	Debug::Print(TEXT("我正在交互！"));
+	if (!ThisActor.IsValid()) return;
+
+	UDkItemComponent* ItemComponent = ThisActor->FindComponentByClass<UDkItemComponent>();
+	if (!IsValid(ItemComponent) || !InventoryComponent.IsValid()) return;
+
+	InventoryComponent->TryAddItem(ItemComponent);
 }
 
 void ADkGamePlayerController::TraceForItem()
@@ -123,9 +131,9 @@ void ADkGamePlayerController::TraceForItem()
 
 	if (!ThisActor.IsValid())
 	{
-		if (IsValid(CachedPickUpBox))
+		if (IsValid(CachedInteractScreen))
 		{
-			CachedPickUpBox->HidePickUpMessage();
+			CachedInteractScreen->HidePickUpMessage();
 		}
 	}
 
@@ -145,9 +153,9 @@ void ADkGamePlayerController::TraceForItem()
 		UDkItemComponent* ItemComponent = ThisActor->FindComponentByClass<UDkItemComponent>();
 		if (!IsValid(ItemComponent)) return;
 
-		if (IsValid(CachedPickUpBox))
+		if (IsValid(CachedInteractScreen))
 		{
-			CachedPickUpBox->ShowPickUpMessage(ItemComponent->GetPickUpMessage());
+			CachedInteractScreen->ShowPickUpMessage(ItemComponent->GetPickUpMessage());
 		}
 	}
 
@@ -166,8 +174,7 @@ void ADkGamePlayerController::TraceForItem()
 
 void ADkGamePlayerController::OnInventoryActionTriggered()
 {
-	UDkInventoryComponent* InventoryComponent = GetPawn()->FindComponentByClass<UDkInventoryComponent>();
-	checkf(IsValid(InventoryComponent), TEXT("打开库存失败，InventoryComponent未有效"));
+	checkf(InventoryComponent.IsValid(), TEXT("打开库存失败，InventoryComponent未有效"));
 
 	Debug::Print(TEXT("我正在打开库存！"));
 

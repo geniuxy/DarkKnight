@@ -6,11 +6,12 @@
 #include "Widgets/DkWidgetActivatableBase.h"
 #include "DkWidgetInteractScreen.generated.h"
 
+class UDkWidgetInfoMessage;
 class UDkWidgetPickUpBox;
 /**
  * 
  */
-UCLASS()
+UCLASS(Abstract, BlueprintType, meta = (DisableNativeTick))
 class DARKKNIGHT_API UDkWidgetInteractScreen : public UDkWidgetActivatableBase
 {
 	GENERATED_BODY()
@@ -25,8 +26,14 @@ protected:
 	//~End UUserWidget
 
 private:
+	UFUNCTION()
+	void ShowNoRoomInInventory();
+	
 	//***** Bound Widgets *****//
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget, AllowPrivateAccess="true"))
 	UDkWidgetPickUpBox* WBP_PickUpBox;
+	
+	UPROPERTY(BlueprintReadOnly, meta=(BindWidget, AllowPrivateAccess="true"))
+	UDkWidgetInfoMessage* WBP_InfoMessage;
 	//***** Bound Widgets *****//
 };

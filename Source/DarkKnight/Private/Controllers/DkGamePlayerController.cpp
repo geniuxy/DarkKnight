@@ -15,6 +15,7 @@
 #include "FunctionLibrarys/DkUIFunctionLibrary.h"
 #include "Interfaces/HighlightInterface.h"
 #include "Kismet/GameplayStatics.h"
+#include "Subsytems/DkInventorySubsystem.h"
 #include "Subsytems/DkUISubsystem.h"
 #include "Widgets/DkWidgetPrimaryLayout.h"
 #include "Widgets/Interact/DkWidgetInteractScreen.h"
@@ -86,6 +87,9 @@ void ADkGamePlayerController::BeginPlay()
 
 	// 从PlayerController获取Character是通过GetPawn()
 	InventoryComponent = CastChecked<ADkCharacterHero>(GetPawn())->FindComponentByClass<UDkInventoryComponent>();
+	UDkInventorySubsystem* InventorySubsystem = UDkInventorySubsystem::Get(this);
+	checkf(InventorySubsystem, TEXT("UISubsystem为空！"));
+	InventorySubsystem->RegisterCachedInventoryComponent(InventoryComponent.Get());
 }
 
 void ADkGamePlayerController::SetupInputComponent()

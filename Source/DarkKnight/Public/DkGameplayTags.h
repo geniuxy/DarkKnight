@@ -29,4 +29,19 @@ namespace DkGameplayTags
 
 	// Images
 	DARKKNIGHT_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dk_Image_TestImage);
+
+	// Items
+	DARKKNIGHT_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dk_Item_Equipment_Weapons_Axe);
+	DARKKNIGHT_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dk_Item_Equipment_Weapons_Sword);
+	DARKKNIGHT_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dk_Item_Equipment_Cloaks_RedCloak);
+	DARKKNIGHT_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dk_Item_Equipment_Masks_SteelMask);
+	
+	DARKKNIGHT_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dk_Item_Consumable_Potions_Health_Small);
+	DARKKNIGHT_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dk_Item_Consumable_Potions_Health_Large);
+	DARKKNIGHT_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dk_Item_Consumable_Potions_Mana_Small);
+	DARKKNIGHT_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dk_Item_Consumable_Potions_Mana_Large);
+	
+	DARKKNIGHT_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dk_Item_CraftingMaterial_FireFernFruit);
+	DARKKNIGHT_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dk_Item_CraftingMaterial_LuminDaisy);
+	DARKKNIGHT_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dk_Item_CraftingMaterial_ScorchPetalBlossom);
 }

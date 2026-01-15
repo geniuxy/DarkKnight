@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Inventory/DkInventoryFastArray.h"
 #include "DkInventoryComponent.generated.h"
 
 
@@ -23,6 +24,8 @@ class DARKKNIGHT_API UDkInventoryComponent : public UActorComponent
 public:
 	UDkInventoryComponent();
 
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+
 	/* 构建背包界面 */
 	void ConstructInventoryMenu();
 	/********/
@@ -36,6 +39,8 @@ public:
 	
 	UFUNCTION(Server, Reliable)
 	void Server_AddStacksToItem(UDkItemComponent* ItemComponent, int32 StackCount, int32 Remainder);
+
+	void AddRepSubObj(UObject* SubObj);
 	
 	FInventoryItemChange OnItemAdded;
 	FInventoryItemChange OnItemRemoved;
@@ -52,4 +57,7 @@ private:
 	TWeakObjectPtr<ADkCharacterHero> OwningCharacter;
 
 	TWeakObjectPtr<UDkWidgetInventoryMenu> CachedInventoryMenu;
+
+	UPROPERTY(Replicated)
+	FDkInventoryFastArray InventoryList;
 };

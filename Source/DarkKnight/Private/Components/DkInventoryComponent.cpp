@@ -6,6 +6,7 @@
 #include "DkGameplayTags.h"
 #include "Characters/DkCharacterHero.h"
 #include "FunctionLibrarys/DkUIFunctionLibrary.h"
+#include "Net/UnrealNetwork.h"
 #include "Subsytems/DkUISubsystem.h"
 #include "Widgets/DkWidgetActivatableBase.h"
 #include "Widgets/GameMenu/DkWidgetGameMenuScreen.h"
@@ -14,6 +15,16 @@
 UDkInventoryComponent::UDkInventoryComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
+
+	SetIsReplicatedByDefault(true);
+	bReplicateUsingRegisteredSubObjectList = true;
+}
+
+void UDkInventoryComponent::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ThisClass, InventoryList);
 }
 
 void UDkInventoryComponent::ConstructInventoryMenu()
@@ -62,8 +73,19 @@ void UDkInventoryComponent::TryAddItem(UDkItemComponent* ItemComponent)
 	
 }
 
+void UDkInventoryComponent::AddRepSubObj(UObject* SubObj)
+{
+	if (IsUsingRegisteredSubObjectList() && IsReadyForReplication() && IsValid(SubObj))
+	{
+		AddReplicatedSubObject(SubObj);
+	}
+}
+
 void UDkInventoryComponent::Server_AddNewItem_Implementation(UDkItemComponent* ItemComponent, int32 StackCount)
 {
+	UDkInventoryItem* NewItem = InventoryList.AddEntry(ItemComponent);
+
+	// TODO: 通知 Item Component 销毁 Owner 道具Actor
 }
 
 void UDkInventoryComponent::Server_AddStacksToItem_Implementation(

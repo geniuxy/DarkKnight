@@ -21,7 +21,8 @@ public class DarkKnight : ModuleRules
 			"CommonInput",
 			"PropertyPath",
 			"CommonUI",
-			"PreLoadScreen"
+			"PreLoadScreen",
+			"StructUtils" // FInstancedStruct
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] { });

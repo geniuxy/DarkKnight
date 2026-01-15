@@ -2,3 +2,17 @@
 
 
 #include "Inventory/DkInventoryItem.h"
+
+#include "Net/UnrealNetwork.h"
+
+void UDkInventoryItem::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	UObject::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ThisClass, ItemManifest);
+}
+
+void UDkInventoryItem::SetItemManifest(const FInventoryItemManifest& Manifest)
+{
+	ItemManifest = FInstancedStruct::Make<FInventoryItemManifest>(Manifest);
+}

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Inventory/DkInventoryStruct.h"
 #include "DkItemComponent.generated.h"
 
 
@@ -15,10 +16,16 @@ class DARKKNIGHT_API UDkItemComponent : public UActorComponent
 public:
 	UDkItemComponent();
 
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+
 private:
 	UPROPERTY(EditAnywhere, Category="Inventory")
 	FString PickUpMessage;
 
+	UPROPERTY(Replicated, EditAnywhere, Category="Inventory")
+	FInventoryItemManifest ItemManifest;
+
 public:
 	FORCEINLINE FString GetPickUpMessage() const { return PickUpMessage; }
+	FORCEINLINE FInventoryItemManifest GetItemManifest() const { return ItemManifest; }
 };

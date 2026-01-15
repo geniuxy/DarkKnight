@@ -84,7 +84,7 @@ void UDkWidgetInventoryMenu::SetActiveGrid(UDkInventoryItemGrid* Grid, UDkUIComm
 	case EInventoryItemCategory::CraftingMaterial:
 		InventoryTitleTxt->SetText(FText::FromString(TEXT("合成材料")));
 		break;
-	case EInventoryItemCategory::Uncategorized:
+	case EInventoryItemCategory::None:
 		break;
 	}
 }

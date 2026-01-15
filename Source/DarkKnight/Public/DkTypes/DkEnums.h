@@ -47,5 +47,5 @@ enum class EInventoryItemCategory: uint8
 	Equipment,
 	Consumable,
 	CraftingMaterial,
-	Uncategorized
+	None
 };

@@ -1,6 +1,7 @@
 ﻿#include "Inventory/DkInventoryFastArray.h"
 
 #include "Components/DkInventoryComponent.h"
+#include "Components/DkItemComponent.h"
 #include "Inventory/DkInventoryItem.h"
 
 
@@ -40,7 +41,18 @@ void FDkInventoryFastArray::PostReplicatedAdd(const TArrayView<int32>& AddedIndi
 
 UDkInventoryItem* FDkInventoryFastArray::AddEntry(UDkItemComponent* ItemComponent)
 {
-	return nullptr;
+	check(OwnerComponent);
+	AActor* OwningActor = OwnerComponent->GetOwner();
+	check(OwningActor->HasAuthority());
+	UDkInventoryComponent* InventoryComponent = Cast<UDkInventoryComponent>(OwnerComponent);
+	if (!IsValid(InventoryComponent)) return nullptr;
+
+	FDkInventoryFastArrayEntry& NewEntry = Entrys.AddDefaulted_GetRef();
+	NewEntry.Item = ItemComponent->GetItemManifest().Manifest(OwningActor);
+
+	InventoryComponent->AddRepSubObj(NewEntry.Item);
+	MarkItemDirty(NewEntry);
+	return NewEntry.Item;
 }
 
 UDkInventoryItem* FDkInventoryFastArray::AddEntry(UDkInventoryItem* Item)

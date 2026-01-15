@@ -28,7 +28,4 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="UI Function Library", meta=(WorldContext = "WorldContextObject"))
 	static void ToggleInputMode(const UObject* WorldContextObject, EDkInputMode InInputMode);
-	
-	UFUNCTION(BlueprintCallable, Category="UI Function Library")
-	static int32 GetIndexFromPosition(const FIntPoint& Position, const int32 Columns);
 };

@@ -28,6 +28,8 @@ public:
 
 	/* 构建背包界面 */
 	void ConstructInventoryMenu();
+
+	bool bHasInitInventoryMenu = false;
 	/********/
 
 	/* 道具物品的添加和删除 */

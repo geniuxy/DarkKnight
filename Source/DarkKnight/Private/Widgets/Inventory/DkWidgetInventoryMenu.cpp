@@ -10,7 +10,9 @@
 
 FDkInventorySlotAvailabilityResult UDkWidgetInventoryMenu::HasRoomForItem(UDkItemComponent* ItemComponent) const
 {
-	return FDkInventorySlotAvailabilityResult();
+	FDkInventorySlotAvailabilityResult Result;
+	Result.TotalRoomToFill = 1;
+	return Result;
 }
 
 void UDkWidgetInventoryMenu::NativeOnInitialized()

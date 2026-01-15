@@ -12,7 +12,7 @@
 #include "Widgets/GameMenu/DkWidgetGameMenuScreen.h"
 #include "Widgets/Inventory/DkWidgetInventoryMenu.h"
 
-UDkInventoryComponent::UDkInventoryComponent()
+UDkInventoryComponent::UDkInventoryComponent() : InventoryList(this)
 {
 	PrimaryComponentTick.bCanEverTick = false;
 
@@ -29,21 +29,33 @@ void UDkInventoryComponent::GetLifetimeReplicatedProps(TArray<class FLifetimePro
 
 void UDkInventoryComponent::ConstructInventoryMenu()
 {
-	OwningCharacter = CastChecked<ADkCharacterHero>(GetOwner());
-	if (!OwningCharacter->IsLocallyControlled())
+	if (!bHasInitInventoryMenu)
+	{
+		OwningCharacter = CastChecked<ADkCharacterHero>(GetOwner());
+	}
+	
+	if (OwningCharacter.IsValid() && !OwningCharacter->IsLocallyControlled())
 	{
 		return;
 	}
-	
+
 	UDkUISubsystem::Get(this)->PushSoftWidgetToStackAsync(
 		DkGameplayTags::Dk_WidgetStack_GameMenu,
 		UDkUIFunctionLibrary::GetUISoftWidgetClassByTag(DkGameplayTags::Dk_Widget_GameMenu),
 		[this](EAsyncPushWidgetState InPushState, UDkWidgetActivatableBase* PushedWidget)
 		{
-			if (InPushState == EAsyncPushWidgetState::AfterPush)
+			if (InPushState == EAsyncPushWidgetState::OnCreatedBeforePush)
 			{
 				UDkUIFunctionLibrary::ToggleInputMode(this, EDkInputMode::UIOnly);
-				CachedInventoryMenu = CastChecked<UDkWidgetGameMenuScreen>(PushedWidget)->GetInventoryMenu();
+			}
+			if (InPushState == EAsyncPushWidgetState::AfterPush)
+			{
+				if (!bHasInitInventoryMenu)
+				{
+					CachedInventoryMenu = CastChecked<UDkWidgetGameMenuScreen>(PushedWidget)->GetInventoryMenu();
+					PushedWidget->DeactivateWidget();
+					bHasInitInventoryMenu = true;
+				}
 			}
 		}
 	);
@@ -51,11 +63,12 @@ void UDkInventoryComponent::ConstructInventoryMenu()
 
 void UDkInventoryComponent::TryAddItem(UDkItemComponent* ItemComponent)
 {
+	if (!CachedInventoryMenu.IsValid()) return;
 	FDkInventorySlotAvailabilityResult AddItemResult = CachedInventoryMenu->HasRoomForItem(ItemComponent);
 	if (AddItemResult.TotalRoomToFill == 0)
 	{
 		OnNoRoomInInventory.Broadcast();
-		return; 
+		return;
 	}
 
 	// 将Item添加到Inventory中
@@ -70,7 +83,6 @@ void UDkInventoryComponent::TryAddItem(UDkItemComponent* ItemComponent)
 		// 此物品类型在物品栏中不存在。请创建一个新物品并更新所有相关栏位。
 		Server_AddNewItem(ItemComponent, AddItemResult.bStackable ? AddItemResult.TotalRoomToFill : 0);
 	}
-	
 }
 
 void UDkInventoryComponent::AddRepSubObj(UObject* SubObj)
@@ -85,6 +97,15 @@ void UDkInventoryComponent::Server_AddNewItem_Implementation(UDkItemComponent* I
 {
 	UDkInventoryItem* NewItem = InventoryList.AddEntry(ItemComponent);
 
+	if (OwningCharacter.IsValid())
+	{
+		if (OwningCharacter->GetController()->GetNetMode() == NM_ListenServer ||
+			OwningCharacter->GetController()->GetNetMode() == NM_Standalone)
+		{
+			OnItemAdded.Broadcast(NewItem);
+		}
+	}
+	
 	// TODO: 通知 Item Component 销毁 Owner 道具Actor
 }
 
@@ -96,4 +117,6 @@ void UDkInventoryComponent::Server_AddStacksToItem_Implementation(
 void UDkInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	ConstructInventoryMenu();
 }

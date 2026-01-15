@@ -2,10 +2,14 @@
 
 
 #include "Widgets/Inventory/DkInventoryItemGrid.h"
+
+#include "DarkKnightDebugHelper.h"
+#include "Components/DkInventoryComponent.h"
 #include "Widgets/Inventory/DkInventoryGridSlot.h"
 
 #include "Components/UniformGridPanel.h"
-#include "FunctionLibrarys/DkUIFunctionLibrary.h"
+#include "FunctionLibrarys/DkCommonFunctionLibrary.h"
+#include "FunctionLibrarys/DkInventoryFunctionLibrary.h"
 
 void UDkInventoryItemGrid::NativeOnInitialized()
 {
@@ -16,6 +20,24 @@ void UDkInventoryItemGrid::NativeOnInitialized()
 	GridPanel->SetSlotPadding(FMargin(SlotDistance));
 
 	ConstructGrid();
+
+	InventoryComponent = UDkInventoryFunctionLibrary::GetInventoryComponent(GetOwningPlayer());
+	InventoryComponent->OnItemAdded.AddDynamic(this, &ThisClass::AddItem);
+}
+
+void UDkInventoryItemGrid::AddItem(UDkInventoryItem* Item)
+{
+	if (!MatchesCategory(Item)) return;
+
+	Debug::Print(FString::Printf(
+			TEXT("%s背包添加物品"),
+			*UDkCommonFunctionLibrary::GetStringValueOfEnum<EInventoryItemCategory>(GetItemCategory()))
+	);
+}
+
+bool UDkInventoryItemGrid::MatchesCategory(const UDkInventoryItem* Item) const
+{
+	return Item->GetItemManifest().GetItemCategory() == ItemCategory;
 }
 
 void UDkInventoryItemGrid::ConstructGrid()
@@ -29,7 +51,7 @@ void UDkInventoryItemGrid::ConstructGrid()
 			UDkInventoryGridSlot* GridSlot = CreateWidget<UDkInventoryGridSlot>(this, GridSlotClass);
 			GridPanel->AddChildToUniformGrid(GridSlot, j, i);
 
-			GridSlot->SetTileIndex(UDkUIFunctionLibrary::GetIndexFromPosition({i,j}, Columns));
+			GridSlot->SetTileIndex(UDkInventoryFunctionLibrary::GetIndexFromPosition({i, j}, Columns));
 
 			GridSlots.Add(GridSlot);
 		}

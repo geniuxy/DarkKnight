@@ -18,8 +18,11 @@ class DARKKNIGHT_API UDkInventoryItem : public UObject
 
 public:
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual bool IsSupportedForNetworking() const override { return true; }
 
 	void SetItemManifest(const FInventoryItemManifest& Manifest);
+	const FInventoryItemManifest& GetItemManifest() const { return ItemManifest.Get<FInventoryItemManifest>(); }
+	FInventoryItemManifest& GetItemManifestMutable() { return ItemManifest.GetMutable<FInventoryItemManifest>(); }
 
 private:
 	UPROPERTY(VisibleAnywhere, meta=(BaseStruct="/Script/DarkKnight.InventoryItemManifest"), Replicated)

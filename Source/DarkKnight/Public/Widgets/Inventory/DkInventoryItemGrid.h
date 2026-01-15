@@ -5,8 +5,11 @@
 #include "CoreMinimal.h"
 #include "CommonUserWidget.h"
 #include "DkTypes/DkEnums.h"
+#include "Inventory/DkInventoryItem.h"
 #include "DkInventoryItemGrid.generated.h"
 
+class UDkInventoryItem;
+class UDkInventoryComponent;
 class UUniformGridPanel;
 class UDkInventoryGridSlot;
 /**
@@ -27,6 +30,15 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UUniformGridPanel> GridPanel;
 	//***** Bound Widgets *****//
+
+	TWeakObjectPtr<UDkInventoryComponent> InventoryComponent;
+
+	/* 添加/删除Item */
+	UFUNCTION()
+	void AddItem(UDkInventoryItem* Item);
+
+	bool MatchesCategory(const UDkInventoryItem* Item) const;
+	/********/
 
 	/* 构造Grid */
 	void ConstructGrid();

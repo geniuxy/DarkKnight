@@ -84,6 +84,7 @@ void ADkGamePlayerController::BeginPlay()
 		InputSubsystem->AddMappingContext(IMCGamePlay, 0);
 	}
 
+	// 从PlayerController获取Character是通过GetPawn()
 	InventoryComponent = CastChecked<ADkCharacterHero>(GetPawn())->FindComponentByClass<UDkInventoryComponent>();
 }
 

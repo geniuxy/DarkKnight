@@ -23,14 +23,27 @@ class DARKKNIGHT_API UDkInventoryComponent : public UActorComponent
 public:
 	UDkInventoryComponent();
 
+	/* 构建背包界面 */
+	void ConstructInventoryMenu();
+	/********/
+
+	/* 道具物品的添加和删除 */
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category="true")
 	void TryAddItem(UDkItemComponent* ItemComponent);
 
-	void ConstructInventoryMenu();
-
+	UFUNCTION(Server, Reliable)
+	void Server_AddNewItem(UDkItemComponent* ItemComponent, int32 StackCount);
+	
+	UFUNCTION(Server, Reliable)
+	void Server_AddStacksToItem(UDkItemComponent* ItemComponent, int32 StackCount, int32 Remainder);
+	
 	FInventoryItemChange OnItemAdded;
 	FInventoryItemChange OnItemRemoved;
+	/********/
+
+	/* 判断是否背包有空间 */
 	FOnRoomInInventoryDelegate OnNoRoomInInventory;
+	/********/
 
 protected:
 	virtual void BeginPlay() override;

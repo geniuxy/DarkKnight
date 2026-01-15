@@ -30,39 +30,38 @@ protected:
 	virtual void NativeOnInitialized() override;
 	//~End UUserWidget Function
 
-private:
 	//***** Bound Widgets *****//
-	UPROPERTY(BlueprintReadOnly, meta=(BindWidget, AllowPrivateAccess="true"))
+	UPROPERTY(BlueprintReadOnly, meta=(BindWidget))
 	TObjectPtr<UCommonTextBlock> InventoryTitleTxt;
 
-	UPROPERTY(BlueprintReadOnly, meta=(BindWidget, AllowPrivateAccess="true"))
+	UPROPERTY(BlueprintReadOnly, meta=(BindWidget))
 	TObjectPtr<UDkUICommonButtonBase> Button_Equipment;
 
-	UPROPERTY(BlueprintReadOnly, meta=(BindWidget, AllowPrivateAccess="true"))
+	UPROPERTY(BlueprintReadOnly, meta=(BindWidget))
 	TObjectPtr<UDkUICommonButtonBase> Button_Consumable;
 
-	UPROPERTY(BlueprintReadOnly, meta=(BindWidget, AllowPrivateAccess="true"))
+	UPROPERTY(BlueprintReadOnly, meta=(BindWidget))
 	TObjectPtr<UDkUICommonButtonBase> Button_CraftingMaterial;
 
-	UPROPERTY(BlueprintReadOnly, meta=(BindWidget, AllowPrivateAccess="true"))
+	UPROPERTY(BlueprintReadOnly, meta=(BindWidget))
 	TObjectPtr<UCommonLazyImage> SelectedEquipmentUnderline;
 
-	UPROPERTY(BlueprintReadOnly, meta=(BindWidget, AllowPrivateAccess="true"))
+	UPROPERTY(BlueprintReadOnly, meta=(BindWidget))
 	TObjectPtr<UCommonLazyImage> SelectedConsumableUnderline;
 
-	UPROPERTY(BlueprintReadOnly, meta=(BindWidget, AllowPrivateAccess="true"))
+	UPROPERTY(BlueprintReadOnly, meta=(BindWidget))
 	TObjectPtr<UCommonLazyImage> SelectedCraftingMaterialUnderline;
 
-	UPROPERTY(BlueprintReadOnly, meta=(BindWidget, AllowPrivateAccess="true"))
+	UPROPERTY(BlueprintReadOnly, meta=(BindWidget))
 	TObjectPtr<UWidgetSwitcher> Switcher;
 
-	UPROPERTY(BlueprintReadOnly, meta=(BindWidget, AllowPrivateAccess="true"))
+	UPROPERTY(BlueprintReadOnly, meta=(BindWidget))
 	TObjectPtr<UDkInventoryItemGrid> GridEquipments;
 
-	UPROPERTY(BlueprintReadOnly, meta=(BindWidget, AllowPrivateAccess="true"))
+	UPROPERTY(BlueprintReadOnly, meta=(BindWidget))
 	TObjectPtr<UDkInventoryItemGrid> GridConsumables;
 
-	UPROPERTY(BlueprintReadOnly, meta=(BindWidget, AllowPrivateAccess="true"))
+	UPROPERTY(BlueprintReadOnly, meta=(BindWidget))
 	TObjectPtr<UDkInventoryItemGrid> GridCraftingMaterials;
 	//***** Bound Widgets *****//
 

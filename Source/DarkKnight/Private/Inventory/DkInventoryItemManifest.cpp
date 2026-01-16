@@ -1,4 +1,4 @@
-﻿#include "Inventory/DkInventoryStruct.h"
+﻿#include "Inventory/DkInventoryItemManifest.h"
 
 #include "Inventory/DkInventoryItem.h"
 

@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "DkTypes/DkEnums.h"
-#include "Inventory/DkInventoryStruct.h"
+#include "Inventory/DkInventorySlotAvailabilty.h"
 #include "Widgets/DkWidgetActivatableBase.h"
 #include "DkWidgetInventoryMenu.generated.h"
 

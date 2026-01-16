@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "DkInventoryStruct.h"
+#include "DkInventoryItemManifest.h"
 #include "StructUtils/InstancedStruct.h"
 #include "UObject/Object.h"
 #include "DkInventoryItem.generated.h"

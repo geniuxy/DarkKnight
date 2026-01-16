@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "Inventory/DkInventoryStruct.h"
+#include "Inventory/DkInventoryItemManifest.h"
 #include "DkItemComponent.generated.h"
 
 

@@ -6,6 +6,7 @@
 #include "CommonUserWidget.h"
 #include "DkTypes/DkEnums.h"
 #include "Inventory/DkInventoryItem.h"
+#include "Inventory/DkInventorySlotAvailabilty.h"
 #include "DkInventoryItemGrid.generated.h"
 
 struct FDkInventorySlotAvailabilityResult;
@@ -40,6 +41,8 @@ protected:
 	/* 添加/删除Item */
 	UFUNCTION()
 	void AddItem(UDkInventoryItem* Item);
+
+	void AddItemToIndices(const FDkInventorySlotAvailabilityResult& Result, UDkInventoryItem* NewItem);
 
 	bool MatchesCategory(const UDkInventoryItem* Item) const;
 

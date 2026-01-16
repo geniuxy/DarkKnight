@@ -25,6 +25,12 @@ FDkInventorySlotAvailabilityResult UDkInventoryItemGrid::HasRoomForItem(const FI
 {
 	FDkInventorySlotAvailabilityResult Result;
 	Result.TotalRoomToFill = 1;
+
+	FDkInventorySlotAvailability SlotAvailability;
+	SlotAvailability.AmountToFill = 1;
+	SlotAvailability.Index = 0;
+
+	Result.SlotAvailabilities.Add(MoveTemp(SlotAvailability));
 	return Result;
 }
 
@@ -48,8 +54,12 @@ void UDkInventoryItemGrid::AddItem(UDkInventoryItem* Item)
 	if (!MatchesCategory(Item)) return;
 
 	FDkInventorySlotAvailabilityResult AvailabilityResult = HasRoomForItem(Item);
+	AddItemToIndices(AvailabilityResult, Item);
+}
 
-	// 创建一个Widget来显示项目图标，并将其添加到网格上的正确位置。
+void UDkInventoryItemGrid::AddItemToIndices(const FDkInventorySlotAvailabilityResult& Result, UDkInventoryItem* NewItem)
+{
+	
 }
 
 bool UDkInventoryItemGrid::MatchesCategory(const UDkInventoryItem* Item) const

@@ -6,6 +6,7 @@
 #include "CommonUserWidget.h"
 #include "DkInventoryGridSlot.generated.h"
 
+class USizeBox;
 class UCommonLazyImage;
 /**
  * 
@@ -19,8 +20,13 @@ public:
 	void SetTileIndex(int32 Index) { TileIndex = Index; }
 	int32 GetTileIndex() const { return TileIndex; }
 
+	void SetGridSlotSize(float InSlotSize);
+
 private:
 	//***** Bound Widgets *****//
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<USizeBox> SizeBox_GridSlot;
+	
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UCommonLazyImage> Image_GridSlot;
 	//***** Bound Widgets *****//

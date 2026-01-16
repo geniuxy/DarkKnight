@@ -25,9 +25,8 @@ protected:
 	virtual void NativeOnInitialized() override;
 	//~End UUserWidget Function
 
-private:
 	//***** Bound Widgets *****//
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(meta = (BindWidgetOptional))
 	TObjectPtr<UUniformGridPanel> GridPanel;
 	//***** Bound Widgets *****//
 
@@ -41,7 +40,7 @@ private:
 	/********/
 
 	/* 构造Grid */
-	void ConstructGrid();
+	virtual void ConstructGrid();
 
 	UPROPERTY()
 	TArray<TObjectPtr<UDkInventoryGridSlot>> GridSlots;
@@ -62,7 +61,7 @@ private:
 	float SlotDistance = 8.f;
 	/********/
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category="Inventory")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Inventory")
 	EInventoryItemCategory ItemCategory;
 
 public:

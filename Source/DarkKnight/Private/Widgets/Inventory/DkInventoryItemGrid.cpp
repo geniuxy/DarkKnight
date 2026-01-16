@@ -15,9 +15,10 @@ void UDkInventoryItemGrid::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
 
-	GridPanel->SetMinDesiredSlotWidth(TileSize);
-	GridPanel->SetMinDesiredSlotHeight(TileSize);
-	GridPanel->SetSlotPadding(FMargin(SlotDistance));
+	if (GridPanel)
+	{
+		GridPanel->SetSlotPadding(FMargin(SlotDistance));
+	}
 
 	ConstructGrid();
 
@@ -51,6 +52,7 @@ void UDkInventoryItemGrid::ConstructGrid()
 			UDkInventoryGridSlot* GridSlot = CreateWidget<UDkInventoryGridSlot>(this, GridSlotClass);
 			GridPanel->AddChildToUniformGrid(GridSlot, j, i);
 
+			GridSlot->SetGridSlotSize(TileSize);
 			GridSlot->SetTileIndex(UDkInventoryFunctionLibrary::GetIndexFromPosition({i, j}, Columns));
 
 			GridSlots.Add(GridSlot);

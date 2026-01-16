@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 
 #include "DkTypes/DkEnums.h"
 #include "StructUtils/InstancedStruct.h"
@@ -22,6 +23,9 @@ struct DARKKNIGHT_API FInventoryItemManifest
 	UDkInventoryItem* Manifest(UObject* NewOuter);
 	EInventoryItemCategory GetItemCategory() const { return ItemCategory; }
 
+	template<typename T> requires std::derived_from<T, FInventoryItemFragment>
+	const T* GetFragmentOfTypeWithTag(const FGameplayTag& FragmentTag) const;
+
 private:
 	UPROPERTY(EditAnywhere, Category="Inventory",meta=(ExcludeBaseStruct))
 	TArray<TInstancedStruct<FInventoryItemFragment>> Fragments;
@@ -29,3 +33,22 @@ private:
 	UPROPERTY(EditAnywhere, Category="Inventory")
 	EInventoryItemCategory ItemCategory = EInventoryItemCategory::None;
 };
+
+template <typename T> requires std::derived_from<T, FInventoryItemFragment>
+const T* FInventoryItemManifest::GetFragmentOfTypeWithTag(const FGameplayTag& FragmentTag) const
+{
+	for (const TInstancedStruct<FInventoryItemFragment>& Fragment : Fragments)
+	{
+		if (const T* FragmentPtr = Fragment.GetPtr<T>())
+		{
+			if (!FragmentPtr->GetFragmentTag().MatchesTagExact(FragmentTag))
+			{
+				continue;
+			}
+
+			return FragmentPtr;
+		}
+	}
+
+	return nullptr;
+}

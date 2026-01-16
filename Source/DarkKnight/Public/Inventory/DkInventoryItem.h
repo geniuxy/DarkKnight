@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "DkInventoryItemManifest.h"
+#include "GameplayTagContainer.h"
 #include "StructUtils/InstancedStruct.h"
 #include "UObject/Object.h"
 #include "DkInventoryItem.generated.h"
@@ -28,3 +29,12 @@ private:
 	UPROPERTY(VisibleAnywhere, meta=(BaseStruct="/Script/DarkKnight.InventoryItemManifest"), Replicated)
 	FInstancedStruct ItemManifest;
 };
+
+template<typename FragmentType>
+const FragmentType* GetFragment(const UDkInventoryItem* Item, const FGameplayTag& Tag)
+{
+	if (!IsValid(Item)) return nullptr;
+
+	const FInventoryItemManifest& Manifest = Item->GetItemManifest();
+	return Manifest.GetFragmentOfTypeWithTag<FragmentType>(Tag);
+}

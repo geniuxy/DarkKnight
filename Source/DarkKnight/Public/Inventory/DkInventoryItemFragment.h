@@ -24,7 +24,7 @@ struct DARKKNIGHT_API FInventoryItemFragment
 	FInventoryItemFragment& operator=(FInventoryItemFragment&&) = default;
 
 private:
-	UPROPERTY(EditAnywhere, Category="Inventory")
+	UPROPERTY(EditAnywhere, meta = (Categories = "Dk.Inventory.Fragment"), Category="Inventory")
 	FGameplayTag FragmentTag = FGameplayTag::EmptyTag;
 
 public:
@@ -48,4 +48,17 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Inventory")
 	float GridPadding = 0.f;
+};
+
+USTRUCT(BlueprintType)
+struct FInventoryItemImageFragment : public FInventoryItemFragment
+{
+	GENERATED_BODY()
+
+private:
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	TObjectPtr<UTexture2D> Icon = nullptr;
+
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	FVector2D IconDimensions{44.f, 44.f};
 };

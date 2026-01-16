@@ -65,4 +65,8 @@ namespace DkGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(
 		Dk_Item_CraftingMaterial_ScorchPetalBlossom, "Dk.Item.CraftingMaterial.ScorchPetalBlossom", "火山土壤中绽放的花"
 	);
+
+	// Inventory Item Fragments Tag
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Inventory_Fragment_Grid, "Dk.Inventory.Fragment.Grid");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Inventory_Fragment_Icon, "Dk.Inventory.Fragment.Icon");
 }

@@ -8,7 +8,9 @@
 #include "Inventory/DkInventoryItem.h"
 #include "DkInventoryItemGrid.generated.h"
 
+struct FDkInventorySlotAvailabilityResult;
 class UDkInventoryItem;
+class UDkItemComponent;
 class UDkInventoryComponent;
 class UUniformGridPanel;
 class UDkInventoryGridSlot;
@@ -19,6 +21,9 @@ UCLASS()
 class DARKKNIGHT_API UDkInventoryItemGrid : public UCommonUserWidget
 {
 	GENERATED_BODY()
+
+public:
+	FDkInventorySlotAvailabilityResult HasRoomForItem(const UDkItemComponent* ItemComponent);
 
 protected:
 	//~Begin UUserWidget Function
@@ -37,6 +42,9 @@ protected:
 	void AddItem(UDkInventoryItem* Item);
 
 	bool MatchesCategory(const UDkInventoryItem* Item) const;
+
+	FDkInventorySlotAvailabilityResult HasRoomForItem(const UDkInventoryItem* Item);
+	FDkInventorySlotAvailabilityResult HasRoomForItem(const FInventoryItemManifest& Manifest);
 	/********/
 
 	/* 构造Grid */

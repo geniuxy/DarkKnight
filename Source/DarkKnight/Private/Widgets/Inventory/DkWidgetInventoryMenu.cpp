@@ -4,15 +4,27 @@
 #include "Widgets/Inventory/DkWidgetInventoryMenu.h"
 
 #include "CommonTextBlock.h"
+#include "DarkKnightDebugHelper.h"
+#include "Components/DkItemComponent.h"
 #include "Components/WidgetSwitcher.h"
 #include "Widgets/Inventory/DkInventoryItemGrid.h"
 #include "Widgets/Components/DkUICommonButtonBase.h"
 
 FDkInventorySlotAvailabilityResult UDkWidgetInventoryMenu::HasRoomForItem(UDkItemComponent* ItemComponent) const
 {
-	FDkInventorySlotAvailabilityResult Result;
-	Result.TotalRoomToFill = 1;
-	return Result;
+	switch (ItemComponent->GetItemManifest().GetItemCategory())
+	{
+	case EInventoryItemCategory::Equipment:
+		return GridEquipments->HasRoomForItem(ItemComponent);
+	case EInventoryItemCategory::Consumable:
+		return GridConsumables->HasRoomForItem(ItemComponent);
+	case EInventoryItemCategory::CraftingMaterial:
+		return GridCraftingMaterials->HasRoomForItem(ItemComponent);
+	case EInventoryItemCategory::None:
+		Debug::Print(TEXT("ItemComponent没有配置ItemCategory"));
+		return FDkInventorySlotAvailabilityResult();
+	}
+	return FDkInventorySlotAvailabilityResult();
 }
 
 void UDkWidgetInventoryMenu::NativeOnInitialized()
@@ -70,11 +82,11 @@ void UDkWidgetInventoryMenu::ShowSelectedUnderline(UDkInventoryItemGrid* Grid)
 void UDkWidgetInventoryMenu::SetActiveGrid(UDkInventoryItemGrid* Grid, UDkUICommonButtonBase* Button)
 {
 	SelectButton(Button);
-	
+
 	ShowSelectedUnderline(Grid);
-	
+
 	Switcher->SetActiveWidget(Grid);
-	
+
 	switch (Grid->GetItemCategory())
 	{
 	case EInventoryItemCategory::Equipment:

@@ -3,13 +3,30 @@
 
 #include "Widgets/Inventory/DkInventoryItemGrid.h"
 
-#include "DarkKnightDebugHelper.h"
 #include "Components/DkInventoryComponent.h"
+#include "Components/DkItemComponent.h"
 #include "Widgets/Inventory/DkInventoryGridSlot.h"
 
 #include "Components/UniformGridPanel.h"
-#include "FunctionLibrarys/DkCommonFunctionLibrary.h"
 #include "FunctionLibrarys/DkInventoryFunctionLibrary.h"
+#include "Inventory/DkInventorySlotAvailabilty.h"
+
+FDkInventorySlotAvailabilityResult UDkInventoryItemGrid::HasRoomForItem(const UDkItemComponent* ItemComponent)
+{
+	return HasRoomForItem(ItemComponent->GetItemManifest());
+}
+
+FDkInventorySlotAvailabilityResult UDkInventoryItemGrid::HasRoomForItem(const UDkInventoryItem* Item)
+{
+	return HasRoomForItem(Item->GetItemManifest());
+}
+
+FDkInventorySlotAvailabilityResult UDkInventoryItemGrid::HasRoomForItem(const FInventoryItemManifest& Manifest)
+{
+	FDkInventorySlotAvailabilityResult Result;
+	Result.TotalRoomToFill = 1;
+	return Result;
+}
 
 void UDkInventoryItemGrid::NativeOnInitialized()
 {
@@ -30,10 +47,9 @@ void UDkInventoryItemGrid::AddItem(UDkInventoryItem* Item)
 {
 	if (!MatchesCategory(Item)) return;
 
-	Debug::Print(FString::Printf(
-			TEXT("%s背包添加物品"),
-			*UDkCommonFunctionLibrary::GetStringValueOfEnum<EInventoryItemCategory>(GetItemCategory()))
-	);
+	FDkInventorySlotAvailabilityResult AvailabilityResult = HasRoomForItem(Item);
+
+	// 创建一个Widget来显示项目图标，并将其添加到网格上的正确位置。
 }
 
 bool UDkInventoryItemGrid::MatchesCategory(const UDkInventoryItem* Item) const

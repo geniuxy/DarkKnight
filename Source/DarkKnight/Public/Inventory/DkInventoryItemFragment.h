@@ -75,3 +75,25 @@ private:
 public:
 	FORCEINLINE UTexture2D* GetIcon() const { return Icon; }
 };
+
+USTRUCT(BlueprintType)
+struct FInventoryItemStackableFragment : public FInventoryItemFragment
+{
+	GENERATED_BODY()
+
+	FInventoryItemStackableFragment()
+	{
+		FragmentTag = DkGameplayTags::Dk_Inventory_Fragment_Stackable;
+	}
+
+private:
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	int32 MaxStackSize = 1;
+
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	int32 StackCount = 1;
+
+public:
+	FORCEINLINE int32 GetMaxStackSize() const { return MaxStackSize; }
+	FORCEINLINE int32 GetStackCount() const { return StackCount; }
+};

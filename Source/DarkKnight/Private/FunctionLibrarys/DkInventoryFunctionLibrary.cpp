@@ -11,6 +11,11 @@ int32 UDkInventoryFunctionLibrary::GetIndexFromPosition(const FIntPoint& Positio
 	return Position.X + Position.Y * Columns;
 }
 
+FIntPoint UDkInventoryFunctionLibrary::GetPositionFormIndex(const int32 Index, const int32 Columns)
+{
+	return FIntPoint(Index % Columns, Index / Columns);
+}
+
 UDkInventoryComponent* UDkInventoryFunctionLibrary::GetInventoryComponent(const APlayerController* PlayerController)
 {
 	if (!IsValid(PlayerController)) return nullptr;

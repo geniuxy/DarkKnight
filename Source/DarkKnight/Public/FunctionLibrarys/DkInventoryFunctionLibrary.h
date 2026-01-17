@@ -20,5 +20,8 @@ public:
 	static int32 GetIndexFromPosition(const FIntPoint& Position, const int32 Columns);
 	
 	UFUNCTION(BlueprintCallable, Category="Inventory Function Library")
+	static FIntPoint GetPositionFormIndex(const int32 Index, const int32 Columns);
+	
+	UFUNCTION(BlueprintCallable, Category="Inventory Function Library")
 	static UDkInventoryComponent* GetInventoryComponent(const APlayerController* PlayerController);
 };

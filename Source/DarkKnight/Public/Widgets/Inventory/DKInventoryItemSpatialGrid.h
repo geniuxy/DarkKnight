@@ -24,10 +24,12 @@ protected:
 	/* 添加/删除Item */
 	virtual void AddItemToIndex(UDkInventoryItem* NewItem, int32 Index, int32 StackAmount, bool bStackable) override;
 	FVector2D GetDrawSize(const FInventoryItemGridFragment* GridFragment) const;
+	void AddSlottedItemToCanvas(
+		const int32 Index, const FInventoryItemGridFragment* GridFragment, UDkInventorySlottedItem* SlottedItem
+	) const;
 	/********/
-	
+
 	/* 构造Grid */
 	virtual void ConstructGrid() override;
 	/********/
-
 };

@@ -34,18 +34,31 @@ void UDKInventoryItemSpatialGrid::AddItemToIndex(
 	SlottedItem->SetImageBrush(Brush);
 
 	// 把slotted item加到CanvasPanel
-
-	// Store the new widget in a container.
+	AddSlottedItemToCanvas(Index, GridFragment, SlottedItem);
+	
+	// 把slotted item存入Map中
+	SlottedItemMap.Add(Index, SlottedItem);
 }
 
 FVector2D UDKInventoryItemSpatialGrid::GetDrawSize(const FInventoryItemGridFragment* GridFragment) const
 {
-	const float IconTileWidth = TileSize - GridFragment->GetGridPadding() * 2;
-	return GridFragment->GetGridSize() * IconTileWidth;
+	return GridFragment->GetGridSize() * TileSize - GridFragment->GetGridPadding() * 2;
+}
+
+void UDKInventoryItemSpatialGrid::AddSlottedItemToCanvas(
+	const int32 Index, const FInventoryItemGridFragment* GridFragment, UDkInventorySlottedItem* SlottedItem) const
+{
+	GridCanvasPanel->AddChild(SlottedItem);
+	UCanvasPanelSlot* CanvasSlot = UWidgetLayoutLibrary::SlotAsCanvasSlot(SlottedItem);
+	CanvasSlot->SetSize(GetDrawSize(GridFragment));
+	const FVector2D DrawPos = UDkInventoryFunctionLibrary::GetPositionFormIndex(Index, Columns) * TileSize;
+	const FVector2D DrawPosWithPadding = DrawPos + FVector2D(GridFragment->GetGridPadding());
+	CanvasSlot->SetPosition(DrawPosWithPadding);
 }
 
 void UDKInventoryItemSpatialGrid::ConstructGrid()
 {
+	GridSlots.Reset();
 	GridSlots.Reserve(Rows * Columns);
 
 	for (int32 j = 0; j < Rows; ++j)

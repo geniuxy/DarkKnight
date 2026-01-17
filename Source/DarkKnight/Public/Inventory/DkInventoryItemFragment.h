@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
 #include "DarkKnight/DarkKnight.h"
+#include "DkGameplayTags.h"
 #include "DkInventoryItemFragment.generated.h"
 
 
@@ -24,7 +25,7 @@ struct DARKKNIGHT_API FInventoryItemFragment
 	FInventoryItemFragment(FInventoryItemFragment&&) = default;
 	FInventoryItemFragment& operator=(FInventoryItemFragment&&) = default;
 
-private:
+protected:
 	UPROPERTY(EditAnywhere, meta = (Categories = "Dk.Inventory.Fragment"), Category="Inventory")
 	FGameplayTag FragmentTag = FGameplayTag::EmptyTag;
 
@@ -36,6 +37,11 @@ USTRUCT(BlueprintType)
 struct FInventoryItemGridFragment : public FInventoryItemFragment
 {
 	GENERATED_BODY()
+
+	FInventoryItemGridFragment()
+	{
+		FragmentTag = DkGameplayTags::Dk_Inventory_Fragment_Grid;
+	}
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Inventory")
@@ -53,6 +59,11 @@ USTRUCT(BlueprintType)
 struct FInventoryItemImageFragment : public FInventoryItemFragment
 {
 	GENERATED_BODY()
+
+	FInventoryItemImageFragment()
+	{
+		FragmentTag = DkGameplayTags::Dk_Inventory_Fragment_Icon;
+	}
 
 private:
 	UPROPERTY(EditAnywhere, Category="Inventory")

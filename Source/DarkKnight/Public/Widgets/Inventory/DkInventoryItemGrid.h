@@ -54,8 +54,15 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Inventory")
 	TSubclassOf<UDkInventorySlottedItem> SlottedItemClass;
+
+	UPROPERTY()
+	TMap<int32, TObjectPtr<UDkInventorySlottedItem>> SlottedItemMap;
 	/********/
 
+	/* 更新GridSlot背景 */
+	void UpdateGridSlots(UDkInventoryItem* NewItem, const int32 Index);
+	/********/
+	
 	/* 构造Grid */
 	virtual void ConstructGrid();
 

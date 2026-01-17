@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+/* Common Types */
 UENUM(BlueprintType)
 enum class EDkTextJustify : uint8
 {
@@ -8,6 +9,16 @@ enum class EDkTextJustify : uint8
 	Right UMETA(DisplayName = "Right")
 };
 
+UENUM(BlueprintType)
+enum class EDkInputMode : uint8
+{
+	GameOnly,
+	UIOnly
+};
+
+/********/
+
+/* UI Types */
 UENUM(BlueprintType)
 enum class EConfirmScreenType :uint8
 {
@@ -34,13 +45,9 @@ enum class EOptionsListDataModifyReason : uint8
 	ResetToDefault
 };
 
-UENUM(BlueprintType)
-enum class EDkInputMode : uint8
-{
-	GameOnly,
-	UIOnly
-};
+/********/
 
+/* Inventory Types */
 UENUM(BlueprintType)
 enum class EInventoryItemCategory: uint8
 {
@@ -49,3 +56,14 @@ enum class EInventoryItemCategory: uint8
 	CraftingMaterial,
 	None
 };
+
+UENUM(BlueprintType)
+enum class EInventoryGridSlotState: uint8
+{
+	Unoccupied,
+	Occupied,
+	Selected,
+	GrayedOut
+};
+
+/********/

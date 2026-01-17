@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "CommonUserWidget.h"
+#include "DkTypes/DkEnums.h"
 #include "DkInventoryGridSlot.generated.h"
 
 class USizeBox;
@@ -22,14 +23,35 @@ public:
 
 	void SetGridSlotSize(float InSlotSize);
 
+	EInventoryGridSlotState GetGridSlotState() const { return GridSlotState; }
+
+	void SetUnoccupiedTexture();
+	void SetOccupiedTexture();
+	void SetSelectedTexture();
+	void SetGrayedOutTexture();
+
 private:
 	//***** Bound Widgets *****//
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<USizeBox> SizeBox_GridSlot;
-	
+
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UCommonLazyImage> Image_GridSlot;
 	//***** Bound Widgets *****//
+
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	TSoftObjectPtr<UTexture2D> GridSlotBgImageUnoccupied;
+
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	TSoftObjectPtr<UTexture2D> GridSlotBgImageOccupied;
+
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	TSoftObjectPtr<UTexture2D> GridSlotBgImageSelected;
+
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	TSoftObjectPtr<UTexture2D> GridSlotBgImageGrayedOut;
+
+	EInventoryGridSlotState GridSlotState;
 
 	int32 TileIndex;
 };

@@ -29,6 +29,10 @@ protected:
 	) const;
 	/********/
 
+	/* 更新GridSlot背景 */
+	virtual void UpdateGridSlots(UDkInventoryItem* NewItem, const int32 Index) override;
+	/********/
+
 	/* 构造Grid */
 	virtual void ConstructGrid() override;
 	/********/

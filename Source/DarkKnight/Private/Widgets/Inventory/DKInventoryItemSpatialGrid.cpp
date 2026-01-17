@@ -35,7 +35,7 @@ void UDKInventoryItemSpatialGrid::AddItemToIndex(
 
 	// 把slotted item加到CanvasPanel
 	AddSlottedItemToCanvas(Index, GridFragment, SlottedItem);
-	
+
 	// 把slotted item存入Map中
 	SlottedItemMap.Add(Index, SlottedItem);
 }
@@ -55,6 +55,26 @@ void UDKInventoryItemSpatialGrid::AddSlottedItemToCanvas(
 	const FVector2D DrawPosWithPadding = DrawPos + FVector2D(GridFragment->GetGridPadding());
 	CanvasSlot->SetPosition(DrawPosWithPadding);
 }
+
+void UDKInventoryItemSpatialGrid::UpdateGridSlots(UDkInventoryItem* NewItem, const int32 Index)
+{
+	check(GridSlots.IsValidIndex(Index));
+
+	const FInventoryItemGridFragment* GridFragment =
+		GetFragment<FInventoryItemGridFragment>(NewItem, DkGameplayTags::Dk_Inventory_Fragment_Grid);
+	if (!GridFragment) return;
+
+	const FIntPoint Dimensions = GridFragment ? GridFragment->GetGridSize() : FIntPoint(1, 1);
+
+	UDkInventoryFunctionLibrary::ForEach2D(
+		GridSlots, Index, Dimensions, Columns,
+		[](UDkInventoryGridSlot* GridSlot)
+		{
+			GridSlot->SetOccupiedTexture();
+		}
+	);
+}
+
 
 void UDKInventoryItemSpatialGrid::ConstructGrid()
 {

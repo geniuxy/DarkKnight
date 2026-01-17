@@ -60,7 +60,7 @@ protected:
 	/********/
 
 	/* 更新GridSlot背景 */
-	void UpdateGridSlots(UDkInventoryItem* NewItem, const int32 Index);
+	virtual void UpdateGridSlots(UDkInventoryItem* NewItem, const int32 Index);
 	/********/
 	
 	/* 构造Grid */

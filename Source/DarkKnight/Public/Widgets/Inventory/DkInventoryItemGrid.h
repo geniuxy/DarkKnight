@@ -9,6 +9,8 @@
 #include "Inventory/DkInventorySlotAvailabilty.h"
 #include "DkInventoryItemGrid.generated.h"
 
+struct FInventoryItemGridFragment;
+class UDkInventorySlottedItem;
 struct FDkInventorySlotAvailabilityResult;
 class UDkInventoryItem;
 class UDkItemComponent;
@@ -43,11 +45,15 @@ protected:
 	void AddItem(UDkInventoryItem* Item);
 
 	void AddItemToIndices(const FDkInventorySlotAvailabilityResult& Result, UDkInventoryItem* NewItem);
+	virtual void AddItemToIndex(UDkInventoryItem* NewItem, int32 Index, int32 StackAmount, bool bStackable);
 
 	bool MatchesCategory(const UDkInventoryItem* Item) const;
 
 	FDkInventorySlotAvailabilityResult HasRoomForItem(const UDkInventoryItem* Item);
 	FDkInventorySlotAvailabilityResult HasRoomForItem(const FInventoryItemManifest& Manifest);
+
+	UPROPERTY(EditAnywhere, Category = "Inventory")
+	TSubclassOf<UDkInventorySlottedItem> SlottedItemClass;
 	/********/
 
 	/* 构造Grid */

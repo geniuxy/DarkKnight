@@ -59,7 +59,14 @@ void UDkInventoryItemGrid::AddItem(UDkInventoryItem* Item)
 
 void UDkInventoryItemGrid::AddItemToIndices(const FDkInventorySlotAvailabilityResult& Result, UDkInventoryItem* NewItem)
 {
-	
+	for (const auto& Availability : Result.SlotAvailabilities)
+	{
+		AddItemToIndex(NewItem, Availability.Index, Availability.AmountToFill, Result.bStackable);
+	}
+}
+
+void UDkInventoryItemGrid::AddItemToIndex(UDkInventoryItem* NewItem, int32 Index, int32 StackAmount, bool bStackable)
+{
 }
 
 bool UDkInventoryItemGrid::MatchesCategory(const UDkInventoryItem* Item) const

@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
+#include "DarkKnight/DarkKnight.h"
 #include "DkInventoryItemFragment.generated.h"
 
 
@@ -28,8 +29,7 @@ private:
 	FGameplayTag FragmentTag = FGameplayTag::EmptyTag;
 
 public:
-	FORCEINLINE FGameplayTag GetFragmentTag() const { return FragmentTag; }
-	FORCEINLINE void SetFragmentTag(FGameplayTag Tag) { FragmentTag = Tag; }
+	LIST_DATA_ACCESSOR(FGameplayTag, FragmentTag)
 };
 
 USTRUCT(BlueprintType)
@@ -37,17 +37,16 @@ struct FInventoryItemGridFragment : public FInventoryItemFragment
 {
 	GENERATED_BODY()
 
-	FIntPoint GetGridSize() const { return GridSize; }
-	void SetGridSize(const FIntPoint& Size) { GridSize = Size; }
-	float GetGridPadding() const { return GridPadding; }
-	void SetGridPadding(float Padding) { GridPadding = Padding; }
-
 private:
 	UPROPERTY(EditAnywhere, Category = "Inventory")
 	FIntPoint GridSize{1, 1};
 
 	UPROPERTY(EditAnywhere, Category = "Inventory")
 	float GridPadding = 0.f;
+
+public:
+	LIST_DATA_ACCESSOR(FIntPoint, GridSize)
+	LIST_DATA_ACCESSOR(float, GridPadding)
 };
 
 USTRUCT(BlueprintType)
@@ -61,4 +60,7 @@ private:
 
 	UPROPERTY(EditAnywhere, Category="Inventory")
 	FVector2D IconDimensions{44.f, 44.f};
+
+public:
+	FORCEINLINE UTexture2D* GetIcon() const { return Icon; }
 };

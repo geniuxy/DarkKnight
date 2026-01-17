@@ -3,15 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "DarkKnight/DarkKnight.h"
 #include "DkTypes/DkEnums.h"
 #include "DkTypes/DkStructs.h"
 #include "UObject/Object.h"
 #include "DkUIListDataObjectBase.generated.h"
 
-
-#define LIST_DATA_ACCESSOR(DataType, PropertyName) \
-	FORCEINLINE DataType Get##PropertyName() const { return PropertyName; } \
-	void Set##PropertyName(DataType In##PropertyName) { PropertyName = In##PropertyName; }
 
 /**
  * 

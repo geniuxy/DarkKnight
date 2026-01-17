@@ -27,6 +27,8 @@ protected:
 	void AddSlottedItemToCanvas(
 		const int32 Index, const FInventoryItemGridFragment* GridFragment, UDkInventorySlottedItem* SlottedItem
 	) const;
+
+	virtual FDkInventorySlotAvailabilityResult HasRoomForItem(const FInventoryItemManifest& Manifest) override;
 	/********/
 
 	/* 更新GridSlot背景 */

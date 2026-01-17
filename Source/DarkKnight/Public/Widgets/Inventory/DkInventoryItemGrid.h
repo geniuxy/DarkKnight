@@ -50,7 +50,7 @@ protected:
 	bool MatchesCategory(const UDkInventoryItem* Item) const;
 
 	FDkInventorySlotAvailabilityResult HasRoomForItem(const UDkInventoryItem* Item);
-	FDkInventorySlotAvailabilityResult HasRoomForItem(const FInventoryItemManifest& Manifest);
+	virtual FDkInventorySlotAvailabilityResult HasRoomForItem(const FInventoryItemManifest& Manifest);
 
 	UPROPERTY(EditAnywhere, Category = "Inventory")
 	TSubclassOf<UDkInventorySlottedItem> SlottedItemClass;

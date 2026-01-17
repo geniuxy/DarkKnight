@@ -5,6 +5,7 @@
 #include "Inventory/DkInventoryItem.h"
 
 #include "CommonLazyImage.h"
+#include "CommonTextBlock.h"
 
 UDkInventoryItem* UDkInventorySlottedItem::GetInventoryItem() const
 {
@@ -19,4 +20,17 @@ void UDkInventorySlottedItem::SetInventoryItem(UDkInventoryItem* InItem)
 void UDkInventorySlottedItem::SetImageBrush(const FSlateBrush& Brush) const
 {
 	Image_Icon->SetBrush(Brush);
+}
+
+void UDkInventorySlottedItem::UpdateStackCount(int32 StackCount)
+{
+	if (StackCount > 0)
+	{
+		Text_StackCount->SetVisibility(ESlateVisibility::Visible);
+		Text_StackCount->SetText(FText::AsNumber(StackCount));
+	}
+	else
+	{
+		Text_StackCount->SetVisibility(ESlateVisibility::Collapsed);
+	}
 }

@@ -32,6 +32,9 @@ void UDKInventoryItemSpatialGrid::AddItemToIndex(
 	Brush.DrawAs = ESlateBrushDrawType::Image;
 	Brush.ImageSize = GetDrawSize(GridFragment);
 	SlottedItem->SetImageBrush(Brush);
+	SlottedItem->SetbIsStackable(bStackable);
+	const int32 StackUpdateAmount = bStackable ? StackAmount : 0;
+	SlottedItem->UpdateStackCount(StackUpdateAmount);
 
 	// 把slotted item加到CanvasPanel
 	AddSlottedItemToCanvas(Index, GridFragment, SlottedItem);
@@ -54,6 +57,25 @@ void UDKInventoryItemSpatialGrid::AddSlottedItemToCanvas(
 	const FVector2D DrawPos = UDkInventoryFunctionLibrary::GetPositionFormIndex(Index, Columns) * TileSize;
 	const FVector2D DrawPosWithPadding = DrawPos + FVector2D(GridFragment->GetGridPadding());
 	CanvasSlot->SetPosition(DrawPosWithPadding);
+}
+
+FDkInventorySlotAvailabilityResult UDKInventoryItemSpatialGrid::HasRoomForItem(const FInventoryItemManifest& Manifest)
+{
+	FDkInventorySlotAvailabilityResult Result;
+	Result.TotalRoomToFill = 7;
+	Result.bStackable = true;
+
+	FDkInventorySlotAvailability SlotAvailability;
+	SlotAvailability.AmountToFill = 2;
+	SlotAvailability.Index = 0;
+	Result.SlotAvailabilities.Add(MoveTemp(SlotAvailability));
+
+	FDkInventorySlotAvailability SlotAvailability2;
+	SlotAvailability2.AmountToFill = 5;
+	SlotAvailability2.Index = 1;
+	Result.SlotAvailabilities.Add(MoveTemp(SlotAvailability2));
+
+	return Result;
 }
 
 void UDKInventoryItemSpatialGrid::UpdateGridSlots(UDkInventoryItem* NewItem, const int32 Index)

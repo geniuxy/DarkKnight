@@ -23,15 +23,7 @@ FDkInventorySlotAvailabilityResult UDkInventoryItemGrid::HasRoomForItem(const UD
 
 FDkInventorySlotAvailabilityResult UDkInventoryItemGrid::HasRoomForItem(const FInventoryItemManifest& Manifest)
 {
-	FDkInventorySlotAvailabilityResult Result;
-	Result.TotalRoomToFill = 1;
-
-	FDkInventorySlotAvailability SlotAvailability;
-	SlotAvailability.AmountToFill = 1;
-	SlotAvailability.Index = 0;
-
-	Result.SlotAvailabilities.Add(MoveTemp(SlotAvailability));
-	return Result;
+	return FDkInventorySlotAvailabilityResult();
 }
 
 void UDkInventoryItemGrid::NativeOnInitialized()

@@ -7,6 +7,7 @@
 #include "DarkKnight/DarkKnight.h"
 #include "DkInventorySlottedItem.generated.h"
 
+class UCommonTextBlock;
 class UDkInventoryItem;
 class UCommonLazyImage;
 /**
@@ -20,14 +21,20 @@ class DARKKNIGHT_API UDkInventorySlottedItem : public UCommonUserWidget
 public:
 	UDkInventoryItem* GetInventoryItem() const;
 	void SetInventoryItem(UDkInventoryItem* InItem);
+
 	void SetImageBrush(const FSlateBrush& Brush) const;
+
+	void UpdateStackCount(int32 StackCount);
 
 private:
 	//***** Bound Widgets *****//
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UCommonLazyImage> Image_Icon;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UCommonTextBlock> Text_StackCount;
 	//***** Bound Widgets *****//
-	
+
 	int32 GridIndex;
 	FIntPoint GridDimension;
 	TWeakObjectPtr<UDkInventoryItem> InventoryItem;

@@ -2,6 +2,7 @@
 
 
 #include "Widgets/Inventory/DkInventoryGridSlot.h"
+#include "Inventory/DkInventoryItem.h"
 
 #include "CommonLazyImage.h"
 #include "Components/SizeBox.h"
@@ -34,4 +35,14 @@ void UDkInventoryGridSlot::SetGrayedOutTexture()
 {
 	GridSlotState = EInventoryGridSlotState::GrayedOut;
 	Image_GridSlot->SetBrushFromLazyTexture(GridSlotBgImageGrayedOut);
+}
+
+UDkInventoryItem* UDkInventoryGridSlot::GetInventoryItem() const
+{
+	return InventoryItem.IsValid() ? InventoryItem.Get() : nullptr;
+}
+
+void UDkInventoryGridSlot::SetInventoryItem(UDkInventoryItem* InItem)
+{
+	InventoryItem = InItem;
 }

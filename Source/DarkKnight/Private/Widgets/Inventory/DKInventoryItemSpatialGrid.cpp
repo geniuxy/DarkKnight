@@ -78,21 +78,30 @@ FDkInventorySlotAvailabilityResult UDKInventoryItemSpatialGrid::HasRoomForItem(c
 	return Result;
 }
 
-void UDKInventoryItemSpatialGrid::UpdateGridSlots(UDkInventoryItem* NewItem, const int32 Index)
+void UDKInventoryItemSpatialGrid::UpdateGridSlots(
+	UDkInventoryItem* NewItem, const int32 Index, int32 StackAmount, bool bStackable)
 {
 	check(GridSlots.IsValidIndex(Index));
+
+	if (bStackable)
+	{
+		GridSlots[Index]->SetStackCount(StackAmount);
+	}
 
 	const FInventoryItemGridFragment* GridFragment =
 		GetFragment<FInventoryItemGridFragment>(NewItem, DkGameplayTags::Dk_Inventory_Fragment_Grid);
 	if (!GridFragment) return;
 
 	const FIntPoint Dimensions = GridFragment ? GridFragment->GetGridSize() : FIntPoint(1, 1);
-
+	
 	UDkInventoryFunctionLibrary::ForEach2D(
 		GridSlots, Index, Dimensions, Columns,
-		[](UDkInventoryGridSlot* GridSlot)
+		[&](UDkInventoryGridSlot* GridSlot) // [&]表示以引用的方式捕获当前作用域中的所有局部变量
 		{
+			GridSlot->SetInventoryItem(NewItem);
+			GridSlot->SetUpperLeftIndex(Index);
 			GridSlot->SetOccupiedTexture();
+			GridSlot->SetbAvailable(false);
 		}
 	);
 }

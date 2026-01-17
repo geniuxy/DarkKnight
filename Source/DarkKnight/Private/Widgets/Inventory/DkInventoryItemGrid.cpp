@@ -54,7 +54,7 @@ void UDkInventoryItemGrid::AddItemToIndices(const FDkInventorySlotAvailabilityRe
 	for (const auto& Availability : Result.SlotAvailabilities)
 	{
 		AddItemToIndex(NewItem, Availability.Index, Availability.AmountToFill, Result.bStackable);
-		UpdateGridSlots(NewItem, Availability.Index);
+		UpdateGridSlots(NewItem, Availability.Index, Availability.AmountToFill, Result.bStackable);
 	}
 }
 
@@ -67,7 +67,8 @@ bool UDkInventoryItemGrid::MatchesCategory(const UDkInventoryItem* Item) const
 	return Item->GetItemManifest().GetItemCategory() == ItemCategory;
 }
 
-void UDkInventoryItemGrid::UpdateGridSlots(UDkInventoryItem* NewItem, const int32 Index)
+void UDkInventoryItemGrid::UpdateGridSlots(
+	UDkInventoryItem* NewItem, const int32 Index, int32 StackAmount, bool bStackable)
 {
 	check(GridSlots.IsValidIndex(Index));
 

@@ -4,9 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "CommonUserWidget.h"
+#include "DarkKnight/DarkKnight.h"
 #include "DkTypes/DkEnums.h"
 #include "DkInventoryGridSlot.generated.h"
 
+class UDkInventoryItem;
 class USizeBox;
 class UCommonLazyImage;
 /**
@@ -18,9 +20,6 @@ class DARKKNIGHT_API UDkInventoryGridSlot : public UCommonUserWidget
 	GENERATED_BODY()
 
 public:
-	void SetTileIndex(int32 Index) { TileIndex = Index; }
-	int32 GetTileIndex() const { return TileIndex; }
-
 	void SetGridSlotSize(float InSlotSize);
 
 	EInventoryGridSlotState GetGridSlotState() const { return GridSlotState; }
@@ -29,6 +28,9 @@ public:
 	void SetOccupiedTexture();
 	void SetSelectedTexture();
 	void SetGrayedOutTexture();
+
+	UDkInventoryItem* GetInventoryItem() const;
+	void SetInventoryItem(UDkInventoryItem* InItem);
 
 private:
 	//***** Bound Widgets *****//
@@ -53,5 +55,15 @@ private:
 
 	EInventoryGridSlotState GridSlotState;
 
+	TWeakObjectPtr<UDkInventoryItem> InventoryItem;
 	int32 TileIndex;
+	int32 StackCount;
+	int32 UpperLeftIndex = INDEX_NONE;
+	bool bAvailable;
+
+public:
+	LIST_DATA_ACCESSOR(int32, TileIndex)
+	LIST_DATA_ACCESSOR(int32, StackCount)
+	LIST_DATA_ACCESSOR(int32, UpperLeftIndex)
+	LIST_DATA_ACCESSOR(bool, bAvailable)
 };

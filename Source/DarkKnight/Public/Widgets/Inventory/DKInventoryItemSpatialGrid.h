@@ -32,7 +32,9 @@ protected:
 	/********/
 
 	/* 更新GridSlot背景 */
-	virtual void UpdateGridSlots(UDkInventoryItem* NewItem, const int32 Index) override;
+	virtual void UpdateGridSlots(
+		UDkInventoryItem* NewItem, const int32 Index, int32 StackAmount, bool bStackable
+	) override;
 	/********/
 
 	/* 构造Grid */

@@ -35,9 +35,9 @@ private:
 	TObjectPtr<UCommonTextBlock> Text_StackCount;
 	//***** Bound Widgets *****//
 
+	TWeakObjectPtr<UDkInventoryItem> InventoryItem;
 	int32 GridIndex;
 	FIntPoint GridDimension;
-	TWeakObjectPtr<UDkInventoryItem> InventoryItem;
 	bool bIsStackable = false;
 
 public:

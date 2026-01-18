@@ -48,7 +48,13 @@ protected:
 	void AddItemToIndices(const FDkInventorySlotAvailabilityResult& Result, UDkInventoryItem* NewItem);
 	virtual void AddItemToIndex(UDkInventoryItem* NewItem, int32 Index, int32 StackAmount, bool bStackable);
 
-	bool HasRoomAtIndex(const UDkInventoryGridSlot* GridSlot, const FIntPoint& Dimension);
+	bool HasRoomAtIndex(
+		const UDkInventoryGridSlot* GridSlot,
+		const FIntPoint& Dimension,
+		const TSet<int32>& CheckedIndices,
+		TSet<int32>& OutTemporarilyClaimed
+	);
+	bool CheckSlotConstraints(const UDkInventoryGridSlot* SubGridSlot) const;
 	bool MatchesCategory(const UDkInventoryItem* Item) const;
 
 	FDkInventorySlotAvailabilityResult HasRoomForItem(const UDkInventoryItem* Item);
@@ -64,7 +70,7 @@ protected:
 	/* 更新GridSlot背景 */
 	virtual void UpdateGridSlots(UDkInventoryItem* NewItem, const int32 Index, int32 StackAmount, bool bStackable);
 	/********/
-	
+
 	/* 构造Grid */
 	virtual void ConstructGrid();
 
@@ -82,7 +88,7 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Inventory")
 	float TileSize = 50.f;
-	
+
 	UPROPERTY(EditAnywhere, Category = "Inventory")
 	float SlotDistance = 8.f;
 	/********/

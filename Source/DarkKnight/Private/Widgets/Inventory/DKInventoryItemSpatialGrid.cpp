@@ -81,18 +81,12 @@ FDkInventorySlotAvailabilityResult UDKInventoryItemSpatialGrid::HasRoomForItem(c
 		//   物品能否放进这里？（是否超出网格边界？）
 		const FInventoryItemGridFragment* GridFragment = Manifest.GetFragmentOfType<FInventoryItemGridFragment>();
 		const FIntPoint& Dimension = GridFragment ? GridFragment->GetGridSize() : FIntPoint(1, 1);
-		if (HasRoomAtIndex(GridSlot, Dimension))
+		TSet<int32> TemporarilyClaimed;
+		if (HasRoomAtIndex(GridSlot, Dimension, CheckedIndices, TemporarilyClaimed))
 		{
 			continue;
 		}
-		//   该索引处是否有空位？（是否有其他物品阻挡？）
-
-		//   检查其它重要条件——在二维范围内做 ForEach2D
-		//     该索引是否已被占用？
-		//     是否有有效物品？
-		//     该物品与待添加物品类型相同吗？
-		//     如果相同，那么它是可堆叠物品吗？
-		//     如果可堆叠，该槽位是否已达到最大堆叠上限？
+		CheckedIndices.Append(TemporarilyClaimed);
 		//   需要填充多少？
 		//   更新剩余待填充数量（AmountToFill）
 	}

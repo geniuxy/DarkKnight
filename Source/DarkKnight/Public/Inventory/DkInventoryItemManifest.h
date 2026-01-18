@@ -37,7 +37,7 @@ private:
 	UPROPERTY(EditAnywhere, Category="Inventory")
 	EInventoryItemCategory ItemCategory = EInventoryItemCategory::None;
 
-	UPROPERTY(EditAnywhere, Category="Inventory")
+	UPROPERTY(EditAnywhere, Category="Inventory",meta = (Categories = "Dk.Item"))
 	FGameplayTag ItemTag;
 };
 

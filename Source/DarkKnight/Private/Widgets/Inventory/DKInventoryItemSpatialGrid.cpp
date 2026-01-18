@@ -62,18 +62,22 @@ void UDKInventoryItemSpatialGrid::AddSlottedItemToCanvas(
 FDkInventorySlotAvailabilityResult UDKInventoryItemSpatialGrid::HasRoomForItem(const FInventoryItemManifest& Manifest)
 {
 	FDkInventorySlotAvailabilityResult Result;
-	Result.TotalRoomToFill = 7;
-	Result.bStackable = true;
-
-	FDkInventorySlotAvailability SlotAvailability;
-	SlotAvailability.AmountToFill = 2;
-	SlotAvailability.Index = 0;
-	Result.SlotAvailabilities.Add(MoveTemp(SlotAvailability));
-
-	FDkInventorySlotAvailability SlotAvailability2;
-	SlotAvailability2.AmountToFill = 5;
-	SlotAvailability2.Index = 1;
-	Result.SlotAvailabilities.Add(MoveTemp(SlotAvailability2));
+	// 判断物品是否可堆叠。
+	// 确定需要添加多少“堆”。
+	// For each Grid Slot:
+	//   如果已经没有剩余要填充的数量，提前跳出循环。
+	//   该索引是否已被占用(claimed)？
+	//   物品能否放进这里？（即是否超出网格边界？）
+	//   该索引处是否有空位？（即是否有其他物品阻挡？）
+	//   检查其它重要条件——在二维范围内做 ForEach2D
+	//     该索引是否已被占用？
+	//     是否有有效物品？
+	//     该物品与待添加物品类型相同吗？
+	//     如果相同，那么它是可堆叠物品吗？
+	//     如果可堆叠，该槽位是否已达到最大堆叠上限？
+	//   需要填充多少？
+	//   更新剩余待填充数量
+	// 剩余量是多少？
 
 	return Result;
 }

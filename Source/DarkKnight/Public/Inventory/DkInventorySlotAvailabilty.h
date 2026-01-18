@@ -13,10 +13,10 @@ struct FDkInventorySlotAvailability
 	{
 	}
 
-	FDkInventorySlotAvailability(int32 ItemIndex, int32 Room, bool bHasItem)
+	FDkInventorySlotAvailability(int32 ItemIndex, int32 InAmountToFill, bool bHasItem)
 	{
 		Index = ItemIndex;
-		AmountToFill = Room;
+		AmountToFill = InAmountToFill;
 		bItemAtIndex = bHasItem;
 	}
 

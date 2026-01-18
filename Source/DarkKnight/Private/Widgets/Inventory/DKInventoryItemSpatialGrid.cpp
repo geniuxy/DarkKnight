@@ -78,7 +78,7 @@ int32 UDKInventoryItemSpatialGrid::CalculateFillAmountForSlot(
 int32 UDKInventoryItemSpatialGrid::GetStackAmount(const UDkInventoryGridSlot* GridSlot) const
 {
 	int32 CurrentSlotStackCount = GridSlot->GetStackCount();
-	// 如果在一个并不储存
+	// 如果在一个并不储存数量的格子，则返回左上角格子的StackCount
 	if (const int32 UpperLeftIndex = GridSlot->GetStackCount(); UpperLeftIndex != INDEX_NONE)
 	{
 		UDkInventoryGridSlot* UpperLeftGridSlot = GridSlots[UpperLeftIndex];
@@ -118,15 +118,24 @@ FDkInventorySlotAvailabilityResult UDKInventoryItemSpatialGrid::HasRoomForItem(c
 		{
 			continue;
 		}
-		CheckedIndices.Append(TemporarilyClaimed);
-		//   需要填充多少？
+		//   需要填充多少？如果是0，说明这个格子不需要考虑
 		const int32 AmountToFillInSlot =
 			CalculateFillAmountForSlot(Result.bStackable, MaxStackCount, AmountToFill, GridSlot);
 		if (AmountToFillInSlot == 0) continue;
+		//   更新已检查索引数组
+		CheckedIndices.Append(TemporarilyClaimed);
+		//   更新SlotAvailabilityResult
+		Result.TotalRoomToFill += AmountToFillInSlot;
+		Result.SlotAvailabilities.Emplace(
+			IsValid(GridSlot->GetInventoryItem()) ? GridSlot->GetUpperLeftIndex() : GridSlot->GetTileIndex(),
+			Result.bStackable ? AmountToFillInSlot : 0,
+			IsValid(GridSlot->GetInventoryItem())
+		);
 		//   更新剩余待填充数量（AmountToFill）
 		AmountToFill -= AmountToFillInSlot;
+		// 剩余量是多少？
+		Result.Remainder = AmountToFill;
 	}
-	// 剩余量是多少？
 
 	return Result;
 }

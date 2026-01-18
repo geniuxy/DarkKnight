@@ -62,7 +62,11 @@ void UDKInventoryItemSpatialGrid::AddSlottedItemToCanvas(
 FDkInventorySlotAvailabilityResult UDKInventoryItemSpatialGrid::HasRoomForItem(const FInventoryItemManifest& Manifest)
 {
 	FDkInventorySlotAvailabilityResult Result;
-	// 判断物品是否可堆叠。
+	// 判断物品是否可堆叠
+	const FInventoryItemStackableFragment* StackableFragment =
+		Manifest.GetFragmentOfType<FInventoryItemStackableFragment>();
+	Result.bStackable = StackableFragment != nullptr;
+	
 	// 确定需要添加多少“堆”。
 	// For each Grid Slot:
 	//   如果已经没有剩余要填充的数量，提前跳出循环。

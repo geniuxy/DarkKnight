@@ -23,13 +23,16 @@ struct DARKKNIGHT_API FInventoryItemManifest
 	UDkInventoryItem* Manifest(UObject* NewOuter);
 	EInventoryItemCategory GetItemCategory() const { return ItemCategory; }
 
-	template<typename T> requires std::derived_from<T, FInventoryItemFragment>
+	template <typename T> requires std::derived_from<T, FInventoryItemFragment>
 	const T* GetFragmentOfTypeWithTag(const FGameplayTag& FragmentTag) const;
 
+	template <typename T> requires std::derived_from<T, FInventoryItemFragment>
+	const T* GetFragmentOfType() const;
+
 private:
-	UPROPERTY(EditAnywhere, Category="Inventory",meta=(ExcludeBaseStruct))
+	UPROPERTY(EditAnywhere, Category="Inventory", meta=(ExcludeBaseStruct))
 	TArray<TInstancedStruct<FInventoryItemFragment>> Fragments;
-	
+
 	UPROPERTY(EditAnywhere, Category="Inventory")
 	EInventoryItemCategory ItemCategory = EInventoryItemCategory::None;
 };
@@ -46,6 +49,20 @@ const T* FInventoryItemManifest::GetFragmentOfTypeWithTag(const FGameplayTag& Fr
 				continue;
 			}
 
+			return FragmentPtr;
+		}
+	}
+
+	return nullptr;
+}
+
+template <typename T> requires std::derived_from<T, FInventoryItemFragment>
+const T* FInventoryItemManifest::GetFragmentOfType() const
+{
+	for (const TInstancedStruct<FInventoryItemFragment>& Fragment : Fragments)
+	{
+		if (const T* FragmentPtr = Fragment.GetPtr<T>())
+		{
 			return FragmentPtr;
 		}
 	}

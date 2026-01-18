@@ -62,6 +62,21 @@ void UDkInventoryItemGrid::AddItemToIndex(UDkInventoryItem* NewItem, int32 Index
 {
 }
 
+bool UDkInventoryItemGrid::HasRoomAtIndex(const UDkInventoryGridSlot* GridSlot, const FIntPoint& Dimension)
+{
+	bool bHasRoomAtIndex = true;
+
+	UDkInventoryFunctionLibrary::ForEach2D(
+		GridSlots, GridSlot->GetTileIndex(), Dimension, Columns,
+		[]()
+		{
+			
+		}
+	);
+
+	return bHasRoomAtIndex;
+}
+
 bool UDkInventoryItemGrid::MatchesCategory(const UDkInventoryItem* Item) const
 {
 	return Item->GetItemManifest().GetItemCategory() == ItemCategory;

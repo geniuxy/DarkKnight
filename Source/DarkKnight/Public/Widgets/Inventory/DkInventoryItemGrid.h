@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "CommonUserWidget.h"
+#include "DkInventoryGridSlot.h"
 #include "DkTypes/DkEnums.h"
 #include "Inventory/DkInventoryItem.h"
 #include "Inventory/DkInventorySlotAvailabilty.h"
@@ -47,6 +48,7 @@ protected:
 	void AddItemToIndices(const FDkInventorySlotAvailabilityResult& Result, UDkInventoryItem* NewItem);
 	virtual void AddItemToIndex(UDkInventoryItem* NewItem, int32 Index, int32 StackAmount, bool bStackable);
 
+	bool HasRoomAtIndex(const UDkInventoryGridSlot* GridSlot, const FIntPoint& Dimension);
 	bool MatchesCategory(const UDkInventoryItem* Item) const;
 
 	FDkInventorySlotAvailabilityResult HasRoomForItem(const UDkInventoryItem* Item);

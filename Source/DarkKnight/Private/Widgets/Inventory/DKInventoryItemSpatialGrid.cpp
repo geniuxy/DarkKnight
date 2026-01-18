@@ -59,6 +59,14 @@ void UDKInventoryItemSpatialGrid::AddSlottedItemToCanvas(
 	CanvasSlot->SetPosition(DrawPosWithPadding);
 }
 
+bool UDKInventoryItemSpatialGrid::IsInGridBounds(const int32 StartIndex, const FIntPoint& ItemDimension) const
+{
+	if (StartIndex < 0 || StartIndex >= GridSlots.Num()) return false;
+	const int32 EndColumn = (StartIndex % Columns) + ItemDimension.X;
+	const int32 EndRow = (StartIndex / Columns) + ItemDimension.Y;
+	return EndColumn <= Columns - 1 && EndRow <= Rows - 1;
+}
+
 FDkInventorySlotAvailabilityResult UDKInventoryItemSpatialGrid::HasRoomForItem(const FInventoryItemManifest& Manifest)
 {
 	FDkInventorySlotAvailabilityResult Result;
@@ -78,9 +86,12 @@ FDkInventorySlotAvailabilityResult UDKInventoryItemSpatialGrid::HasRoomForItem(c
 		if (AmountToFill == 0) break;
 		//   该索引是否已被占用(claimed)？
 		if (CheckedIndices.Contains(GridSlot->GetTileIndex())) continue;
-		//   物品能否放进这里？（是否超出网格边界？）
+
 		const FInventoryItemGridFragment* GridFragment = Manifest.GetFragmentOfType<FInventoryItemGridFragment>();
 		const FIntPoint& Dimension = GridFragment ? GridFragment->GetGridSize() : FIntPoint(1, 1);
+		//   是否超出网格边界？
+		if (!IsInGridBounds(GridSlot->GetTileIndex(), Dimension)) continue;
+		//   物品能否放进这里？
 		TSet<int32> TemporarilyClaimed;
 		if (!HasRoomAtIndex(GridSlot, Dimension, CheckedIndices, TemporarilyClaimed,
 		                    Manifest.GetItemTag(), MaxStackCount))

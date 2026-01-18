@@ -28,6 +28,8 @@ protected:
 		const int32 Index, const FInventoryItemGridFragment* GridFragment, UDkInventorySlottedItem* SlottedItem
 	) const;
 
+	bool IsInGridBounds(const int32 StartIndex, const FIntPoint& ItemDimension) const;
+
 	virtual FDkInventorySlotAvailabilityResult HasRoomForItem(const FInventoryItemManifest& Manifest) override;
 	/********/
 

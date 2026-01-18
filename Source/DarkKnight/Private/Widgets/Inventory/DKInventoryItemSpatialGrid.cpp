@@ -69,14 +69,19 @@ FDkInventorySlotAvailabilityResult UDKInventoryItemSpatialGrid::HasRoomForItem(c
 	// 确定需要添加多少StackCount。AmountToFill
 	const int32 MaxStackCount = StackableFragment ? StackableFragment->GetMaxStackSize() : 1;
 	const int32 AmountToFill = StackableFragment ? StackableFragment->GetStackCount() : 1;
+
+	TSet<int32> CheckedIndices;
 	// For each Grid Slot:
 	for (const auto& GridSlot : GridSlots)
 	{
-		if (AmountToFill == 0) break;
 		//   如果已经没有剩余要填充的数量，提前跳出循环。
+		if (AmountToFill == 0) break;
 		//   该索引是否已被占用(claimed)？
+		if (CheckedIndices.Contains(GridSlot->GetTileIndex())) continue;
 		//   物品能否放进这里？（即是否超出网格边界？）
+		
 		//   该索引处是否有空位？（即是否有其他物品阻挡？）
+		
 		//   检查其它重要条件——在二维范围内做 ForEach2D
 		//     该索引是否已被占用？
 		//     是否有有效物品？

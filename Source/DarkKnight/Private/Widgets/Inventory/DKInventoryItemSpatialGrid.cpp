@@ -66,22 +66,26 @@ FDkInventorySlotAvailabilityResult UDKInventoryItemSpatialGrid::HasRoomForItem(c
 	const FInventoryItemStackableFragment* StackableFragment =
 		Manifest.GetFragmentOfType<FInventoryItemStackableFragment>();
 	Result.bStackable = StackableFragment != nullptr;
-	// 确定需要添加多少StackCount。
+	// 确定需要添加多少StackCount。AmountToFill
 	const int32 MaxStackCount = StackableFragment ? StackableFragment->GetMaxStackSize() : 1;
 	const int32 AmountToFill = StackableFragment ? StackableFragment->GetStackCount() : 1;
 	// For each Grid Slot:
-	//   如果已经没有剩余要填充的数量，提前跳出循环。
-	//   该索引是否已被占用(claimed)？
-	//   物品能否放进这里？（即是否超出网格边界？）
-	//   该索引处是否有空位？（即是否有其他物品阻挡？）
-	//   检查其它重要条件——在二维范围内做 ForEach2D
-	//     该索引是否已被占用？
-	//     是否有有效物品？
-	//     该物品与待添加物品类型相同吗？
-	//     如果相同，那么它是可堆叠物品吗？
-	//     如果可堆叠，该槽位是否已达到最大堆叠上限？
-	//   需要填充多少？
-	//   更新剩余待填充数量
+	for (const auto& GridSlot : GridSlots)
+	{
+		if (AmountToFill == 0) break;
+		//   如果已经没有剩余要填充的数量，提前跳出循环。
+		//   该索引是否已被占用(claimed)？
+		//   物品能否放进这里？（即是否超出网格边界？）
+		//   该索引处是否有空位？（即是否有其他物品阻挡？）
+		//   检查其它重要条件——在二维范围内做 ForEach2D
+		//     该索引是否已被占用？
+		//     是否有有效物品？
+		//     该物品与待添加物品类型相同吗？
+		//     如果相同，那么它是可堆叠物品吗？
+		//     如果可堆叠，该槽位是否已达到最大堆叠上限？
+		//   需要填充多少？
+		//   更新剩余待填充数量（AmountToFill）
+	}
 	// 剩余量是多少？
 
 	return Result;
@@ -102,7 +106,7 @@ void UDKInventoryItemSpatialGrid::UpdateGridSlots(
 	if (!GridFragment) return;
 
 	const FIntPoint Dimensions = GridFragment ? GridFragment->GetGridSize() : FIntPoint(1, 1);
-	
+
 	UDkInventoryFunctionLibrary::ForEach2D(
 		GridSlots, Index, Dimensions, Columns,
 		[&](UDkInventoryGridSlot* GridSlot) // [&]表示以引用的方式捕获当前作用域中的所有局部变量

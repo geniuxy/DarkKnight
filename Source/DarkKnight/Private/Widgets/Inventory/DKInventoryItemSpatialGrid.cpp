@@ -66,8 +66,9 @@ FDkInventorySlotAvailabilityResult UDKInventoryItemSpatialGrid::HasRoomForItem(c
 	const FInventoryItemStackableFragment* StackableFragment =
 		Manifest.GetFragmentOfType<FInventoryItemStackableFragment>();
 	Result.bStackable = StackableFragment != nullptr;
-	
-	// 确定需要添加多少“堆”。
+	// 确定需要添加多少StackCount。
+	const int32 MaxStackCount = StackableFragment ? StackableFragment->GetMaxStackSize() : 1;
+	const int32 AmountToFill = StackableFragment ? StackableFragment->GetStackCount() : 1;
 	// For each Grid Slot:
 	//   如果已经没有剩余要填充的数量，提前跳出循环。
 	//   该索引是否已被占用(claimed)？

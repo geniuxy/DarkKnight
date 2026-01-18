@@ -91,7 +91,7 @@ private:
 	int32 MaxStackSize = 1;
 
 	UPROPERTY(EditAnywhere, Category="Inventory")
-	int32 StackCount = 1;
+	int32 StackCount = 1; // Amount To Fill 需要加到背包里道具的量
 
 public:
 	FORCEINLINE int32 GetMaxStackSize() const { return MaxStackSize; }

@@ -30,6 +30,11 @@ protected:
 
 	bool IsInGridBounds(const int32 StartIndex, const FIntPoint& ItemDimension) const;
 
+	int32 CalculateFillAmountForSlot(
+		const bool bStackable, const int32 MaxStackSize, const int32 AmountToFill, const UDkInventoryGridSlot* GridSlot
+	) const;
+	int32 GetStackAmount(const UDkInventoryGridSlot* GridSlot) const;
+
 	virtual FDkInventorySlotAvailabilityResult HasRoomForItem(const FInventoryItemManifest& Manifest) override;
 	/********/
 

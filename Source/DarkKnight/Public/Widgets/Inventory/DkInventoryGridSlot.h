@@ -12,7 +12,7 @@ class UDkInventoryItem;
 class USizeBox;
 class UCommonLazyImage;
 /**
- * 
+ * 背包的网格Widget
  */
 UCLASS()
 class DARKKNIGHT_API UDkInventoryGridSlot : public UCommonUserWidget

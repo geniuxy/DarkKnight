@@ -67,6 +67,26 @@ bool UDKInventoryItemSpatialGrid::IsInGridBounds(const int32 StartIndex, const F
 	return EndColumn <= Columns - 1 && EndRow <= Rows - 1;
 }
 
+int32 UDKInventoryItemSpatialGrid::CalculateFillAmountForSlot(
+	const bool bStackable, const int32 MaxStackSize,
+	const int32 AmountToFill, const UDkInventoryGridSlot* GridSlot) const
+{
+	const int32 RoomInSlot = MaxStackSize - GetStackAmount(GridSlot);
+	return bStackable ? FMath::Min(AmountToFill, RoomInSlot) : 1;
+}
+
+int32 UDKInventoryItemSpatialGrid::GetStackAmount(const UDkInventoryGridSlot* GridSlot) const
+{
+	int32 CurrentSlotStackCount = GridSlot->GetStackCount();
+	// 如果在一个并不储存
+	if (const int32 UpperLeftIndex = GridSlot->GetStackCount(); UpperLeftIndex != INDEX_NONE)
+	{
+		UDkInventoryGridSlot* UpperLeftGridSlot = GridSlots[UpperLeftIndex];
+		CurrentSlotStackCount = UpperLeftGridSlot->GetStackCount();
+	}
+	return CurrentSlotStackCount;
+}
+
 FDkInventorySlotAvailabilityResult UDKInventoryItemSpatialGrid::HasRoomForItem(const FInventoryItemManifest& Manifest)
 {
 	FDkInventorySlotAvailabilityResult Result;
@@ -76,7 +96,7 @@ FDkInventorySlotAvailabilityResult UDKInventoryItemSpatialGrid::HasRoomForItem(c
 	Result.bStackable = StackableFragment != nullptr;
 	// 确定需要添加多少StackCount。AmountToFill
 	const int32 MaxStackCount = StackableFragment ? StackableFragment->GetMaxStackSize() : 1;
-	const int32 AmountToFill = StackableFragment ? StackableFragment->GetStackCount() : 1;
+	int32 AmountToFill = StackableFragment ? StackableFragment->GetStackCount() : 1;
 
 	TSet<int32> CheckedIndices;
 	// For each Grid Slot:
@@ -100,7 +120,11 @@ FDkInventorySlotAvailabilityResult UDKInventoryItemSpatialGrid::HasRoomForItem(c
 		}
 		CheckedIndices.Append(TemporarilyClaimed);
 		//   需要填充多少？
+		const int32 AmountToFillInSlot =
+			CalculateFillAmountForSlot(Result.bStackable, MaxStackCount, AmountToFill, GridSlot);
+		if (AmountToFillInSlot == 0) continue;
 		//   更新剩余待填充数量（AmountToFill）
+		AmountToFill -= AmountToFillInSlot;
 	}
 	// 剩余量是多少？
 

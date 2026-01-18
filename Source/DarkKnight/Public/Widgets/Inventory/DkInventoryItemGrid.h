@@ -49,12 +49,17 @@ protected:
 	virtual void AddItemToIndex(UDkInventoryItem* NewItem, int32 Index, int32 StackAmount, bool bStackable);
 
 	bool HasRoomAtIndex(
-		const UDkInventoryGridSlot* GridSlot,
+		const UDkInventoryGridSlot* CurIndexGridSlot,
 		const FIntPoint& Dimension,
 		const TSet<int32>& CheckedIndices,
 		TSet<int32>& OutTemporarilyClaimed
 	);
-	bool CheckSlotConstraints(const UDkInventoryGridSlot* SubGridSlot) const;
+	bool CheckSlotConstraints(
+		const UDkInventoryGridSlot* CurIndexGridSlot,
+		const UDkInventoryGridSlot* SubGridSlot,
+		const TSet<int32>& CheckedIndices,
+		TSet<int32>& OutTemporarilyClaimed
+	) const;
 	bool MatchesCategory(const UDkInventoryItem* Item) const;
 
 	FDkInventorySlotAvailabilityResult HasRoomForItem(const UDkInventoryItem* Item);

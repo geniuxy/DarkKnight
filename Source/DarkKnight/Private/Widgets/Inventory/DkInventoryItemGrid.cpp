@@ -63,7 +63,7 @@ void UDkInventoryItemGrid::AddItemToIndex(UDkInventoryItem* NewItem, int32 Index
 }
 
 bool UDkInventoryItemGrid::HasRoomAtIndex(
-	const UDkInventoryGridSlot* GridSlot,
+	const UDkInventoryGridSlot* CurIndexGridSlot,
 	const FIntPoint& Dimension,
 	const TSet<int32>& CheckedIndices,
 	TSet<int32>& OutTemporarilyClaimed)
@@ -71,17 +71,18 @@ bool UDkInventoryItemGrid::HasRoomAtIndex(
 	//   该索引处是否有空位？（是否有其他物品阻挡?）
 	bool bHasRoomAtIndex = true;
 
+	//   检查其它重要条件——在二维范围内做 ForEach2D
 	UDkInventoryFunctionLibrary::ForEach2D(
-		GridSlots, GridSlot->GetTileIndex(), Dimension, Columns,
+		GridSlots, CurIndexGridSlot->GetTileIndex(), Dimension, Columns,
 		[&](const UDkInventoryGridSlot* SubGridSlot)
 		{
-			if (CheckSlotConstraints(SubGridSlot))
+			if (CheckSlotConstraints(CurIndexGridSlot, SubGridSlot, CheckedIndices, OutTemporarilyClaimed))
 			{
 				OutTemporarilyClaimed.Add(SubGridSlot->GetTileIndex());
 			}
 			else
 			{
-				bHasRoomAtIndex = true;
+				bHasRoomAtIndex = false;
 			}
 		}
 	);
@@ -89,11 +90,22 @@ bool UDkInventoryItemGrid::HasRoomAtIndex(
 	return bHasRoomAtIndex;
 }
 
-bool UDkInventoryItemGrid::CheckSlotConstraints(const UDkInventoryGridSlot* SubGridSlot) const
+bool UDkInventoryItemGrid::CheckSlotConstraints(
+	const UDkInventoryGridSlot* CurIndexGridSlot,
+	const UDkInventoryGridSlot* SubGridSlot,
+	const TSet<int32>& CheckedIndices,
+	TSet<int32>& OutTemporarilyClaimed) const
 {
-	//   检查其它重要条件——在二维范围内做 ForEach2D
 	//     该索引是否已被占用？
+	if (CheckedIndices.Contains(SubGridSlot->GetTileIndex())) return false;
 	//     是否有有效物品？
+	if (!IsValid(SubGridSlot->GetInventoryItem()))
+	{
+		OutTemporarilyClaimed.Add(SubGridSlot->GetTileIndex());
+		return true;
+	}
+	//	   该GridSlot是一个左上角Slot吗？如果不是，则当前索引的格子没有空间可以放Item
+	if (SubGridSlot->GetUpperLeftIndex() != CurIndexGridSlot->GetTileIndex()) return false;
 	//     该物品与待添加物品类型相同吗？
 	//     如果相同，那么它是可堆叠物品吗？
 	//     如果可堆叠，该槽位是否已达到最大堆叠上限？

@@ -68,7 +68,8 @@ bool UDkInventoryItemGrid::HasRoomAtIndex(
 	const FIntPoint& Dimension,
 	const TSet<int32>& CheckedIndices,
 	TSet<int32>& OutTemporarilyClaimed,
-	FGameplayTag ItemTag)
+	const FGameplayTag& ItemTag,
+	const int32 MaxStackCount)
 {
 	//   该索引处是否有空位？（是否有其他物品阻挡?）
 	bool bHasRoomAtIndex = true;
@@ -78,7 +79,8 @@ bool UDkInventoryItemGrid::HasRoomAtIndex(
 		GridSlots, CurIndexGridSlot->GetTileIndex(), Dimension, Columns,
 		[&](const UDkInventoryGridSlot* SubGridSlot)
 		{
-			if (CheckSlotConstraints(CurIndexGridSlot, SubGridSlot, CheckedIndices, OutTemporarilyClaimed, ItemTag))
+			if (CheckSlotConstraints(CurIndexGridSlot, SubGridSlot, CheckedIndices, OutTemporarilyClaimed,
+			                         ItemTag, MaxStackCount))
 			{
 				OutTemporarilyClaimed.Add(SubGridSlot->GetTileIndex());
 			}
@@ -97,7 +99,8 @@ bool UDkInventoryItemGrid::CheckSlotConstraints(
 	const UDkInventoryGridSlot* SubGridSlot,
 	const TSet<int32>& CheckedIndices,
 	TSet<int32>& OutTemporarilyClaimed,
-	FGameplayTag ItemTag) const
+	const FGameplayTag& ItemTag,
+	const int32 MaxStackCount) const
 {
 	//     子GridSlot是否已被检查过？
 	if (CheckedIndices.Contains(SubGridSlot->GetTileIndex())) return false;
@@ -116,7 +119,9 @@ bool UDkInventoryItemGrid::CheckSlotConstraints(
 	//     该物品与待添加物品Tag相同吗？
 	if (!SubItem->DoesItemTagMatch(ItemTag)) return false;
 	//     如果可堆叠，该槽位是否已达到最大堆叠上限？
-	return false;
+	if (CurIndexGridSlot->GetStackCount() >= MaxStackCount) return false;
+
+	return true;
 }
 
 bool UDkInventoryItemGrid::MatchesCategory(const UDkInventoryItem* Item) const

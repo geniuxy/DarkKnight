@@ -82,7 +82,8 @@ FDkInventorySlotAvailabilityResult UDKInventoryItemSpatialGrid::HasRoomForItem(c
 		const FInventoryItemGridFragment* GridFragment = Manifest.GetFragmentOfType<FInventoryItemGridFragment>();
 		const FIntPoint& Dimension = GridFragment ? GridFragment->GetGridSize() : FIntPoint(1, 1);
 		TSet<int32> TemporarilyClaimed;
-		if (!HasRoomAtIndex(GridSlot, Dimension, CheckedIndices, TemporarilyClaimed, Manifest.GetItemTag()))
+		if (!HasRoomAtIndex(GridSlot, Dimension, CheckedIndices, TemporarilyClaimed,
+		                    Manifest.GetItemTag(), MaxStackCount))
 		{
 			continue;
 		}

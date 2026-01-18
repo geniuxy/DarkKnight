@@ -5,6 +5,7 @@
 
 #include "DkGameplayTags.h"
 #include "Characters/DkCharacterHero.h"
+#include "Components/DkItemComponent.h"
 #include "FunctionLibrarys/DkUIFunctionLibrary.h"
 #include "Net/UnrealNetwork.h"
 #include "Subsytems/DkUISubsystem.h"
@@ -65,6 +66,10 @@ void UDkInventoryComponent::TryAddItem(UDkItemComponent* ItemComponent)
 {
 	if (!CachedInventoryMenu.IsValid()) return;
 	FDkInventorySlotAvailabilityResult AddItemResult = CachedInventoryMenu->HasRoomForItem(ItemComponent);
+
+	UDkInventoryItem* FoundItem = InventoryList.FindFirstItemByTag(ItemComponent->GetItemManifest().GetItemTag());
+	AddItemResult.Item = FoundItem;
+	
 	if (AddItemResult.TotalRoomToFill == 0)
 	{
 		OnNoRoomInInventory.Broadcast();

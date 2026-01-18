@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "Net/Serialization/FastArraySerializer.h"
 
 #include "DkInventoryFastArray.generated.h"
@@ -51,19 +52,21 @@ struct FDkInventoryFastArray : public FFastArraySerializer
 	bool NetDeltaSerialize(FNetDeltaSerializeInfo& DeltaParams)
 	{
 		return FastArrayDeltaSerialize<FDkInventoryFastArrayEntry, FDkInventoryFastArray>(
-			Entrys, DeltaParams, *this);
+			Entries, DeltaParams, *this);
 	}
 
 	UDkInventoryItem* AddEntry(UDkItemComponent* ItemComponent);
 	UDkInventoryItem* AddEntry(UDkInventoryItem* Item);
 	void RemoveEntry(UDkInventoryItem* Item);
 
+	UDkInventoryItem* FindFirstItemByTag(const FGameplayTag& ItemTag);
+
 private:
 	friend UDkInventoryComponent;
 
 	// 复制的Items列表
 	UPROPERTY()
-	TArray<FDkInventoryFastArrayEntry> Entrys;
+	TArray<FDkInventoryFastArrayEntry> Entries;
 
 	UPROPERTY(NotReplicated)
 	TObjectPtr<UActorComponent> OwnerComponent;

@@ -8,8 +8,8 @@
 TArray<UDkInventoryItem*> FDkInventoryFastArray::GetAllItems() const
 {
 	TArray<UDkInventoryItem*> Results;
-	Results.Reserve(Entrys.Num());
-	for (const auto& Entry : Entrys)
+	Results.Reserve(Entries.Num());
+	for (const auto& Entry : Entries)
 	{
 		if (!IsValid(Entry.Item)) continue;
 		Results.Add(Entry.Item);
@@ -24,7 +24,7 @@ void FDkInventoryFastArray::PreReplicatedRemove(const TArrayView<int32>& Removed
 
 	for (int32 Index : RemovedIndices)
 	{
-		InventoryComponent->OnItemRemoved.Broadcast(Entrys[Index].Item);
+		InventoryComponent->OnItemRemoved.Broadcast(Entries[Index].Item);
 	}
 }
 
@@ -35,7 +35,7 @@ void FDkInventoryFastArray::PostReplicatedAdd(const TArrayView<int32>& AddedIndi
 
 	for (int32 Index : AddedIndices)
 	{
-		InventoryComponent->OnItemAdded.Broadcast(Entrys[Index].Item);
+		InventoryComponent->OnItemAdded.Broadcast(Entries[Index].Item);
 	}
 }
 
@@ -47,7 +47,7 @@ UDkInventoryItem* FDkInventoryFastArray::AddEntry(UDkItemComponent* ItemComponen
 	UDkInventoryComponent* InventoryComponent = Cast<UDkInventoryComponent>(OwnerComponent);
 	if (!IsValid(InventoryComponent)) return nullptr;
 
-	FDkInventoryFastArrayEntry& NewEntry = Entrys.AddDefaulted_GetRef();
+	FDkInventoryFastArrayEntry& NewEntry = Entries.AddDefaulted_GetRef();
 	NewEntry.Item = ItemComponent->GetItemManifest().Manifest(OwningActor);
 
 	InventoryComponent->AddRepSubObj(NewEntry.Item);
@@ -61,7 +61,7 @@ UDkInventoryItem* FDkInventoryFastArray::AddEntry(UDkInventoryItem* Item)
 	AActor* OwningActor = OwnerComponent->GetOwner();
 	check(OwningActor->HasAuthority());
 
-	FDkInventoryFastArrayEntry& NewEntry = Entrys.AddDefaulted_GetRef();
+	FDkInventoryFastArrayEntry& NewEntry = Entries.AddDefaulted_GetRef();
 	NewEntry.Item = Item;
 
 	MarkItemDirty(NewEntry);
@@ -70,7 +70,7 @@ UDkInventoryItem* FDkInventoryFastArray::AddEntry(UDkInventoryItem* Item)
 
 void FDkInventoryFastArray::RemoveEntry(UDkInventoryItem* Item)
 {
-	for (auto EntryIter = Entrys.CreateIterator(); EntryIter; ++EntryIter)
+	for (auto EntryIter = Entries.CreateIterator(); EntryIter; ++EntryIter)
 	{
 		FDkInventoryFastArrayEntry& Entry = *EntryIter;
 		if (Entry.Item == Item)
@@ -79,4 +79,15 @@ void FDkInventoryFastArray::RemoveEntry(UDkInventoryItem* Item)
 			MarkArrayDirty();
 		}
 	}
+}
+
+UDkInventoryItem* FDkInventoryFastArray::FindFirstItemByTag(const FGameplayTag& ItemTag)
+{
+	FDkInventoryFastArrayEntry* FoundItem = Entries.FindByPredicate(
+		[ItemTag](const FDkInventoryFastArrayEntry& Entry)
+		{
+			return IsValid(Entry.Item) && Entry.Item->GetItemManifest().GetItemTag().MatchesTagExact(ItemTag);
+		}
+	);
+	return FoundItem ? FoundItem->Item : nullptr;
 }

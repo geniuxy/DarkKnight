@@ -20,6 +20,11 @@ bool UDkInventoryItem::IsItemStackable() const
 	return StackableFragment != nullptr;
 }
 
+bool UDkInventoryItem::DoesItemTagMatch(const FGameplayTag& ItemTag) const
+{
+	return GetItemManifest().GetItemTag().MatchesTagExact(ItemTag);
+}
+
 void UDkInventoryItem::SetItemManifest(const FInventoryItemManifest& Manifest)
 {
 	ItemManifest = FInstancedStruct::Make<FInventoryItemManifest>(Manifest);

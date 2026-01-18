@@ -22,6 +22,7 @@ struct DARKKNIGHT_API FInventoryItemManifest
 
 	UDkInventoryItem* Manifest(UObject* NewOuter);
 	EInventoryItemCategory GetItemCategory() const { return ItemCategory; }
+	FGameplayTag GetItemTag() const { return ItemTag; }
 
 	template <typename T> requires std::derived_from<T, FInventoryItemFragment>
 	const T* GetFragmentOfTypeWithTag(const FGameplayTag& FragmentTag) const;
@@ -35,6 +36,9 @@ private:
 
 	UPROPERTY(EditAnywhere, Category="Inventory")
 	EInventoryItemCategory ItemCategory = EInventoryItemCategory::None;
+
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	FGameplayTag ItemTag;
 };
 
 template <typename T> requires std::derived_from<T, FInventoryItemFragment>

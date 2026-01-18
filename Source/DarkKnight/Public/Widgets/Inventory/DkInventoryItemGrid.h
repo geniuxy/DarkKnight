@@ -52,13 +52,15 @@ protected:
 		const UDkInventoryGridSlot* CurIndexGridSlot,
 		const FIntPoint& Dimension,
 		const TSet<int32>& CheckedIndices,
-		TSet<int32>& OutTemporarilyClaimed
+		TSet<int32>& OutTemporarilyClaimed,
+		FGameplayTag ItemTag
 	);
 	bool CheckSlotConstraints(
 		const UDkInventoryGridSlot* CurIndexGridSlot,
 		const UDkInventoryGridSlot* SubGridSlot,
 		const TSet<int32>& CheckedIndices,
-		TSet<int32>& OutTemporarilyClaimed
+		TSet<int32>& OutTemporarilyClaimed,
+		FGameplayTag ItemTag
 	) const;
 	bool MatchesCategory(const UDkInventoryItem* Item) const;
 

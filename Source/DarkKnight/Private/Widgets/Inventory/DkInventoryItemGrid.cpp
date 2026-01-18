@@ -9,6 +9,7 @@
 
 #include "Components/UniformGridPanel.h"
 #include "FunctionLibrarys/DkInventoryFunctionLibrary.h"
+#include "Inventory/DkInventoryItemFragment.h"
 #include "Inventory/DkInventorySlotAvailabilty.h"
 
 FDkInventorySlotAvailabilityResult UDkInventoryItemGrid::HasRoomForItem(const UDkItemComponent* ItemComponent)
@@ -96,18 +97,20 @@ bool UDkInventoryItemGrid::CheckSlotConstraints(
 	const TSet<int32>& CheckedIndices,
 	TSet<int32>& OutTemporarilyClaimed) const
 {
-	//     该索引是否已被占用？
+	//     子GridSlot是否已被检查过？
 	if (CheckedIndices.Contains(SubGridSlot->GetTileIndex())) return false;
-	//     是否有有效物品？
+	//     子GridSlot是否有有效物品？如果没有，则当前子GridSlot可能有空间可以放Item
 	if (!IsValid(SubGridSlot->GetInventoryItem()))
 	{
 		OutTemporarilyClaimed.Add(SubGridSlot->GetTileIndex());
 		return true;
 	}
-	//	   该GridSlot是一个左上角Slot吗？如果不是，则当前索引的格子没有空间可以放Item
+	// 如果子GridSlot有有效的Item，
+	//	   子GridSlot的左上角Slot是当前索引的GridSlot吗？如果不是，则当前索引的格子没有空间可以放Item
 	if (SubGridSlot->GetUpperLeftIndex() != CurIndexGridSlot->GetTileIndex()) return false;
+	//     是可堆叠物品吗？如果不是，则当前索引的格子没有空间可以放Item
+	if (!SubGridSlot->GetInventoryItem()->IsItemStackable()) return false;
 	//     该物品与待添加物品类型相同吗？
-	//     如果相同，那么它是可堆叠物品吗？
 	//     如果可堆叠，该槽位是否已达到最大堆叠上限？
 	return false;
 }

@@ -88,7 +88,7 @@ void UDkInventoryComponent::TryAddItem(UDkItemComponent* ItemComponent)
 	{
 		// 为背包中已存在的物品添加堆叠数量。我们只想更新堆叠数量，
 		// 而不是创建这种类型的新物品。
-		OnStackChange.Broadcast(AddItemResult);
+		OnStackChange.Broadcast(AddItemResult); // OnStackChange在Server和Client都会执行，光在Server执行，无法同步到Client
 		Server_AddStacksToItem(ItemComponent, AddItemResult.TotalRoomToFill, AddItemResult.Remainder);
 	}
 	else
@@ -108,6 +108,7 @@ void UDkInventoryComponent::AddRepSubObj(UObject* SubObj)
 
 void UDkInventoryComponent::Server_AddNewItem_Implementation(UDkItemComponent* ItemComponent, int32 StackCount)
 {
+	// 服务器FastArray添加Item后，回调PostReplicatedAdd来达到OnItemAdded.Broadcast(NewItem)的目的，以更新Client
 	UDkInventoryItem* NewItem = InventoryList.AddEntry(ItemComponent);
 	NewItem->SetTotalStackCount(StackCount);
 

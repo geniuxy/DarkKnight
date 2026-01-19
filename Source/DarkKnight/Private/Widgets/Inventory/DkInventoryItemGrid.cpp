@@ -3,6 +3,7 @@
 
 #include "Widgets/Inventory/DkInventoryItemGrid.h"
 
+#include "Chaos/ChaosPerfTest.h"
 #include "Components/DkInventoryComponent.h"
 #include "Components/DkItemComponent.h"
 #include "Widgets/Inventory/DkInventoryGridSlot.h"
@@ -11,6 +12,7 @@
 #include "FunctionLibrarys/DkInventoryFunctionLibrary.h"
 #include "Inventory/DkInventoryItemFragment.h"
 #include "Inventory/DkInventorySlotAvailabilty.h"
+#include "Widgets/Inventory/DkInventorySlottedItem.h"
 
 FDkInventorySlotAvailabilityResult UDkInventoryItemGrid::HasRoomForItem(const UDkItemComponent* ItemComponent)
 {
@@ -53,6 +55,23 @@ void UDkInventoryItemGrid::AddItem(UDkInventoryItem* Item)
 
 void UDkInventoryItemGrid::AddStacks(const FDkInventorySlotAvailabilityResult& Result)
 {
+	if (!Result.Item.IsValid() || !MatchesCategory(Result.Item.Get())) return;
+
+	for (const auto& Availability : Result.SlotAvailabilities)
+	{
+		if (Availability.bItemAtIndex)
+		{
+			const TObjectPtr<UDkInventoryGridSlot>& GridSlot = GridSlots[Availability.Index];
+			const TObjectPtr<UDkInventorySlottedItem>& SlottedItem = SlottedItemMap.FindChecked(Availability.Index);
+			SlottedItem->UpdateStackCount(GridSlot->GetStackCount() + Availability.AmountToFill);
+			GridSlot->SetStackCount(GridSlot->GetStackCount() + Availability.AmountToFill);
+		}
+		else
+		{
+			AddItemToIndex(Result.Item.Get(), Availability.Index, Availability.AmountToFill, Result.bStackable);
+			UpdateGridSlots(Result.Item.Get(), Availability.Index, Availability.AmountToFill, Result.bStackable);
+		}
+	}
 }
 
 void UDkInventoryItemGrid::AddItemToIndices(const FDkInventorySlotAvailabilityResult& Result, UDkInventoryItem* NewItem)

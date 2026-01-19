@@ -3,14 +3,15 @@
 
 #include "Subsytems/DkLoadingScreenSubsystem.h"
 #include "PreLoadScreenManager.h"
-#include "DarkKnightDebugHelper.h"
 #include "Blueprint/UserWidget.h"
+#include "Characters/DkCharacterHero.h"
+#include "Components/DkInventoryComponent.h"
 #include "Interfaces/LoadingScreenInterface.h"
 #include "Settings/DkLoadingScreenSettings.h"
 
 bool UDkLoadingScreenSubsystem::ShouldCreateSubsystem(UObject* Outer) const
 {
-	if (!CastChecked<UGameInstance>(Outer)->IsDedicatedServerInstance()) // 因为 UI 子系统通常不需要在服务器上运行
+	if (!CastChecked<UGameInstance>(Outer)->IsDedicatedServerInstance()) // 因为 LoadingScreen 子系统通常不需要在服务器上运行
 	{
 		TArray<UClass*> FoundClasses;
 		GetDerivedClasses(GetClass(), FoundClasses); // 获取当前类的所有派生类（子类）
@@ -280,6 +281,22 @@ void UDkLoadingScreenSubsystem::NotifyLoadingScreenVisibilityChanged(bool bIsVis
 					else
 					{
 						ILoadingScreenInterface::Execute_OnLoadingScreenDeactivated(OwningPawn);
+					}
+				}
+			}
+
+			if (ADkCharacterHero* OwningHero = Cast<ADkCharacterHero>(PC->GetPawn()))
+			{
+				UDkInventoryComponent* InventoryComponent = OwningHero->GetInventoryComponent();
+				if (InventoryComponent->Implements<ULoadingScreenInterface>())
+				{
+					if (bIsVisible)
+					{
+						ILoadingScreenInterface::Execute_OnLoadingScreenActivated(InventoryComponent);
+					}
+					else
+					{
+						ILoadingScreenInterface::Execute_OnLoadingScreenDeactivated(InventoryComponent);
 					}
 				}
 			}

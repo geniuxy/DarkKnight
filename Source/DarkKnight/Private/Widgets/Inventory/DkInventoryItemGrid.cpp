@@ -3,7 +3,6 @@
 
 #include "Widgets/Inventory/DkInventoryItemGrid.h"
 
-#include "Chaos/ChaosPerfTest.h"
 #include "Components/DkInventoryComponent.h"
 #include "Components/DkItemComponent.h"
 #include "Widgets/Inventory/DkInventoryGridSlot.h"

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Interfaces/LoadingScreenInterface.h"
 #include "Inventory/DkInventoryFastArray.h"
 #include "DkInventoryComponent.generated.h"
 
@@ -19,7 +20,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRoomInInventoryDelegate);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FStackChange, const FDkInventorySlotAvailabilityResult&, Result);
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), Blueprintable)
-class DARKKNIGHT_API UDkInventoryComponent : public UActorComponent
+class DARKKNIGHT_API UDkInventoryComponent : public UActorComponent, public ILoadingScreenInterface
 {
 	GENERATED_BODY()
 
@@ -27,6 +28,10 @@ public:
 	UDkInventoryComponent();
 
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+
+	//~Begin ILoadingScreenInterface Interface
+	virtual void OnLoadingScreenDeactivated_Implementation() override;
+	//~End ILoadingScreenInterface Interface
 
 	/* 构建背包界面 */
 	void ConstructInventoryMenu();

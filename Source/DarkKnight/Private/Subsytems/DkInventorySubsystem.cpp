@@ -17,16 +17,19 @@ UDkInventorySubsystem* UDkInventorySubsystem::Get(const UObject* WorldContextObj
 
 bool UDkInventorySubsystem::ShouldCreateSubsystem(UObject* Outer) const
 {
-	// 目前， InventorySubsystem先不需要在服务器上运行
-	if (!CastChecked<UGameInstance>(Outer)->IsDedicatedServerInstance())
-	{
-		TArray<UClass*> FoundClasses;
-		GetDerivedClasses(GetClass(), FoundClasses); // 获取当前类的所有派生类（子类）
+	// // 目前， InventorySubsystem先不需要在服务器上运行
+	// if (!CastChecked<UGameInstance>(Outer)->IsDedicatedServerInstance())
+	// {
+	
+	// 目前， InventorySubsystem先在服务器和客户端上运行
+	TArray<UClass*> FoundClasses;
+	GetDerivedClasses(GetClass(), FoundClasses); // 获取当前类的所有派生类（子类）
 
-		return FoundClasses.IsEmpty(); // 我不是专用服务器，而且没人继承我，我才允许自己被创建。
-	}
-
-	return false;
+	return FoundClasses.IsEmpty(); // 我不是专用服务器，而且没人继承我，我才允许自己被创建。
+	
+	// }
+	//
+	// return false;
 }
 
 void UDkInventorySubsystem::RegisterCachedInventoryComponent(UDkInventoryComponent* InventoryComponent)

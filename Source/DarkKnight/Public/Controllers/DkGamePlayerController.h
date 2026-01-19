@@ -31,6 +31,10 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	virtual void OnPossess(APawn* InPawn) override;
+
+	virtual void OnRep_Pawn() override;
+
 	virtual void SetupInputComponent() override;
 
 private:
@@ -60,6 +64,7 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category="Inventory")
 	TObjectPtr<UInputAction> InventoryAction;
 
+	void RefreshInventoryComponent();
 	TWeakObjectPtr<UDkInventoryComponent> InventoryComponent;
 	/********/
 

@@ -84,12 +84,21 @@ void ADkGamePlayerController::BeginPlay()
 	{
 		InputSubsystem->AddMappingContext(IMCGamePlay, 0);
 	}
+}
 
-	// 从PlayerController获取Character是通过GetPawn()
-	InventoryComponent = CastChecked<ADkCharacterHero>(GetPawn())->FindComponentByClass<UDkInventoryComponent>();
-	UDkInventorySubsystem* InventorySubsystem = UDkInventorySubsystem::Get(this);
-	checkf(InventorySubsystem, TEXT("UISubsystem为空！"));
-	InventorySubsystem->RegisterCachedInventoryComponent(InventoryComponent.Get());
+void ADkGamePlayerController::OnPossess(APawn* InPawn)
+{
+	Super::OnPossess(InPawn);
+
+	RefreshInventoryComponent();
+}
+
+void ADkGamePlayerController::OnRep_Pawn()
+{
+	Super::OnRep_Pawn();
+	if (!GetPawn()) return;
+
+	RefreshInventoryComponent();
 }
 
 void ADkGamePlayerController::SetupInputComponent()
@@ -184,4 +193,13 @@ void ADkGamePlayerController::OnInventoryActionTriggered()
 	Debug::Print(TEXT("我正在打开库存！"));
 
 	InventoryComponent->ConstructInventoryMenu();
+}
+
+void ADkGamePlayerController::RefreshInventoryComponent()
+{
+	// 从PlayerController获取Character是通过GetPawn() (永远不要在 BeginPlay 里假设 Pawn 已准备好!）
+	InventoryComponent = CastChecked<ADkCharacterHero>(GetPawn())->FindComponentByClass<UDkInventoryComponent>();
+	UDkInventorySubsystem* InventorySubsystem = UDkInventorySubsystem::Get(this);
+	checkf(InventorySubsystem, TEXT("UISubsystem为空！"));
+	InventorySubsystem->RegisterCachedInventoryComponent(InventoryComponent.Get());
 }

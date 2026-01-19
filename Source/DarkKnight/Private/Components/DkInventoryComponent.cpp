@@ -30,6 +30,11 @@ void UDkInventoryComponent::GetLifetimeReplicatedProps(TArray<class FLifetimePro
 	DOREPLIFETIME(ThisClass, InventoryList);
 }
 
+void UDkInventoryComponent::OnLoadingScreenDeactivated_Implementation()
+{
+	ConstructInventoryMenu();
+}
+
 void UDkInventoryComponent::ConstructInventoryMenu()
 {
 	if (!bHasInitInventoryMenu)
@@ -145,6 +150,4 @@ void UDkInventoryComponent::Server_AddStacksToItem_Implementation(
 void UDkInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	ConstructInventoryMenu();
 }

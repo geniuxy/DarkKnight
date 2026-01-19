@@ -79,7 +79,7 @@ int32 UDKInventoryItemSpatialGrid::GetStackAmount(const UDkInventoryGridSlot* Gr
 {
 	int32 CurrentSlotStackCount = GridSlot->GetStackCount();
 	// 如果在一个并不储存数量的格子，则返回左上角格子的StackCount
-	if (const int32 UpperLeftIndex = GridSlot->GetStackCount(); UpperLeftIndex != INDEX_NONE)
+	if (const int32 UpperLeftIndex = GridSlot->GetUpperLeftIndex(); UpperLeftIndex != INDEX_NONE)
 	{
 		UDkInventoryGridSlot* UpperLeftGridSlot = GridSlots[UpperLeftIndex];
 		CurrentSlotStackCount = UpperLeftGridSlot->GetStackCount();

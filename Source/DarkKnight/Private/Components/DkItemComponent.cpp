@@ -18,3 +18,10 @@ void UDkItemComponent::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty
 
 	DOREPLIFETIME(ThisClass, ItemManifest);
 }
+
+void UDkItemComponent::OnPickedUp()
+{
+	BP_OnPickedUp();
+
+	GetOwner()->Destroy();
+}

@@ -8,6 +8,7 @@
 #include "Components/DkItemComponent.h"
 #include "FunctionLibrarys/DkUIFunctionLibrary.h"
 #include "Inventory/DkInventoryItem.h"
+#include "Inventory/DkInventoryItemFragment.h"
 #include "Net/UnrealNetwork.h"
 #include "Subsytems/DkUISubsystem.h"
 #include "Widgets/DkWidgetActivatableBase.h"
@@ -113,7 +114,8 @@ void UDkInventoryComponent::Server_AddNewItem_Implementation(UDkItemComponent* I
 		}
 	}
 
-	// TODO: 通知 Item Component 销毁 Owner 道具Actor
+	// 通知 ItemComponent 执行PickedUp操作（销毁 Owner 道具Actor等）
+	ItemComponent->OnPickedUp();
 }
 
 void UDkInventoryComponent::Server_AddStacksToItem_Implementation(
@@ -126,8 +128,17 @@ void UDkInventoryComponent::Server_AddStacksToItem_Implementation(
 
 	Item->SetTotalStackCount(Item->GetTotalStackCount() + StackCount);
 
-	// TODO: 如果剩余为零，则销毁该Item Actor。
+	// 如果Remainder零，则 执行PickedUp操作（销毁 Owner 道具Actor等）
+	if (Remainder == 0)
+	{
+		ItemComponent->OnPickedUp();
+	}
 	// 否则，更新想要捡起的Item的StackCount
+	else if (FInventoryItemStackableFragment* StackableFragment =
+		ItemComponent->GetItemManifest().GetFragmentOfTypeMutable<FInventoryItemStackableFragment>())
+	{
+		StackableFragment->SetStackCount(Remainder);	
+	}
 }
 
 void UDkInventoryComponent::BeginPlay()

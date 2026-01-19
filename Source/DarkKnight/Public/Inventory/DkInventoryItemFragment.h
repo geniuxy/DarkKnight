@@ -95,5 +95,5 @@ private:
 
 public:
 	FORCEINLINE int32 GetMaxStackSize() const { return MaxStackSize; }
-	FORCEINLINE int32 GetStackCount() const { return StackCount; }
+	LIST_DATA_ACCESSOR(int32, StackCount)
 };

@@ -30,6 +30,9 @@ struct DARKKNIGHT_API FInventoryItemManifest
 	template <typename T> requires std::derived_from<T, FInventoryItemFragment>
 	const T* GetFragmentOfType() const;
 
+	template <typename T> requires std::derived_from<T, FInventoryItemFragment>
+	T* GetFragmentOfTypeMutable();
+
 private:
 	UPROPERTY(EditAnywhere, Category="Inventory", meta=(ExcludeBaseStruct))
 	TArray<TInstancedStruct<FInventoryItemFragment>> Fragments;
@@ -66,6 +69,20 @@ const T* FInventoryItemManifest::GetFragmentOfType() const
 	for (const TInstancedStruct<FInventoryItemFragment>& Fragment : Fragments)
 	{
 		if (const T* FragmentPtr = Fragment.GetPtr<T>())
+		{
+			return FragmentPtr;
+		}
+	}
+
+	return nullptr;
+}
+
+template <typename T> requires std::derived_from<T, FInventoryItemFragment>
+T* FInventoryItemManifest::GetFragmentOfTypeMutable()
+{
+	for (TInstancedStruct<FInventoryItemFragment>& Fragment : Fragments)
+	{
+		if (T* FragmentPtr = Fragment.GetMutablePtr<T>())
 		{
 			return FragmentPtr;
 		}

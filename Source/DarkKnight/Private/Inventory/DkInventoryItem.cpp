@@ -11,6 +11,7 @@ void UDkInventoryItem::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty
 	UObject::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ThisClass, ItemManifest);
+	DOREPLIFETIME(ThisClass, TotalStackCount);
 }
 
 bool UDkInventoryItem::IsItemStackable() const

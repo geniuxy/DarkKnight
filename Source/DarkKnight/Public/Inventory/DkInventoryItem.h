@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "DkInventoryItemManifest.h"
 #include "GameplayTagContainer.h"
+#include "DarkKnight/DarkKnight.h"
 #include "StructUtils/InstancedStruct.h"
 #include "UObject/Object.h"
 #include "DkInventoryItem.generated.h"
@@ -30,6 +31,12 @@ public:
 private:
 	UPROPERTY(VisibleAnywhere, meta=(BaseStruct="/Script/DarkKnight.InventoryItemManifest"), Replicated)
 	FInstancedStruct ItemManifest;
+
+	UPROPERTY(Replicated)
+	int32 TotalStackCount = 0;
+
+public:
+	LIST_DATA_ACCESSOR(int32, TotalStackCount)
 };
 
 template<typename FragmentType>

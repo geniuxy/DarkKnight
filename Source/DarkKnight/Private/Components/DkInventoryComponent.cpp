@@ -7,6 +7,7 @@
 #include "Characters/DkCharacterHero.h"
 #include "Components/DkItemComponent.h"
 #include "FunctionLibrarys/DkUIFunctionLibrary.h"
+#include "Inventory/DkInventoryItem.h"
 #include "Net/UnrealNetwork.h"
 #include "Subsytems/DkUISubsystem.h"
 #include "Widgets/DkWidgetActivatableBase.h"
@@ -34,7 +35,7 @@ void UDkInventoryComponent::ConstructInventoryMenu()
 	{
 		OwningCharacter = CastChecked<ADkCharacterHero>(GetOwner());
 	}
-	
+
 	if (OwningCharacter.IsValid() && !OwningCharacter->IsLocallyControlled())
 	{
 		return;
@@ -69,7 +70,7 @@ void UDkInventoryComponent::TryAddItem(UDkItemComponent* ItemComponent)
 
 	UDkInventoryItem* FoundItem = InventoryList.FindFirstItemByTag(ItemComponent->GetItemManifest().GetItemTag());
 	AddItemResult.Item = FoundItem;
-	
+
 	if (AddItemResult.TotalRoomToFill == 0)
 	{
 		OnNoRoomInInventory.Broadcast();
@@ -101,6 +102,7 @@ void UDkInventoryComponent::AddRepSubObj(UObject* SubObj)
 void UDkInventoryComponent::Server_AddNewItem_Implementation(UDkItemComponent* ItemComponent, int32 StackCount)
 {
 	UDkInventoryItem* NewItem = InventoryList.AddEntry(ItemComponent);
+	NewItem->SetTotalStackCount(StackCount);
 
 	if (OwningCharacter.IsValid())
 	{
@@ -110,13 +112,22 @@ void UDkInventoryComponent::Server_AddNewItem_Implementation(UDkItemComponent* I
 			OnItemAdded.Broadcast(NewItem);
 		}
 	}
-	
+
 	// TODO: 通知 Item Component 销毁 Owner 道具Actor
 }
 
 void UDkInventoryComponent::Server_AddStacksToItem_Implementation(
 	UDkItemComponent* ItemComponent, int32 StackCount, int32 Remainder)
 {
+	const FGameplayTag& ItemTag =
+		IsValid(ItemComponent) ? ItemComponent->GetItemManifest().GetItemTag() : FGameplayTag::EmptyTag;
+	UDkInventoryItem* Item = InventoryList.FindFirstItemByTag(ItemTag);
+	if (!IsValid(Item)) return;
+
+	Item->SetTotalStackCount(Item->GetTotalStackCount() + StackCount);
+
+	// TODO: 如果剩余为零，则销毁该Item Actor。
+	// 否则，更新想要捡起的Item的StackCount
 }
 
 void UDkInventoryComponent::BeginPlay()

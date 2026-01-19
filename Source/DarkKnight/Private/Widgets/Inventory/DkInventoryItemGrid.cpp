@@ -40,6 +40,7 @@ void UDkInventoryItemGrid::NativeOnInitialized()
 
 	InventoryComponent = UDkInventoryFunctionLibrary::GetInventoryComponent(GetOwningPlayer());
 	InventoryComponent->OnItemAdded.AddDynamic(this, &ThisClass::AddItem);
+	InventoryComponent->OnStackChange.AddDynamic(this, &ThisClass::AddStacks);
 }
 
 void UDkInventoryItemGrid::AddItem(UDkInventoryItem* Item)
@@ -48,6 +49,10 @@ void UDkInventoryItemGrid::AddItem(UDkInventoryItem* Item)
 
 	FDkInventorySlotAvailabilityResult AvailabilityResult = HasRoomForItem(Item);
 	AddItemToIndices(AvailabilityResult, Item);
+}
+
+void UDkInventoryItemGrid::AddStacks(const FDkInventorySlotAvailabilityResult& Result)
+{
 }
 
 void UDkInventoryItemGrid::AddItemToIndices(const FDkInventorySlotAvailabilityResult& Result, UDkInventoryItem* NewItem)

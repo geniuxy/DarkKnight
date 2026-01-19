@@ -44,6 +44,9 @@ protected:
 	/* 添加/删除Item */
 	UFUNCTION()
 	void AddItem(UDkInventoryItem* Item);
+	
+	UFUNCTION()
+	void AddStacks(const FDkInventorySlotAvailabilityResult& Result);
 
 	void AddItemToIndices(const FDkInventorySlotAvailabilityResult& Result, UDkInventoryItem* NewItem);
 	virtual void AddItemToIndex(UDkInventoryItem* NewItem, int32 Index, int32 StackAmount, bool bStackable);

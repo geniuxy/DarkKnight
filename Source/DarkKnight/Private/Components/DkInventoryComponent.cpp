@@ -83,6 +83,7 @@ void UDkInventoryComponent::TryAddItem(UDkItemComponent* ItemComponent)
 	{
 		// 为背包中已存在的物品添加堆叠数量。我们只想更新堆叠数量，
 		// 而不是创建这种类型的新物品。
+		OnStackChange.Broadcast(AddItemResult);
 		Server_AddStacksToItem(ItemComponent, AddItemResult.TotalRoomToFill, AddItemResult.Remainder);
 	}
 	else

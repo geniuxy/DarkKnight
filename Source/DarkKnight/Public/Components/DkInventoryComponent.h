@@ -8,6 +8,7 @@
 #include "DkInventoryComponent.generated.h"
 
 
+struct FDkInventorySlotAvailabilityResult;
 class UDkWidgetInventoryMenu;
 class UDkItemComponent;
 class UDkInventoryItem;
@@ -15,6 +16,7 @@ class ADkCharacterHero;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FInventoryItemChange, UDkInventoryItem*, Item);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRoomInInventoryDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FStackChange, const FDkInventorySlotAvailabilityResult&, Result);
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), Blueprintable)
 class DARKKNIGHT_API UDkInventoryComponent : public UActorComponent
@@ -44,8 +46,9 @@ public:
 
 	void AddRepSubObj(UObject* SubObj);
 	
-	FInventoryItemChange OnItemAdded;
-	FInventoryItemChange OnItemRemoved;
+	FInventoryItemChange OnItemAdded; // item从无到有
+	FInventoryItemChange OnItemRemoved; // item从有到无
+	FStackChange OnStackChange; // item从有到更多
 	/********/
 
 	/* 判断是否背包有空间 */

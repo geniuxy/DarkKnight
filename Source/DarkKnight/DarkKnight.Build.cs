@@ -14,7 +14,7 @@ public class DarkKnight : ModuleRules
 			"NetCore", // FFastArraySerializer 定义在 NetCore 模块
 			"CoreUObject",
 			"Engine",
-			"InputCore",
+			"InputCore", // EKeys::LeftMouseButton 等
 			"EnhancedInput",
 			"GameplayTags",
 			"UMG",

@@ -3,7 +3,6 @@
 
 #include "Widgets/Inventory/DkInventoryItemGrid.h"
 
-#include "DarkKnightDebugHelper.h"
 #include "Components/DkInventoryComponent.h"
 #include "Components/DkItemComponent.h"
 #include "Widgets/Inventory/DkInventoryGridSlot.h"
@@ -12,6 +11,7 @@
 #include "FunctionLibrarys/DkInventoryFunctionLibrary.h"
 #include "Inventory/DkInventoryItemFragment.h"
 #include "Inventory/DkInventorySlotAvailabilty.h"
+#include "Widgets/Inventory/DkInventoryDraggedItem.h"
 #include "Widgets/Inventory/DkInventorySlottedItem.h"
 
 FDkInventorySlotAvailabilityResult UDkInventoryItemGrid::HasRoomForItem(const UDkItemComponent* ItemComponent)
@@ -184,5 +184,20 @@ void UDkInventoryItemGrid::ConstructGrid()
 
 void UDkInventoryItemGrid::OnSlottedItemClicked(int32 GridIndex, const FPointerEvent& MouseEvent)
 {
-	Debug::Print(FString::Printf(TEXT("点击了索引为 %d 的格子"), GridIndex));
+	check(GridSlots.IsValidIndex(GridIndex));
+	UDkInventoryItem* ClickedInventoryItem = GridSlots[GridIndex]->GetInventoryItem();
+	if (!IsValid(DraggedItem) && IsLeftMouseClick(MouseEvent))
+	{
+		// TODO: 拖拽Item
+	}
+}
+
+bool UDkInventoryItemGrid::IsRightMouseClick(const FPointerEvent& MouseEvent) const
+{
+	return MouseEvent.GetEffectingButton() == EKeys::RightMouseButton;
+}
+
+bool UDkInventoryItemGrid::IsLeftMouseClick(const FPointerEvent& MouseEvent) const
+{
+	return MouseEvent.GetEffectingButton() == EKeys::LeftMouseButton;
 }

@@ -10,6 +10,7 @@
 #include "Inventory/DkInventorySlotAvailabilty.h"
 #include "DkInventoryItemGrid.generated.h"
 
+class UDkInventoryDraggedItem;
 struct FInventoryItemGridFragment;
 class UDkInventorySlottedItem;
 struct FDkInventorySlotAvailabilityResult;
@@ -108,6 +109,15 @@ protected:
 	/* 拖拽Item */
 	UFUNCTION()
 	void OnSlottedItemClicked(int32 GridIndex, const FPointerEvent& MouseEvent);
+
+	bool IsRightMouseClick(const FPointerEvent& MouseEvent) const;
+	bool IsLeftMouseClick(const FPointerEvent& MouseEvent) const;
+
+	UPROPERTY(EditAnywhere, Category = "Inventory")
+	TSubclassOf<UDkInventoryDraggedItem> DraggedItemClass;
+
+	UPROPERTY()
+	TObjectPtr<UDkInventoryDraggedItem> DraggedItem;
 	/********/
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Inventory")

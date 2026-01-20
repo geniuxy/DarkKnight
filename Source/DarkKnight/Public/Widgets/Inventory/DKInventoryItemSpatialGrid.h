@@ -16,6 +16,11 @@ class DARKKNIGHT_API UDKInventoryItemSpatialGrid : public UDkInventoryItemGrid
 	GENERATED_BODY()
 
 protected:
+	//~Begin UUserWidget Function
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+	virtual void NativeDestruct() override;
+	//~End UUserWidget Function
+	
 	//***** Bound Widgets *****//
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UCanvasPanel> GridCanvasPanel;
@@ -46,6 +51,8 @@ protected:
 
 	/* 构造Grid */
 	virtual void ConstructGrid() override;
+
+	virtual void RemoveItemFromGrid(UDkInventoryItem* InventoryItem, const int32 GridIndex) override;
 	/********/
 
 	/* 拖拽Item */

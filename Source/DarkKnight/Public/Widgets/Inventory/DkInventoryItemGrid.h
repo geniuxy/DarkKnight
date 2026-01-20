@@ -118,6 +118,7 @@ protected:
 	virtual void AssignDraggedItem(
 		UDkInventoryItem* InventoryItem, const int32 GridIndex, const int32 PreviousGridIndex
 	);
+	virtual void RemoveItemFromGrid(UDkInventoryItem* InventoryItem, const int32 GridIndex);
 
 	UPROPERTY(EditAnywhere, Category = "Inventory")
 	TSubclassOf<UDkInventoryDraggedItem> DraggedItemClass;

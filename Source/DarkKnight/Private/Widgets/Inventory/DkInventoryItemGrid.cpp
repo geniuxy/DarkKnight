@@ -208,6 +208,7 @@ void UDkInventoryItemGrid::DragItem(UDkInventoryItem* ClickedInventoryItem, cons
 	AssignDraggedItem(ClickedInventoryItem, GridIndex, GridIndex);
 
 	// 从背包中移除被点击的Item
+	RemoveItemFromGrid(ClickedInventoryItem, GridIndex);
 }
 
 void UDkInventoryItemGrid::AssignDraggedItem(UDkInventoryItem* InventoryItem)
@@ -221,4 +222,8 @@ void UDkInventoryItemGrid::AssignDraggedItem(
 
 	DraggedItem->SetPreviousGridIndex(PreviousGridIndex);
 	DraggedItem->UpdateStackCountText(InventoryItem->IsItemStackable() ? GridSlots[GridIndex]->GetStackCount() : 0);
+}
+
+void UDkInventoryItemGrid::RemoveItemFromGrid(UDkInventoryItem* InventoryItem, const int32 GridIndex)
+{
 }

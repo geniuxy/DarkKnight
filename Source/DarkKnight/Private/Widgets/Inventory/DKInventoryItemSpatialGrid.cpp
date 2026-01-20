@@ -15,6 +15,35 @@
 
 struct FInventoryItemImageFragment;
 
+void UDKInventoryItemSpatialGrid::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+
+	if (DraggedItem && DraggedItem->IsInViewport())
+	{
+		FVector2D MousePos;
+		if (UGameViewportClient* VP = GetWorld()->GetGameViewport())
+		{
+			VP->GetMousePosition(MousePos); // UMG 虚拟像素（受 DPI 缩放） (把鼠标坐标转成和 UMG 同一空间)
+		}
+
+		// 用实际布局尺寸，而不是 DesiredSize
+		const FVector2D ActualSize = DraggedItem->GetCachedGeometry().GetAbsoluteSize();
+		DraggedItem->SetPositionInViewport(MousePos - ActualSize * 0.5f);
+	}
+}
+
+void UDKInventoryItemSpatialGrid::NativeDestruct()
+{
+	Super::NativeDestruct();
+
+	if (DraggedItem && DraggedItem->IsInViewport())
+	{
+		DraggedItem->RemoveFromParent();
+		DraggedItem = nullptr;
+	}
+}
+
 void UDKInventoryItemSpatialGrid::AddItemToIndex(
 	UDkInventoryItem* NewItem, int32 Index, int32 StackAmount, bool bStackable)
 {
@@ -195,6 +224,32 @@ void UDKInventoryItemSpatialGrid::ConstructGrid()
 	}
 }
 
+void UDKInventoryItemSpatialGrid::RemoveItemFromGrid(UDkInventoryItem* InventoryItem, const int32 GridIndex)
+{
+	const FInventoryItemGridFragment* GridFragment =
+		GetFragment<FInventoryItemGridFragment>(InventoryItem, DkGameplayTags::Dk_Inventory_Fragment_Grid);
+	if (!GridFragment) return;
+
+	UDkInventoryFunctionLibrary::ForEach2D(
+		GridSlots, GridIndex, GridFragment->GetGridSize(), Columns,
+		[&](UDkInventoryGridSlot* GridSlot)
+		{
+			GridSlot->SetInventoryItem(nullptr);
+			GridSlot->SetUpperLeftIndex(INDEX_NONE);
+			GridSlot->SetUnoccupiedTexture();
+			GridSlot->SetbAvailable(true);
+			GridSlot->SetStackCount(0);
+		}
+	);
+
+	if (SlottedItemMap.Contains(GridIndex))
+	{
+		TObjectPtr<UDkInventorySlottedItem> FoundSlottedItem;
+		SlottedItemMap.RemoveAndCopyValue(GridIndex, FoundSlottedItem);
+		FoundSlottedItem->RemoveFromParent();
+	}
+}
+
 void UDKInventoryItemSpatialGrid::AssignDraggedItem(UDkInventoryItem* InventoryItem)
 {
 	if (!IsValid(DraggedItem))
@@ -212,11 +267,12 @@ void UDKInventoryItemSpatialGrid::AssignDraggedItem(UDkInventoryItem* InventoryI
 	Brush.SetResourceObject(ImageFragment->GetIcon());
 	Brush.DrawAs = ESlateBrushDrawType::Image;
 	Brush.ImageSize = GetDrawSize(GridFragment);
-	
+
 	DraggedItem->SetImageBrush(Brush);
 	DraggedItem->SetGridDimension(GridFragment->GetGridSize());
 	DraggedItem->SetInventoryItem(InventoryItem);
 	DraggedItem->SetIsStackable(InventoryItem->IsItemStackable());
 
-	GetOwningPlayer()->SetMouseCursorWidget(EMouseCursor::Default, DraggedItem);
+	DraggedItem->SetDesiredSizeInViewport(Brush.ImageSize);
+	DraggedItem->AddToViewport();
 }

@@ -47,4 +47,8 @@ protected:
 	/* 构造Grid */
 	virtual void ConstructGrid() override;
 	/********/
+
+	/* 拖拽Item */
+	virtual void AssignDraggedItem(UDkInventoryItem* InventoryItem) override;
+	/********/
 };

@@ -9,6 +9,7 @@
 #include "Components/CanvasPanelSlot.h"
 #include "FunctionLibrarys/DkInventoryFunctionLibrary.h"
 #include "Inventory/DkInventoryItemFragment.h"
+#include "Widgets/Inventory/DkInventoryDraggedItem.h"
 #include "Widgets/Inventory/DkInventoryGridSlot.h"
 #include "Widgets/Inventory/DkInventorySlottedItem.h"
 
@@ -192,4 +193,30 @@ void UDKInventoryItemSpatialGrid::ConstructGrid()
 			GridSlots.Add(GridSlot);
 		}
 	}
+}
+
+void UDKInventoryItemSpatialGrid::AssignDraggedItem(UDkInventoryItem* InventoryItem)
+{
+	if (!IsValid(DraggedItem))
+	{
+		DraggedItem = CreateWidget<UDkInventoryDraggedItem>(GetOwningPlayer(), DraggedItemClass);
+	}
+
+	const FInventoryItemGridFragment* GridFragment =
+		GetFragment<FInventoryItemGridFragment>(InventoryItem, DkGameplayTags::Dk_Inventory_Fragment_Grid);
+	const FInventoryItemImageFragment* ImageFragment =
+		GetFragment<FInventoryItemImageFragment>(InventoryItem, DkGameplayTags::Dk_Inventory_Fragment_Icon);
+	if (!GridFragment || !ImageFragment) return;
+
+	FSlateBrush Brush;
+	Brush.SetResourceObject(ImageFragment->GetIcon());
+	Brush.DrawAs = ESlateBrushDrawType::Image;
+	Brush.ImageSize = GetDrawSize(GridFragment);
+	
+	DraggedItem->SetImageBrush(Brush);
+	DraggedItem->SetGridDimension(GridFragment->GetGridSize());
+	DraggedItem->SetInventoryItem(InventoryItem);
+	DraggedItem->SetIsStackable(InventoryItem->IsItemStackable());
+
+	GetOwningPlayer()->SetMouseCursorWidget(EMouseCursor::Default, DraggedItem);
 }

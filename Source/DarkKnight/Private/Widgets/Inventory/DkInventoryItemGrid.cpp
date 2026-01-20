@@ -188,7 +188,8 @@ void UDkInventoryItemGrid::OnSlottedItemClicked(int32 GridIndex, const FPointerE
 	UDkInventoryItem* ClickedInventoryItem = GridSlots[GridIndex]->GetInventoryItem();
 	if (!IsValid(DraggedItem) && IsLeftMouseClick(MouseEvent))
 	{
-		// TODO: 拖拽Item
+		// 拖拽Item
+		DragItem(ClickedInventoryItem, GridIndex);
 	}
 }
 
@@ -200,4 +201,15 @@ bool UDkInventoryItemGrid::IsRightMouseClick(const FPointerEvent& MouseEvent) co
 bool UDkInventoryItemGrid::IsLeftMouseClick(const FPointerEvent& MouseEvent) const
 {
 	return MouseEvent.GetEffectingButton() == EKeys::LeftMouseButton;
+}
+
+void UDkInventoryItemGrid::DragItem(UDkInventoryItem* ClickedInventoryItem, const int32 GridIndex)
+{
+	AssignDraggedItem(ClickedInventoryItem);
+
+	// 从背包中移除被点击的Item
+}
+
+void UDkInventoryItemGrid::AssignDraggedItem(UDkInventoryItem* InventoryItem)
+{
 }

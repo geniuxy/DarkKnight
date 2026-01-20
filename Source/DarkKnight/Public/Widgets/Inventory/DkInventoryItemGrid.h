@@ -113,6 +113,9 @@ protected:
 	bool IsRightMouseClick(const FPointerEvent& MouseEvent) const;
 	bool IsLeftMouseClick(const FPointerEvent& MouseEvent) const;
 
+	void DragItem(UDkInventoryItem* ClickedInventoryItem, const int32 GridIndex);
+	virtual void AssignDraggedItem(UDkInventoryItem* InventoryItem);
+
 	UPROPERTY(EditAnywhere, Category = "Inventory")
 	TSubclassOf<UDkInventoryDraggedItem> DraggedItemClass;
 

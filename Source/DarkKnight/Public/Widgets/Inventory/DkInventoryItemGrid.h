@@ -105,6 +105,11 @@ protected:
 	float SlotDistance = 8.f;
 	/********/
 
+	/* 拖拽Item */
+	UFUNCTION()
+	void OnSlottedItemClicked(int32 GridIndex, const FPointerEvent& MouseEvent);
+	/********/
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Inventory")
 	EInventoryItemCategory ItemCategory;
 

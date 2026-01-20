@@ -3,6 +3,7 @@
 
 #include "Widgets/Inventory/DkInventoryItemGrid.h"
 
+#include "DarkKnightDebugHelper.h"
 #include "Components/DkInventoryComponent.h"
 #include "Components/DkItemComponent.h"
 #include "Widgets/Inventory/DkInventoryGridSlot.h"
@@ -179,4 +180,9 @@ void UDkInventoryItemGrid::ConstructGrid()
 			GridSlots.Add(GridSlot);
 		}
 	}
+}
+
+void UDkInventoryItemGrid::OnSlottedItemClicked(int32 GridIndex, const FPointerEvent& MouseEvent)
+{
+	Debug::Print(FString::Printf(TEXT("点击了索引为 %d 的格子"), GridIndex));
 }

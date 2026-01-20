@@ -35,6 +35,7 @@ void UDKInventoryItemSpatialGrid::AddItemToIndex(
 	SlottedItem->SetbIsStackable(bStackable);
 	const int32 StackUpdateAmount = bStackable ? StackAmount : 0;
 	SlottedItem->UpdateStackCount(StackUpdateAmount);
+	SlottedItem->OnSlottedItemClicked.AddDynamic(this, &ThisClass::OnSlottedItemClicked);
 
 	// 把slotted item加到CanvasPanel
 	AddSlottedItemToCanvas(Index, GridFragment, SlottedItem);

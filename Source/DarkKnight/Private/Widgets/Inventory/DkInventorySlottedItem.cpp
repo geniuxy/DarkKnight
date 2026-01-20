@@ -7,6 +7,12 @@
 #include "CommonLazyImage.h"
 #include "CommonTextBlock.h"
 
+FReply UDkInventorySlottedItem::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+	OnSlottedItemClicked.Broadcast(GridIndex, InMouseEvent);
+	return FReply::Handled();
+}
+
 UDkInventoryItem* UDkInventorySlottedItem::GetInventoryItem() const
 {
 	return InventoryItem.IsValid() ? InventoryItem.Get() : nullptr;

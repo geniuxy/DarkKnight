@@ -205,11 +205,20 @@ bool UDkInventoryItemGrid::IsLeftMouseClick(const FPointerEvent& MouseEvent) con
 
 void UDkInventoryItemGrid::DragItem(UDkInventoryItem* ClickedInventoryItem, const int32 GridIndex)
 {
-	AssignDraggedItem(ClickedInventoryItem);
+	AssignDraggedItem(ClickedInventoryItem, GridIndex, GridIndex);
 
 	// 从背包中移除被点击的Item
 }
 
 void UDkInventoryItemGrid::AssignDraggedItem(UDkInventoryItem* InventoryItem)
 {
+}
+
+void UDkInventoryItemGrid::AssignDraggedItem(
+	UDkInventoryItem* InventoryItem, const int32 GridIndex, const int32 PreviousGridIndex)
+{
+	AssignDraggedItem(InventoryItem);
+
+	DraggedItem->SetPreviousGridIndex(PreviousGridIndex);
+	DraggedItem->UpdateStackCountText(InventoryItem->IsItemStackable() ? GridSlots[GridIndex]->GetStackCount() : 0);
 }

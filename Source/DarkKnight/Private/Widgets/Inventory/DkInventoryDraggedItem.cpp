@@ -12,7 +12,7 @@ void UDkInventoryDraggedItem::SetImageBrush(const FSlateBrush& Brush) const
 	Image_Icon->SetBrush(Brush);
 }
 
-void UDkInventoryDraggedItem::UpdateStackCount(const int32 Count) const
+void UDkInventoryDraggedItem::UpdateStackCountText(const int32 Count) const
 {
 	if (Count > 0)
 	{

@@ -21,7 +21,7 @@ class DARKKNIGHT_API UDkInventoryDraggedItem : public UCommonUserWidget
 
 public:
 	void SetImageBrush(const FSlateBrush& Brush) const;
-	void UpdateStackCount(const int32 Count) const;
+	void UpdateStackCountText(const int32 Count) const;
 
 	FGameplayTag GetItemTag() const;
 

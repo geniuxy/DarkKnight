@@ -45,7 +45,7 @@ protected:
 	/* 添加/删除Item */
 	UFUNCTION()
 	void AddItem(UDkInventoryItem* Item);
-	
+
 	UFUNCTION()
 	void AddStacks(const FDkInventorySlotAvailabilityResult& Result);
 
@@ -115,6 +115,9 @@ protected:
 
 	void DragItem(UDkInventoryItem* ClickedInventoryItem, const int32 GridIndex);
 	virtual void AssignDraggedItem(UDkInventoryItem* InventoryItem);
+	virtual void AssignDraggedItem(
+		UDkInventoryItem* InventoryItem, const int32 GridIndex, const int32 PreviousGridIndex
+	);
 
 	UPROPERTY(EditAnywhere, Category = "Inventory")
 	TSubclassOf<UDkInventoryDraggedItem> DraggedItemClass;
@@ -122,7 +125,7 @@ protected:
 	UPROPERTY()
 	TObjectPtr<UDkInventoryDraggedItem> DraggedItem;
 	/********/
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Inventory")
 	EInventoryItemCategory ItemCategory;
 

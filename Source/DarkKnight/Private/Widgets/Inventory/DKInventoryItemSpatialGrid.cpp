@@ -13,35 +13,15 @@
 #include "Widgets/Inventory/DkInventoryGridSlot.h"
 #include "Widgets/Inventory/DkInventorySlottedItem.h"
 
-struct FInventoryItemImageFragment;
-
 void UDKInventoryItemSpatialGrid::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
 
-	if (DraggedItem && DraggedItem->IsInViewport())
-	{
-		FVector2D MousePos;
-		if (UGameViewportClient* VP = GetWorld()->GetGameViewport())
-		{
-			VP->GetMousePosition(MousePos); // UMG 虚拟像素（受 DPI 缩放） (把鼠标坐标转成和 UMG 同一空间)
-		}
+	// 根据鼠标的位置，更改Hover的格子样式
+	const FVector2D CanvasPosition = UDkInventoryFunctionLibrary::GetWidgetPosition(GridCanvasPanel);
+	const FVector2D MousePosition = UWidgetLayoutLibrary::GetMousePositionOnViewport(GetOwningPlayer());
 
-		// 用实际布局尺寸，而不是 DesiredSize
-		const FVector2D ActualSize = DraggedItem->GetCachedGeometry().GetAbsoluteSize();
-		DraggedItem->SetPositionInViewport(MousePos - ActualSize * 0.5f);
-	}
-}
-
-void UDKInventoryItemSpatialGrid::NativeDestruct()
-{
-	Super::NativeDestruct();
-
-	if (DraggedItem && DraggedItem->IsInViewport())
-	{
-		DraggedItem->RemoveFromParent();
-		DraggedItem = nullptr;
-	}
+	UpdateTileParameters(CanvasPosition, MousePosition);
 }
 
 void UDKInventoryItemSpatialGrid::AddItemToIndex(
@@ -275,4 +255,11 @@ void UDKInventoryItemSpatialGrid::AssignDraggedItem(UDkInventoryItem* InventoryI
 
 	DraggedItem->SetDesiredSizeInViewport(Brush.ImageSize);
 	DraggedItem->AddToViewport();
+}
+
+void UDKInventoryItemSpatialGrid::UpdateTileParameters(
+	const FVector2D& CanvasPosition, const FVector2D& MousePosition)
+{
+	// 计算鼠标所处格子内的哪个象限
+	// 更新背景网格的Highlight样式
 }

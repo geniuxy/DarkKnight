@@ -45,6 +45,36 @@ void UDkInventoryItemGrid::NativeOnInitialized()
 	InventoryComponent->OnStackChange.AddDynamic(this, &ThisClass::AddStacks);
 }
 
+void UDkInventoryItemGrid::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+
+	// 拖拽Item，跟随鼠标移动
+	if (DraggedItem && DraggedItem->IsInViewport())
+	{
+		FVector2D MousePos;
+		if (UGameViewportClient* VP = GetWorld()->GetGameViewport())
+		{
+			VP->GetMousePosition(MousePos); // UMG 虚拟像素（受 DPI 缩放） (把鼠标坐标转成和 UMG 同一空间)
+		}
+
+		// 用实际布局尺寸，而不是 DesiredSize
+		const FVector2D ActualSize = DraggedItem->GetCachedGeometry().GetAbsoluteSize();
+		DraggedItem->SetPositionInViewport(MousePos - ActualSize * 0.5f);
+	}
+}
+
+void UDkInventoryItemGrid::NativeDestruct()
+{
+	Super::NativeDestruct();
+
+	if (DraggedItem && DraggedItem->IsInViewport())
+	{
+		DraggedItem->RemoveFromParent();
+		DraggedItem = nullptr;
+	}
+}
+
 void UDkInventoryItemGrid::AddItem(UDkInventoryItem* Item)
 {
 	if (!MatchesCategory(Item)) return;

@@ -35,6 +35,8 @@ public:
 protected:
 	//~Begin UUserWidget Function
 	virtual void NativeOnInitialized() override;
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+	virtual void NativeDestruct() override;
 	//~End UUserWidget Function
 
 	//***** Bound Widgets *****//

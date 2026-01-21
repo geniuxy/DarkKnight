@@ -18,9 +18,8 @@ class DARKKNIGHT_API UDKInventoryItemSpatialGrid : public UDkInventoryItemGrid
 protected:
 	//~Begin UUserWidget Function
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
-	virtual void NativeDestruct() override;
 	//~End UUserWidget Function
-	
+
 	//***** Bound Widgets *****//
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UCanvasPanel> GridCanvasPanel;
@@ -57,5 +56,9 @@ protected:
 
 	/* 拖拽Item */
 	virtual void AssignDraggedItem(UDkInventoryItem* InventoryItem) override;
+	/********/
+
+	/* 鼠标Hover背包网格，改变其样式 */
+	void UpdateTileParameters(const FVector2D& CanvasPosition, const FVector2D& MousePosition);
 	/********/
 };

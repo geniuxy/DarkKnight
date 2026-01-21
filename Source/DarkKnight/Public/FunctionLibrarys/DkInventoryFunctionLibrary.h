@@ -25,6 +25,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Inventory Function Library")
 	static UDkInventoryComponent* GetInventoryComponent(const APlayerController* PlayerController);
 
+	UFUNCTION(BlueprintCallable, Category="Inventory Function Library")
+	static FVector2D GetWidgetPosition(UWidget* Widget);
+
 	template <typename T, typename FuncT>
 	static void ForEach2D(
 		TArray<T>& Array, int32 Index, const FIntPoint& Range2D, int32 GridColumns, const FuncT& Function

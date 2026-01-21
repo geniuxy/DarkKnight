@@ -66,4 +66,14 @@ enum class EInventoryGridSlotState: uint8
 	GrayedOut
 };
 
+UENUM(BlueprintType)
+enum class EInventoryTileQuadrant: uint8 // 位于背包一个格子的哪个象限
+{
+	TopLeft,
+	TopRight,
+	BottomLeft,
+	BottomRight,
+	None
+};
+
 /********/

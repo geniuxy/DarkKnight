@@ -6,14 +6,16 @@
 #include "CommonUserWidget.h"
 #include "DkInventoryGridSlot.h"
 #include "DkTypes/DkEnums.h"
+#include "DkTypes/DkStructs.h"
 #include "Inventory/DkInventoryItem.h"
 #include "Inventory/DkInventorySlotAvailabilty.h"
 #include "DkInventoryItemGrid.generated.h"
 
-class UDkInventoryDraggedItem;
+struct FInventoryTileParameters;
 struct FInventoryItemGridFragment;
-class UDkInventorySlottedItem;
 struct FDkInventorySlotAvailabilityResult;
+class UDkInventoryDraggedItem;
+class UDkInventorySlottedItem;
 class UDkInventoryItem;
 class UDkItemComponent;
 class UDkInventoryComponent;
@@ -125,6 +127,11 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<UDkInventoryDraggedItem> DraggedItem;
+	/********/
+
+	/* 鼠标Hover背包网格，改变其样式 */
+	FInventoryTileParameters TileParameters;
+	FInventoryTileParameters LastTileParameters;
 	/********/
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Inventory")

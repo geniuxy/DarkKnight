@@ -260,6 +260,22 @@ void UDKInventoryItemSpatialGrid::AssignDraggedItem(UDkInventoryItem* InventoryI
 void UDKInventoryItemSpatialGrid::UpdateTileParameters(
 	const FVector2D& CanvasPosition, const FVector2D& MousePosition)
 {
-	// 计算鼠标所处格子内的哪个象限
+	// 如果鼠标不在CanvasPanel内，return
+	// 计算网格的象限、索引、坐标
+	const FIntPoint HoveredTileCoordinate = CalculateHoveredCoordinates(CanvasPosition, MousePosition);
+
+	LastTileParameters = TileParameters;
+	TileParameters.TileCoordinate = HoveredTileCoordinate;
+	TileParameters.TileIndex = UDkInventoryFunctionLibrary::GetIndexFromPosition(HoveredTileCoordinate, Columns);
+	
 	// 更新背景网格的Highlight样式
+}
+
+FIntPoint UDKInventoryItemSpatialGrid::CalculateHoveredCoordinates(
+	const FVector2D& CanvasPosition, const FVector2D& MousePosition) const
+{
+	return FIntPoint{
+		static_cast<int32>(FMath::FloorToInt((MousePosition.X - CanvasPosition.X) / TileSize)),
+		static_cast<int32>(FMath::FloorToInt((MousePosition.Y - CanvasPosition.Y) / TileSize))
+	};
 }

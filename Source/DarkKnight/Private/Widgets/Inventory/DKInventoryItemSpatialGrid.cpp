@@ -4,6 +4,7 @@
 #include "Widgets/Inventory/DKInventoryItemSpatialGrid.h"
 
 #include "DkGameplayTags.h"
+#include "ToolContextInterfaces.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Components/CanvasPanel.h"
 #include "Components/CanvasPanelSlot.h"
@@ -267,8 +268,9 @@ void UDKInventoryItemSpatialGrid::UpdateTileParameters(
 	LastTileParameters = TileParameters;
 	TileParameters.TileCoordinate = HoveredTileCoordinate;
 	TileParameters.TileIndex = UDkInventoryFunctionLibrary::GetIndexFromPosition(HoveredTileCoordinate, Columns);
+	TileParameters.TileQuadrant = CalculateTileQuadrant(CanvasPosition, MousePosition);
 	
-	// 更新背景网格的Highlight样式
+	OnTileParametersUpdated(TileParameters);
 }
 
 FIntPoint UDKInventoryItemSpatialGrid::CalculateHoveredCoordinates(
@@ -278,4 +280,36 @@ FIntPoint UDKInventoryItemSpatialGrid::CalculateHoveredCoordinates(
 		static_cast<int32>(FMath::FloorToInt((MousePosition.X - CanvasPosition.X) / TileSize)),
 		static_cast<int32>(FMath::FloorToInt((MousePosition.Y - CanvasPosition.Y) / TileSize))
 	};
+}
+
+EInventoryTileQuadrant UDKInventoryItemSpatialGrid::CalculateTileQuadrant(
+	const FVector2D& CanvasPosition, const FVector2D& MousePosition) const
+{
+	// 计算在当前格子的相对坐标
+	const float TileLocalX = FMath::Fmod(MousePosition.X - CanvasPosition.X, TileSize);
+	const float TileLocalY = FMath::Fmod(MousePosition.Y - CanvasPosition.Y, TileSize);
+
+	// 决定了鼠标在当前格子的哪个象限
+	const bool bIsTop = TileLocalY < TileSize / 2.f;
+	const bool bIsLeft = TileLocalX < TileSize / 2.f;
+
+	EInventoryTileQuadrant HoveredTileQuadrant = EInventoryTileQuadrant::None;
+	if (bIsTop && bIsLeft) HoveredTileQuadrant = EInventoryTileQuadrant::TopLeft;
+	else if (bIsTop && !bIsLeft) HoveredTileQuadrant = EInventoryTileQuadrant::TopRight;
+	else if (!bIsTop && bIsLeft) HoveredTileQuadrant = EInventoryTileQuadrant::BottomLeft;
+	else if (!bIsTop && !bIsLeft) HoveredTileQuadrant = EInventoryTileQuadrant::BottomRight;
+
+	return HoveredTileQuadrant;
+}
+
+void UDKInventoryItemSpatialGrid::OnTileParametersUpdated(const FInventoryTileParameters& Parameters)
+{
+	if (!DraggedItem) return;
+
+	// Get Hover Item's dimensions
+	// calculate the starting coordinate for highlighting
+	// check hover position
+		// in the grid bounds?
+		// any items in the way?
+		// if so, is there only one item in the way? (can we swap?)
 }

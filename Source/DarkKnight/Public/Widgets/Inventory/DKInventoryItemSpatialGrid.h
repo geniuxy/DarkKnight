@@ -61,5 +61,7 @@ protected:
 	/* 鼠标Hover背包网格，改变其样式 */
 	void UpdateTileParameters(const FVector2D& CanvasPosition, const FVector2D& MousePosition);
 	FIntPoint CalculateHoveredCoordinates(const FVector2D& CanvasPosition, const FVector2D& MousePosition) const;
+	EInventoryTileQuadrant CalculateTileQuadrant(const FVector2D& CanvasPosition, const FVector2D& MousePosition) const;
+	void OnTileParametersUpdated(const FInventoryTileParameters& Parameters);
 	/********/
 };

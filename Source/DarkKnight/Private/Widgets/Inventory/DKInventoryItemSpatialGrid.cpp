@@ -306,7 +306,8 @@ void UDKInventoryItemSpatialGrid::OnTileParametersUpdated(const FInventoryTilePa
 {
 	if (!DraggedItem) return;
 
-	// Get Hover Item's dimensions
+	// 获取DraggedItem的尺寸/面积
+	const FIntPoint Dimension = DraggedItem->GetGridDimension();
 	// calculate the starting coordinate for highlighting
 	// check hover position
 		// in the grid bounds?

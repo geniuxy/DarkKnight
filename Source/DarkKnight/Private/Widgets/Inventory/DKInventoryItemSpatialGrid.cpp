@@ -3,8 +3,8 @@
 
 #include "Widgets/Inventory/DKInventoryItemSpatialGrid.h"
 
+#include "DarkKnightDebugHelper.h"
 #include "DkGameplayTags.h"
-#include "ToolContextInterfaces.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Components/CanvasPanel.h"
 #include "Components/CanvasPanelSlot.h"
@@ -269,7 +269,7 @@ void UDKInventoryItemSpatialGrid::UpdateTileParameters(
 	TileParameters.TileCoordinate = HoveredTileCoordinate;
 	TileParameters.TileIndex = UDkInventoryFunctionLibrary::GetIndexFromPosition(HoveredTileCoordinate, Columns);
 	TileParameters.TileQuadrant = CalculateTileQuadrant(CanvasPosition, MousePosition);
-	
+
 	OnTileParametersUpdated(TileParameters);
 }
 
@@ -308,9 +308,43 @@ void UDKInventoryItemSpatialGrid::OnTileParametersUpdated(const FInventoryTilePa
 
 	// 获取DraggedItem的尺寸/面积
 	const FIntPoint Dimension = DraggedItem->GetGridDimension();
-	// calculate the starting coordinate for highlighting
+	// 计算DraggedItem所在背景位置的起始Index
+	const FIntPoint StartingCoordinate =
+		CalculateStartingCoordinate(Parameters.TileCoordinate, Dimension, Parameters.TileQuadrant);
 	// check hover position
-		// in the grid bounds?
-		// any items in the way?
-		// if so, is there only one item in the way? (can we swap?)
+	// in the grid bounds?
+	// any items in the way?
+	// if so, is there only one item in the way? (can we swap?)
+}
+
+FIntPoint UDKInventoryItemSpatialGrid::CalculateStartingCoordinate(
+	const FIntPoint& Coordinate, const FIntPoint& Dimension, const EInventoryTileQuadrant Quadrant) const
+{
+	const int32 HasEvenWidth = Dimension.X % 2 == 0 ? 1 : 0;
+	const int32 HasEvenHeight = Dimension.Y % 2 == 0 ? 1 : 0;
+
+	FIntPoint StartingCoord;
+	switch (Quadrant) {
+	case EInventoryTileQuadrant::TopLeft:
+		StartingCoord.X = Coordinate.X - FMath::FloorToInt(0.5f * Dimension.X);
+		StartingCoord.Y = Coordinate.Y - FMath::FloorToInt(0.5f * Dimension.Y);
+		break;
+	case EInventoryTileQuadrant::TopRight:
+		StartingCoord.X = Coordinate.X - FMath::FloorToInt(0.5f * Dimension.X) + HasEvenWidth;
+		StartingCoord.Y = Coordinate.Y - FMath::FloorToInt(0.5f * Dimension.Y);
+		break;
+	case EInventoryTileQuadrant::BottomLeft:
+		StartingCoord.X = Coordinate.X - FMath::FloorToInt(0.5f * Dimension.X);
+		StartingCoord.Y = Coordinate.Y - FMath::FloorToInt(0.5f * Dimension.Y) + HasEvenHeight;
+		break;
+	case EInventoryTileQuadrant::BottomRight:
+		StartingCoord.X = Coordinate.X - FMath::FloorToInt(0.5f * Dimension.X) + HasEvenWidth;
+		StartingCoord.Y = Coordinate.Y - FMath::FloorToInt(0.5f * Dimension.Y) + HasEvenHeight;
+		break;
+	case EInventoryTileQuadrant::None:
+		Debug::Print(TEXT("无效的象限"));
+		return FIntPoint(-1, -1);
+	}
+
+	return StartingCoord;
 }

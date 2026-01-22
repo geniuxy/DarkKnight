@@ -63,5 +63,8 @@ protected:
 	FIntPoint CalculateHoveredCoordinates(const FVector2D& CanvasPosition, const FVector2D& MousePosition) const;
 	EInventoryTileQuadrant CalculateTileQuadrant(const FVector2D& CanvasPosition, const FVector2D& MousePosition) const;
 	void OnTileParametersUpdated(const FInventoryTileParameters& Parameters);
+	FIntPoint CalculateStartingCoordinate(
+		const FIntPoint& Coordinate, const FIntPoint& Dimension, const EInventoryTileQuadrant Quadrant
+	) const;
 	/********/
 };

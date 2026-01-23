@@ -352,7 +352,8 @@ FInventorySpaceQueryResult UDKInventoryItemSpatialGrid::CheckHoverPosition(
 	const FIntPoint& Position, const FIntPoint& Dimension) const
 {
 	FInventorySpaceQueryResult Result;
-	// in the grid bounds?
+	// 是否在背包网格边界内
+	if (!IsInGridBounds(ItemDropIndex, Dimension)) return Result;
 	// any items in the way?
 	// if so, is there only one item in the way? (can we swap?)
 

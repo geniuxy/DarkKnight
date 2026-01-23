@@ -22,6 +22,11 @@ void UDKInventoryItemSpatialGrid::NativeTick(const FGeometry& MyGeometry, float 
 	const FVector2D CanvasPosition = UDkInventoryFunctionLibrary::GetWidgetPosition(GridCanvasPanel);
 	const FVector2D MousePosition = UWidgetLayoutLibrary::GetMousePositionOnViewport(GetOwningPlayer());
 
+	if (CursorExitedCanvas(CanvasPosition, UDkInventoryFunctionLibrary::GetWidgetSize(GridCanvasPanel), MousePosition))
+	{
+		return;
+	}
+
 	UpdateTileParameters(CanvasPosition, MousePosition);
 }
 
@@ -378,6 +383,19 @@ FInventorySpaceQueryResult UDKInventoryItemSpatialGrid::CheckHoverPosition(
 		Result.ValidItem = GridSlots[Index]->GetInventoryItem();
 		Result.UpperLeftIndex = GridSlots[Index]->GetUpperLeftIndex();
 	}
-	
+
 	return Result;
+}
+
+bool UDKInventoryItemSpatialGrid::CursorExitedCanvas(
+	const FVector2D& BoundaryPos, const FVector2D& BoundarySize, const FVector2D& MousePos)
+{
+	bLastMouseWithInCanvas = bMouseWithInCanvas;
+	bMouseWithInCanvas = UDkInventoryFunctionLibrary::IsWithInBounds(BoundaryPos, BoundarySize, MousePos);
+	if (!bMouseWithInCanvas && bLastMouseWithInCanvas)
+	{
+		// TODO: UnHighlightSlots()
+		return true;
+	}
+	return false;
 }

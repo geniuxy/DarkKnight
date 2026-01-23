@@ -36,3 +36,16 @@ FVector2D UDkInventoryFunctionLibrary::GetWidgetPosition(UWidget* Widget)
 	);
 	return ViewportPosition;
 }
+
+FVector2D UDkInventoryFunctionLibrary::GetWidgetSize(UWidget* Widget)
+{
+	const FGeometry Geometry = Widget->GetCachedGeometry();
+	return Geometry.GetLocalSize();
+}
+
+bool UDkInventoryFunctionLibrary::IsWithInBounds(
+	const FVector2D& BoundaryPos, const FVector2D& WidgetSize, const FVector2D& MousePos)
+{
+	return MousePos.X >= BoundaryPos.X && MousePos.X <= (BoundaryPos.X + WidgetSize.X) &&
+		MousePos.Y >= BoundaryPos.Y && MousePos.Y <= (BoundaryPos.Y + WidgetSize.Y);
+}

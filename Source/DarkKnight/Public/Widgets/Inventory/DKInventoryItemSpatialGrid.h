@@ -66,9 +66,16 @@ protected:
 	FIntPoint CalculateStartingCoordinate(
 		const FIntPoint& Coordinate, const FIntPoint& Dimension, const EInventoryTileQuadrant Quadrant
 	) const;
-	FInventorySpaceQueryResult CheckHoverPosition(const FIntPoint& Position, const FIntPoint& Dimension); 
+
+	// 查看DraggedItem覆盖的背后区域的格子(是否有别的Item)
+	FInventorySpaceQueryResult CheckHoverPosition(const FIntPoint& Position, const FIntPoint& Dimension);
+
+	// 鼠标是否离开GridCanvasPanel对应的区域
+	bool CursorExitedCanvas(const FVector2D& BoundaryPos, const FVector2D& BoundarySize, const FVector2D& MousePos);
 
 	int32 ItemDropIndex = INDEX_NONE;
 	FInventorySpaceQueryResult CurrentSpaceQueryResult;
+	bool bMouseWithInCanvas;
+	bool bLastMouseWithInCanvas;
 	/********/
 };

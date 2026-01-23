@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "Inventory/DkInventoryItem.h"
 
 #include "DkStructs.generated.h"
 
@@ -82,4 +83,13 @@ inline bool operator==(const FInventoryTileParameters& A, const FInventoryTilePa
 	return A.TileCoordinate == B.TileCoordinate && A.TileIndex == B.TileIndex && A.TileQuadrant == B.TileQuadrant;
 }
 
+USTRUCT()
+struct FInventorySpaceQueryResult
+{
+	GENERATED_BODY()
+
+	bool bHasSpace = false;
+	TWeakObjectPtr<UDkInventoryItem> ValidItem = nullptr;
+	int32 UpperLeftIndex = INDEX_NONE;
+};
 /********/

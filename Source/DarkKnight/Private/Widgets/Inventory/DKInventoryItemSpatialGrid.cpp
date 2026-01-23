@@ -311,10 +311,9 @@ void UDKInventoryItemSpatialGrid::OnTileParametersUpdated(const FInventoryTilePa
 	// 计算DraggedItem所在背景位置的起始Index
 	const FIntPoint StartingCoordinate =
 		CalculateStartingCoordinate(Parameters.TileCoordinate, Dimension, Parameters.TileQuadrant);
-	// check hover position
-	// in the grid bounds?
-	// any items in the way?
-	// if so, is there only one item in the way? (can we swap?)
+	ItemDropIndex = UDkInventoryFunctionLibrary::GetIndexFromPosition(StartingCoordinate, Columns);
+
+	CurrentSpaceQueryResult = CheckHoverPosition(StartingCoordinate, Dimension);
 }
 
 FIntPoint UDKInventoryItemSpatialGrid::CalculateStartingCoordinate(
@@ -347,4 +346,15 @@ FIntPoint UDKInventoryItemSpatialGrid::CalculateStartingCoordinate(
 	}
 
 	return StartingCoord;
+}
+
+FInventorySpaceQueryResult UDKInventoryItemSpatialGrid::CheckHoverPosition(
+	const FIntPoint& Position, const FIntPoint& Dimension) const
+{
+	FInventorySpaceQueryResult Result;
+	// in the grid bounds?
+	// any items in the way?
+	// if so, is there only one item in the way? (can we swap?)
+
+	return Result;
 }

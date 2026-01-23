@@ -68,7 +68,9 @@ protected:
 	) const;
 
 	// 查看DraggedItem覆盖的背后区域的格子(是否有别的Item)
-	FInventorySpaceQueryResult CheckHoverPosition(const FIntPoint& Position, const FIntPoint& Dimension);
+	FInventorySpaceQueryResult CheckHoverPosition(const FIntPoint& Dimension);
+	// 更改DraggedItem覆盖的背后区域的格子的样式
+	void ChangeHoverType(const int32 StartingIndex, const FIntPoint& Dimension, EInventoryGridSlotState GridSlotState);
 
 	// 鼠标是否离开GridCanvasPanel对应的区域
 	bool CursorExitedCanvas(const FVector2D& BoundaryPos, const FVector2D& BoundarySize, const FVector2D& MousePos);
@@ -76,6 +78,7 @@ protected:
 	// Highlight/UnHighlight DraggedItem覆盖的背后区域的格子
 	void HighlightSlots(const int32 Index, const FIntPoint& Dimension);
 	void UnHighlightSlots(const int32 Index, const FIntPoint& Dimension);
+
 
 	int32 ItemDropIndex = INDEX_NONE;
 	FInventorySpaceQueryResult CurrentSpaceQueryResult;

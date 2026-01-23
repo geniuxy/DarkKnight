@@ -79,8 +79,8 @@ void UDKInventoryItemSpatialGrid::AddSlottedItemToCanvas(
 bool UDKInventoryItemSpatialGrid::IsInGridBounds(const int32 StartIndex, const FIntPoint& ItemDimension) const
 {
 	if (StartIndex < 0 || StartIndex >= GridSlots.Num()) return false;
-	const int32 EndColumn = (StartIndex % Columns) + ItemDimension.X;
-	const int32 EndRow = (StartIndex / Columns) + ItemDimension.Y;
+	const int32 EndColumn = (StartIndex % Columns) + ItemDimension.X - 1;
+	const int32 EndRow = (StartIndex / Columns) + ItemDimension.Y - 1;
 	return EndColumn <= Columns - 1 && EndRow <= Rows - 1;
 }
 
@@ -320,7 +320,7 @@ void UDKInventoryItemSpatialGrid::OnTileParametersUpdated(const FInventoryTilePa
 		CalculateStartingCoordinate(Parameters.TileCoordinate, Dimension, Parameters.TileQuadrant);
 	ItemDropIndex = UDkInventoryFunctionLibrary::GetIndexFromPosition(StartingCoordinate, Columns);
 
-	CurrentSpaceQueryResult = CheckHoverPosition(StartingCoordinate, Dimension);
+	CurrentSpaceQueryResult = CheckHoverPosition(Dimension);
 	if (CurrentSpaceQueryResult.bHasSpace)
 	{
 		HighlightSlots(ItemDropIndex, Dimension);
@@ -328,8 +328,19 @@ void UDKInventoryItemSpatialGrid::OnTileParametersUpdated(const FInventoryTilePa
 	}
 	UnHighlightSlots(LastHighlightedIndex, LastHighlightedDimension);
 
-	if (CurrentSpaceQueryResult.ValidItem.IsValid())
+	if (CurrentSpaceQueryResult.ValidItem.IsValid() && GridSlots.IsValidIndex(CurrentSpaceQueryResult.UpperLeftIndex))
 	{
+		const FInventoryItemGridFragment* GridFragment = GetFragment<FInventoryItemGridFragment>(
+			CurrentSpaceQueryResult.ValidItem.Get(), DkGameplayTags::Dk_Inventory_Fragment_Grid
+		);
+		if (!GridFragment) return;
+
+		ChangeHoverType(
+			CurrentSpaceQueryResult.UpperLeftIndex,
+			GridFragment->GetGridSize(),
+			EInventoryGridSlotState::GrayedOut
+		);
+
 		// TODO: 如果这片区域内有一个Item，可以交换位置或者增加StackCount
 	}
 }
@@ -367,12 +378,14 @@ FIntPoint UDKInventoryItemSpatialGrid::CalculateStartingCoordinate(
 	return StartingCoord;
 }
 
-FInventorySpaceQueryResult UDKInventoryItemSpatialGrid::CheckHoverPosition(
-	const FIntPoint& Position, const FIntPoint& Dimension)
+FInventorySpaceQueryResult UDKInventoryItemSpatialGrid::CheckHoverPosition(const FIntPoint& Dimension)
 {
 	FInventorySpaceQueryResult Result;
 	// 是否在背包网格边界内
-	if (!IsInGridBounds(ItemDropIndex, Dimension)) return Result;
+	if (ItemDropIndex == INDEX_NONE || !IsInGridBounds(ItemDropIndex, Dimension))
+	{
+		return Result;
+	}
 
 	Result.bHasSpace = true;
 	// 查看DraggedItem背后的是否有别的Item，如果有的话将左上角坐标存进Set中
@@ -398,6 +411,36 @@ FInventorySpaceQueryResult UDKInventoryItemSpatialGrid::CheckHoverPosition(
 	}
 
 	return Result;
+}
+
+void UDKInventoryItemSpatialGrid::ChangeHoverType(
+	const int32 StartingIndex, const FIntPoint& Dimension, EInventoryGridSlotState GridSlotState)
+{
+	UnHighlightSlots(LastHighlightedIndex, LastHighlightedDimension);
+	UDkInventoryFunctionLibrary::ForEach2D(
+		GridSlots, StartingIndex, Dimension, Columns,
+		[GridSlotState](UDkInventoryGridSlot* CurrentSlot)
+		{
+			switch (GridSlotState)
+			{
+			case EInventoryGridSlotState::Unoccupied:
+				CurrentSlot->SetUnoccupiedTexture();
+				break;
+			case EInventoryGridSlotState::Occupied:
+				CurrentSlot->SetOccupiedTexture();
+				break;
+			case EInventoryGridSlotState::Selected:
+				CurrentSlot->SetSelectedTexture();
+				break;
+			case EInventoryGridSlotState::GrayedOut:
+				CurrentSlot->SetGrayedOutTexture();
+				break;
+			}
+		}
+	);
+
+	LastHighlightedIndex = StartingIndex,
+		LastHighlightedDimension = Dimension;
 }
 
 bool UDKInventoryItemSpatialGrid::CursorExitedCanvas(

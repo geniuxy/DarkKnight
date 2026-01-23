@@ -323,7 +323,8 @@ FIntPoint UDKInventoryItemSpatialGrid::CalculateStartingCoordinate(
 	const int32 HasEvenHeight = Dimension.Y % 2 == 0 ? 1 : 0;
 
 	FIntPoint StartingCoord;
-	switch (Quadrant) {
+	switch (Quadrant)
+	{
 	case EInventoryTileQuadrant::TopLeft:
 		StartingCoord.X = Coordinate.X - FMath::FloorToInt(0.5f * Dimension.X);
 		StartingCoord.Y = Coordinate.Y - FMath::FloorToInt(0.5f * Dimension.Y);
@@ -349,13 +350,34 @@ FIntPoint UDKInventoryItemSpatialGrid::CalculateStartingCoordinate(
 }
 
 FInventorySpaceQueryResult UDKInventoryItemSpatialGrid::CheckHoverPosition(
-	const FIntPoint& Position, const FIntPoint& Dimension) const
+	const FIntPoint& Position, const FIntPoint& Dimension)
 {
 	FInventorySpaceQueryResult Result;
 	// 是否在背包网格边界内
 	if (!IsInGridBounds(ItemDropIndex, Dimension)) return Result;
-	// any items in the way?
-	// if so, is there only one item in the way? (can we swap?)
 
+	Result.bHasSpace = true;
+	// 查看DraggedItem背后的是否有别的Item，如果有的话将左上角坐标存进Set中
+	TSet<int32> OccupiedUpperLeftIndices;
+	UDkInventoryFunctionLibrary::ForEach2D(
+		GridSlots, ItemDropIndex, Dimension, Columns,
+		[&](const UDkInventoryGridSlot* CurrentSlot)
+		{
+			if (IsValid(CurrentSlot->GetInventoryItem()))
+			{
+				OccupiedUpperLeftIndices.Add(CurrentSlot->GetUpperLeftIndex());
+				Result.bHasSpace = false;
+			}
+		}
+	);
+
+	// 如果有的话，是否只有一个Item? (即是否可能可以交换)
+	if (OccupiedUpperLeftIndices.Num() == 1)
+	{
+		const int32 Index = *OccupiedUpperLeftIndices.CreateIterator();
+		Result.ValidItem = GridSlots[Index]->GetInventoryItem();
+		Result.UpperLeftIndex = GridSlots[Index]->GetUpperLeftIndex();
+	}
+	
 	return Result;
 }

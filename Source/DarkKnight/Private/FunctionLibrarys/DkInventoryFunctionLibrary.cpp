@@ -29,8 +29,8 @@ UDkInventoryComponent* UDkInventoryFunctionLibrary::GetInventoryComponent(const 
 FVector2D UDkInventoryFunctionLibrary::GetWidgetPosition(UWidget* Widget)
 {
 	const FGeometry Geometry = Widget->GetCachedGeometry();
-	FVector2D PixelPosition;
-	FVector2D ViewportPosition;
+	FVector2D PixelPosition; // 物理像素, 操作系统认的硬件像素
+	FVector2D ViewportPosition; // 逻辑/虚拟像素, 数值不受 DPI 缩放影响
 	USlateBlueprintLibrary::LocalToViewport(
 		Widget, Geometry, USlateBlueprintLibrary::GetLocalTopLeft(Geometry), PixelPosition, ViewportPosition
 	);

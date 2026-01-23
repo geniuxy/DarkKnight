@@ -52,13 +52,13 @@ void UDkInventoryItemGrid::NativeTick(const FGeometry& MyGeometry, float InDelta
 	// 拖拽Item，跟随鼠标移动
 	if (DraggedItem && DraggedItem->IsInViewport())
 	{
+		// 全程用硬件像素，以将鼠标定位到DraggedItem中心
 		FVector2D MousePos;
 		if (UGameViewportClient* VP = GetWorld()->GetGameViewport())
 		{
-			VP->GetMousePosition(MousePos); // UMG 虚拟像素（受 DPI 缩放） (把鼠标坐标转成和 UMG 同一空间)
+			VP->GetMousePosition(MousePos); // 系统硬件像素（受 DPI 缩放）
 		}
 
-		// 用实际布局尺寸，而不是 DesiredSize
 		const FVector2D ActualSize = DraggedItem->GetCachedGeometry().GetAbsoluteSize();
 		DraggedItem->SetPositionInViewport(MousePos - ActualSize * 0.5f);
 	}

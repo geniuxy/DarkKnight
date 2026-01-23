@@ -180,7 +180,7 @@ void UDKInventoryItemSpatialGrid::UpdateGridSlots(
 			GridSlot->SetInventoryItem(NewItem);
 			GridSlot->SetUpperLeftIndex(Index);
 			GridSlot->SetOccupiedTexture();
-			GridSlot->SetbAvailable(false);
+			GridSlot->SetIsAvailable(false);
 		}
 	);
 }
@@ -223,7 +223,7 @@ void UDKInventoryItemSpatialGrid::RemoveItemFromGrid(UDkInventoryItem* Inventory
 			GridSlot->SetInventoryItem(nullptr);
 			GridSlot->SetUpperLeftIndex(INDEX_NONE);
 			GridSlot->SetUnoccupiedTexture();
-			GridSlot->SetbAvailable(true);
+			GridSlot->SetIsAvailable(true);
 			GridSlot->SetStackCount(0);
 		}
 	);
@@ -266,7 +266,9 @@ void UDKInventoryItemSpatialGrid::AssignDraggedItem(UDkInventoryItem* InventoryI
 void UDKInventoryItemSpatialGrid::UpdateTileParameters(
 	const FVector2D& CanvasPosition, const FVector2D& MousePosition)
 {
-	// 如果鼠标不在CanvasPanel内，return
+	// 如果鼠标不在GridCanvasPanel内，return
+	if (!bMouseWithInCanvas) return;
+
 	// 计算网格的象限、索引、坐标
 	const FIntPoint HoveredTileCoordinate = CalculateHoveredCoordinates(CanvasPosition, MousePosition);
 
@@ -319,6 +321,17 @@ void UDKInventoryItemSpatialGrid::OnTileParametersUpdated(const FInventoryTilePa
 	ItemDropIndex = UDkInventoryFunctionLibrary::GetIndexFromPosition(StartingCoordinate, Columns);
 
 	CurrentSpaceQueryResult = CheckHoverPosition(StartingCoordinate, Dimension);
+	if (CurrentSpaceQueryResult.bHasSpace)
+	{
+		HighlightSlots(ItemDropIndex, Dimension);
+		return;
+	}
+	UnHighlightSlots(LastHighlightedIndex, LastHighlightedDimension);
+
+	if (CurrentSpaceQueryResult.ValidItem.IsValid())
+	{
+		// TODO: 如果这片区域内有一个Item，可以交换位置或者增加StackCount
+	}
 }
 
 FIntPoint UDKInventoryItemSpatialGrid::CalculateStartingCoordinate(
@@ -327,7 +340,7 @@ FIntPoint UDKInventoryItemSpatialGrid::CalculateStartingCoordinate(
 	const int32 HasEvenWidth = Dimension.X % 2 == 0 ? 1 : 0;
 	const int32 HasEvenHeight = Dimension.Y % 2 == 0 ? 1 : 0;
 
-	FIntPoint StartingCoord;
+	FIntPoint StartingCoord{};
 	switch (Quadrant)
 	{
 	case EInventoryTileQuadrant::TopLeft:
@@ -394,8 +407,41 @@ bool UDKInventoryItemSpatialGrid::CursorExitedCanvas(
 	bMouseWithInCanvas = UDkInventoryFunctionLibrary::IsWithInBounds(BoundaryPos, BoundarySize, MousePos);
 	if (!bMouseWithInCanvas && bLastMouseWithInCanvas)
 	{
-		// TODO: UnHighlightSlots()
+		UnHighlightSlots(LastHighlightedIndex, LastHighlightedDimension);
 		return true;
 	}
 	return false;
+}
+
+void UDKInventoryItemSpatialGrid::HighlightSlots(const int32 Index, const FIntPoint& Dimension)
+{
+	if (!bMouseWithInCanvas) return;
+	UnHighlightSlots(LastHighlightedIndex, LastHighlightedDimension);
+	UDkInventoryFunctionLibrary::ForEach2D(
+		GridSlots, Index, Dimension, Columns,
+		[](UDkInventoryGridSlot* CurrentSlot)
+		{
+			CurrentSlot->SetOccupiedTexture();
+		}
+	);
+	LastHighlightedIndex = Index;
+	LastHighlightedDimension = Dimension;
+}
+
+void UDKInventoryItemSpatialGrid::UnHighlightSlots(const int32 Index, const FIntPoint& Dimension)
+{
+	UDkInventoryFunctionLibrary::ForEach2D(
+		GridSlots, Index, Dimension, Columns,
+		[](UDkInventoryGridSlot* CurrentSlot)
+		{
+			if (CurrentSlot->IsAvailable())
+			{
+				CurrentSlot->SetUnoccupiedTexture();
+			}
+			else
+			{
+				CurrentSlot->SetOccupiedTexture();
+			}
+		}
+	);
 }

@@ -56,14 +56,15 @@ private:
 	EInventoryGridSlotState GridSlotState;
 
 	TWeakObjectPtr<UDkInventoryItem> InventoryItem;
-	int32 TileIndex;
-	int32 StackCount;
+	int32 TileIndex = INDEX_NONE;
+	int32 StackCount = 0;
 	int32 UpperLeftIndex = INDEX_NONE;
-	bool bAvailable;
+	bool bAvailable = true;
 
 public:
 	LIST_DATA_ACCESSOR(int32, TileIndex)
 	LIST_DATA_ACCESSOR(int32, StackCount)
 	LIST_DATA_ACCESSOR(int32, UpperLeftIndex)
-	LIST_DATA_ACCESSOR(bool, bAvailable)
+	FORCEINLINE bool IsAvailable() const { return bAvailable; }
+	FORCEINLINE void SetIsAvailable(bool bInIsAvailable) { bAvailable = bInIsAvailable; }
 };

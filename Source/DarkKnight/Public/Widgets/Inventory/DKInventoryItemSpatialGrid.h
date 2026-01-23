@@ -73,9 +73,15 @@ protected:
 	// 鼠标是否离开GridCanvasPanel对应的区域
 	bool CursorExitedCanvas(const FVector2D& BoundaryPos, const FVector2D& BoundarySize, const FVector2D& MousePos);
 
+	// Highlight/UnHighlight DraggedItem覆盖的背后区域的格子
+	void HighlightSlots(const int32 Index, const FIntPoint& Dimension);
+	void UnHighlightSlots(const int32 Index, const FIntPoint& Dimension);
+
 	int32 ItemDropIndex = INDEX_NONE;
 	FInventorySpaceQueryResult CurrentSpaceQueryResult;
 	bool bMouseWithInCanvas;
 	bool bLastMouseWithInCanvas;
+	int32 LastHighlightedIndex;
+	FIntPoint LastHighlightedDimension;
 	/********/
 };

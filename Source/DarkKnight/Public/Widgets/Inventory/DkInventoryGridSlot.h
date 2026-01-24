@@ -8,6 +8,8 @@
 #include "DkTypes/DkEnums.h"
 #include "DkInventoryGridSlot.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FGridSlotEvent, int32, GridIndex, const FPointerEvent&, MouseEvent);
+
 class UDkInventoryItem;
 class USizeBox;
 class UCommonLazyImage;
@@ -20,6 +22,12 @@ class DARKKNIGHT_API UDkInventoryGridSlot : public UCommonUserWidget
 	GENERATED_BODY()
 
 public:
+	//~Begin UUserWidget Function
+	virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+	virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
+	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+	//~End UUserWidget Function
+
 	void SetGridSlotSize(float InSlotSize);
 
 	EInventoryGridSlotState GetGridSlotState() const { return GridSlotState; }
@@ -31,6 +39,10 @@ public:
 
 	UDkInventoryItem* GetInventoryItem() const;
 	void SetInventoryItem(UDkInventoryItem* InItem);
+
+	FGridSlotEvent GridSlotClicked;
+	FGridSlotEvent GridSlotHovered;
+	FGridSlotEvent GridSlotUnhovered;
 
 private:
 	//***** Bound Widgets *****//

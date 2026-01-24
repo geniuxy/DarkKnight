@@ -206,6 +206,9 @@ void UDKInventoryItemSpatialGrid::ConstructGrid()
 			GridCPS->SetPosition(TilePosition * TileSize);
 
 			GridSlots.Add(GridSlot);
+			GridSlot->GridSlotClicked.AddDynamic(this, &ThisClass::OnGridSlotClicked);
+			GridSlot->GridSlotHovered.AddDynamic(this, &ThisClass::OnGridSlotHovered);
+			GridSlot->GridSlotUnhovered.AddDynamic(this, &ThisClass::OnGridSlotUnhovered);
 		}
 	}
 }

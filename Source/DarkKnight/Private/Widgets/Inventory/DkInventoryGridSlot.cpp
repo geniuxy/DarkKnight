@@ -7,6 +7,24 @@
 #include "CommonLazyImage.h"
 #include "Components/SizeBox.h"
 
+void UDkInventoryGridSlot::NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+	Super::NativeOnMouseEnter(InGeometry, InMouseEvent);
+	GridSlotHovered.Broadcast(TileIndex, InMouseEvent);
+}
+
+void UDkInventoryGridSlot::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
+{
+	Super::NativeOnMouseLeave(InMouseEvent);
+	GridSlotUnhovered.Broadcast(TileIndex, InMouseEvent);
+}
+
+FReply UDkInventoryGridSlot::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+	GridSlotClicked.Broadcast(TileIndex, InMouseEvent);
+	return FReply::Handled();
+}
+
 void UDkInventoryGridSlot::SetGridSlotSize(float InSlotSize)
 {
 	SizeBox_GridSlot->SetWidthOverride(InSlotSize);

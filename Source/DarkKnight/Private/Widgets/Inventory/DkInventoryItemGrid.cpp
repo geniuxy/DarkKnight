@@ -257,3 +257,29 @@ void UDkInventoryItemGrid::AssignDraggedItem(
 void UDkInventoryItemGrid::RemoveItemFromGrid(UDkInventoryItem* InventoryItem, const int32 GridIndex)
 {
 }
+
+void UDkInventoryItemGrid::OnGridSlotClicked(int32 GridIndex, const FPointerEvent& MouseEvent)
+{
+}
+
+void UDkInventoryItemGrid::OnGridSlotHovered(int32 GridIndex, const FPointerEvent& MouseEvent)
+{
+	if (IsValid(DraggedItem)) return;
+
+	UDkInventoryGridSlot* GridSlot = GridSlots[GridIndex];
+	if (GridSlot->IsAvailable())
+	{
+		GridSlot->SetOccupiedTexture();
+	}
+}
+
+void UDkInventoryItemGrid::OnGridSlotUnhovered(int32 GridIndex, const FPointerEvent& MouseEvent)
+{
+	if (IsValid(DraggedItem)) return;
+
+	UDkInventoryGridSlot* GridSlot = GridSlots[GridIndex];
+	if (GridSlot->IsAvailable())
+	{
+		GridSlot->SetUnoccupiedTexture();
+	}
+}

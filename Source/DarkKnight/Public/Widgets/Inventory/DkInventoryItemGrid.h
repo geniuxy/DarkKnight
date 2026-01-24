@@ -134,6 +134,15 @@ protected:
 	/* 鼠标Hover背包网格，改变其样式 */
 	FInventoryTileParameters TileParameters; // 鼠标所处格子的相关数据(索引、坐标、象限)
 	FInventoryTileParameters LastTileParameters;
+
+	UFUNCTION()
+	void OnGridSlotClicked(int32 GridIndex, const FPointerEvent& MouseEvent);
+
+	UFUNCTION()
+	void OnGridSlotHovered(int32 GridIndex, const FPointerEvent& MouseEvent);
+
+	UFUNCTION()
+	void OnGridSlotUnhovered(int32 GridIndex, const FPointerEvent& MouseEvent);
 	/********/
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Inventory")

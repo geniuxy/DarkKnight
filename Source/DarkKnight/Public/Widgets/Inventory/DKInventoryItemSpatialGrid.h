@@ -79,7 +79,6 @@ protected:
 	void HighlightSlots(const int32 Index, const FIntPoint& Dimension);
 	void UnHighlightSlots(const int32 Index, const FIntPoint& Dimension);
 
-
 	int32 ItemDropIndex = INDEX_NONE;
 	FInventorySpaceQueryResult CurrentSpaceQueryResult;
 	bool bMouseWithInCanvas;

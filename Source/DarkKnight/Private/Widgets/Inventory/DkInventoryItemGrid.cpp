@@ -251,16 +251,11 @@ void UDkInventoryItemGrid::AssignDraggedItem(
 	AssignDraggedItem(InventoryItem);
 
 	DraggedItem->SetPreviousGridIndex(PreviousGridIndex);
-	DraggedItem->UpdateStackCountText(InventoryItem->IsItemStackable() ? GridSlots[GridIndex]->GetStackCount() : 0);
+	DraggedItem->UpdateStackCount(InventoryItem->IsItemStackable() ? GridSlots[GridIndex]->GetStackCount() : 0);
 }
 
 void UDkInventoryItemGrid::RemoveItemFromGrid(UDkInventoryItem* InventoryItem, const int32 GridIndex)
 {
-}
-
-void UDkInventoryItemGrid::OnGridSlotClicked(int32 GridIndex, const FPointerEvent& MouseEvent)
-{
-	
 }
 
 void UDkInventoryItemGrid::OnGridSlotHovered(int32 GridIndex, const FPointerEvent& MouseEvent)

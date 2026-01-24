@@ -19,12 +19,6 @@ void UDkInventoryGridSlot::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
 	GridSlotUnhovered.Broadcast(TileIndex, InMouseEvent);
 }
 
-FReply UDkInventoryGridSlot::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
-{
-	GridSlotClicked.Broadcast(TileIndex, InMouseEvent);
-	return FReply::Handled();
-}
-
 void UDkInventoryGridSlot::SetGridSlotSize(float InSlotSize)
 {
 	SizeBox_GridSlot->SetWidthOverride(InSlotSize);

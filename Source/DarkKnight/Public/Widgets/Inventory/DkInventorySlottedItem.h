@@ -21,7 +21,9 @@ class DARKKNIGHT_API UDkInventorySlottedItem : public UCommonUserWidget
 	GENERATED_BODY()
 
 public:
+	//~Begin UUserWidget Function
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+	//~End UUserWidget Function
 
 	UDkInventoryItem* GetInventoryItem() const;
 	void SetInventoryItem(UDkInventoryItem* InItem);

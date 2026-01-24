@@ -206,7 +206,6 @@ void UDKInventoryItemSpatialGrid::ConstructGrid()
 			GridCPS->SetPosition(TilePosition * TileSize);
 
 			GridSlots.Add(GridSlot);
-			GridSlot->GridSlotClicked.AddDynamic(this, &ThisClass::OnGridSlotClicked);
 			GridSlot->GridSlotHovered.AddDynamic(this, &ThisClass::OnGridSlotHovered);
 			GridSlot->GridSlotUnhovered.AddDynamic(this, &ThisClass::OnGridSlotUnhovered);
 		}
@@ -261,6 +260,7 @@ void UDKInventoryItemSpatialGrid::AssignDraggedItem(UDkInventoryItem* InventoryI
 	DraggedItem->SetGridDimension(GridFragment->GetGridSize());
 	DraggedItem->SetInventoryItem(InventoryItem);
 	DraggedItem->SetIsStackable(InventoryItem->IsItemStackable());
+	DraggedItem->OnDraggedItemClicked.AddDynamic(this, &ThisClass::OnDraggedItemClicked);
 
 	DraggedItem->SetDesiredSizeInViewport(Brush.ImageSize);
 	DraggedItem->AddToViewport();
@@ -492,7 +492,7 @@ void UDKInventoryItemSpatialGrid::UnHighlightSlots(const int32 Index, const FInt
 	);
 }
 
-void UDKInventoryItemSpatialGrid::OnGridSlotClicked(int32 GridIndex, const FPointerEvent& MouseEvent)
+void UDKInventoryItemSpatialGrid::OnDraggedItemClicked(const FPointerEvent& MouseEvent)
 {
 	if (!IsValid(DraggedItem)) return;
 	if (!GridSlots.IsValidIndex(ItemDropIndex)) return;
@@ -506,6 +506,27 @@ void UDKInventoryItemSpatialGrid::OnGridSlotClicked(int32 GridIndex, const FPoin
 	UDkInventoryGridSlot* GridSlot = GridSlots[ItemDropIndex];
 	if (!IsValid(GridSlot->GetInventoryItem()))
 	{
-		// TODO: 在对应的格子放下Item
+		PutDownOnIndex(ItemDropIndex);
 	}
+}
+
+void UDKInventoryItemSpatialGrid::PutDownOnIndex(const int32 Index)
+{
+	AddItemToIndex(DraggedItem->GetInventoryItem(), Index, DraggedItem->GetStackCount(), DraggedItem->GetIsStackable());
+	UpdateGridSlots(DraggedItem->GetInventoryItem(), Index, DraggedItem->GetStackCount(), DraggedItem->GetIsStackable());
+	ClearDraggedItem();
+}
+
+void UDKInventoryItemSpatialGrid::ClearDraggedItem()
+{
+	if (!IsValid(DraggedItem)) return;
+
+	DraggedItem->SetInventoryItem(nullptr);
+	DraggedItem->SetIsStackable(false);
+	DraggedItem->SetPreviousGridIndex(INDEX_NONE);
+	DraggedItem->UpdateStackCount(0);
+	DraggedItem->SetImageBrush(FSlateNoResource());
+
+	DraggedItem->RemoveFromParent();
+	DraggedItem = nullptr;
 }

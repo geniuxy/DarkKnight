@@ -25,7 +25,6 @@ public:
 	//~Begin UUserWidget Function
 	virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 	virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
-	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 	//~End UUserWidget Function
 
 	void SetGridSlotSize(float InSlotSize);

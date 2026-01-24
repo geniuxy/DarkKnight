@@ -79,7 +79,12 @@ protected:
 	void HighlightSlots(const int32 Index, const FIntPoint& Dimension);
 	void UnHighlightSlots(const int32 Index, const FIntPoint& Dimension);
 
-	virtual void OnGridSlotClicked(int32 GridIndex, const FPointerEvent& MouseEvent) override;
+	UFUNCTION()
+	void OnDraggedItemClicked(const FPointerEvent& MouseEvent);
+
+	void PutDownOnIndex(const int32 Index);
+	
+	void ClearDraggedItem();
 
 	int32 ItemDropIndex = INDEX_NONE;
 	FInventorySpaceQueryResult CurrentSpaceQueryResult;

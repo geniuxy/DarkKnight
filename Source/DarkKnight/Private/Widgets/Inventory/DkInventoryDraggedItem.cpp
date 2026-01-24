@@ -7,13 +7,20 @@
 #include "CommonTextBlock.h"
 #include "Inventory/DkInventoryItem.h"
 
+FReply UDkInventoryDraggedItem::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+	OnDraggedItemClicked.Broadcast(InMouseEvent);
+	return FReply::Handled();
+}
+
 void UDkInventoryDraggedItem::SetImageBrush(const FSlateBrush& Brush) const
 {
 	Image_Icon->SetBrush(Brush);
 }
 
-void UDkInventoryDraggedItem::UpdateStackCountText(const int32 Count) const
+void UDkInventoryDraggedItem::UpdateStackCount(const int32 Count)
 {
+	StackCount = Count;
 	if (Count > 0)
 	{
 		Text_StackCount->SetText(FText::AsNumber(Count));

@@ -136,9 +136,6 @@ protected:
 	FInventoryTileParameters LastTileParameters;
 
 	UFUNCTION()
-	virtual void OnGridSlotClicked(int32 GridIndex, const FPointerEvent& MouseEvent);
-
-	UFUNCTION()
 	void OnGridSlotHovered(int32 GridIndex, const FPointerEvent& MouseEvent);
 
 	UFUNCTION()

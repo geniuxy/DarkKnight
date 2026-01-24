@@ -8,6 +8,8 @@
 #include "DarkKnight/DarkKnight.h"
 #include "DkInventoryDraggedItem.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDraggedItemEvent, const FPointerEvent&, MouseEvent);
+
 class UDkInventoryItem;
 class UCommonTextBlock;
 class UCommonLazyImage;
@@ -20,8 +22,12 @@ class DARKKNIGHT_API UDkInventoryDraggedItem : public UCommonUserWidget
 	GENERATED_BODY()
 
 public:
+	//~Begin UUserWidget Function
+	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+	//~End UUserWidget Function
+	
 	void SetImageBrush(const FSlateBrush& Brush) const;
-	void UpdateStackCountText(const int32 Count) const;
+	void UpdateStackCount(const int32 Count);
 
 	FGameplayTag GetItemTag() const;
 
@@ -30,6 +36,8 @@ public:
 
 	UDkInventoryItem* GetInventoryItem() const;
 	void SetInventoryItem(UDkInventoryItem* InItem);
+
+	FDraggedItemEvent OnDraggedItemClicked;
 
 private:
 	//***** Bound Widgets *****//

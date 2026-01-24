@@ -260,6 +260,7 @@ void UDkInventoryItemGrid::RemoveItemFromGrid(UDkInventoryItem* InventoryItem, c
 
 void UDkInventoryItemGrid::OnGridSlotClicked(int32 GridIndex, const FPointerEvent& MouseEvent)
 {
+	
 }
 
 void UDkInventoryItemGrid::OnGridSlotHovered(int32 GridIndex, const FPointerEvent& MouseEvent)

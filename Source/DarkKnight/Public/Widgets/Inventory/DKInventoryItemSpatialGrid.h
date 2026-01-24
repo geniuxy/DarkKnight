@@ -79,6 +79,8 @@ protected:
 	void HighlightSlots(const int32 Index, const FIntPoint& Dimension);
 	void UnHighlightSlots(const int32 Index, const FIntPoint& Dimension);
 
+	virtual void OnGridSlotClicked(int32 GridIndex, const FPointerEvent& MouseEvent) override;
+
 	int32 ItemDropIndex = INDEX_NONE;
 	FInventorySpaceQueryResult CurrentSpaceQueryResult;
 	bool bMouseWithInCanvas;

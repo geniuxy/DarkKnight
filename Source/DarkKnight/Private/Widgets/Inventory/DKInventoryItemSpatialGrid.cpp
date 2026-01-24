@@ -491,3 +491,21 @@ void UDKInventoryItemSpatialGrid::UnHighlightSlots(const int32 Index, const FInt
 		}
 	);
 }
+
+void UDKInventoryItemSpatialGrid::OnGridSlotClicked(int32 GridIndex, const FPointerEvent& MouseEvent)
+{
+	if (!IsValid(DraggedItem)) return;
+	if (!GridSlots.IsValidIndex(ItemDropIndex)) return;
+
+	if (CurrentSpaceQueryResult.ValidItem.IsValid() && GridSlots.IsValidIndex(CurrentSpaceQueryResult.UpperLeftIndex))
+	{
+		OnSlottedItemClicked(CurrentSpaceQueryResult.UpperLeftIndex, MouseEvent);
+		return;
+	}
+
+	UDkInventoryGridSlot* GridSlot = GridSlots[ItemDropIndex];
+	if (!IsValid(GridSlot->GetInventoryItem()))
+	{
+		// TODO: 在对应的格子放下Item
+	}
+}

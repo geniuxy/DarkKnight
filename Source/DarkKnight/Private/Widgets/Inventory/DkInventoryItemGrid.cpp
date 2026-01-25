@@ -231,7 +231,17 @@ void UDkInventoryItemGrid::OnSlottedItemClicked(int32 GridIndex, const FPointerE
 	// DraggedItem和被点击的Item是一个类型吗，他们都可堆叠吗？
 	if (IsSameStackableWithDraggedItem(ClickedInventoryItem))
 	{
-		//		Should we swap their stack counts?
+		const int32 ClickedStackCount = GridSlots[GridIndex]->GetStackCount();
+		const FInventoryItemStackableFragment* StackableFragment =
+			ClickedInventoryItem->GetItemManifest().GetFragmentOfType<FInventoryItemStackableFragment>();
+		const int32 MaxStackSize = StackableFragment->GetMaxStackSize();
+		const int32 SpaceInClickedSlot = MaxStackSize - ClickedStackCount;
+		const int32 DraggedStackCount = DraggedItem->GetStackCount();
+		//		是否应该交换SlottedItem和DraggedItem
+		if (SpaceInClickedSlot == 0 && DraggedStackCount < MaxStackSize)
+		{
+			// TODO: 交换SlottedItem和DraggedItem
+		}
 		//		Should we consume the hover item's stacks?
 		//		Should we fill in the stacks of the clicked item? (and not consume the hover item)
 		//		Is there no room in the clicked slot?

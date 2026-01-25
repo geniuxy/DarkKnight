@@ -249,7 +249,12 @@ void UDkInventoryItemGrid::OnSlottedItemClicked(int32 GridIndex, const FPointerE
 
 			DraggedItem->UpdateStackCount(ClickedStackCount);
 		}
-		//		Should we consume the hover item's stacks?
+
+		//	是否可以合并DraggedItem
+		if (SpaceInClickedSlot >= DraggedStackCount)
+		{
+			ConsumeDraggedItemStack(ClickedStackCount, DraggedStackCount, GridIndex);
+		}
 		//		Should we fill in the stacks of the clicked item? (and not consume the hover item)
 		//		Is there no room in the clicked slot?
 		return;
@@ -267,6 +272,10 @@ bool UDkInventoryItemGrid::IsSameStackableWithDraggedItem(const UDkInventoryItem
 }
 
 void UDkInventoryItemGrid::SwapWithDraggedItem(UDkInventoryItem* ClickedInventoryItem, const int32 GridIndex)
+{
+}
+
+void UDkInventoryItemGrid::ConsumeDraggedItemStack(int32 ClickedStackCount, int32 DraggedStackCount, int32 GridIndex)
 {
 }
 

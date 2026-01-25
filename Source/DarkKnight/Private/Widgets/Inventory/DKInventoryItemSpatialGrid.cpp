@@ -252,6 +252,22 @@ void UDKInventoryItemSpatialGrid::SwapWithDraggedItem(UDkInventoryItem* ClickedI
 	UpdateGridSlots(TempInventoryItem, ItemDropIndex, TempStackCount, bTempIsStackable);
 }
 
+void UDKInventoryItemSpatialGrid::ConsumeDraggedItemStack(
+	int32 ClickedStackCount, int32 DraggedStackCount, int32 GridIndex)
+{
+	const int32 NewClickedStackCount = ClickedStackCount + DraggedStackCount;
+
+	GridSlots[GridIndex]->SetStackCount(NewClickedStackCount);
+	SlottedItemMap.FindChecked(GridIndex)->UpdateStackCount(NewClickedStackCount);
+	ClearDraggedItem();
+
+	const FInventoryItemGridFragment* GridFragment =
+		GridSlots[GridIndex]->GetInventoryItem()->GetItemManifest().GetFragmentOfType<FInventoryItemGridFragment>();
+	const FIntPoint Dimension = GridFragment ? GridFragment->GetGridSize() : FIntPoint(1, 1);
+
+	HighlightSlots(GridIndex, Dimension);
+}
+
 void UDKInventoryItemSpatialGrid::AssignDraggedItem(UDkInventoryItem* InventoryItem)
 {
 	if (!IsValid(DraggedItem))
@@ -533,7 +549,8 @@ void UDKInventoryItemSpatialGrid::OnDraggedItemClicked(const FPointerEvent& Mous
 void UDKInventoryItemSpatialGrid::PutDownOnIndex(const int32 Index)
 {
 	AddItemToIndex(DraggedItem->GetInventoryItem(), Index, DraggedItem->GetStackCount(), DraggedItem->GetIsStackable());
-	UpdateGridSlots(DraggedItem->GetInventoryItem(), Index, DraggedItem->GetStackCount(), DraggedItem->GetIsStackable());
+	UpdateGridSlots(DraggedItem->GetInventoryItem(), Index, DraggedItem->GetStackCount(),
+	                DraggedItem->GetIsStackable());
 	ClearDraggedItem();
 }
 

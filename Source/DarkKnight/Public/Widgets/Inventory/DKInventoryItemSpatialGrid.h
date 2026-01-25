@@ -56,6 +56,8 @@ protected:
 
 	/* 拖拽Item */
 	virtual void SwapWithDraggedItem(UDkInventoryItem* ClickedInventoryItem, const int32 GridIndex) override;
+
+	virtual void ConsumeDraggedItemStack(int32 ClickedStackCount, int32 DraggedStackCount, int32 GridIndex) override;
 	
 	virtual void AssignDraggedItem(UDkInventoryItem* InventoryItem) override;
 

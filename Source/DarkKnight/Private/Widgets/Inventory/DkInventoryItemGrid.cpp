@@ -248,15 +248,32 @@ void UDkInventoryItemGrid::OnSlottedItemClicked(int32 GridIndex, const FPointerE
 			SlottedItem->UpdateStackCount(DraggedStackCount);
 
 			DraggedItem->UpdateStackCount(ClickedStackCount);
+
+			return;
 		}
 
 		//	是否可以合并DraggedItem
 		if (SpaceInClickedSlot >= DraggedStackCount)
 		{
 			ConsumeDraggedItemStack(ClickedStackCount, DraggedStackCount, GridIndex);
+			return;
 		}
-		//		Should we fill in the stacks of the clicked item? (and not consume the hover item)
-		//		Is there no room in the clicked slot?
+
+		//	是否可以填充ClickedItem,并更新DraggedItem
+		if (SpaceInClickedSlot < DraggedStackCount)
+		{
+			// 填充ClickedItem,并更新DraggedItem
+			UDkInventoryGridSlot* GridSlot = GridSlots[GridIndex];
+			GridSlot->SetStackCount(MaxStackSize);
+
+			UDkInventorySlottedItem* SlottedItem = SlottedItemMap.FindChecked(GridIndex);
+			SlottedItem->UpdateStackCount(MaxStackSize);
+
+			DraggedItem->UpdateStackCount(DraggedStackCount - SpaceInClickedSlot);
+
+			return;
+		}
+
 		return;
 	}
 	// 和DraggedItem交换位置

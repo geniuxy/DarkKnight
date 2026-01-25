@@ -237,10 +237,17 @@ void UDkInventoryItemGrid::OnSlottedItemClicked(int32 GridIndex, const FPointerE
 		const int32 MaxStackSize = StackableFragment->GetMaxStackSize();
 		const int32 SpaceInClickedSlot = MaxStackSize - ClickedStackCount;
 		const int32 DraggedStackCount = DraggedItem->GetStackCount();
-		//		是否应该交换SlottedItem和DraggedItem
+		// 是否应该交换SlottedItem和DraggedItem
 		if (SpaceInClickedSlot == 0 && DraggedStackCount < MaxStackSize)
 		{
-			// TODO: 交换SlottedItem和DraggedItem
+			// 交换SlottedItem和DraggedItem
+			UDkInventoryGridSlot* GridSlot = GridSlots[GridIndex];
+			GridSlot->SetStackCount(DraggedStackCount);
+
+			UDkInventorySlottedItem* SlottedItem = SlottedItemMap.FindChecked(GridIndex);
+			SlottedItem->UpdateStackCount(DraggedStackCount);
+
+			DraggedItem->UpdateStackCount(ClickedStackCount);
 		}
 		//		Should we consume the hover item's stacks?
 		//		Should we fill in the stacks of the clicked item? (and not consume the hover item)

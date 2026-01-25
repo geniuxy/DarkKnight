@@ -112,7 +112,13 @@ protected:
 
 	/* 拖拽Item */
 	UFUNCTION()
-	void OnSlottedItemClicked(int32 GridIndex, const FPointerEvent& MouseEvent);
+	void HandleSlottedItemClicked(int32 GridIndex, const FPointerEvent& MouseEvent);
+	
+	virtual void OnSlottedItemClicked(int32 GridIndex, const FPointerEvent& MouseEvent);
+
+	bool IsSameStackableWithDraggedItem(const UDkInventoryItem* ClickedInventoryItem);
+
+	virtual void SwapWithDraggedItem(UDkInventoryItem* ClickedInventoryItem, const int32 GridIndex);
 
 	bool IsRightMouseClick(const FPointerEvent& MouseEvent) const;
 	bool IsLeftMouseClick(const FPointerEvent& MouseEvent) const;

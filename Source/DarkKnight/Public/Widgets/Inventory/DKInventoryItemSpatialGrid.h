@@ -55,7 +55,13 @@ protected:
 	/********/
 
 	/* 拖拽Item */
+	virtual void SwapWithDraggedItem(UDkInventoryItem* ClickedInventoryItem, const int32 GridIndex) override;
+	
 	virtual void AssignDraggedItem(UDkInventoryItem* InventoryItem) override;
+
+	virtual void AssignDraggedItem(
+		UDkInventoryItem* InventoryItem, const int32 GridIndex, const int32 PreviousGridIndex
+	) override;
 	/********/
 
 	/* 鼠标Hover背包网格，改变其样式 */

@@ -51,7 +51,7 @@ void UDKInventoryItemSpatialGrid::AddItemToIndex(
 	SlottedItem->SetbIsStackable(bStackable);
 	const int32 StackUpdateAmount = bStackable ? StackAmount : 0;
 	SlottedItem->UpdateStackCount(StackUpdateAmount);
-	SlottedItem->OnSlottedItemClicked.AddDynamic(this, &ThisClass::OnSlottedItemClicked);
+	SlottedItem->OnSlottedItemClicked.AddDynamic(this, &ThisClass::HandleSlottedItemClicked);
 
 	// 把slotted item加到CanvasPanel
 	AddSlottedItemToCanvas(Index, GridFragment, SlottedItem);
@@ -238,6 +238,20 @@ void UDKInventoryItemSpatialGrid::RemoveItemFromGrid(UDkInventoryItem* Inventory
 	}
 }
 
+void UDKInventoryItemSpatialGrid::SwapWithDraggedItem(UDkInventoryItem* ClickedInventoryItem, const int32 GridIndex)
+{
+	if (!IsValid(DraggedItem)) return;
+
+	UDkInventoryItem* TempInventoryItem = DraggedItem->GetInventoryItem();
+	const int32 TempStackCount = DraggedItem->GetStackCount();
+	const bool bTempIsStackable = DraggedItem->GetIsStackable();
+
+	AssignDraggedItem(ClickedInventoryItem, GridIndex, DraggedItem->GetPreviousGridIndex());
+	RemoveItemFromGrid(ClickedInventoryItem, GridIndex);
+	AddItemToIndex(TempInventoryItem, ItemDropIndex, TempStackCount, bTempIsStackable);
+	UpdateGridSlots(TempInventoryItem, ItemDropIndex, TempStackCount, bTempIsStackable);
+}
+
 void UDKInventoryItemSpatialGrid::AssignDraggedItem(UDkInventoryItem* InventoryItem)
 {
 	if (!IsValid(DraggedItem))
@@ -260,10 +274,16 @@ void UDKInventoryItemSpatialGrid::AssignDraggedItem(UDkInventoryItem* InventoryI
 	DraggedItem->SetGridDimension(GridFragment->GetGridSize());
 	DraggedItem->SetInventoryItem(InventoryItem);
 	DraggedItem->SetIsStackable(InventoryItem->IsItemStackable());
-	DraggedItem->OnDraggedItemClicked.AddDynamic(this, &ThisClass::OnDraggedItemClicked);
+	DraggedItem->OnDraggedItemClicked.AddUniqueDynamic(this, &ThisClass::OnDraggedItemClicked);
 
 	DraggedItem->SetDesiredSizeInViewport(Brush.ImageSize);
 	DraggedItem->AddToViewport();
+}
+
+void UDKInventoryItemSpatialGrid::AssignDraggedItem(
+	UDkInventoryItem* InventoryItem, const int32 GridIndex, const int32 PreviousGridIndex)
+{
+	Super::AssignDraggedItem(InventoryItem, GridIndex, PreviousGridIndex);
 }
 
 void UDKInventoryItemSpatialGrid::UpdateTileParameters(

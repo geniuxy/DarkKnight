@@ -212,6 +212,11 @@ void UDkInventoryItemGrid::ConstructGrid()
 	}
 }
 
+void UDkInventoryItemGrid::HandleSlottedItemClicked(int32 GridIndex, const FPointerEvent& MouseEvent)
+{
+	OnSlottedItemClicked(GridIndex, MouseEvent);
+}
+
 void UDkInventoryItemGrid::OnSlottedItemClicked(int32 GridIndex, const FPointerEvent& MouseEvent)
 {
 	check(GridSlots.IsValidIndex(GridIndex));
@@ -223,12 +228,29 @@ void UDkInventoryItemGrid::OnSlottedItemClicked(int32 GridIndex, const FPointerE
 		return;
 	}
 
-	// Do the hovered item and the clicked inventory item share a type, and are they stackable?
-	//		Should we swap their stack counts?
-	//		Should we consume the hover item's stacks?
-	//		Should we fill in the stacks of the clicked item? (and not consume the hover item)
-	//		Is there no room in the clicked slot?
-	// Swap with the hover item.
+	// DraggedItem和被点击的Item是一个类型吗，他们都可堆叠吗？
+	if (IsSameStackableWithDraggedItem(ClickedInventoryItem))
+	{
+		//		Should we swap their stack counts?
+		//		Should we consume the hover item's stacks?
+		//		Should we fill in the stacks of the clicked item? (and not consume the hover item)
+		//		Is there no room in the clicked slot?
+		return;
+	}
+	// 和DraggedItem交换位置
+	SwapWithDraggedItem(ClickedInventoryItem, GridIndex);
+}
+
+bool UDkInventoryItemGrid::IsSameStackableWithDraggedItem(const UDkInventoryItem* ClickedInventoryItem)
+{
+	const bool bIsSameItem = ClickedInventoryItem == DraggedItem->GetInventoryItem();
+	const bool bIsStackable = ClickedInventoryItem->IsItemStackable();
+	return bIsSameItem && bIsStackable &&
+		DraggedItem->GetItemTag().MatchesTagExact(ClickedInventoryItem->GetItemManifest().GetItemTag());
+}
+
+void UDkInventoryItemGrid::SwapWithDraggedItem(UDkInventoryItem* ClickedInventoryItem, const int32 GridIndex)
+{
 }
 
 bool UDkInventoryItemGrid::IsRightMouseClick(const FPointerEvent& MouseEvent) const

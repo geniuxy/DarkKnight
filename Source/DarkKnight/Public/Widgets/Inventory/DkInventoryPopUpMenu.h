@@ -4,10 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "CommonUserWidget.h"
+#include "DarkKnight/DarkKnight.h"
 #include "DkInventoryPopUpMenu.generated.h"
 
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FPopUpMenuSplit, int32, SplitAmount, int32, Index);
+
 DECLARE_DYNAMIC_DELEGATE_OneParam(FPopUpMenuDrop, int32, Index);
+
 DECLARE_DYNAMIC_DELEGATE_OneParam(FPopUpMenuConsume, int32, Index);
 
 class UCommonTextBlock;
@@ -28,6 +31,13 @@ protected:
 	FPopUpMenuConsume OnConsume;
 
 	int32 GetSplitAmount() const;
+
+	void CollapseSplitButton() const;
+	void CollapseConsumeButton() const;
+
+	void SetSliderParams(const float Max, const float Value) const;
+
+	FVector2D GetBoxSize() const;
 
 protected:
 	//~Begin UUserWidget Function
@@ -67,4 +77,7 @@ private:
 	void SliderValueChanged(float Value);
 
 	int32 GridIndex = INDEX_NONE;
+
+public:
+	LIST_DATA_ACCESSOR(int32, GridIndex)
 };

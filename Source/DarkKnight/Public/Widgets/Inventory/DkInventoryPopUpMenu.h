@@ -18,6 +18,11 @@ class DARKKNIGHT_API UDkInventoryPopUpMenu : public UCommonUserWidget
 {
 	GENERATED_BODY()
 
+protected:
+	//~Begin UUserWidget Function
+	virtual void NativeOnInitialized() override;
+	//~End UUserWidget Function
+
 private:
 	//***** Bound Widgets *****//
 	UPROPERTY(meta=(BindWidget))
@@ -38,4 +43,15 @@ private:
 	UPROPERTY(meta=(BindWidget))
 	TObjectPtr<UDkUICommonButtonBase> Button_Consume;
 	//***** Bound Widgets *****//
+
+	void SplitButtonClicked();
+
+	UFUNCTION()
+	void DropButtonClicked();
+
+	UFUNCTION()
+	void ConsumeButtonClicked();
+
+	UFUNCTION()
+	void SliderValueChanged(float Value);
 };

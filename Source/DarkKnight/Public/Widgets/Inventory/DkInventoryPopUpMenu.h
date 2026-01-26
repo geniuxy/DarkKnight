@@ -6,6 +6,10 @@
 #include "CommonUserWidget.h"
 #include "DkInventoryPopUpMenu.generated.h"
 
+DECLARE_DYNAMIC_DELEGATE_TwoParams(FPopUpMenuSplit, int32, SplitAmount, int32, Index);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FPopUpMenuDrop, int32, Index);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FPopUpMenuConsume, int32, Index);
+
 class UCommonTextBlock;
 class USlider;
 class USizeBox;
@@ -19,6 +23,13 @@ class DARKKNIGHT_API UDkInventoryPopUpMenu : public UCommonUserWidget
 	GENERATED_BODY()
 
 protected:
+	FPopUpMenuSplit OnSplit;
+	FPopUpMenuDrop OnDrop;
+	FPopUpMenuConsume OnConsume;
+
+	int32 GetSplitAmount() const;
+
+protected:
 	//~Begin UUserWidget Function
 	virtual void NativeOnInitialized() override;
 	//~End UUserWidget Function
@@ -30,10 +41,10 @@ private:
 
 	UPROPERTY(meta=(BindWidget))
 	TObjectPtr<USlider> Slider_Split;
-	
+
 	UPROPERTY(meta=(BindWidget))
 	TObjectPtr<UCommonTextBlock> Text_SplitAmount;
-	
+
 	UPROPERTY(meta=(BindWidget))
 	TObjectPtr<UDkUICommonButtonBase> Button_Split;
 
@@ -54,4 +65,6 @@ private:
 
 	UFUNCTION()
 	void SliderValueChanged(float Value);
+
+	int32 GridIndex = INDEX_NONE;
 };

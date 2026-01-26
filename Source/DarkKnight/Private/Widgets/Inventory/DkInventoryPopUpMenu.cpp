@@ -6,6 +6,11 @@
 #include "Components/Slider.h"
 #include "Widgets/Components/DkUICommonButtonBase.h"
 
+int32 UDkInventoryPopUpMenu::GetSplitAmount() const
+{
+	return FMath::Floor(Slider_Split->GetValue());
+}
+
 void UDkInventoryPopUpMenu::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
@@ -18,14 +23,26 @@ void UDkInventoryPopUpMenu::NativeOnInitialized()
 
 void UDkInventoryPopUpMenu::SplitButtonClicked()
 {
+	if (OnSplit.ExecuteIfBound(GetSplitAmount(), GridIndex))
+	{
+		RemoveFromParent();
+	}
 }
 
 void UDkInventoryPopUpMenu::DropButtonClicked()
 {
+	if (OnDrop.ExecuteIfBound(GridIndex))
+	{
+		RemoveFromParent();
+	}
 }
 
 void UDkInventoryPopUpMenu::ConsumeButtonClicked()
 {
+	if (OnConsume.ExecuteIfBound(GridIndex))
+	{
+		RemoveFromParent();
+	}
 }
 
 void UDkInventoryPopUpMenu::SliderValueChanged(float Value)

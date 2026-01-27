@@ -574,9 +574,11 @@ void UDKInventoryItemSpatialGrid::CreateItemPopUp(const int32 GridIndex)
 	UDkInventoryItem* RightClickedItem = GridSlots[GridIndex]->GetInventoryItem();
 	if (!IsValid(RightClickedItem)) return;
 
+	// 设置PopUpMenu弹出位置
 	PopUpMenu = CreateWidget<UDkInventoryPopUpMenu>(this, PopUpMenuClass);
 	if (IsValid(PopUpMenu))
 	{
+		PopUpMenu->SetGridIndex(GridIndex);
 		PopUpMenu->AddToViewport();
 	}
 	if (PopUpMenu && PopUpMenu->IsInViewport())
@@ -590,6 +592,7 @@ void UDKInventoryItemSpatialGrid::CreateItemPopUp(const int32 GridIndex)
 		PopUpMenu->SetPositionInViewport(MousePos - FVector2D(10, 10));
 	}
 
+	// 设置PopUpMenu内容
 	const int32 SliderMax = GridSlots[GridIndex]->GetStackCount() - 1;
 	if (RightClickedItem->IsItemStackable() && SliderMax > 0)
 	{

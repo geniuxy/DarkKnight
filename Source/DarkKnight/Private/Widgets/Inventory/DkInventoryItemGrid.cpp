@@ -365,6 +365,20 @@ void UDkInventoryItemGrid::CreateItemPopUp(const int32 GridIndex)
 
 void UDkInventoryItemGrid::OnPopUpMenuSplit(int32 SplitAmount, int32 Index)
 {
+	UDkInventoryItem* RightClickedItem = GridSlots[Index]->GetInventoryItem();
+	if (!IsValid(RightClickedItem)) return;
+	if (!RightClickedItem->IsItemStackable()) return;
+
+	const int32 UpperLeftIndex = GridSlots[Index]->GetUpperLeftIndex();
+	UDkInventoryGridSlot* UpperLeftGridSlot = GridSlots[UpperLeftIndex];
+	const int32 StackCount = UpperLeftGridSlot->GetStackCount();
+	const int32 NewStackCount = StackCount - SplitAmount;
+
+	UpperLeftGridSlot->SetStackCount(NewStackCount);
+	SlottedItemMap.FindChecked(UpperLeftIndex)->UpdateStackCount(NewStackCount);
+
+	AssignDraggedItem(RightClickedItem, UpperLeftIndex, UpperLeftIndex);
+	DraggedItem->UpdateStackCount(SplitAmount);
 }
 
 void UDkInventoryItemGrid::OnPopUpMenuDrop(int32 Index)

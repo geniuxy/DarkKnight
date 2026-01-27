@@ -37,6 +37,7 @@ void UDkInventoryPopUpMenu::SetSliderParams(const float Max, const float Value) 
 	Slider_Split->SetMaxValue(Max);
 	Slider_Split->SetMinValue(1);
 	Slider_Split->SetValue(Value);
+	Slider_Split->SetStepSize(1);
 	Text_SplitAmount->SetText(FText::FromString(FString::Printf(TEXT("%03d"), FMath::FloorToInt(Value))));
 }
 

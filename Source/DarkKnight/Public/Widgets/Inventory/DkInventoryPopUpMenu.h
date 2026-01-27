@@ -26,6 +26,10 @@ class DARKKNIGHT_API UDkInventoryPopUpMenu : public UCommonUserWidget
 	GENERATED_BODY()
 
 public:
+	//~Begin UUserWidget Function
+	virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
+	//~End UUserWidget Function
+	
 	FPopUpMenuSplit OnSplit;
 	FPopUpMenuDrop OnDrop;
 	FPopUpMenuConsume OnConsume;

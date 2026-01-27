@@ -575,10 +575,18 @@ void UDKInventoryItemSpatialGrid::CreateItemPopUp(const int32 GridIndex)
 	if (!IsValid(RightClickedItem)) return;
 
 	PopUpMenu = CreateWidget<UDkInventoryPopUpMenu>(this, PopUpMenuClass);
+	if (IsValid(PopUpMenu))
+	{
+		PopUpMenu->AddToViewport();
+	}
+	if (PopUpMenu && PopUpMenu->IsInViewport())
+	{
+		FVector2D MousePos;
+		if (UGameViewportClient* VP = GetWorld()->GetGameViewport())
+		{
+			VP->GetMousePosition(MousePos); // 系统硬件像素（受 DPI 缩放）
+		}
 
-	GridCanvasPanel->AddChild(PopUpMenu);
-	UCanvasPanelSlot* CanvasSlot = UWidgetLayoutLibrary::SlotAsCanvasSlot(PopUpMenu);
-	const FVector2D MousePosition = UWidgetLayoutLibrary::GetMousePositionOnViewport(GetOwningPlayer());
-	CanvasSlot->SetPosition(MousePosition);
-	CanvasSlot->SetSize(PopUpMenu->GetBoxSize());
+		PopUpMenu->SetPositionInViewport(MousePos - FVector2D(10, 10));
+	}
 }

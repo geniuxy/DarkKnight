@@ -8,6 +8,13 @@
 #include "Components/Slider.h"
 #include "Widgets/Components/DkUICommonButtonBase.h"
 
+void UDkInventoryPopUpMenu::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
+{
+	Super::NativeOnMouseLeave(InMouseEvent);
+
+	RemoveFromParent();
+}
+
 int32 UDkInventoryPopUpMenu::GetSplitAmount() const
 {
 	return FMath::Floor(Slider_Split->GetValue());
@@ -30,7 +37,7 @@ void UDkInventoryPopUpMenu::SetSliderParams(const float Max, const float Value) 
 	Slider_Split->SetMaxValue(Max);
 	Slider_Split->SetMinValue(1);
 	Slider_Split->SetValue(Value);
-	Text_SplitAmount->SetText(FText::AsNumber(FMath::Floor(Value)));
+	Text_SplitAmount->SetText(FText::FromString(FString::Printf(TEXT("%03d"), FMath::FloorToInt(Value))));
 }
 
 FVector2D UDkInventoryPopUpMenu::GetBoxSize() const
@@ -74,5 +81,5 @@ void UDkInventoryPopUpMenu::ConsumeButtonClicked()
 
 void UDkInventoryPopUpMenu::SliderValueChanged(float Value)
 {
-	Text_SplitAmount->SetText(FText::AsNumber(FMath::Floor(Value)));
+	Text_SplitAmount->SetText(FText::FromString(FString::Printf(TEXT("%03d"), FMath::FloorToInt(Value))));
 }

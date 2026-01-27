@@ -158,6 +158,15 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<UDkInventoryPopUpMenu> PopUpMenu;
+
+	UFUNCTION()
+	void OnPopUpMenuSplit(int32 SplitAmount, int32 Index);
+
+	UFUNCTION()
+	void OnPopUpMenuDrop(int32 Index);
+
+	UFUNCTION()
+	void OnPopUpMenuConsume(int32 Index);
 	/********/
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Inventory")

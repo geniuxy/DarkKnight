@@ -362,3 +362,15 @@ void UDkInventoryItemGrid::OnGridSlotUnhovered(int32 GridIndex, const FPointerEv
 void UDkInventoryItemGrid::CreateItemPopUp(const int32 GridIndex)
 {
 }
+
+void UDkInventoryItemGrid::OnPopUpMenuSplit(int32 SplitAmount, int32 Index)
+{
+}
+
+void UDkInventoryItemGrid::OnPopUpMenuDrop(int32 Index)
+{
+}
+
+void UDkInventoryItemGrid::OnPopUpMenuConsume(int32 Index)
+{
+}

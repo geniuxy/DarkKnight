@@ -589,4 +589,26 @@ void UDKInventoryItemSpatialGrid::CreateItemPopUp(const int32 GridIndex)
 
 		PopUpMenu->SetPositionInViewport(MousePos - FVector2D(10, 10));
 	}
+
+	const int32 SliderMax = GridSlots[GridIndex]->GetStackCount() - 1;
+	if (RightClickedItem->IsItemStackable() && SliderMax > 0)
+	{
+		PopUpMenu->OnSplit.BindDynamic(this, &ThisClass::OnPopUpMenuSplit);
+		PopUpMenu->SetSliderParams(SliderMax, FMath::Max(1, GridSlots[GridIndex]->GetStackCount() / 2));
+	}
+	else
+	{
+		PopUpMenu->CollapseSplitButton();
+	}
+
+	PopUpMenu->OnDrop.BindDynamic(this, &ThisClass::OnPopUpMenuDrop);
+
+	if (RightClickedItem->GetItemManifest().GetItemCategory() == EInventoryItemCategory::Consumable)
+	{
+		PopUpMenu->OnConsume.BindDynamic(this, &ThisClass::OnPopUpMenuConsume);
+	}
+	else
+	{
+		PopUpMenu->CollapseConsumeButton();
+	}
 }

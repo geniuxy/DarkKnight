@@ -11,6 +11,7 @@
 #include "Inventory/DkInventorySlotAvailabilty.h"
 #include "DkInventoryItemGrid.generated.h"
 
+class UDkInventoryPopUpMenu;
 struct FInventoryTileParameters;
 struct FInventoryItemGridFragment;
 struct FDkInventorySlotAvailabilityResult;
@@ -149,6 +150,16 @@ protected:
 	void OnGridSlotUnhovered(int32 GridIndex, const FPointerEvent& MouseEvent);
 	/********/
 
+	/* 右键菜单 */
+	virtual void CreateItemPopUp(const int32 GridIndex);
+
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	TSubclassOf<UDkInventoryPopUpMenu> PopUpMenuClass;
+
+	UPROPERTY()
+	TObjectPtr<UDkInventoryPopUpMenu> PopUpMenu;
+	/********/
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Inventory")
 	EInventoryItemCategory ItemCategory;
 

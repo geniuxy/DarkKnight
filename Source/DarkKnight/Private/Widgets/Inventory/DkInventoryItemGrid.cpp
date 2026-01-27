@@ -228,6 +228,12 @@ void UDkInventoryItemGrid::OnSlottedItemClicked(int32 GridIndex, const FPointerE
 		return;
 	}
 
+	if (IsRightMouseClick(MouseEvent))
+	{
+		CreateItemPopUp(GridIndex);
+		return;
+	}
+
 	// DraggedItem和被点击的Item是一个类型吗，他们都可堆叠吗？
 	if (IsSameStackableWithDraggedItem(ClickedInventoryItem))
 	{
@@ -351,4 +357,8 @@ void UDkInventoryItemGrid::OnGridSlotUnhovered(int32 GridIndex, const FPointerEv
 	{
 		GridSlot->SetUnoccupiedTexture();
 	}
+}
+
+void UDkInventoryItemGrid::CreateItemPopUp(const int32 GridIndex)
+{
 }

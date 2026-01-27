@@ -101,4 +101,8 @@ protected:
 	int32 LastHighlightedIndex;
 	FIntPoint LastHighlightedDimension;
 	/********/
+
+	/* 右键菜单 */
+	virtual void CreateItemPopUp(const int32 GridIndex) override;
+	/********/
 };

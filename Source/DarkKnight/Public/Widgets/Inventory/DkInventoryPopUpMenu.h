@@ -25,7 +25,7 @@ class DARKKNIGHT_API UDkInventoryPopUpMenu : public UCommonUserWidget
 {
 	GENERATED_BODY()
 
-protected:
+public:
 	FPopUpMenuSplit OnSplit;
 	FPopUpMenuDrop OnDrop;
 	FPopUpMenuConsume OnConsume;

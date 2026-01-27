@@ -13,6 +13,7 @@
 #include "Widgets/Inventory/DkInventoryDraggedItem.h"
 #include "Widgets/Inventory/DkInventoryGridSlot.h"
 #include "Widgets/Inventory/DkInventorySlottedItem.h"
+#include "Widgets/Inventory/DkInventoryPopUpMenu.h"
 
 void UDKInventoryItemSpatialGrid::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
@@ -566,4 +567,18 @@ void UDKInventoryItemSpatialGrid::ClearDraggedItem()
 
 	DraggedItem->RemoveFromParent();
 	DraggedItem = nullptr;
+}
+
+void UDKInventoryItemSpatialGrid::CreateItemPopUp(const int32 GridIndex)
+{
+	UDkInventoryItem* RightClickedItem = GridSlots[GridIndex]->GetInventoryItem();
+	if (!IsValid(RightClickedItem)) return;
+
+	PopUpMenu = CreateWidget<UDkInventoryPopUpMenu>(this, PopUpMenuClass);
+
+	GridCanvasPanel->AddChild(PopUpMenu);
+	UCanvasPanelSlot* CanvasSlot = UWidgetLayoutLibrary::SlotAsCanvasSlot(PopUpMenu);
+	const FVector2D MousePosition = UWidgetLayoutLibrary::GetMousePositionOnViewport(GetOwningPlayer());
+	CanvasSlot->SetPosition(MousePosition);
+	CanvasSlot->SetSize(PopUpMenu->GetBoxSize());
 }

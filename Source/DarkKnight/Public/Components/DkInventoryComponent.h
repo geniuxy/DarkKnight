@@ -86,9 +86,9 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
-	TWeakObjectPtr<ADkCharacterHero> OwningCharacter;
+	TWeakObjectPtr<ADkCharacterHero> OwningCharacter; // 仅在客户端上存在， 这个在初始化的时候用了一下。直接用GetOwner获取角色即可
 
-	TWeakObjectPtr<UDkWidgetInventoryMenu> CachedInventoryMenu;
+	TWeakObjectPtr<UDkWidgetInventoryMenu> CachedInventoryMenu; // 仅在客户端上存在
 
 	UPROPERTY(Replicated)
 	FDkInventoryFastArray InventoryList;

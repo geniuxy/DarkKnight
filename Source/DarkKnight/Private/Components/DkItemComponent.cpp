@@ -10,6 +10,8 @@ UDkItemComponent::UDkItemComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 
 	PickUpMessage = TEXT("F - 捡起");
+
+	SetIsReplicatedByDefault(true);
 }
 
 void UDkItemComponent::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const

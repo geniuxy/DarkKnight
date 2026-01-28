@@ -165,17 +165,17 @@ void UDkInventoryComponent::ServerDropItem_Implementation(UDkInventoryItem* Item
 
 void UDkInventoryComponent::SpawnDroppedItem(UDkInventoryItem* Item, int32 DroppedCount)
 {
-	const APawn* OwningPawn = OwningCharacter->GetController()->GetPawn();
-	FVector RotatedForward = OwningPawn->GetActorForwardVector();
+	const AActor* OwningActor = GetOwner();
+	FVector RotatedForward = OwningActor->GetActorForwardVector();
 	RotatedForward =
 		RotatedForward.RotateAngleAxis(FMath::FRandRange(DropSpawnAngleMin, DropSpawnAngleMax), FVector::UpVector);
 	FVector SpawnLocation =
-		OwningPawn->GetActorLocation() + RotatedForward * FMath::FRandRange(DropSpawnDistanceMin, DropSpawnDistanceMax);
+		OwningActor->GetActorLocation() + RotatedForward * FMath::FRandRange(DropSpawnDistanceMin, DropSpawnDistanceMax);
 	SpawnLocation.Z -= RelativeSpawnElevation;
 	const FRotator SpawnRotation = FRotator::ZeroRotator;
 
 	// 通过Item Manifest去生成PickUp的ItemActor
-	FInventoryItemManifest ItemManifest = Item->GetItemManifestMutable();
+	FInventoryItemManifest& ItemManifest = Item->GetItemManifestMutable();
 	if (FInventoryItemStackableFragment* StackableFragment =
 		ItemManifest.GetFragmentOfTypeMutable<FInventoryItemStackableFragment>())
 	{

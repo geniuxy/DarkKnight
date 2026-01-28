@@ -409,7 +409,7 @@ void UDkInventoryItemGrid::DropItem()
 	if (!IsValid(DraggedItem)) return;
 	if (!IsValid(DraggedItem->GetInventoryItem())) return;
 
-	// TODO: Tell the server to actually drop the item
+	InventoryComponent->ServerDropItem(DraggedItem->GetInventoryItem(), DraggedItem->GetStackCount());
 	
 	ClearDraggedItem();
 }

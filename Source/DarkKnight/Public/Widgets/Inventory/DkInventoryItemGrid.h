@@ -169,7 +169,8 @@ protected:
 	void OnPopUpMenuDrop(int32 Index);
 
 	void DropItem();
-	
+
+	// 消耗Item
 	UFUNCTION()
 	void OnPopUpMenuConsume(int32 Index);
 	/********/

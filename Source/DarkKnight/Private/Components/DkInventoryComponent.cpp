@@ -172,8 +172,16 @@ void UDkInventoryComponent::SpawnDroppedItem(UDkInventoryItem* Item, int32 Dropp
 	FVector SpawnLocation =
 		OwningPawn->GetActorLocation() + RotatedForward * FMath::FRandRange(DropSpawnDistanceMin, DropSpawnDistanceMax);
 	SpawnLocation.Z -= RelativeSpawnElevation;
+	const FRotator SpawnRotation = FRotator::ZeroRotator;
 
-	// TODO: Have the Item Manifest spawn the pickup actor.
+	// 通过Item Manifest去生成PickUp的ItemActor
+	FInventoryItemManifest ItemManifest = Item->GetItemManifestMutable();
+	if (FInventoryItemStackableFragment* StackableFragment =
+		ItemManifest.GetFragmentOfTypeMutable<FInventoryItemStackableFragment>())
+	{
+		StackableFragment->SetStackCount(DroppedCount);
+	}
+	ItemManifest.SpawnPickUpActor(this, SpawnLocation, SpawnRotation);
 }
 
 void UDkInventoryComponent::BeginPlay()

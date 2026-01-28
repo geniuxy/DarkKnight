@@ -25,3 +25,8 @@ void UDkItemComponent::OnPickedUp()
 
 	GetOwner()->Destroy();
 }
+
+void UDkItemComponent::InitItemManifest(FInventoryItemManifest InItemManifest)
+{
+	ItemManifest = InItemManifest;
+}

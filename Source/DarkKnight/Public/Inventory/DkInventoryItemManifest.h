@@ -24,6 +24,10 @@ struct DARKKNIGHT_API FInventoryItemManifest
 	EInventoryItemCategory GetItemCategory() const { return ItemCategory; }
 	FGameplayTag GetItemTag() const { return ItemTag; }
 
+	void SpawnPickUpActor(
+		const UObject* WorldContextObject, const FVector& SpawnLocation, const FRotator& SpawnRotation
+	);
+
 	template <typename T> requires std::derived_from<T, FInventoryItemFragment>
 	const T* GetFragmentOfTypeWithTag(const FGameplayTag& FragmentTag) const;
 
@@ -40,8 +44,11 @@ private:
 	UPROPERTY(EditAnywhere, Category="Inventory")
 	EInventoryItemCategory ItemCategory = EInventoryItemCategory::None;
 
-	UPROPERTY(EditAnywhere, Category="Inventory",meta = (Categories = "Dk.Item"))
+	UPROPERTY(EditAnywhere, Category="Inventory", meta = (Categories = "Dk.Item"))
 	FGameplayTag ItemTag;
+
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	TSubclassOf<AActor> PickUpActorClass;
 };
 
 template <typename T> requires std::derived_from<T, FInventoryItemFragment>

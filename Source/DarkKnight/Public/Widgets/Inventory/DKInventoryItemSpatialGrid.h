@@ -91,8 +91,6 @@ protected:
 	void OnDraggedItemClicked(const FPointerEvent& MouseEvent);
 
 	void PutDownOnIndex(const int32 Index);
-	
-	void ClearDraggedItem();
 
 	int32 ItemDropIndex = INDEX_NONE;
 	FInventorySpaceQueryResult CurrentSpaceQueryResult;

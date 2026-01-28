@@ -69,6 +69,8 @@ protected:
 	TMap<EInventoryItemCategory, TObjectPtr<UDkUICommonButtonBase>> CategoryButtonMap;
 	TMap<EInventoryItemCategory, TObjectPtr<UCommonLazyImage>> SelectedUnderlineMap;
 
+	TWeakObjectPtr<UDkInventoryItemGrid> ActiveGrid;
+
 	void ShowEquipments();
 	void ShowConsumables();
 	void ShowCraftingMaterials();

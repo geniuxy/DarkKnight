@@ -337,6 +337,20 @@ void UDkInventoryItemGrid::RemoveItemFromGrid(UDkInventoryItem* InventoryItem, c
 {
 }
 
+void UDkInventoryItemGrid::ClearDraggedItem()
+{
+	if (!IsValid(DraggedItem)) return;
+
+	DraggedItem->SetInventoryItem(nullptr);
+	DraggedItem->SetIsStackable(false);
+	DraggedItem->SetPreviousGridIndex(INDEX_NONE);
+	DraggedItem->UpdateStackCount(0);
+	DraggedItem->SetImageBrush(FSlateNoResource());
+
+	DraggedItem->RemoveFromParent();
+	DraggedItem = nullptr;
+}
+
 void UDkInventoryItemGrid::OnGridSlotHovered(int32 GridIndex, const FPointerEvent& MouseEvent)
 {
 	if (IsValid(DraggedItem)) return;
@@ -383,6 +397,21 @@ void UDkInventoryItemGrid::OnPopUpMenuSplit(int32 SplitAmount, int32 Index)
 
 void UDkInventoryItemGrid::OnPopUpMenuDrop(int32 Index)
 {
+	UDkInventoryItem* RightClickedItem = GridSlots[Index]->GetInventoryItem();
+	if (!IsValid(RightClickedItem)) return;
+
+	DragItem(RightClickedItem, Index);
+	DropItem();
+}
+
+void UDkInventoryItemGrid::DropItem()
+{
+	if (!IsValid(DraggedItem)) return;
+	if (!IsValid(DraggedItem->GetInventoryItem())) return;
+
+	// TODO: Tell the server to actually drop the item
+	
+	ClearDraggedItem();
 }
 
 void UDkInventoryItemGrid::OnPopUpMenuConsume(int32 Index)

@@ -83,6 +83,8 @@ void UDkWidgetInventoryMenu::SetActiveGrid(UDkInventoryItemGrid* Grid, UDkUIComm
 {
 	SelectButton(Button);
 
+	ActiveGrid = Grid;
+
 	ShowSelectedUnderline(Grid);
 
 	Switcher->SetActiveWidget(Grid);

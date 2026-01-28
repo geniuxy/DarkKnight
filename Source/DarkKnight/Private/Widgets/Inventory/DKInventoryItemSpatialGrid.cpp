@@ -555,20 +555,6 @@ void UDKInventoryItemSpatialGrid::PutDownOnIndex(const int32 Index)
 	ClearDraggedItem();
 }
 
-void UDKInventoryItemSpatialGrid::ClearDraggedItem()
-{
-	if (!IsValid(DraggedItem)) return;
-
-	DraggedItem->SetInventoryItem(nullptr);
-	DraggedItem->SetIsStackable(false);
-	DraggedItem->SetPreviousGridIndex(INDEX_NONE);
-	DraggedItem->UpdateStackCount(0);
-	DraggedItem->SetImageBrush(FSlateNoResource());
-
-	DraggedItem->RemoveFromParent();
-	DraggedItem = nullptr;
-}
-
 void UDKInventoryItemSpatialGrid::CreateItemPopUp(const int32 GridIndex)
 {
 	UDkInventoryItem* RightClickedItem = GridSlots[GridIndex]->GetInventoryItem();

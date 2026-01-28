@@ -56,6 +56,13 @@ public:
 	FStackChange OnStackChange; // item从有到更多
 	/********/
 
+	/* 道具物品的丢弃 */
+	UFUNCTION(Server, Reliable)
+	void ServerDropItem(UDkInventoryItem* Item, int32 DroppedCount);
+
+	void SpawnDroppedItem(UDkInventoryItem* Item, int32 DroppedCount);
+	/********/
+
 	/* 判断是否背包有空间 */
 	FOnRoomInInventoryDelegate OnNoRoomInInventory;
 	/********/

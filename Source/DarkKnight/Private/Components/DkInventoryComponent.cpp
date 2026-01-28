@@ -148,6 +148,26 @@ void UDkInventoryComponent::Server_AddStacksToItem_Implementation(
 	}
 }
 
+void UDkInventoryComponent::ServerDropItem_Implementation(UDkInventoryItem* Item, int32 DroppedCount)
+{
+	const int32 NewStackCount = Item->GetTotalStackCount() - DroppedCount;
+	if (NewStackCount <= 0)
+	{
+		InventoryList.RemoveEntry(Item);
+	}
+	else
+	{
+		Item->SetTotalStackCount(NewStackCount);
+	}
+
+	SpawnDroppedItem(Item, DroppedCount);
+}
+
+void UDkInventoryComponent::SpawnDroppedItem(UDkInventoryItem* Item, int32 DroppedCount)
+{
+	// Spawn the Dropped Item in the level
+}
+
 void UDkInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();

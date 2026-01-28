@@ -61,6 +61,21 @@ public:
 	void ServerDropItem(UDkInventoryItem* Item, int32 DroppedCount);
 
 	void SpawnDroppedItem(UDkInventoryItem* Item, int32 DroppedCount);
+
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	float DropSpawnAngleMin = -85.f;
+	
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	float DropSpawnAngleMax = 85.f;
+	
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	float DropSpawnDistanceMin = 50.f;
+	
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	float DropSpawnDistanceMax = 100.f;
+	
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	float RelativeSpawnElevation = 70.f; // Spawn降低高度
 	/********/
 
 	/* 判断是否背包有空间 */

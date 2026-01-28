@@ -144,7 +144,7 @@ void UDkInventoryComponent::Server_AddStacksToItem_Implementation(
 	else if (FInventoryItemStackableFragment* StackableFragment =
 		ItemComponent->GetItemManifest().GetFragmentOfTypeMutable<FInventoryItemStackableFragment>())
 	{
-		StackableFragment->SetStackCount(Remainder);	
+		StackableFragment->SetStackCount(Remainder);
 	}
 }
 
@@ -165,7 +165,15 @@ void UDkInventoryComponent::ServerDropItem_Implementation(UDkInventoryItem* Item
 
 void UDkInventoryComponent::SpawnDroppedItem(UDkInventoryItem* Item, int32 DroppedCount)
 {
-	// Spawn the Dropped Item in the level
+	const APawn* OwningPawn = OwningCharacter->GetController()->GetPawn();
+	FVector RotatedForward = OwningPawn->GetActorForwardVector();
+	RotatedForward =
+		RotatedForward.RotateAngleAxis(FMath::FRandRange(DropSpawnAngleMin, DropSpawnAngleMax), FVector::UpVector);
+	FVector SpawnLocation =
+		OwningPawn->GetActorLocation() + RotatedForward * FMath::FRandRange(DropSpawnDistanceMin, DropSpawnDistanceMax);
+	SpawnLocation.Z -= RelativeSpawnElevation;
+
+	// TODO: Have the Item Manifest spawn the pickup actor.
 }
 
 void UDkInventoryComponent::BeginPlay()

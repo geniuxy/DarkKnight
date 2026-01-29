@@ -94,23 +94,23 @@ bool UDkUIFunctionLibrary::PositionWidgetAtMouse(UUserWidget* Widget, FVector2D 
 		VP->GetMousePosition(MousePos); // 系统硬件像素（受 DPI 缩放）
 	}
 
-	FVector2D WidgetSize = FVector2D::ZeroVector;
-	if (TSharedPtr<SWidget> SlateWidget = Widget->TakeWidget())
-	{
-		SlateWidget->SlatePrepass(FSlateApplication::Get().GetApplicationScale());
-
-		FVector2D Desired = SlateWidget->GetDesiredSize();
-		float DPIScale = World->GetGameViewport()->GetDPIScale();
-		// FVector2D Actual = Widget->GetCachedGeometry().GetAbsoluteSize();
-		// float AppScale = FSlateApplication::Get().GetApplicationScale();
-
-		// Debug::Print(FString::Printf(TEXT("Desired: %s, DPI: %.2f, AppScale: %.2f, AbsoluteSize: %s, Ratio: %.2f"),
-		// 	*Desired.ToString(), DPIScale, AppScale, *Actual.ToString(), 
-		// 	Actual.X / (Desired.X * DPIScale)));
-		WidgetSize = Desired * DPIScale * 1.25f; // TODO: 这个1.25是哪来的？如何造成的？
-	}
+	// FVector2D WidgetSize = FVector2D::ZeroVector;
+	// if (TSharedPtr<SWidget> SlateWidget = Widget->TakeWidget())
+	// {
+	// 	SlateWidget->SlatePrepass(FSlateApplication::Get().GetApplicationScale());
+	//
+	// 	FVector2D Desired = SlateWidget->GetDesiredSize();
+	// 	float DPIScale = World->GetGameViewport()->GetDPIScale();
+	// 	// FVector2D Actual = Widget->GetCachedGeometry().GetAbsoluteSize();
+	// 	// float AppScale = FSlateApplication::Get().GetApplicationScale();
+	//
+	// 	// Debug::Print(FString::Printf(TEXT("Desired: %s, DPI: %.2f, AppScale: %.2f, AbsoluteSize: %s, Ratio: %.2f"),
+	// 	// 	*Desired.ToString(), DPIScale, AppScale, *Actual.ToString(), 
+	// 	// 	Actual.X / (Desired.X * DPIScale)));
+	// 	WidgetSize = Desired * DPIScale * 1.25f; // TODO: 这个1.25是哪来的？如何造成的？
+	// }
 	// 这种算法在tick时，会得到WidgetSize为0,0，从而瞬闪
-	// const FVector2D WidgetSize = Widget->GetCachedGeometry().GetAbsoluteSize();
+	const FVector2D WidgetSize = Widget->GetCachedGeometry().GetAbsoluteSize();
 	// Debug::Print(FString::Printf(TEXT("宽度：%f,高度：%f"), WidgetSize.X, WidgetSize.Y));
 	FVector2D ViewportSize = GetViewportSizeInPixels(World);
 

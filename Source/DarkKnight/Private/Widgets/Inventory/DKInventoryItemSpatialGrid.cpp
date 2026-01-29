@@ -381,8 +381,6 @@ void UDKInventoryItemSpatialGrid::OnTileParametersUpdated(const FInventoryTilePa
 			GridFragment->GetGridSize(),
 			EInventoryGridSlotState::GrayedOut
 		);
-
-		// TODO: 如果这片区域内有一个Item，可以交换位置或者增加StackCount
 	}
 }
 
@@ -481,7 +479,7 @@ void UDKInventoryItemSpatialGrid::ChangeHoverType(
 	);
 
 	LastHighlightedIndex = StartingIndex,
-		LastHighlightedDimension = Dimension;
+	LastHighlightedDimension = Dimension;
 }
 
 bool UDKInventoryItemSpatialGrid::CursorExitedCanvas(
@@ -534,6 +532,7 @@ void UDKInventoryItemSpatialGrid::OnDraggedItemClicked(const FPointerEvent& Mous
 {
 	if (!IsValid(DraggedItem)) return;
 	if (!GridSlots.IsValidIndex(ItemDropIndex)) return;
+	if (!IsInGridBounds(ItemDropIndex, DraggedItem->GetGridDimension())) return;
 
 	if (CurrentSpaceQueryResult.ValidItem.IsValid() && GridSlots.IsValidIndex(CurrentSpaceQueryResult.UpperLeftIndex))
 	{

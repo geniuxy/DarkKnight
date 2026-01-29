@@ -12,6 +12,7 @@
 #include "Inventory/DkInventoryItemFragment.h"
 #include "Inventory/DkInventorySlotAvailabilty.h"
 #include "Widgets/Inventory/DkInventoryDraggedItem.h"
+#include "Widgets/Inventory/DkInventoryPopUpMenu.h"
 #include "Widgets/Inventory/DkInventorySlottedItem.h"
 
 FDkInventorySlotAvailabilityResult UDkInventoryItemGrid::HasRoomForItem(const UDkItemComponent* ItemComponent)
@@ -375,24 +376,58 @@ void UDkInventoryItemGrid::OnGridSlotUnhovered(int32 GridIndex, const FPointerEv
 
 void UDkInventoryItemGrid::CreateItemPopUp(const int32 GridIndex)
 {
+	UDkInventoryItem* RightClickedItem = GridSlots[GridIndex]->GetInventoryItem();
+	if (!IsValid(RightClickedItem)) return;
+
+	// 设置PopUpMenu弹出位置
+	PopUpMenu = CreateWidget<UDkInventoryPopUpMenu>(this, PopUpMenuClass);
+	if (IsValid(PopUpMenu))
+	{
+		PopUpMenu->SetGridIndex(GridIndex);
+		PopUpMenu->AddToViewport();
+	}
+	if (PopUpMenu && PopUpMenu->IsInViewport())
+	{
+		FVector2D MousePos;
+		if (UGameViewportClient* VP = GetWorld()->GetGameViewport())
+		{
+			VP->GetMousePosition(MousePos); // 系统硬件像素（受 DPI 缩放）
+		}
+
+		PopUpMenu->SetPositionInViewport(MousePos - FVector2D(10, 10));
+	}
+
+	// 设置PopUpMenu内容
+	const int32 SliderMax = GridSlots[GridIndex]->GetStackCount() - 1;
+	if (RightClickedItem->IsItemStackable() && SliderMax > 0)
+	{
+		PopUpMenu->OnSplit.BindDynamic(this, &ThisClass::HandlePopUpMenuSplit);
+		PopUpMenu->SetSliderParams(SliderMax, FMath::Max(1, GridSlots[GridIndex]->GetStackCount() / 2));
+	}
+	else
+	{
+		PopUpMenu->CollapseSplitButton();
+	}
+
+	PopUpMenu->OnDrop.BindDynamic(this, &ThisClass::OnPopUpMenuDrop);
+
+	if (RightClickedItem->GetItemManifest().GetItemCategory() == EInventoryItemCategory::Consumable)
+	{
+		PopUpMenu->OnConsume.BindDynamic(this, &ThisClass::HandlePopUpMenuConsume);
+	}
+	else
+	{
+		PopUpMenu->CollapseConsumeButton();
+	}
+}
+
+void UDkInventoryItemGrid::HandlePopUpMenuSplit(int32 SplitAmount, int32 Index)
+{
+	OnPopUpMenuSplit(SplitAmount, Index);
 }
 
 void UDkInventoryItemGrid::OnPopUpMenuSplit(int32 SplitAmount, int32 Index)
 {
-	UDkInventoryItem* RightClickedItem = GridSlots[Index]->GetInventoryItem();
-	if (!IsValid(RightClickedItem)) return;
-	if (!RightClickedItem->IsItemStackable()) return;
-
-	const int32 UpperLeftIndex = GridSlots[Index]->GetUpperLeftIndex();
-	UDkInventoryGridSlot* UpperLeftGridSlot = GridSlots[UpperLeftIndex];
-	const int32 StackCount = UpperLeftGridSlot->GetStackCount();
-	const int32 NewStackCount = StackCount - SplitAmount;
-
-	UpperLeftGridSlot->SetStackCount(NewStackCount);
-	SlottedItemMap.FindChecked(UpperLeftIndex)->UpdateStackCount(NewStackCount);
-
-	AssignDraggedItem(RightClickedItem, UpperLeftIndex, UpperLeftIndex);
-	DraggedItem->UpdateStackCount(SplitAmount);
 }
 
 void UDkInventoryItemGrid::OnPopUpMenuDrop(int32 Index)
@@ -412,6 +447,11 @@ void UDkInventoryItemGrid::DropItem()
 	InventoryComponent->ServerDropItem(DraggedItem->GetInventoryItem(), DraggedItem->GetStackCount());
 	
 	ClearDraggedItem();
+}
+
+void UDkInventoryItemGrid::HandlePopUpMenuConsume(int32 Index)
+{
+	OnPopUpMenuConsume(Index);
 }
 
 void UDkInventoryItemGrid::OnPopUpMenuConsume(int32 Index)

@@ -101,6 +101,8 @@ protected:
 	/********/
 
 	/* 右键菜单 */
-	virtual void CreateItemPopUp(const int32 GridIndex) override;
+	virtual void OnPopUpMenuSplit(int32 SplitAmount, int32 Index) override;
+	
+	virtual void OnPopUpMenuConsume(int32 Index) override;
 	/********/
 };

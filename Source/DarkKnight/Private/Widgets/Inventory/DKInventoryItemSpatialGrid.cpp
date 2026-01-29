@@ -555,49 +555,40 @@ void UDKInventoryItemSpatialGrid::PutDownOnIndex(const int32 Index)
 	ClearDraggedItem();
 }
 
-void UDKInventoryItemSpatialGrid::CreateItemPopUp(const int32 GridIndex)
+void UDKInventoryItemSpatialGrid::OnPopUpMenuSplit(int32 SplitAmount, int32 Index)
 {
-	UDkInventoryItem* RightClickedItem = GridSlots[GridIndex]->GetInventoryItem();
+	UDkInventoryItem* RightClickedItem = GridSlots[Index]->GetInventoryItem();
+	if (!IsValid(RightClickedItem)) return;
+	if (!RightClickedItem->IsItemStackable()) return;
+
+	const int32 UpperLeftIndex = GridSlots[Index]->GetUpperLeftIndex();
+	UDkInventoryGridSlot* UpperLeftGridSlot = GridSlots[UpperLeftIndex];
+	const int32 StackCount = UpperLeftGridSlot->GetStackCount();
+	const int32 NewStackCount = StackCount - SplitAmount;
+
+	UpperLeftGridSlot->SetStackCount(NewStackCount);
+	SlottedItemMap.FindChecked(UpperLeftIndex)->UpdateStackCount(NewStackCount);
+
+	AssignDraggedItem(RightClickedItem, UpperLeftIndex, UpperLeftIndex);
+	DraggedItem->UpdateStackCount(SplitAmount);
+}
+
+void UDKInventoryItemSpatialGrid::OnPopUpMenuConsume(int32 Index)
+{
+	UDkInventoryItem* RightClickedItem = GridSlots[Index]->GetInventoryItem();
 	if (!IsValid(RightClickedItem)) return;
 
-	// 设置PopUpMenu弹出位置
-	PopUpMenu = CreateWidget<UDkInventoryPopUpMenu>(this, PopUpMenuClass);
-	if (IsValid(PopUpMenu))
-	{
-		PopUpMenu->SetGridIndex(GridIndex);
-		PopUpMenu->AddToViewport();
-	}
-	if (PopUpMenu && PopUpMenu->IsInViewport())
-	{
-		FVector2D MousePos;
-		if (UGameViewportClient* VP = GetWorld()->GetGameViewport())
-		{
-			VP->GetMousePosition(MousePos); // 系统硬件像素（受 DPI 缩放）
-		}
+	const int32 UpperLeftIndex = GridSlots[Index]->GetUpperLeftIndex();
+	UDkInventoryGridSlot* UpperLeftGridSlot = GridSlots[UpperLeftIndex];
+	const int32 NewStackCount = UpperLeftGridSlot->GetStackCount() - 1;
 
-		PopUpMenu->SetPositionInViewport(MousePos - FVector2D(10, 10));
-	}
+	UpperLeftGridSlot->SetStackCount(NewStackCount);
+	SlottedItemMap.FindChecked(UpperLeftIndex)->UpdateStackCount(NewStackCount);
 
-	// 设置PopUpMenu内容
-	const int32 SliderMax = GridSlots[GridIndex]->GetStackCount() - 1;
-	if (RightClickedItem->IsItemStackable() && SliderMax > 0)
-	{
-		PopUpMenu->OnSplit.BindDynamic(this, &ThisClass::OnPopUpMenuSplit);
-		PopUpMenu->SetSliderParams(SliderMax, FMath::Max(1, GridSlots[GridIndex]->GetStackCount() / 2));
-	}
-	else
-	{
-		PopUpMenu->CollapseSplitButton();
-	}
+	// TODO: Tell the server we're consuming an item 
 
-	PopUpMenu->OnDrop.BindDynamic(this, &ThisClass::OnPopUpMenuDrop);
-
-	if (RightClickedItem->GetItemManifest().GetItemCategory() == EInventoryItemCategory::Consumable)
+	if (NewStackCount <= 0)
 	{
-		PopUpMenu->OnConsume.BindDynamic(this, &ThisClass::OnPopUpMenuConsume);
-	}
-	else
-	{
-		PopUpMenu->CollapseConsumeButton();
+		RemoveItemFromGrid(RightClickedItem, Index);
 	}
 }

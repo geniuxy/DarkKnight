@@ -153,7 +153,7 @@ protected:
 	/********/
 
 	/* 右键菜单 */
-	virtual void CreateItemPopUp(const int32 GridIndex);
+	void CreateItemPopUp(const int32 GridIndex);
 
 	UPROPERTY(EditAnywhere, Category="Inventory")
 	TSubclassOf<UDkInventoryPopUpMenu> PopUpMenuClass;
@@ -161,8 +161,11 @@ protected:
 	UPROPERTY()
 	TObjectPtr<UDkInventoryPopUpMenu> PopUpMenu;
 
+	// 拆解Item
 	UFUNCTION()
-	void OnPopUpMenuSplit(int32 SplitAmount, int32 Index);
+	void HandlePopUpMenuSplit(int32 SplitAmount, int32 Index);
+	
+	virtual void OnPopUpMenuSplit(int32 SplitAmount, int32 Index);
 
 	// 丢弃Item
 	UFUNCTION()
@@ -172,7 +175,9 @@ protected:
 
 	// 消耗Item
 	UFUNCTION()
-	void OnPopUpMenuConsume(int32 Index);
+	void HandlePopUpMenuConsume(int32 Index);
+	
+	virtual void OnPopUpMenuConsume(int32 Index);
 	/********/
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Inventory")

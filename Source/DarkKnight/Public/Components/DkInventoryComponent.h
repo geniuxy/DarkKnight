@@ -78,6 +78,11 @@ public:
 	float RelativeSpawnElevation = 70.f; // Spawn降低高度
 	/********/
 
+	/* 道具物品的使用 */
+	UFUNCTION(Server, Reliable)
+	void ServerConsumeItem(UDkInventoryItem* Item);
+	/********/
+
 	/* 判断是否背包有空间 */
 	FOnRoomInInventoryDelegate OnNoRoomInInventory;
 	/********/

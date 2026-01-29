@@ -184,6 +184,22 @@ void UDkInventoryComponent::SpawnDroppedItem(UDkInventoryItem* Item, int32 Dropp
 	ItemManifest.SpawnPickUpActor(this, SpawnLocation, SpawnRotation);
 }
 
+void UDkInventoryComponent::ServerConsumeItem_Implementation(UDkInventoryItem* Item)
+{
+	const int32 NewStackCount = Item->GetTotalStackCount() - 1;
+	if (NewStackCount <= 0)
+	{
+		InventoryList.RemoveEntry(Item);
+	}
+	else
+	{
+		Item->SetTotalStackCount(NewStackCount);
+	}
+
+	// TODO: Get the consumable fragment and call Consume()
+	// (Actually create the Consumable Fragement)
+}
+
 void UDkInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();

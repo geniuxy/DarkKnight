@@ -8,6 +8,7 @@
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Components/CanvasPanel.h"
 #include "Components/CanvasPanelSlot.h"
+#include "Components/DkInventoryComponent.h"
 #include "FunctionLibrarys/DkInventoryFunctionLibrary.h"
 #include "Inventory/DkInventoryItemFragment.h"
 #include "Widgets/Inventory/DkInventoryDraggedItem.h"
@@ -585,7 +586,7 @@ void UDKInventoryItemSpatialGrid::OnPopUpMenuConsume(int32 Index)
 	UpperLeftGridSlot->SetStackCount(NewStackCount);
 	SlottedItemMap.FindChecked(UpperLeftIndex)->UpdateStackCount(NewStackCount);
 
-	// TODO: Tell the server we're consuming an item 
+	InventoryComponent->ServerConsumeItem(RightClickedItem);
 
 	if (NewStackCount <= 0)
 	{

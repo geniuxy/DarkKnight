@@ -195,9 +195,14 @@ void UDkInventoryComponent::ServerConsumeItem_Implementation(UDkInventoryItem* I
 	{
 		Item->SetTotalStackCount(NewStackCount);
 	}
-
-	// TODO: Get the consumable fragment and call Consume()
-	// (Actually create the Consumable Fragement)
+	
+	if (FInventoryItemConsumableFragment* ConsumableFragment =
+		Item->GetItemManifestMutable().GetFragmentOfTypeMutable<FInventoryItemConsumableFragment>())
+	{
+		ACharacter* OwnerCharacter = CastChecked<ACharacter>(GetOwner());
+		APlayerController* PlayerController = CastChecked<APlayerController>(OwnerCharacter->GetController());
+		ConsumableFragment->OnConsume(PlayerController);
+	}
 }
 
 void UDkInventoryComponent::BeginPlay()

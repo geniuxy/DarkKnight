@@ -97,3 +97,36 @@ public:
 	FORCEINLINE int32 GetMaxStackSize() const { return MaxStackSize; }
 	LIST_DATA_ACCESSOR(int32, StackCount)
 };
+
+/*
+ * 消耗品相关的Fragment
+ */
+USTRUCT(BlueprintType)
+struct FInventoryItemConsumableFragment : public FInventoryItemFragment
+{
+	GENERATED_BODY()
+
+	virtual void OnConsume(APlayerController* PC) {}
+};
+
+USTRUCT(BlueprintType)
+struct FInventoryItemHealthConsumableFragment : public FInventoryItemConsumableFragment
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	float HealthAmount = 25.f;
+
+	virtual void OnConsume(APlayerController* PC) override;
+};
+
+USTRUCT(BlueprintType)
+struct FInventoryItemManaConsumableFragment : public FInventoryItemConsumableFragment
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	float ManaAmount = 25.f;
+
+	virtual void OnConsume(APlayerController* PC) override;
+};

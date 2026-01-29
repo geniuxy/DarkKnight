@@ -7,6 +7,7 @@
 #include "DarkKnight/DarkKnight.h"
 #include "DkInventorySlottedItem.generated.h"
 
+class UDkInventoryItemDescriptionMenu;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FSlottedItemClicked, int32, GridIndex, const FPointerEvent&, MouseEvent);
 
 class UCommonTextBlock;
@@ -23,6 +24,9 @@ class DARKKNIGHT_API UDkInventorySlottedItem : public UCommonUserWidget
 public:
 	//~Begin UUserWidget Function
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+	virtual void NativeOnMouseEnter(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent) override;
+	virtual void NativeOnMouseLeave(const FPointerEvent& MouseEvent) override;
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 	//~End UUserWidget Function
 
 	UDkInventoryItem* GetInventoryItem() const;
@@ -43,6 +47,16 @@ private:
 	TObjectPtr<UCommonTextBlock> Text_StackCount;
 	//***** Bound Widgets *****//
 
+	/* 鼠标Hover时，显示Item详细信息 */
+	void CreateItemDescriptionMenu();
+
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	TSubclassOf<UDkInventoryItemDescriptionMenu> ItemDescriptionMenuClass;
+
+	UPROPERTY()
+	TObjectPtr<UDkInventoryItemDescriptionMenu> ItemDescriptionMenu;
+	/********/
+	
 	TWeakObjectPtr<UDkInventoryItem> InventoryItem;
 	int32 GridIndex;
 	FIntPoint GridDimension;

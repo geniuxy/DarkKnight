@@ -28,4 +28,28 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="UI Function Library", meta=(WorldContext = "WorldContextObject"))
 	static void ToggleInputMode(const UObject* WorldContextObject, EDkInputMode InInputMode);
+
+	/**
+	 * 直接定位任意 UserWidget 到鼠标附近（一站式方案）
+	 * 自动获取 Widget 尺寸并应用 DPI 转换
+	 * 
+	 * @param Widget 要定位的控件（必须已在视口中）
+	 * @param bAutoFlipX 水平空间不足时是否自动翻转到另一侧
+	 * @param bAutoFlipY 垂直空间不足时是否自动翻转到另一侧
+	 * @return 是否定位成功
+	 */
+	UFUNCTION(BlueprintCallable, Category="UI|Layout", meta=(UnsafeDuringActorConstruction="true"))
+	static bool PositionWidgetAtMouse(
+		UUserWidget* Widget,
+		FVector2D Offset = FVector2D(4.0f, 4.0f),
+		bool bAutoFlipX = true,
+		bool bAutoFlipY = true,
+		float Margin = 1.0f
+	);
+
+	/**
+	 * 获取当前游戏视口的硬件像素尺寸
+	 */
+	UFUNCTION(BlueprintPure, Category="UI|Layout", meta=(WorldContext="WorldContextObject"))
+	static FVector2D GetViewportSizeInPixels(const UObject* WorldContextObject);
 };

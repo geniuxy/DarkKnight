@@ -2,15 +2,63 @@
 
 
 #include "Widgets/Inventory/DkInventorySlottedItem.h"
+#include "Widgets/Inventory/DkInventoryItemDescriptionMenu.h"
 #include "Inventory/DkInventoryItem.h"
 
 #include "CommonLazyImage.h"
 #include "CommonTextBlock.h"
+#include "FunctionLibrarys/DkUIFunctionLibrary.h"
 
 FReply UDkInventorySlottedItem::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
 	OnSlottedItemClicked.Broadcast(GridIndex, InMouseEvent);
+
+	if (IsValid(ItemDescriptionMenu))
+	{
+		ItemDescriptionMenu->RemoveFromParent();
+	}
+
 	return FReply::Handled();
+}
+
+void UDkInventorySlottedItem::NativeOnMouseEnter(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
+{
+	CreateItemDescriptionMenu();
+}
+
+void UDkInventorySlottedItem::NativeOnMouseLeave(const FPointerEvent& MouseEvent)
+{
+	if (IsValid(ItemDescriptionMenu))
+	{
+		ItemDescriptionMenu->RemoveFromParent();
+	}
+}
+
+void UDkInventorySlottedItem::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+
+	// if (ItemDescriptionMenu && ItemDescriptionMenu->IsInViewport())
+	// {
+	// 	// 全程用硬件像素，以将DescriptionMenu定位到鼠标附近
+	// 	FVector2D MousePos;
+	// 	if (UGameViewportClient* VP = GetWorld()->GetGameViewport())
+	// 	{
+	// 		VP->GetMousePosition(MousePos); // 系统硬件像素（受 DPI 缩放）
+	// 	}
+	// 	ItemDescriptionMenu->SetPositionInViewport(MousePos + FVector2D(1.f, 1.f));
+	// }
+
+	if (ItemDescriptionMenu && ItemDescriptionMenu->IsInViewport())
+	{
+		UDkUIFunctionLibrary::PositionWidgetAtMouse(
+			ItemDescriptionMenu,
+			FVector2D{8.f, 8.f},
+			true,
+			true,
+			4
+		);
+	}
 }
 
 UDkInventoryItem* UDkInventorySlottedItem::GetInventoryItem() const
@@ -39,4 +87,13 @@ void UDkInventorySlottedItem::UpdateStackCount(int32 StackCount)
 	{
 		Text_StackCount->SetVisibility(ESlateVisibility::Collapsed);
 	}
+}
+
+void UDkInventorySlottedItem::CreateItemDescriptionMenu()
+{
+	if (!IsValid(ItemDescriptionMenu))
+	{
+		ItemDescriptionMenu = CreateWidget<UDkInventoryItemDescriptionMenu>(this, ItemDescriptionMenuClass);
+	}
+	ItemDescriptionMenu->AddToViewport();
 }

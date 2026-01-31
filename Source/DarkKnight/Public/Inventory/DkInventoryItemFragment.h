@@ -11,22 +11,22 @@
 class UDkInventoryCompositeBase;
 
 USTRUCT(BlueprintType)
-struct FInventoryItemFragment
+struct FItemFragment
 {
 	GENERATED_BODY()
 
-	FInventoryItemFragment()
+	FItemFragment()
 	{
 	}
 
-	virtual ~FInventoryItemFragment()
+	virtual ~FItemFragment()
 	{
 	}
 
-	FInventoryItemFragment(const FInventoryItemFragment&) = default;
-	FInventoryItemFragment& operator=(const FInventoryItemFragment&) = default;
-	FInventoryItemFragment(FInventoryItemFragment&&) = default;
-	FInventoryItemFragment& operator=(FInventoryItemFragment&&) = default;
+	FItemFragment(const FItemFragment&) = default;
+	FItemFragment& operator=(const FItemFragment&) = default;
+	FItemFragment(FItemFragment&&) = default;
+	FItemFragment& operator=(FItemFragment&&) = default;
 
 protected:
 	UPROPERTY(EditAnywhere, meta = (Categories = "Dk.Inventory.Fragment"), Category="Inventory")
@@ -40,7 +40,7 @@ public:
  * 专门为了同化数据到Widget的Fragment
  */
 USTRUCT(BlueprintType)
-struct FInventoryItemWidgetFragment : public FInventoryItemFragment
+struct FInventoryItemFragment : public FItemFragment
 {
 	GENERATED_BODY()
 
@@ -51,7 +51,7 @@ protected:
 };
 
 USTRUCT(BlueprintType)
-struct FInventoryItemGridFragment : public FInventoryItemFragment
+struct FInventoryItemGridFragment : public FItemFragment
 {
 	GENERATED_BODY()
 
@@ -73,7 +73,7 @@ public:
 };
 
 USTRUCT(BlueprintType)
-struct FInventoryItemImageFragment : public FInventoryItemFragment
+struct FInventoryItemImageFragment : public FItemFragment
 {
 	GENERATED_BODY()
 
@@ -94,7 +94,7 @@ public:
 };
 
 USTRUCT(BlueprintType)
-struct FInventoryItemStackableFragment : public FInventoryItemFragment
+struct FInventoryItemStackableFragment : public FItemFragment
 {
 	GENERATED_BODY()
 
@@ -119,7 +119,7 @@ public:
  * 消耗品相关的Fragment
  */
 USTRUCT(BlueprintType)
-struct FInventoryItemConsumableFragment : public FInventoryItemFragment
+struct FInventoryItemConsumableFragment : public FItemFragment
 {
 	GENERATED_BODY()
 

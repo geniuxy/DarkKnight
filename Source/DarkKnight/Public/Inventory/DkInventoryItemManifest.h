@@ -12,7 +12,7 @@
  */
 
 class UDkInventoryCompositeBase;
-struct FInventoryItemFragment;
+struct FItemFragment;
 class UDkInventoryItem;
 
 USTRUCT(BlueprintType)
@@ -31,21 +31,21 @@ struct DARKKNIGHT_API FInventoryItemManifest
 
 	void AssimilateInventoryFragments(UDkInventoryCompositeBase* Composite) const;
 
-	template <typename T> requires std::derived_from<T, FInventoryItemFragment>
+	template <typename T> requires std::derived_from<T, FItemFragment>
 	const T* GetFragmentOfTypeWithTag(const FGameplayTag& FragmentTag) const;
 
-	template <typename T> requires std::derived_from<T, FInventoryItemFragment>
+	template <typename T> requires std::derived_from<T, FItemFragment>
 	const T* GetFragmentOfType() const;
 
-	template <typename T> requires std::derived_from<T, FInventoryItemFragment>
+	template <typename T> requires std::derived_from<T, FItemFragment>
 	T* GetFragmentOfTypeMutable();
 
-	template <typename T> requires std::derived_from<T, FInventoryItemFragment>
+	template <typename T> requires std::derived_from<T, FItemFragment>
 	TArray<const T*> GetAllFragmentsOfType() const;
 	
 private:
 	UPROPERTY(EditAnywhere, Category="Inventory", meta=(ExcludeBaseStruct))
-	TArray<TInstancedStruct<FInventoryItemFragment>> Fragments;
+	TArray<TInstancedStruct<FItemFragment>> Fragments;
 
 	UPROPERTY(EditAnywhere, Category="Inventory")
 	EInventoryItemCategory ItemCategory = EInventoryItemCategory::None;
@@ -57,10 +57,10 @@ private:
 	TSubclassOf<AActor> PickUpActorClass;
 };
 
-template <typename T> requires std::derived_from<T, FInventoryItemFragment>
+template <typename T> requires std::derived_from<T, FItemFragment>
 const T* FInventoryItemManifest::GetFragmentOfTypeWithTag(const FGameplayTag& FragmentTag) const
 {
-	for (const TInstancedStruct<FInventoryItemFragment>& Fragment : Fragments)
+	for (const TInstancedStruct<FItemFragment>& Fragment : Fragments)
 	{
 		if (const T* FragmentPtr = Fragment.GetPtr<T>())
 		{
@@ -76,10 +76,10 @@ const T* FInventoryItemManifest::GetFragmentOfTypeWithTag(const FGameplayTag& Fr
 	return nullptr;
 }
 
-template <typename T> requires std::derived_from<T, FInventoryItemFragment>
+template <typename T> requires std::derived_from<T, FItemFragment>
 const T* FInventoryItemManifest::GetFragmentOfType() const
 {
-	for (const TInstancedStruct<FInventoryItemFragment>& Fragment : Fragments)
+	for (const TInstancedStruct<FItemFragment>& Fragment : Fragments)
 	{
 		if (const T* FragmentPtr = Fragment.GetPtr<T>())
 		{
@@ -90,10 +90,10 @@ const T* FInventoryItemManifest::GetFragmentOfType() const
 	return nullptr;
 }
 
-template <typename T> requires std::derived_from<T, FInventoryItemFragment>
+template <typename T> requires std::derived_from<T, FItemFragment>
 T* FInventoryItemManifest::GetFragmentOfTypeMutable()
 {
-	for (TInstancedStruct<FInventoryItemFragment>& Fragment : Fragments)
+	for (TInstancedStruct<FItemFragment>& Fragment : Fragments)
 	{
 		if (T* FragmentPtr = Fragment.GetMutablePtr<T>())
 		{
@@ -104,11 +104,11 @@ T* FInventoryItemManifest::GetFragmentOfTypeMutable()
 	return nullptr;
 }
 
-template <typename T> requires std::derived_from<T, FInventoryItemFragment>
+template <typename T> requires std::derived_from<T, FItemFragment>
 TArray<const T*> FInventoryItemManifest::GetAllFragmentsOfType() const
 {
 	TArray<const T*> Result;
-	for (const TInstancedStruct<FInventoryItemFragment>& Fragment : Fragments)
+	for (const TInstancedStruct<FItemFragment>& Fragment : Fragments)
 	{
 		if (const T* FragmentPtr = Fragment.GetPtr<T>())
 		{

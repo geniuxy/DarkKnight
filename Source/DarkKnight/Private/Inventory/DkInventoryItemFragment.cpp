@@ -2,14 +2,14 @@
 
 #include "DarkKnightDebugHelper.h"
 
-void FInventoryItemWidgetFragment::Assimilate(UDkInventoryCompositeBase* Composite) const
+void FInventoryItemFragment::Assimilate(UDkInventoryCompositeBase* Composite) const
 {
 	if (!MatchesWidgetTag(Composite)) return;
 
 	Composite->Expand();
 }
 
-bool FInventoryItemWidgetFragment::MatchesWidgetTag(const UDkInventoryCompositeBase* Composite) const
+bool FInventoryItemFragment::MatchesWidgetTag(const UDkInventoryCompositeBase* Composite) const
 {
 	return Composite->GetFragmentTag().MatchesTagExact(GetFragmentTag());
 }

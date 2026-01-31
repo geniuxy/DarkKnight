@@ -29,7 +29,7 @@ void FInventoryItemManifest::SpawnPickUpActor(
 
 void FInventoryItemManifest::AssimilateInventoryFragments(UDkInventoryCompositeBase* Composite) const
 {
-	const auto& InventoryItemFragments = GetAllFragmentsOfType<FInventoryItemWidgetFragment>();
+	const auto& InventoryItemFragments = GetAllFragmentsOfType<FInventoryItemFragment>();
 	for (const auto& Fragment : InventoryItemFragments)
 	{
 		Composite->ApplyFunction(

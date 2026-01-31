@@ -2,6 +2,18 @@
 
 #include "DarkKnightDebugHelper.h"
 
+void FInventoryItemWidgetFragment::Assimilate(UDkInventoryCompositeBase* Composite) const
+{
+	if (!MatchesWidgetTag(Composite)) return;
+
+	Composite->Expand();
+}
+
+bool FInventoryItemWidgetFragment::MatchesWidgetTag(const UDkInventoryCompositeBase* Composite) const
+{
+	return Composite->GetFragmentTag().MatchesTagExact(GetFragmentTag());
+}
+
 void FInventoryItemHealthConsumableFragment::OnConsume(APlayerController* PC)
 {
 	// Get a stats component from the PC or the PC->GetPawn()

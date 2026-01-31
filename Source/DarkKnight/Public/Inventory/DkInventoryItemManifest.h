@@ -11,6 +11,7 @@
  * ItemManifest 包含创建新 InventoryItem 所需的所有数据。
  */
 
+class UDkInventoryCompositeBase;
 struct FInventoryItemFragment;
 class UDkInventoryItem;
 
@@ -28,6 +29,8 @@ struct DARKKNIGHT_API FInventoryItemManifest
 		const UObject* WorldContextObject, const FVector& SpawnLocation, const FRotator& SpawnRotation
 	);
 
+	void AssimilateInventoryFragments(UDkInventoryCompositeBase* Composite) const;
+
 	template <typename T> requires std::derived_from<T, FInventoryItemFragment>
 	const T* GetFragmentOfTypeWithTag(const FGameplayTag& FragmentTag) const;
 
@@ -37,6 +40,9 @@ struct DARKKNIGHT_API FInventoryItemManifest
 	template <typename T> requires std::derived_from<T, FInventoryItemFragment>
 	T* GetFragmentOfTypeMutable();
 
+	template <typename T> requires std::derived_from<T, FInventoryItemFragment>
+	TArray<const T*> GetAllFragmentsOfType() const;
+	
 private:
 	UPROPERTY(EditAnywhere, Category="Inventory", meta=(ExcludeBaseStruct))
 	TArray<TInstancedStruct<FInventoryItemFragment>> Fragments;
@@ -96,4 +102,19 @@ T* FInventoryItemManifest::GetFragmentOfTypeMutable()
 	}
 
 	return nullptr;
+}
+
+template <typename T> requires std::derived_from<T, FInventoryItemFragment>
+TArray<const T*> FInventoryItemManifest::GetAllFragmentsOfType() const
+{
+	TArray<const T*> Result;
+	for (const TInstancedStruct<FInventoryItemFragment>& Fragment : Fragments)
+	{
+		if (const T* FragmentPtr = Fragment.GetPtr<T>())
+		{
+			Result.Add(FragmentPtr);
+		}
+	}
+
+	return Result;
 }

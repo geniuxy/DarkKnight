@@ -2,6 +2,7 @@
 
 #include "Components/DkItemComponent.h"
 #include "Inventory/DkInventoryItem.h"
+#include "Inventory/DkInventoryItemFragment.h"
 
 UDkInventoryItem* FInventoryItemManifest::Manifest(UObject* NewOuter)
 {
@@ -24,4 +25,18 @@ void FInventoryItemManifest::SpawnPickUpActor(
 	check(ItemComponent);
 
 	ItemComponent->InitItemManifest(*this);
+}
+
+void FInventoryItemManifest::AssimilateInventoryFragments(UDkInventoryCompositeBase* Composite) const
+{
+	const auto& InventoryItemFragments = GetAllFragmentsOfType<FInventoryItemWidgetFragment>();
+	for (const auto& Fragment : InventoryItemFragments)
+	{
+		Composite->ApplyFunction(
+			[Fragment](UDkInventoryCompositeBase* Widget)
+			{
+				Fragment->Assimilate(Widget);
+			}
+		);
+	}
 }

@@ -91,9 +91,15 @@ void UDkInventorySlottedItem::UpdateStackCount(int32 StackCount)
 
 void UDkInventorySlottedItem::CreateItemDescriptionMenu()
 {
+	if (!InventoryItem.IsValid()) return;
+	
 	if (!IsValid(ItemDescriptionMenu))
 	{
 		ItemDescriptionMenu = CreateWidget<UDkInventoryItemDescriptionMenu>(this, ItemDescriptionMenuClass);
 	}
+
+	// 根据Fragments，同化(渲染)ItemDescription的内容
+	InventoryItem->GetItemManifest().AssimilateInventoryFragments(ItemDescriptionMenu);
+	
 	ItemDescriptionMenu->AddToViewport();
 }

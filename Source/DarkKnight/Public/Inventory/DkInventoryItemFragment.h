@@ -4,11 +4,14 @@
 #include "GameplayTagContainer.h"
 #include "DarkKnight/DarkKnight.h"
 #include "DkGameplayTags.h"
+#include "Widgets/Inventory/Composites/DkInventoryCompositeBase.h"
 #include "DkInventoryItemFragment.generated.h"
 
 
+class UDkInventoryCompositeBase;
+
 USTRUCT(BlueprintType)
-struct DARKKNIGHT_API FInventoryItemFragment
+struct FInventoryItemFragment
 {
 	GENERATED_BODY()
 
@@ -31,6 +34,20 @@ protected:
 
 public:
 	LIST_DATA_ACCESSOR(FGameplayTag, FragmentTag)
+};
+
+/*
+ * 专门为了同化数据到Widget的Fragment
+ */
+USTRUCT(BlueprintType)
+struct FInventoryItemWidgetFragment : public FInventoryItemFragment
+{
+	GENERATED_BODY()
+
+	virtual void Assimilate(UDkInventoryCompositeBase* Composite) const;
+
+protected:
+	bool MatchesWidgetTag(const UDkInventoryCompositeBase* Composite) const;
 };
 
 USTRUCT(BlueprintType)

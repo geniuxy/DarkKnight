@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "CommonUserWidget.h"
+#include "Composites/DkInventoryComposite.h"
 #include "DkInventoryItemDescriptionMenu.generated.h"
 
 class USizeBox;
@@ -11,7 +11,7 @@ class USizeBox;
  * 
  */
 UCLASS()
-class DARKKNIGHT_API UDkInventoryItemDescriptionMenu : public UCommonUserWidget
+class DARKKNIGHT_API UDkInventoryItemDescriptionMenu : public UDkInventoryComposite
 {
 	GENERATED_BODY()
 

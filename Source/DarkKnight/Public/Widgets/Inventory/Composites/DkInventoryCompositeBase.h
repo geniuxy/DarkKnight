@@ -23,8 +23,8 @@ public:
 	using FuncType = TFunction<void(UDkInventoryCompositeBase*)>;
 	virtual void ApplyFunction(FuncType Function) {}
 
-private:
-	UPROPERTY(EditAnywhere, Category="Inventory")
+protected:
+	UPROPERTY(EditAnywhere, meta = (Categories = "Dk.Inventory.Fragment"), Category="Inventory")
 	FGameplayTag FragmentTag;
 
 public:

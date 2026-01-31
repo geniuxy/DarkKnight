@@ -1,6 +1,8 @@
 ﻿#include "Inventory/DkInventoryItemFragment.h"
 
 #include "DarkKnightDebugHelper.h"
+#include "Widgets/Inventory/Composites/DkInventoryLeaf.h"
+#include "Widgets/Inventory/Composites/DkInventoryLeafImage.h"
 
 void FInventoryItemFragment::Assimilate(UDkInventoryCompositeBase* Composite) const
 {
@@ -12,6 +14,18 @@ void FInventoryItemFragment::Assimilate(UDkInventoryCompositeBase* Composite) co
 bool FInventoryItemFragment::MatchesWidgetTag(const UDkInventoryCompositeBase* Composite) const
 {
 	return Composite->GetFragmentTag().MatchesTagExact(GetFragmentTag());
+}
+
+void FInventoryItemImageFragment::Assimilate(UDkInventoryCompositeBase* Composite) const
+{
+	FInventoryItemFragment::Assimilate(Composite);
+
+	UDkInventoryLeafImage* Image = Cast<UDkInventoryLeafImage>(Composite);
+	if (!IsValid(Image)) return;
+
+	Image->SetImage(Icon);
+	Image->SetBoxSize(IconDimension);
+	Image->SetImageSize(IconDimension);
 }
 
 void FInventoryItemHealthConsumableFragment::OnConsume(APlayerController* PC)

@@ -6,6 +6,7 @@
 #include "Composites/DkInventoryComposite.h"
 #include "DkInventoryItemDescriptionMenu.generated.h"
 
+class UDkInventoryLeafImage;
 class USizeBox;
 /**
  * 
@@ -19,6 +20,11 @@ public:
 	FVector2D GetBoxSize() const;
 
 private:
+	//***** Bound Widgets *****//
 	UPROPERTY(meta=(BindWidget))
 	TObjectPtr<USizeBox> SizeBox_Root;
+	
+	UPROPERTY(meta=(BindWidgetOptional))
+	TObjectPtr<UDkInventoryLeafImage> Image_ItemIcon;
+	//***** Bound Widgets *****//
 };

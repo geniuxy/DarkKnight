@@ -73,7 +73,7 @@ public:
 };
 
 USTRUCT(BlueprintType)
-struct FInventoryItemImageFragment : public FItemFragment
+struct FInventoryItemImageFragment : public FInventoryItemFragment
 {
 	GENERATED_BODY()
 
@@ -82,12 +82,14 @@ struct FInventoryItemImageFragment : public FItemFragment
 		FragmentTag = DkGameplayTags::Dk_Inventory_Fragment_Icon;
 	}
 
+	virtual void Assimilate(UDkInventoryCompositeBase* Composite) const override;
+
 private:
 	UPROPERTY(EditAnywhere, Category="Inventory")
 	TObjectPtr<UTexture2D> Icon = nullptr;
 
 	UPROPERTY(EditAnywhere, Category="Inventory")
-	FVector2D IconDimensions{44.f, 44.f};
+	FVector2D IconDimension{44.f, 44.f};
 
 public:
 	FORCEINLINE UTexture2D* GetIcon() const { return Icon; }

@@ -6,6 +6,7 @@
 #include "Composites/DkInventoryComposite.h"
 #include "DkInventoryItemDescriptionMenu.generated.h"
 
+class UDkInventoryLeafText;
 class UDkInventoryLeafImage;
 class USizeBox;
 /**
@@ -26,5 +27,8 @@ private:
 	
 	UPROPERTY(meta=(BindWidgetOptional))
 	TObjectPtr<UDkInventoryLeafImage> Image_ItemIcon;
+
+	UPROPERTY(meta=(BindWidgetOptional))
+	TObjectPtr<UDkInventoryLeafText> Text_ItemName;
 	//***** Bound Widgets *****//
 };

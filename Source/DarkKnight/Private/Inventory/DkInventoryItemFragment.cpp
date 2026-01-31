@@ -3,6 +3,7 @@
 #include "DarkKnightDebugHelper.h"
 #include "Widgets/Inventory/Composites/DkInventoryLeaf.h"
 #include "Widgets/Inventory/Composites/DkInventoryLeafImage.h"
+#include "Widgets/Inventory/Composites/DkInventoryLeafText.h"
 
 void FInventoryItemFragment::Assimilate(UDkInventoryCompositeBase* Composite) const
 {
@@ -26,6 +27,16 @@ void FInventoryItemImageFragment::Assimilate(UDkInventoryCompositeBase* Composit
 	Image->SetImage(Icon);
 	Image->SetBoxSize(IconDimension);
 	Image->SetImageSize(IconDimension);
+}
+
+void FInventoryItemTextFragment::Assimilate(UDkInventoryCompositeBase* Composite) const
+{
+	FInventoryItemFragment::Assimilate(Composite);
+
+	UDkInventoryLeafText* Text = Cast<UDkInventoryLeafText>(Composite);
+	if (!IsValid(Text)) return;
+
+	Text->SetText(FragmentText);
 }
 
 void FInventoryItemHealthConsumableFragment::OnConsume(APlayerController* PC)

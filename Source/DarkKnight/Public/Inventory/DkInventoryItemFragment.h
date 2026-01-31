@@ -117,6 +117,26 @@ public:
 	LIST_DATA_ACCESSOR(int32, StackCount)
 };
 
+USTRUCT(BlueprintType)
+struct FInventoryItemTextFragment : public FInventoryItemFragment
+{
+	GENERATED_BODY()
+
+	FInventoryItemTextFragment()
+	{
+		FragmentTag = DkGameplayTags::Dk_Inventory_Fragment_Name;
+	}
+
+	virtual void Assimilate(UDkInventoryCompositeBase* Composite) const override;
+
+private:
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	FText FragmentText;
+
+public:
+	LIST_DATA_ACCESSOR(FText, FragmentText)
+};
+
 /*
  * 消耗品相关的Fragment
  */

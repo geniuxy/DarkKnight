@@ -138,7 +138,7 @@ public:
 };
 
 USTRUCT(BlueprintType)
-struct FInventoryItemEnumTextFragment : public FInventoryItemTextFragment
+struct FInventoryItemEnumTextFragment : public FInventoryItemFragment
 {
 	GENERATED_BODY()
 

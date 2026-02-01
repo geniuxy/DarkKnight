@@ -137,6 +137,32 @@ public:
 	LIST_DATA_ACCESSOR(FText, FragmentText)
 };
 
+USTRUCT(BlueprintType)
+struct FInventoryItemEnumTextFragment : public FInventoryItemTextFragment
+{
+	GENERATED_BODY()
+
+	FInventoryItemEnumTextFragment()
+	{
+		FragmentTag = DkGameplayTags::Dk_Inventory_Fragment_ItemType;
+		EnumTypePath = "/Script/DarkKnight.EInventoryItemCategory";
+		EnumValue = 0;
+	}
+	
+	virtual void Assimilate(UDkInventoryCompositeBase* Composite) const override;
+
+private:
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	FString EnumTypePath;
+
+	UPROPERTY(EditAnywhere, Category="Inventory", Meta = (
+		AllowPrivateAccess = "true", 
+		EditCondition = "EnumTypePath.IsEmpty() == false",
+		EditConditionHides
+	))
+	int32 EnumValue;
+};
+
 /*
  * 消耗品相关的Fragment
  */

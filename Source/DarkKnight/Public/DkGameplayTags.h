@@ -51,4 +51,5 @@ namespace DkGameplayTags
 	DARKKNIGHT_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dk_Inventory_Fragment_Stackable);
 	DARKKNIGHT_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dk_Inventory_Fragment_Consumable);
 	DARKKNIGHT_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dk_Inventory_Fragment_Name);
+	DARKKNIGHT_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dk_Inventory_Fragment_ItemType);
 }

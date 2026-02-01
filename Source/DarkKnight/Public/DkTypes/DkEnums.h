@@ -51,9 +51,9 @@ enum class EOptionsListDataModifyReason : uint8
 UENUM(BlueprintType)
 enum class EInventoryItemCategory: uint8
 {
-	Equipment,
-	Consumable,
-	CraftingMaterial,
+	Equipment UMETA(DisplayName = "装备"),
+	Consumable UMETA(DisplayName = "消耗品"),
+	CraftingMaterial UMETA(DisplayName = "制作材料"),
 	None
 };
 

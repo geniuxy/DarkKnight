@@ -22,4 +22,12 @@ public:
 
 		return StaticEnumOption->GetNameStringByIndex(static_cast<int64>(InEnumType));
 	}
+
+	template <typename EnumType>
+	static FString GetDisplayValueOfEnum(EnumType InEnumType)
+	{
+		const UEnum* StaticEnumOption = StaticEnum<EnumType>();
+
+		return StaticEnumOption->GetDisplayNameTextByIndex(static_cast<int64>(InEnumType));
+	}
 };

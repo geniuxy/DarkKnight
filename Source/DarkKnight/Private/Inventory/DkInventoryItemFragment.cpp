@@ -20,6 +20,7 @@ bool FInventoryItemFragment::MatchesWidgetTag(const UDkInventoryCompositeBase* C
 void FInventoryItemImageFragment::Assimilate(UDkInventoryCompositeBase* Composite) const
 {
 	FInventoryItemFragment::Assimilate(Composite);
+	if (!MatchesWidgetTag(Composite)) return;
 
 	UDkInventoryLeafImage* Image = Cast<UDkInventoryLeafImage>(Composite);
 	if (!IsValid(Image)) return;
@@ -32,11 +33,25 @@ void FInventoryItemImageFragment::Assimilate(UDkInventoryCompositeBase* Composit
 void FInventoryItemTextFragment::Assimilate(UDkInventoryCompositeBase* Composite) const
 {
 	FInventoryItemFragment::Assimilate(Composite);
+	if (!MatchesWidgetTag(Composite)) return;
 
 	UDkInventoryLeafText* Text = Cast<UDkInventoryLeafText>(Composite);
 	if (!IsValid(Text)) return;
 
 	Text->SetText(FragmentText);
+}
+
+void FInventoryItemEnumTextFragment::Assimilate(UDkInventoryCompositeBase* Composite) const
+{
+	FInventoryItemFragment::Assimilate(Composite);
+	if (!MatchesWidgetTag(Composite)) return;
+
+	UDkInventoryLeafText* Text = Cast<UDkInventoryLeafText>(Composite);
+	if (!IsValid(Text)) return;
+
+	UEnum* Enum = FindObject<UEnum>(nullptr, *EnumTypePath);
+	if (Enum->GetIndexByValue(EnumValue) == INDEX_NONE) return;
+	Text->SetText(Enum->GetDisplayNameTextByValue(EnumValue));
 }
 
 void FInventoryItemHealthConsumableFragment::OnConsume(APlayerController* PC)

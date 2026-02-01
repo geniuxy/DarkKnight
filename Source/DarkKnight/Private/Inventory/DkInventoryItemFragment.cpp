@@ -3,6 +3,7 @@
 #include "DarkKnightDebugHelper.h"
 #include "Widgets/Inventory/Composites/DkInventoryLeaf.h"
 #include "Widgets/Inventory/Composites/DkInventoryLeafImage.h"
+#include "Widgets/Inventory/Composites/DkInventoryLeafLabeledValue.h"
 #include "Widgets/Inventory/Composites/DkInventoryLeafText.h"
 
 void FInventoryItemFragment::Assimilate(UDkInventoryCompositeBase* Composite) const
@@ -52,6 +53,34 @@ void FInventoryItemEnumTextFragment::Assimilate(UDkInventoryCompositeBase* Compo
 	UEnum* Enum = FindObject<UEnum>(nullptr, *EnumTypePath);
 	if (Enum->GetIndexByValue(EnumValue) == INDEX_NONE) return;
 	Text->SetText(Enum->GetDisplayNameTextByValue(EnumValue));
+}
+
+void FInventoryItemLabeledValueFragment::Assimilate(UDkInventoryCompositeBase* Composite) const
+{
+	FInventoryItemFragment::Assimilate(Composite);
+	if (!MatchesWidgetTag(Composite)) return;
+
+	UDkInventoryLeafLabeledValue* LabeledValue = Cast<UDkInventoryLeafLabeledValue>(Composite);
+	if (!IsValid(LabeledValue)) return;
+
+	LabeledValue->SetTextLabel(Text_Label, bCollapseLabel);
+
+	FNumberFormattingOptions Options;
+	Options.MinimumFractionalDigits = MinFractionalDigits;
+	Options.MaximumFractionalDigits = MaxFractionalDigits;
+	
+	LabeledValue->SetTextValue(FText::AsNumber(Value, &Options), bCollapseValue);
+}
+
+void FInventoryItemLabeledValueFragment::Manifest()
+{
+	FInventoryItemFragment::Manifest();
+
+	if (bRandomizeOnManifest)
+	{
+		Value = FMath::FRandRange(Min, Max);
+	}
+	bRandomizeOnManifest = false;
 }
 
 void FInventoryItemHealthConsumableFragment::OnConsume(APlayerController* PC)

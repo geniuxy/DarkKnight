@@ -23,6 +23,7 @@ struct FItemFragment
 	{
 	}
 
+	virtual void Manifest() {}
 	FItemFragment(const FItemFragment&) = default;
 	FItemFragment& operator=(const FItemFragment&) = default;
 	FItemFragment(FItemFragment&&) = default;
@@ -161,6 +162,49 @@ private:
 		EditConditionHides
 	))
 	int32 EnumValue;
+};
+
+USTRUCT(BlueprintType)
+struct FInventoryItemLabeledValueFragment : public FInventoryItemFragment
+{
+	GENERATED_BODY()
+
+	FInventoryItemLabeledValueFragment()
+	{
+		FragmentTag = DkGameplayTags::Dk_Inventory_Fragment_LabeledValue;
+	}
+	
+	virtual void Assimilate(UDkInventoryCompositeBase* Composite) const override;
+	virtual void Manifest() override;
+
+	// 第一次出现的时候，该Fragment会随机数值。但是，之后装备或者丢弃，都会保持原有数值
+	bool bRandomizeOnManifest{true};
+
+private:
+
+	UPROPERTY(EditAnywhere, Category = "Inventory")
+	FText Text_Label{};
+
+	UPROPERTY(VisibleAnywhere, Category = "Inventory")
+	float Value{0.f};
+
+	UPROPERTY(EditAnywhere, Category = "Inventory")
+	float Min{0};
+
+	UPROPERTY(EditAnywhere, Category = "Inventory")
+	float Max{0};
+	
+	UPROPERTY(EditAnywhere, Category = "Inventory")
+	bool bCollapseLabel{false};
+
+	UPROPERTY(EditAnywhere, Category = "Inventory")
+	bool bCollapseValue{false};
+
+	UPROPERTY(EditAnywhere, Category = "Inventory")
+	int32 MinFractionalDigits{1};
+	
+	UPROPERTY(EditAnywhere, Category = "Inventory")
+	int32 MaxFractionalDigits{1};
 };
 
 /*

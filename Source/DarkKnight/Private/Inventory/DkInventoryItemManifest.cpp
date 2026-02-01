@@ -8,6 +8,11 @@ UDkInventoryItem* FInventoryItemManifest::Manifest(UObject* NewOuter)
 {
 	UDkInventoryItem* Item = NewObject<UDkInventoryItem>(NewOuter, UDkInventoryItem::StaticClass());
 	Item->SetItemManifest(*this);
+	for (auto& Fragment : Item->GetItemManifestMutable().GetFragmentsMutable())
+	{
+		Fragment.GetMutable().Manifest();
+	}
+	ClearFragments();
 
 	return Item;
 }
@@ -39,4 +44,13 @@ void FInventoryItemManifest::AssimilateInventoryFragments(UDkInventoryCompositeB
 			}
 		);
 	}
+}
+
+void FInventoryItemManifest::ClearFragments()
+{
+	for (auto& Fragment : Fragments)
+	{
+		Fragment.Reset();
+	}
+	Fragments.Empty();
 }

@@ -33,5 +33,8 @@ private:
 
 	UPROPERTY(meta=(BindWidgetOptional))
 	TObjectPtr<UDkInventoryLeafText> Text_ItemType;
+
+	UPROPERTY(meta=(BindWidgetOptional))
+	TObjectPtr<UDkInventoryLeafLabeledValue> Text_ItemLabeledValue;
 	//***** Bound Widgets *****//
 };

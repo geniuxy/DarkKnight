@@ -22,6 +22,7 @@ struct DARKKNIGHT_API FInventoryItemManifest
 	GENERATED_BODY()
 
 	UDkInventoryItem* Manifest(UObject* NewOuter);
+	TArray<TInstancedStruct<FItemFragment>>& GetFragmentsMutable() { return Fragments; }
 	EInventoryItemCategory GetItemCategory() const { return ItemCategory; }
 	FGameplayTag GetItemTag() const { return ItemTag; }
 
@@ -44,6 +45,8 @@ struct DARKKNIGHT_API FInventoryItemManifest
 	TArray<const T*> GetAllFragmentsOfType() const;
 	
 private:
+	void ClearFragments();
+	
 	UPROPERTY(EditAnywhere, Category="Inventory", meta=(ExcludeBaseStruct))
 	TArray<TInstancedStruct<FItemFragment>> Fragments;
 

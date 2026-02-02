@@ -3,6 +3,7 @@
 #include "Components/DkItemComponent.h"
 #include "Inventory/DkInventoryItem.h"
 #include "Inventory/DkInventoryItemFragment.h"
+#include "Widgets/Inventory/DkInventoryItemDescriptionMenu.h"
 
 UDkInventoryItem* FInventoryItemManifest::Manifest(UObject* NewOuter)
 {
@@ -43,6 +44,18 @@ void FInventoryItemManifest::AssimilateInventoryFragments(UDkInventoryCompositeB
 				Fragment->Assimilate(Widget);
 			}
 		);
+
+		if (Fragment->GetFragmentTag() == DkGameplayTags::Dk_Inventory_Fragment_Consumable)
+		{
+			if (static_cast<const FInventoryItemConsumableFragment*>(Fragment)->HasOptionalStats())
+			{
+				if (UDkInventoryItemDescriptionMenu* ItemDescriptionMenu =
+					Cast<UDkInventoryItemDescriptionMenu>(Composite))
+				{
+					ItemDescriptionMenu->ShowOptionalStatTitle();
+				}
+			}
+		}
 	}
 }
 

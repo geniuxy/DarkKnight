@@ -6,6 +6,8 @@
 #include "Composites/DkInventoryComposite.h"
 #include "DkInventoryItemDescriptionMenu.generated.h"
 
+class UCommonTextBlock;
+class UDkInventoryLeafLabeledValue;
 class UDkInventoryLeafText;
 class UDkInventoryLeafImage;
 class USizeBox;
@@ -18,13 +20,19 @@ class DARKKNIGHT_API UDkInventoryItemDescriptionMenu : public UDkInventoryCompos
 	GENERATED_BODY()
 
 public:
+	//~Begin UUserWidget
+	virtual void NativeOnInitialized() override;
+	//~End UUserWidget
+	
+	void ShowOptionalStatTitle() const;
+
 	FVector2D GetBoxSize() const;
 
 private:
 	//***** Bound Widgets *****//
 	UPROPERTY(meta=(BindWidget))
 	TObjectPtr<USizeBox> SizeBox_Root;
-	
+
 	UPROPERTY(meta=(BindWidgetOptional))
 	TObjectPtr<UDkInventoryLeafImage> Image_ItemIcon;
 
@@ -36,5 +44,17 @@ private:
 
 	UPROPERTY(meta=(BindWidgetOptional))
 	TObjectPtr<UDkInventoryLeafLabeledValue> Text_ItemLabeledValue;
+
+	UPROPERTY(meta=(BindWidgetOptional))
+	TObjectPtr<UCommonTextBlock> Text_ItemOptionalTitle;
+
+	UPROPERTY(meta=(BindWidgetOptional))
+	TObjectPtr<UDkInventoryLeafLabeledValue> Text_ItemOptionalStat0;
+
+	UPROPERTY(meta=(BindWidgetOptional))
+	TObjectPtr<UDkInventoryLeafLabeledValue> Text_ItemOptionalStat1;
+
+	UPROPERTY(meta=(BindWidgetOptional))
+	TObjectPtr<UDkInventoryLeafLabeledValue> Text_ItemOptionalStat2;
 	//***** Bound Widgets *****//
 };

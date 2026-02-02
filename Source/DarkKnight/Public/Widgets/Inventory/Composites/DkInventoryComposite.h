@@ -13,6 +13,7 @@ UCLASS()
 class DARKKNIGHT_API UDkInventoryComposite : public UDkInventoryCompositeBase
 {
 	GENERATED_BODY()
+
 public:
 	//~Begin UUserWidget
 	virtual void NativeOnInitialized() override;

@@ -68,7 +68,7 @@ void FInventoryItemLabeledValueFragment::Assimilate(UDkInventoryCompositeBase* C
 	FNumberFormattingOptions Options;
 	Options.MinimumFractionalDigits = MinFractionalDigits;
 	Options.MaximumFractionalDigits = MaxFractionalDigits;
-	
+
 	LabeledValue->SetTextValue(FText::AsNumber(Value, &Options), bCollapseValue);
 }
 
@@ -83,18 +83,62 @@ void FInventoryItemLabeledValueFragment::Manifest()
 	bRandomizeOnManifest = false;
 }
 
+void FInventoryItemConsumableFragment::OnConsume(APlayerController* PC)
+{
+	for (auto& Modifier : ConsumeModifiers)
+	{
+		auto& ModRef = Modifier.GetMutable();
+		ModRef.OnConsume(PC);
+	}
+}
+
+void FInventoryItemConsumableFragment::Assimilate(UDkInventoryCompositeBase* Composite) const
+{
+	FInventoryItemFragment::Assimilate(Composite);
+
+	for (const auto& Modifier : ConsumeModifiers)
+	{
+		const auto& ModRef = Modifier.Get();
+		ModRef.Assimilate(Composite);
+	}
+}
+
+void FInventoryItemConsumableFragment::Manifest()
+{
+	FInventoryItemFragment::Manifest();
+
+	for (auto& Modifier : ConsumeModifiers)
+	{
+		auto& ModRef = Modifier.GetMutable();
+		ModRef.Manifest();
+	}
+}
+
+bool FInventoryItemConsumableFragment::HasOptionalStats() const
+{
+	bool bHasOptionalStat = false;
+	for (const auto& Modifier : ConsumeModifiers)
+	{
+		const auto& ModRef = Modifier.Get();
+		bHasOptionalStat = ModRef.GetFragmentTag() == DkGameplayTags::Dk_Inventory_Fragment_LabeledValue_Stat_0 ||
+			ModRef.GetFragmentTag() == DkGameplayTags::Dk_Inventory_Fragment_LabeledValue_Stat_1 ||
+			ModRef.GetFragmentTag() == DkGameplayTags::Dk_Inventory_Fragment_LabeledValue_Stat_2;
+	}
+	return bHasOptionalStat;
+}
+
 void FInventoryItemHealthConsumableFragment::OnConsume(APlayerController* PC)
 {
 	// Get a stats component from the PC or the PC->GetPawn()
 	// or get the Ability System Component and apply a Gameplay Effect
 	// or call an interface function for Healing()
 
-	Debug::Print(FString::Printf(TEXT("血量相关Item已被使用！恢复量为: %f"), HealthAmount));
+	Debug::Print(FString::Printf(TEXT("血量相关Item已被使用！恢复量为: %f"), GetValue()));
 }
 
 void FInventoryItemManaConsumableFragment::OnConsume(APlayerController* PC)
 {
 	// Replenish mana however you wish
-	
-	Debug::Print(FString::Printf(TEXT("法力值相关Item已被使用！恢复量为: %f"), ManaAmount));
+
+	Debug::Print(FString::Printf(TEXT("法力值相关Item已被使用！恢复量为: %f"), GetValue()));
 }

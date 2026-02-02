@@ -74,4 +74,9 @@ namespace DkGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Inventory_Fragment_Name, "Dk.Inventory.Fragment.Name");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Inventory_Fragment_ItemType, "Dk.Inventory.Fragment.ItemType");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Inventory_Fragment_LabeledValue, "Dk.Inventory.Fragment.LabeledValue");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Inventory_Fragment_LabeledValue_Stat_Primary,
+	                       "Dk.Inventory.Fragment.LabeledValue.Stat.Primary");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Inventory_Fragment_LabeledValue_Stat_0, "Dk.Inventory.Fragment.LabeledValue.Stat.0");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Inventory_Fragment_LabeledValue_Stat_1, "Dk.Inventory.Fragment.LabeledValue.Stat.1");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Inventory_Fragment_LabeledValue_Stat_2, "Dk.Inventory.Fragment.LabeledValue.Stat.2");
 }

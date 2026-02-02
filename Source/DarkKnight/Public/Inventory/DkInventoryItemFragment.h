@@ -4,6 +4,7 @@
 #include "GameplayTagContainer.h"
 #include "DarkKnight/DarkKnight.h"
 #include "DkGameplayTags.h"
+#include "StructUtils/InstancedStruct.h"
 #include "Widgets/Inventory/Composites/DkInventoryCompositeBase.h"
 #include "DkInventoryItemFragment.generated.h"
 
@@ -23,7 +24,10 @@ struct FItemFragment
 	{
 	}
 
-	virtual void Manifest() {}
+	virtual void Manifest()
+	{
+	}
+
 	FItemFragment(const FItemFragment&) = default;
 	FItemFragment& operator=(const FItemFragment&) = default;
 	FItemFragment(FItemFragment&&) = default;
@@ -149,7 +153,7 @@ struct FInventoryItemEnumTextFragment : public FInventoryItemFragment
 		EnumTypePath = "/Script/DarkKnight.EInventoryItemCategory";
 		EnumValue = 0;
 	}
-	
+
 	virtual void Assimilate(UDkInventoryCompositeBase* Composite) const override;
 
 private:
@@ -157,7 +161,7 @@ private:
 	FString EnumTypePath;
 
 	UPROPERTY(EditAnywhere, Category="Inventory", Meta = (
-		AllowPrivateAccess = "true", 
+		AllowPrivateAccess = "true",
 		EditCondition = "EnumTypePath.IsEmpty() == false",
 		EditConditionHides
 	))
@@ -173,15 +177,15 @@ struct FInventoryItemLabeledValueFragment : public FInventoryItemFragment
 	{
 		FragmentTag = DkGameplayTags::Dk_Inventory_Fragment_LabeledValue;
 	}
-	
+
 	virtual void Assimilate(UDkInventoryCompositeBase* Composite) const override;
 	virtual void Manifest() override;
+	float GetValue() const { return Value; }
 
 	// 第一次出现的时候，该Fragment会随机数值。但是，之后装备或者丢弃，都会保持原有数值
 	bool bRandomizeOnManifest{true};
 
 private:
-
 	UPROPERTY(EditAnywhere, Category = "Inventory")
 	FText Text_Label{};
 
@@ -193,7 +197,7 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Inventory")
 	float Max{0};
-	
+
 	UPROPERTY(EditAnywhere, Category = "Inventory")
 	bool bCollapseLabel{false};
 
@@ -202,7 +206,7 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Inventory")
 	int32 MinFractionalDigits{1};
-	
+
 	UPROPERTY(EditAnywhere, Category = "Inventory")
 	int32 MaxFractionalDigits{1};
 };
@@ -211,31 +215,48 @@ private:
  * 消耗品相关的Fragment
  */
 USTRUCT(BlueprintType)
-struct FInventoryItemConsumableFragment : public FItemFragment
+struct FInventoryConsumeModifier : public FInventoryItemLabeledValueFragment
 {
 	GENERATED_BODY()
 
-	virtual void OnConsume(APlayerController* PC) {}
+	virtual void OnConsume(APlayerController* PC)
+	{
+	}
+};
+
+
+USTRUCT(BlueprintType)
+struct FInventoryItemConsumableFragment : public FInventoryItemFragment
+{
+	GENERATED_BODY()
+
+	FInventoryItemConsumableFragment()
+	{
+		FragmentTag = DkGameplayTags::Dk_Inventory_Fragment_Consumable;
+	}
+
+	virtual void OnConsume(APlayerController* PC);
+	virtual void Assimilate(UDkInventoryCompositeBase* Composite) const override;
+	virtual void Manifest() override;
+	bool HasOptionalStats() const;
+
+private:
+	UPROPERTY(EditAnywhere, Category="Inventory", meta=(ExcludeBaseStruct))
+	TArray<TInstancedStruct<FInventoryConsumeModifier>> ConsumeModifiers;
 };
 
 USTRUCT(BlueprintType)
-struct FInventoryItemHealthConsumableFragment : public FInventoryItemConsumableFragment
+struct FInventoryItemHealthConsumableFragment : public FInventoryConsumeModifier
 {
 	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere, Category="Inventory")
-	float HealthAmount = 25.f;
 
 	virtual void OnConsume(APlayerController* PC) override;
 };
 
 USTRUCT(BlueprintType)
-struct FInventoryItemManaConsumableFragment : public FInventoryItemConsumableFragment
+struct FInventoryItemManaConsumableFragment : public FInventoryConsumeModifier
 {
 	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere, Category="Inventory")
-	float ManaAmount = 25.f;
 
 	virtual void OnConsume(APlayerController* PC) override;
 };

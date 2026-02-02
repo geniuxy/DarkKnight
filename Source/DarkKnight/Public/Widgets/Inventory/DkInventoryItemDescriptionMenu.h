@@ -56,5 +56,14 @@ private:
 
 	UPROPERTY(meta=(BindWidgetOptional))
 	TObjectPtr<UDkInventoryLeafLabeledValue> Text_ItemOptionalStat2;
+
+	UPROPERTY(meta=(BindWidgetOptional))
+	TObjectPtr<UDkInventoryLeafText> Text_ItemDescription;
+
+	UPROPERTY(meta=(BindWidgetOptional))
+	TObjectPtr<UDkInventoryLeafLabeledValue> Text_ItemSellValue;
+
+	UPROPERTY(meta=(BindWidgetOptional))
+	TObjectPtr<UDkInventoryLeafLabeledValue> Text_ItemRequiredLevel;
 	//***** Bound Widgets *****//
 };

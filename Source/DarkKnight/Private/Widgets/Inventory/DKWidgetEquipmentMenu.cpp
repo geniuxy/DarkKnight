@@ -4,29 +4,98 @@
 #include "Widgets/Inventory/DKWidgetEquipmentMenu.h"
 
 #include "DarkKnightDebugHelper.h"
+#include "Blueprint/WidgetLayoutLibrary.h"
+#include "Blueprint/WidgetTree.h"
+#include "Components/CanvasPanel.h"
 #include "Components/DkInventoryComponent.h"
 #include "FunctionLibrarys/DkInventoryFunctionLibrary.h"
 #include "Widgets/Inventory/DkInventoryDraggedItem.h"
+#include "Widgets/Inventory/Equipment/DkInventoryEquipmentGridSlot.h"
 
 void UDKWidgetEquipmentMenu::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
 
+	WidgetTree->ForEachWidget([this](UWidget* Widget)
+	{
+		UDkInventoryEquipmentGridSlot* EquippedGridSlot = Cast<UDkInventoryEquipmentGridSlot>(Widget);
+		if (IsValid(EquippedGridSlot))
+		{
+			EquippedGridSlots.Add(EquippedGridSlot);
+		}
+	});
+
 	InventoryComponent = UDkInventoryFunctionLibrary::GetInventoryComponent(GetOwningPlayer());
 	// 绑定DraggedItem创建相关的回调
 	InventoryComponent->OnDraggedItemCreated.AddUniqueDynamic(this, &ThisClass::HandleDraggedItemCreated);
+	InventoryComponent->OnDraggedItemRemoved.AddUniqueDynamic(this, &ThisClass::HandleDraggedItemRemoved);
+}
+
+void UDKWidgetEquipmentMenu::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+
+	// 根据鼠标的位置，更改Hover的格子样式
+	const FVector2D CanvasPosition = UDkInventoryFunctionLibrary::GetWidgetPosition(EquipmentCanvasPanel);
+	const FVector2D MousePosition = UWidgetLayoutLibrary::GetMousePositionOnViewport(GetOwningPlayer());
+
+	bMouseWithInCanvas = UDkInventoryFunctionLibrary::IsWithInBounds(
+		CanvasPosition, UDkInventoryFunctionLibrary::GetWidgetSize(EquipmentCanvasPanel), MousePosition
+	);
+	if (!bMouseWithInCanvas)
+	{
+		return;
+	}
+
+	UpdateTileParameters(CanvasPosition, MousePosition);
+}
+
+void UDKWidgetEquipmentMenu::UpdateTileParameters(const FVector2D& CanvasPosition, const FVector2D& MousePosition)
+{
+	// 如果鼠标不在GridCanvasPanel内，return
+	if (!bMouseWithInCanvas) return;
+
+	if (FMath::FloorToInt(MousePosition.Y - CanvasPosition.Y) %
+		FMath::FloorToInt(EquippedGridSlots[0]->GetTotalSlotSize().Y) <
+		FMath::FloorToInt(EquippedGridSlots[0]->GetTotalSlotSize().Y - EquippedGridSlots[0]->GetSlotSize().Y))
+	{
+		return;
+	}
+
+	// 计算网格的象限、索引、坐标
+	const FIntPoint HoveredTileCoordinate = CalculateHoveredCoordinates(CanvasPosition, MousePosition);
+
+	Debug::Print(FString::Printf(TEXT("X索引：%d, Y索引：%d"), HoveredTileCoordinate.X, HoveredTileCoordinate.Y));
+
+	// OnTileParametersUpdated(TileParameters);
+}
+
+FIntPoint UDKWidgetEquipmentMenu::CalculateHoveredCoordinates(
+	const FVector2D& CanvasPosition, const FVector2D& MousePosition) const
+{
+	return FIntPoint{
+		static_cast<int32>(FMath::FloorToInt(
+			(MousePosition.X - CanvasPosition.X) / EquippedGridSlots[0]->GetTotalSlotSize().X)),
+		static_cast<int32>(FMath::FloorToInt(
+			(MousePosition.Y - CanvasPosition.Y) / EquippedGridSlots[0]->GetTotalSlotSize().Y))
+	};
 }
 
 void UDKWidgetEquipmentMenu::HandleDraggedItemCreated(UDkInventoryDraggedItem* InDraggedItem)
 {
 	if (!IsValid(InDraggedItem)) return;
-	
+
 	if (IsValid(DraggedItem))
 	{
 		DraggedItem = nullptr;
 	}
 	DraggedItem = InDraggedItem;
 	DraggedItem->OnDraggedItemClicked.AddUniqueDynamic(this, &ThisClass::HandleDraggedItemClicked);
+}
+
+void UDKWidgetEquipmentMenu::HandleDraggedItemRemoved()
+{
+	DraggedItem = nullptr;
 }
 
 void UDKWidgetEquipmentMenu::HandleDraggedItemClicked(const FPointerEvent& MouseEvent)

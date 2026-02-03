@@ -59,6 +59,8 @@ void UDkInventoryItemGrid::NativeDestruct()
 	{
 		DraggedItem->RemoveFromParent();
 		DraggedItem = nullptr;
+		check(InventoryComponent.IsValid());
+		InventoryComponent->OnDraggedItemRemoved.Broadcast();
 	}
 }
 
@@ -336,6 +338,8 @@ void UDkInventoryItemGrid::ClearDraggedItem()
 
 	DraggedItem->RemoveFromParent();
 	DraggedItem = nullptr;
+	check(InventoryComponent.IsValid());
+	InventoryComponent->OnDraggedItemRemoved.Broadcast();
 }
 
 void UDkInventoryItemGrid::OnGridSlotHovered(int32 GridIndex, const FPointerEvent& MouseEvent)

@@ -43,6 +43,9 @@ private:
 	
 	UFUNCTION()
 	void HandleDraggedItemCreated(UDkInventoryDraggedItem* InDraggedItem);
+	
+	UFUNCTION()
+	void HandleDraggedItemRemoved();
 
 	void OnBackBoundActionTriggered();
 

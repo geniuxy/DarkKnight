@@ -6,8 +6,9 @@
 #include "CommonUserWidget.h"
 #include "DKWidgetEquipmentMenu.generated.h"
 
-class UDkInventoryDraggedItem;
 class UDkInventoryEquipmentGridSlot;
+class UCanvasPanel;
+class UDkInventoryDraggedItem;
 class UDkInventoryComponent;
 /**
  * 
@@ -20,11 +21,24 @@ class DARKKNIGHT_API UDKWidgetEquipmentMenu : public UCommonUserWidget
 protected:
 	//~Begin UUserWidget Function
 	virtual void NativeOnInitialized() override;
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 	//~End UUserWidget Function
 
 	TWeakObjectPtr<UDkInventoryComponent> InventoryComponent;
 
 private:
+	//***** Bound Widgets *****//
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UCanvasPanel> EquipmentCanvasPanel;
+	//***** Bound Widgets *****//
+	
+	bool bMouseWithInCanvas;
+
+	/* 鼠标Hover装备网格，改变其样式 */
+	void UpdateTileParameters(const FVector2D& CanvasPosition, const FVector2D& MousePosition);
+	FIntPoint CalculateHoveredCoordinates(const FVector2D& CanvasPosition, const FVector2D& MousePosition) const;
+	/********/
+	
 	UPROPERTY(EditAnywhere, Category = "Inventory")
 	TSubclassOf<UDkInventoryDraggedItem> DraggedItemClass;
 
@@ -33,6 +47,9 @@ private:
 	
 	UFUNCTION()
 	void HandleDraggedItemCreated(UDkInventoryDraggedItem* InDraggedItem);
+	
+	UFUNCTION()
+	void HandleDraggedItemRemoved();
 	
 	UFUNCTION()
 	void HandleDraggedItemClicked(const FPointerEvent& MouseEvent);

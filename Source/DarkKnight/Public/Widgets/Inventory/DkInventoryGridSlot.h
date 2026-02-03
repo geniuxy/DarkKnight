@@ -27,14 +27,16 @@ public:
 	virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
 	//~End UUserWidget Function
 
+	FVector2D GetGridSlotSize() const;
+
 	void SetGridSlotSize(float InSlotSize);
 
 	EInventoryGridSlotState GetGridSlotState() const { return GridSlotState; }
 
-	void SetUnoccupiedTexture();
-	void SetOccupiedTexture();
-	void SetSelectedTexture();
-	void SetGrayedOutTexture();
+	virtual void SetUnoccupiedTexture();
+	virtual void SetOccupiedTexture();
+	virtual void SetSelectedTexture();
+	virtual void SetGrayedOutTexture();
 
 	UDkInventoryItem* GetInventoryItem() const;
 	void SetInventoryItem(UDkInventoryItem* InItem);
@@ -43,7 +45,7 @@ public:
 	FGridSlotEvent GridSlotHovered;
 	FGridSlotEvent GridSlotUnhovered;
 
-private:
+protected:
 	//***** Bound Widgets *****//
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<USizeBox> SizeBox_GridSlot;
@@ -67,7 +69,10 @@ private:
 	EInventoryGridSlotState GridSlotState;
 
 	TWeakObjectPtr<UDkInventoryItem> InventoryItem;
+
+	UPROPERTY(EditAnywhere, Category="Inventory")
 	int32 TileIndex = INDEX_NONE;
+	
 	int32 StackCount = 0;
 	int32 UpperLeftIndex = INDEX_NONE;
 	bool bAvailable = true;

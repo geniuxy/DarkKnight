@@ -25,6 +25,7 @@ void UDkWidgetGameMenuScreen::NativeOnInitialized()
 	InventoryComponent = UDkInventoryFunctionLibrary::GetInventoryComponent(GetOwningPlayer());
 	// 绑定DraggedItem创建相关的回调
 	InventoryComponent->OnDraggedItemCreated.AddUniqueDynamic(this, &ThisClass::HandleDraggedItemCreated);
+	InventoryComponent->OnDraggedItemRemoved.AddUniqueDynamic(this, &ThisClass::HandleDraggedItemRemoved);
 }
 
 void UDkWidgetGameMenuScreen::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -62,6 +63,11 @@ void UDkWidgetGameMenuScreen::HandleDraggedItemCreated(UDkInventoryDraggedItem* 
 		DraggedItem = nullptr;
 	}
 	DraggedItem = InDraggedItem;
+}
+
+void UDkWidgetGameMenuScreen::HandleDraggedItemRemoved()
+{
+	DraggedItem = nullptr;
 }
 
 void UDkWidgetGameMenuScreen::OnBackBoundActionTriggered()

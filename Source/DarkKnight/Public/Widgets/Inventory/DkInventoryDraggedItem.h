@@ -39,7 +39,6 @@ public:
 	UDkInventoryItem* GetInventoryItem() const;
 	void SetInventoryItem(UDkInventoryItem* InItem);
 
-
 private:
 	//***** Bound Widgets *****//
 	UPROPERTY(meta = (BindWidget))

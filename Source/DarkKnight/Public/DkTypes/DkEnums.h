@@ -63,6 +63,8 @@ enum class EInventoryGridSlotState: uint8
 	Unoccupied,
 	Occupied,
 	Selected,
+	Enabled,
+	Disabled,
 	GrayedOut
 };
 

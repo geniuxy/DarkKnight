@@ -20,6 +20,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FInventoryItemChange, UDkInventoryIt
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRoomInInventoryDelegate);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FStackChange, const FDkInventorySlotAvailabilityResult&, Result);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDraggedItemCreated, UDkInventoryDraggedItem*, DraggedItem);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDraggedItemRemoved);
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), Blueprintable)
 class DARKKNIGHT_API UDkInventoryComponent : public UActorComponent, public ILoadingScreenInterface
@@ -91,6 +92,7 @@ public:
 
 	/* 判断是否背包有空间 */
 	FOnDraggedItemCreated OnDraggedItemCreated;
+	FOnDraggedItemRemoved OnDraggedItemRemoved;
 	/********/
 
 protected:

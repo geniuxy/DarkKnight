@@ -21,28 +21,5 @@ public:
 	virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
 	//~End UUserWidget Function
 
-	virtual void SetOccupiedTexture() override;
-	virtual void SetEnabledBrush();
-	virtual void SetDisabledBrush();
-	virtual void SetGrayedOutTexture() override;
-
-protected:
-	UPROPERTY(EditAnywhere, Category="Inventory")
-	FSlateBrush NormalBrush;
-
-	UPROPERTY(EditAnywhere, Category="Inventory")
-	FSlateBrush EnabledBrush;
-
-	UPROPERTY(EditAnywhere, Category="Inventory")
-	FSlateBrush DisabledBrush;
-
-	UPROPERTY(EditAnywhere, Category="Inventory")
-	FSlateBrush GrayedOutBrush;
-
-private:
-	UPROPERTY(EditAnywhere, Category = "Inventory", meta = (Categories = "Dk.Item.Equipment"))
-	FGameplayTag EquipmentTypeTag;
-
-public:
-	LIST_DATA_ACCESSOR(FGameplayTag, EquipmentTypeTag)
+	void SetBrush(FSlateBrush InBrush);
 };

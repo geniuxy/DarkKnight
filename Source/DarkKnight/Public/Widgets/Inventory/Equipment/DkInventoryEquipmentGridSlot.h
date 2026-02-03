@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "CommonUserWidget.h"
+#include "GameplayTagContainer.h"
+#include "DarkKnight/DarkKnight.h"
 #include "DkInventoryEquipmentGridSlot.generated.h"
 
 class UCommonTextBlock;
@@ -21,6 +23,12 @@ class DARKKNIGHT_API UDkInventoryEquipmentGridSlot : public UCommonUserWidget
 public:
 	FVector2D GetTotalSlotSize() const;
 	FVector2D GetSlotSize() const;
+	UDkInventoryEquipmentSlot* GetEquipmentSlot() const;
+
+	virtual void SetOccupiedBrush();
+	virtual void SetEnabledBrush();
+	virtual void SetDisabledBrush();
+	virtual void SetGrayedOutBrush();
 
 protected:
 	//~Begin UUserWidget
@@ -39,5 +47,24 @@ protected:
 	//***** Bound Widgets *****//
 
 	UPROPERTY(EditAnywhere, Category="Inventory")
+	FSlateBrush NormalBrush;
+
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	FSlateBrush EnabledBrush;
+
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	FSlateBrush DisabledBrush;
+
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	FSlateBrush GrayedOutBrush;
+
+	UPROPERTY(EditAnywhere, Category="Inventory")
 	FText SlotTitle;
+
+private:
+	UPROPERTY(EditAnywhere, Category = "Inventory", meta = (Categories = "Dk.Item.Equipment"))
+	FGameplayTag EquipmentTypeTag;
+
+public:
+	LIST_DATA_ACCESSOR(FGameplayTag, EquipmentTypeTag)
 };

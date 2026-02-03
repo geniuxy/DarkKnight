@@ -15,26 +15,7 @@ void UDkInventoryEquipmentSlot::NativeOnMouseLeave(const FPointerEvent& InMouseE
 	Super::NativeOnMouseLeave(InMouseEvent);
 }
 
-void UDkInventoryEquipmentSlot::SetOccupiedTexture()
+void UDkInventoryEquipmentSlot::SetBrush(FSlateBrush InBrush)
 {
-	GridSlotState = EInventoryGridSlotState::Occupied;
-	Image_GridSlot->SetBrush(NormalBrush);
-}
-
-void UDkInventoryEquipmentSlot::SetEnabledBrush()
-{
-	GridSlotState = EInventoryGridSlotState::Enabled;
-	Image_GridSlot->SetBrush(EnabledBrush);
-}
-
-void UDkInventoryEquipmentSlot::SetDisabledBrush()
-{
-	GridSlotState = EInventoryGridSlotState::Disabled;
-	Image_GridSlot->SetBrush(DisabledBrush);
-}
-
-void UDkInventoryEquipmentSlot::SetGrayedOutTexture()
-{
-	GridSlotState = EInventoryGridSlotState::GrayedOut;
-	Image_GridSlot->SetBrush(GrayedOutBrush);
+	Image_GridSlot->SetBrush(InBrush);
 }

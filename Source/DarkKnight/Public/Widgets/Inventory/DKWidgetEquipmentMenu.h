@@ -6,6 +6,8 @@
 #include "CommonUserWidget.h"
 #include "DKWidgetEquipmentMenu.generated.h"
 
+#define NUM_OF_COLUMNS 6
+
 class UDkInventoryEquipmentGridSlot;
 class UCanvasPanel;
 class UDkInventoryDraggedItem;
@@ -35,8 +37,10 @@ private:
 	bool bMouseWithInCanvas;
 
 	/* 鼠标Hover装备网格，改变其样式 */
-	void UpdateTileParameters(const FVector2D& CanvasPosition, const FVector2D& MousePosition);
+	void CalculateHoveredSlot(const FVector2D& CanvasPosition, const FVector2D& MousePosition);
 	FIntPoint CalculateHoveredCoordinates(const FVector2D& CanvasPosition, const FVector2D& MousePosition) const;
+
+	int32 LastHighlightIndex = INDEX_NONE;
 	/********/
 	
 	UPROPERTY(EditAnywhere, Category = "Inventory")

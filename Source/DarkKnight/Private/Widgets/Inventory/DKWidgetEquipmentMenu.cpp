@@ -35,6 +35,11 @@ void UDKWidgetEquipmentMenu::NativeTick(const FGeometry& MyGeometry, float InDel
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
 
+	if (LastHighlightIndex != INDEX_NONE)
+	{
+		EquippedGridSlots[LastHighlightIndex]->SetOccupiedBrush();
+	}
+
 	// 根据鼠标的位置，更改Hover的格子样式
 	const FVector2D CanvasPosition = UDkInventoryFunctionLibrary::GetWidgetPosition(EquipmentCanvasPanel);
 	const FVector2D MousePosition = UWidgetLayoutLibrary::GetMousePositionOnViewport(GetOwningPlayer());
@@ -42,15 +47,15 @@ void UDKWidgetEquipmentMenu::NativeTick(const FGeometry& MyGeometry, float InDel
 	bMouseWithInCanvas = UDkInventoryFunctionLibrary::IsWithInBounds(
 		CanvasPosition, UDkInventoryFunctionLibrary::GetWidgetSize(EquipmentCanvasPanel), MousePosition
 	);
-	if (!bMouseWithInCanvas)
+	if (!bMouseWithInCanvas && LastHighlightIndex != INDEX_NONE)
 	{
 		return;
 	}
 
-	UpdateTileParameters(CanvasPosition, MousePosition);
+	CalculateHoveredSlot(CanvasPosition, MousePosition);
 }
 
-void UDKWidgetEquipmentMenu::UpdateTileParameters(const FVector2D& CanvasPosition, const FVector2D& MousePosition)
+void UDKWidgetEquipmentMenu::CalculateHoveredSlot(const FVector2D& CanvasPosition, const FVector2D& MousePosition)
 {
 	// 如果鼠标不在GridCanvasPanel内，return
 	if (!bMouseWithInCanvas) return;
@@ -65,9 +70,22 @@ void UDKWidgetEquipmentMenu::UpdateTileParameters(const FVector2D& CanvasPositio
 	// 计算网格的象限、索引、坐标
 	const FIntPoint HoveredTileCoordinate = CalculateHoveredCoordinates(CanvasPosition, MousePosition);
 
-	Debug::Print(FString::Printf(TEXT("X索引：%d, Y索引：%d"), HoveredTileCoordinate.X, HoveredTileCoordinate.Y));
+	// Debug::Print(FString::Printf(TEXT("X索引：%d, Y索引：%d"), HoveredTileCoordinate.X, HoveredTileCoordinate.Y));
 
-	// OnTileParametersUpdated(TileParameters);
+	// 改变Slot的样式
+	if (!IsValid(DraggedItem)) return;
+
+	int EquipmentIndex = HoveredTileCoordinate.X * NUM_OF_COLUMNS + HoveredTileCoordinate.Y;
+	// Debug::Print(DraggedItem->GetItemTag().ToString());
+	if (DraggedItem->GetItemTag().MatchesTag(EquippedGridSlots[EquipmentIndex]->GetEquipmentTypeTag()))
+	{
+		EquippedGridSlots[EquipmentIndex]->SetEnabledBrush();
+	}
+	else
+	{
+		EquippedGridSlots[EquipmentIndex]->SetDisabledBrush();
+	}
+	LastHighlightIndex = EquipmentIndex;
 }
 
 FIntPoint UDKWidgetEquipmentMenu::CalculateHoveredCoordinates(

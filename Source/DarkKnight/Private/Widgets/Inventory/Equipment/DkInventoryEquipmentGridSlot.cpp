@@ -17,6 +17,31 @@ FVector2D UDkInventoryEquipmentGridSlot::GetSlotSize() const
 	return EquipmentSlot->GetGridSlotSize();
 }
 
+UDkInventoryEquipmentSlot* UDkInventoryEquipmentGridSlot::GetEquipmentSlot() const
+{
+	return EquipmentSlot;
+}
+
+void UDkInventoryEquipmentGridSlot::SetOccupiedBrush()
+{
+	EquipmentSlot->SetBrush(NormalBrush);
+}
+
+void UDkInventoryEquipmentGridSlot::SetEnabledBrush()
+{
+	EquipmentSlot->SetBrush(EnabledBrush);
+}
+
+void UDkInventoryEquipmentGridSlot::SetDisabledBrush()
+{
+	EquipmentSlot->SetBrush(DisabledBrush);
+}
+
+void UDkInventoryEquipmentGridSlot::SetGrayedOutBrush()
+{
+	EquipmentSlot->SetBrush(GrayedOutBrush);
+}
+
 void UDkInventoryEquipmentGridSlot::NativePreConstruct()
 {
 	Super::NativePreConstruct();

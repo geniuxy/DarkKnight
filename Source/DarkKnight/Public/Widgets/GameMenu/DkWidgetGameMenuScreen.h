@@ -6,6 +6,9 @@
 #include "Widgets/DkWidgetActivatableBase.h"
 #include "DkWidgetGameMenuScreen.generated.h"
 
+class UDkInventoryComponent;
+class UDkInventoryDraggedItem;
+class UDKWidgetEquipmentMenu;
 class UDkWidgetInventoryMenu;
 /**
  * 
@@ -18,6 +21,7 @@ class DARKKNIGHT_API UDkWidgetGameMenuScreen : public UDkWidgetActivatableBase
 protected:
 	//~Begin UUserWidget Function
 	virtual void NativeOnInitialized() override;
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 	//~End UUserWidget Function
 
 	//~ Begin UCommonActivatableWidget Function
@@ -28,7 +32,17 @@ private:
 	//***** Bound Widgets *****//
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget, AllowPrivateAccess="true"))
 	TObjectPtr<UDkWidgetInventoryMenu> WBP_InventoryMenu;
+
+	UPROPERTY(BlueprintReadOnly, meta=(BindWidget, AllowPrivateAccess="true"))
+	TObjectPtr<UDKWidgetEquipmentMenu> WBP_EquipmentMenu;
 	//***** Bound Widgets *****//
+
+	TWeakObjectPtr<UDkInventoryDraggedItem> DraggedItem;
+	
+	TWeakObjectPtr<UDkInventoryComponent> InventoryComponent;
+	
+	UFUNCTION()
+	void HandleDraggedItemCreated(UDkInventoryDraggedItem* InDraggedItem);
 
 	void OnBackBoundActionTriggered();
 

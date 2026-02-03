@@ -49,20 +49,6 @@ void UDkInventoryItemGrid::NativeOnInitialized()
 void UDkInventoryItemGrid::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
-
-	// 拖拽Item，跟随鼠标移动
-	if (DraggedItem && DraggedItem->IsInViewport())
-	{
-		// 全程用硬件像素，以将鼠标定位到DraggedItem中心
-		FVector2D MousePos;
-		if (UGameViewportClient* VP = GetWorld()->GetGameViewport())
-		{
-			VP->GetMousePosition(MousePos); // 系统硬件像素（受 DPI 缩放）
-		}
-
-		const FVector2D ActualSize = DraggedItem->GetCachedGeometry().GetAbsoluteSize();
-		DraggedItem->SetPositionInViewport(MousePos - ActualSize * 0.5f);
-	}
 }
 
 void UDkInventoryItemGrid::NativeDestruct()

@@ -9,6 +9,7 @@
 #include "DkInventoryComponent.generated.h"
 
 
+class UDkInventoryDraggedItem;
 struct FDkInventorySlotAvailabilityResult;
 class UDkWidgetInventoryMenu;
 class UDkItemComponent;
@@ -18,6 +19,7 @@ class ADkCharacterHero;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FInventoryItemChange, UDkInventoryItem*, Item);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRoomInInventoryDelegate);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FStackChange, const FDkInventorySlotAvailabilityResult&, Result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDraggedItemCreated, UDkInventoryDraggedItem*, DraggedItem);
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), Blueprintable)
 class DARKKNIGHT_API UDkInventoryComponent : public UActorComponent, public ILoadingScreenInterface
@@ -85,6 +87,10 @@ public:
 
 	/* 判断是否背包有空间 */
 	FOnRoomInInventoryDelegate OnNoRoomInInventory;
+	/********/
+
+	/* 判断是否背包有空间 */
+	FOnDraggedItemCreated OnDraggedItemCreated;
 	/********/
 
 protected:

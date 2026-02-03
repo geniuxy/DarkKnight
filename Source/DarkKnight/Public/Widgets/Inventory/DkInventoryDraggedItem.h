@@ -25,6 +25,8 @@ public:
 	//~Begin UUserWidget Function
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 	//~End UUserWidget Function
+
+	FDraggedItemEvent OnDraggedItemClicked;
 	
 	void SetImageBrush(const FSlateBrush& Brush) const;
 	void UpdateStackCount(const int32 Count);
@@ -37,7 +39,6 @@ public:
 	UDkInventoryItem* GetInventoryItem() const;
 	void SetInventoryItem(UDkInventoryItem* InItem);
 
-	FDraggedItemEvent OnDraggedItemClicked;
 
 private:
 	//***** Bound Widgets *****//

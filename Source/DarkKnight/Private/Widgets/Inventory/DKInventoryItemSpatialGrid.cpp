@@ -292,6 +292,8 @@ void UDKInventoryItemSpatialGrid::AssignDraggedItem(UDkInventoryItem* InventoryI
 	DraggedItem->SetGridDimension(GridFragment->GetGridSize());
 	DraggedItem->SetInventoryItem(InventoryItem);
 	DraggedItem->SetIsStackable(InventoryItem->IsItemStackable());
+	check(InventoryComponent.IsValid());
+	InventoryComponent->OnDraggedItemCreated.Broadcast(DraggedItem);
 	DraggedItem->OnDraggedItemClicked.AddUniqueDynamic(this, &ThisClass::OnDraggedItemClicked);
 
 	DraggedItem->SetDesiredSizeInViewport(Brush.ImageSize);

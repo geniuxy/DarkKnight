@@ -5,6 +5,7 @@
 
 #include "CommonTextBlock.h"
 #include "Components/VerticalBox.h"
+#include "Inventory/DkInventoryItem.h"
 #include "Widgets/Inventory/Equipment/DkInventoryEquipmentSlot.h"
 
 FVector2D UDkInventoryEquipmentGridSlot::GetTotalSlotSize() const
@@ -25,6 +26,13 @@ UDkInventoryEquipmentSlot* UDkInventoryEquipmentGridSlot::GetEquipmentSlot() con
 UDkInventoryItem* UDkInventoryEquipmentGridSlot::GetInventoryItem() const
 {
 	return EquipmentSlot->GetInventoryItem();
+}
+
+void UDkInventoryEquipmentGridSlot::UpdateEquipmentIcon(UDkInventoryItem* InItem)
+{
+	if (!IsValid(InItem)) return;
+	EquipmentSlot->SetInventoryItem(InItem);
+	EquipmentSlot->SetEquipmentIcon();
 }
 
 void UDkInventoryEquipmentGridSlot::SetOccupiedBrush()
@@ -52,4 +60,5 @@ void UDkInventoryEquipmentGridSlot::NativePreConstruct()
 	Super::NativePreConstruct();
 
 	Text_Title->SetText(SlotTitle);
+	EquipmentSlot->SetBackGroundIcon(EquipmentBgIcon);
 }

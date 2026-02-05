@@ -534,6 +534,7 @@ void UDKInventoryItemSpatialGrid::OnDraggedItemClicked(const FPointerEvent& Mous
 	if (!IsValid(DraggedItem)) return;
 	if (!GridSlots.IsValidIndex(ItemDropIndex)) return;
 	if (!IsInGridBounds(ItemDropIndex, DraggedItem->GetGridDimension())) return;
+	if (!bMouseWithInCanvas) return;
 
 	if (CurrentSpaceQueryResult.ValidItem.IsValid() && GridSlots.IsValidIndex(CurrentSpaceQueryResult.UpperLeftIndex))
 	{

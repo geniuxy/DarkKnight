@@ -122,6 +122,7 @@ void UDKWidgetEquipmentMenu::HandleDraggedItemClicked(const FPointerEvent& Mouse
 	if (!IsValid(DraggedItem)) return;
 	if (!EquippedGridSlots.IsValidIndex(ItemEquipIndex)) return;
 	if (!DraggedItem->GetItemTag().MatchesTag(EquippedGridSlots[ItemEquipIndex]->GetEquipmentTypeTag())) return;
+	if (!bMouseWithInCanvas) return;
 
 	// TODO: 如何已有Equipment，则交换俩者的位置
 	// if (CurrentSpaceQueryResult.ValidItem.IsValid() && EquippedGridSlots.IsValidIndex(CurrentSpaceQueryResult.UpperLeftIndex))
@@ -133,7 +134,6 @@ void UDKWidgetEquipmentMenu::HandleDraggedItemClicked(const FPointerEvent& Mouse
 	UDkInventoryEquipmentGridSlot* EquipmentGridSlot = EquippedGridSlots[ItemEquipIndex];
 	if (!IsValid(EquipmentGridSlot->GetInventoryItem()))
 	{
-		Debug::Print(TEXT("装备Item"));
-		// PutDownOnIndex(ItemEquipIndex);
+		EquipmentGridSlot->UpdateEquipmentIcon(DraggedItem->GetInventoryItem());
 	}
 }

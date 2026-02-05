@@ -22,4 +22,13 @@ public:
 	//~End UUserWidget Function
 
 	void SetBrush(FSlateBrush InBrush);
+
+	void SetBackGroundIcon(const TSoftObjectPtr<UTexture2D>& InTexture);
+	void SetEquipmentIcon();
+
+private:
+	//***** Bound Widgets *****//
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UCommonLazyImage> Image_EquipIcon;
+	//***** Bound Widgets *****//
 };

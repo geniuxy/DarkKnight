@@ -28,6 +28,8 @@ public:
 
 	UDkInventoryItem* GetInventoryItem() const;
 
+	void UpdateEquipmentIcon(UDkInventoryItem* InItem);
+
 	virtual void SetOccupiedBrush();
 	virtual void SetEnabledBrush();
 	virtual void SetDisabledBrush();
@@ -63,6 +65,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category="Inventory")
 	FText SlotTitle;
+
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	TSoftObjectPtr<UTexture2D> EquipmentBgIcon;
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Inventory", meta = (Categories = "Dk.Item.Equipment"))

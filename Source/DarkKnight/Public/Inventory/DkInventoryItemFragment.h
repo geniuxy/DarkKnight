@@ -212,7 +212,7 @@ private:
 };
 
 /*
- * 消耗品相关的Fragment
+ *  消耗品 相关的Fragment
  */
 USTRUCT(BlueprintType)
 struct FInventoryConsumeModifier : public FInventoryItemLabeledValueFragment
@@ -259,4 +259,52 @@ struct FInventoryItemManaConsumableFragment : public FInventoryConsumeModifier
 	GENERATED_BODY()
 
 	virtual void OnConsume(APlayerController* PC) override;
+};
+
+/*
+ *  装备 相关的Fragment
+ */
+USTRUCT(BlueprintType)
+struct FInventoryEquipModifier : public FInventoryItemLabeledValueFragment
+{
+	GENERATED_BODY()
+
+	virtual void OnEquip(APlayerController* PC)
+	{
+	}
+
+	virtual void OnUnEquip(APlayerController* PC)
+	{
+	}
+};
+
+USTRUCT(BlueprintType)
+struct FInventoryItemEquipmentFragment : public FInventoryItemFragment
+{
+	GENERATED_BODY()
+
+	FInventoryItemEquipmentFragment()
+	{
+		FragmentTag = DkGameplayTags::Dk_Inventory_Fragment_Consumable;
+	}
+
+	bool bEquipped = false;
+	void OnEquip(APlayerController* PC);
+	void OnUnEquip(APlayerController* PC);
+	virtual void Assimilate(UDkInventoryCompositeBase* Composite) const override;
+	virtual void Manifest() override;
+	bool HasOptionalStats() const;
+
+private:
+	UPROPERTY(EditAnywhere, Category="Inventory", meta=(ExcludeBaseStruct))
+	TArray<TInstancedStruct<FInventoryEquipModifier>> EquipModifiers;
+};
+
+USTRUCT(BlueprintType)
+struct FInventoryItemStrengthFragment : public FInventoryEquipModifier
+{
+	GENERATED_BODY()
+
+	virtual void OnEquip(APlayerController* PC) override;
+	virtual void OnUnEquip(APlayerController* PC) override;
 };

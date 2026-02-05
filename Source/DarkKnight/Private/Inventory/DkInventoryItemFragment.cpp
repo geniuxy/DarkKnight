@@ -142,3 +142,64 @@ void FInventoryItemManaConsumableFragment::OnConsume(APlayerController* PC)
 
 	Debug::Print(FString::Printf(TEXT("法力值相关Item已被使用！恢复量为: %f"), GetValue()));
 }
+
+void FInventoryItemEquipmentFragment::OnEquip(APlayerController* PC)
+{
+	if (bEquipped) return;
+	bEquipped = true;
+	for (auto& Modifier : EquipModifiers)
+	{
+		auto& ModRef = Modifier.GetMutable();
+		ModRef.OnEquip(PC);
+	}
+}
+
+void FInventoryItemEquipmentFragment::OnUnEquip(APlayerController* PC)
+{
+	if (!bEquipped) return;
+	bEquipped = false;
+	for (auto& Modifier : EquipModifiers)
+	{
+		auto& ModRef = Modifier.GetMutable();
+		ModRef.OnUnEquip(PC);
+	}
+}
+
+void FInventoryItemEquipmentFragment::Assimilate(UDkInventoryCompositeBase* Composite) const
+{
+	FInventoryItemFragment::Assimilate(Composite);
+}
+
+void FInventoryItemEquipmentFragment::Manifest()
+{
+	FInventoryItemFragment::Manifest();
+
+	for (auto& Modifier : EquipModifiers)
+	{
+		auto& ModRef = Modifier.GetMutable();
+		ModRef.Manifest();
+	}
+}
+
+bool FInventoryItemEquipmentFragment::HasOptionalStats() const
+{
+	bool bHasOptionalStat = false;
+	for (const auto& Modifier : EquipModifiers)
+	{
+		const auto& ModRef = Modifier.Get();
+		bHasOptionalStat = ModRef.GetFragmentTag() == DkGameplayTags::Dk_Inventory_Fragment_LabeledValue_Stat_0 ||
+			ModRef.GetFragmentTag() == DkGameplayTags::Dk_Inventory_Fragment_LabeledValue_Stat_1 ||
+			ModRef.GetFragmentTag() == DkGameplayTags::Dk_Inventory_Fragment_LabeledValue_Stat_2;
+	}
+	return bHasOptionalStat;
+}
+
+void FInventoryItemStrengthFragment::OnEquip(APlayerController* PC)
+{
+	Debug::Print(FString::Printf(TEXT("力量相关Equipment已被使用！增加力量值为: %f"), GetValue()));
+}
+
+void FInventoryItemStrengthFragment::OnUnEquip(APlayerController* PC)
+{
+	Debug::Print(FString::Printf(TEXT("力量相关Equipment已被卸下！减少力量值为: %f"), GetValue()));
+}

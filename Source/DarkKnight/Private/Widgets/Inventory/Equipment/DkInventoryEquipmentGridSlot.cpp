@@ -22,6 +22,11 @@ UDkInventoryEquipmentSlot* UDkInventoryEquipmentGridSlot::GetEquipmentSlot() con
 	return EquipmentSlot;
 }
 
+UDkInventoryItem* UDkInventoryEquipmentGridSlot::GetInventoryItem() const
+{
+	return EquipmentSlot->GetInventoryItem();
+}
+
 void UDkInventoryEquipmentGridSlot::SetOccupiedBrush()
 {
 	EquipmentSlot->SetBrush(NormalBrush);

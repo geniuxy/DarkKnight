@@ -9,6 +9,7 @@
 #include "Components/CanvasPanel.h"
 #include "Components/DkInventoryComponent.h"
 #include "FunctionLibrarys/DkInventoryFunctionLibrary.h"
+#include "Inventory/DkInventoryItem.h"
 #include "Widgets/Inventory/DkInventoryDraggedItem.h"
 #include "Widgets/Inventory/Equipment/DkInventoryEquipmentGridSlot.h"
 
@@ -75,17 +76,17 @@ void UDKWidgetEquipmentMenu::CalculateHoveredSlot(const FVector2D& CanvasPositio
 	// 改变Slot的样式
 	if (!IsValid(DraggedItem)) return;
 
-	int EquipmentIndex = HoveredTileCoordinate.X * NUM_OF_COLUMNS + HoveredTileCoordinate.Y;
+	ItemEquipIndex = HoveredTileCoordinate.X * NUM_OF_COLUMNS + HoveredTileCoordinate.Y;
 	// Debug::Print(DraggedItem->GetItemTag().ToString());
-	if (DraggedItem->GetItemTag().MatchesTag(EquippedGridSlots[EquipmentIndex]->GetEquipmentTypeTag()))
+	if (DraggedItem->GetItemTag().MatchesTag(EquippedGridSlots[ItemEquipIndex]->GetEquipmentTypeTag()))
 	{
-		EquippedGridSlots[EquipmentIndex]->SetEnabledBrush();
+		EquippedGridSlots[ItemEquipIndex]->SetEnabledBrush();
 	}
 	else
 	{
-		EquippedGridSlots[EquipmentIndex]->SetDisabledBrush();
+		EquippedGridSlots[ItemEquipIndex]->SetDisabledBrush();
 	}
-	LastHighlightIndex = EquipmentIndex;
+	LastHighlightIndex = ItemEquipIndex;
 }
 
 FIntPoint UDKWidgetEquipmentMenu::CalculateHoveredCoordinates(
@@ -118,5 +119,21 @@ void UDKWidgetEquipmentMenu::HandleDraggedItemRemoved()
 
 void UDKWidgetEquipmentMenu::HandleDraggedItemClicked(const FPointerEvent& MouseEvent)
 {
-	Debug::Print(TEXT("EquippedMenu的Clicked回调触发"));
+	if (!IsValid(DraggedItem)) return;
+	if (!EquippedGridSlots.IsValidIndex(ItemEquipIndex)) return;
+	if (!DraggedItem->GetItemTag().MatchesTag(EquippedGridSlots[ItemEquipIndex]->GetEquipmentTypeTag())) return;
+
+	// TODO: 如何已有Equipment，则交换俩者的位置
+	// if (CurrentSpaceQueryResult.ValidItem.IsValid() && EquippedGridSlots.IsValidIndex(CurrentSpaceQueryResult.UpperLeftIndex))
+	// {
+	// 	OnSlottedItemClicked(CurrentSpaceQueryResult.UpperLeftIndex, MouseEvent);
+	// 	return;
+	// }
+
+	UDkInventoryEquipmentGridSlot* EquipmentGridSlot = EquippedGridSlots[ItemEquipIndex];
+	if (!IsValid(EquipmentGridSlot->GetInventoryItem()))
+	{
+		Debug::Print(TEXT("装备Item"));
+		// PutDownOnIndex(ItemEquipIndex);
+	}
 }

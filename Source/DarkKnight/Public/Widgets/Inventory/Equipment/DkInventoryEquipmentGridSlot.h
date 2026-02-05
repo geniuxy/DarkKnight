@@ -8,6 +8,7 @@
 #include "DarkKnight/DarkKnight.h"
 #include "DkInventoryEquipmentGridSlot.generated.h"
 
+class UDkInventoryItem;
 class UCommonTextBlock;
 class UVerticalBox;
 class UDkInventoryEquipmentSlot;
@@ -24,6 +25,8 @@ public:
 	FVector2D GetTotalSlotSize() const;
 	FVector2D GetSlotSize() const;
 	UDkInventoryEquipmentSlot* GetEquipmentSlot() const;
+
+	UDkInventoryItem* GetInventoryItem() const;
 
 	virtual void SetOccupiedBrush();
 	virtual void SetEnabledBrush();

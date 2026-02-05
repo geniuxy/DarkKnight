@@ -14,7 +14,6 @@
 #include "Widgets/Inventory/DkInventoryDraggedItem.h"
 #include "Widgets/Inventory/DkInventoryGridSlot.h"
 #include "Widgets/Inventory/DkInventorySlottedItem.h"
-#include "Widgets/Inventory/DkInventoryPopUpMenu.h"
 
 void UDKInventoryItemSpatialGrid::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {

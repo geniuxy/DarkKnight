@@ -41,6 +41,8 @@ private:
 	FIntPoint CalculateHoveredCoordinates(const FVector2D& CanvasPosition, const FVector2D& MousePosition) const;
 
 	int32 LastHighlightIndex = INDEX_NONE;
+
+	int32 ItemEquipIndex = INDEX_NONE;
 	/********/
 	
 	UPROPERTY(EditAnywhere, Category = "Inventory")

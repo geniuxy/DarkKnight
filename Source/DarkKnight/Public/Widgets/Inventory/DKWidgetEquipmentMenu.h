@@ -63,7 +63,13 @@ private:
 
 	void ClearDraggedItem();
 
-	/* 鼠标Hover装备网格，改变其样式 */
+	/********/
+
+	/* 点击EquipSlot */
+	UFUNCTION()
+	void HandleEquipSlotClicked(int GridIndex, const FPointerEvent& MouseEvent);
+	
+	/********/
 
 	UPROPERTY()
 	TArray<TObjectPtr<UDkInventoryEquipmentGridSlot>> EquippedGridSlots;

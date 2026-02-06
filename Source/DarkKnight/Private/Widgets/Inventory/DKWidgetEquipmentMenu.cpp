@@ -12,6 +12,7 @@
 #include "Inventory/DkInventoryItem.h"
 #include "Widgets/Inventory/DkInventoryDraggedItem.h"
 #include "Widgets/Inventory/Equipment/DkInventoryEquipmentGridSlot.h"
+#include "Widgets/Inventory/Equipment/DkInventoryEquipmentSlot.h"
 
 void UDKWidgetEquipmentMenu::NativeOnInitialized()
 {
@@ -23,6 +24,7 @@ void UDKWidgetEquipmentMenu::NativeOnInitialized()
 		if (IsValid(EquippedGridSlot))
 		{
 			EquippedGridSlots.Add(EquippedGridSlot);
+			EquippedGridSlot->GetEquipmentSlot()->GridSlotClicked.AddDynamic(this, &ThisClass::HandleEquipSlotClicked);
 		}
 	});
 
@@ -137,16 +139,16 @@ void UDKWidgetEquipmentMenu::HandleDraggedItemClicked(const FPointerEvent& Mouse
 		EquipmentGridSlot->UpdateEquipmentIcon(DraggedItem->GetInventoryItem());
 	}
 
-	ClearDraggedItem();
-
 	check(InventoryComponent.IsValid());
 	InventoryComponent->ServerUpdateEquippedItem(DraggedItem->GetInventoryItem(), nullptr);
-	
+
 	// 执行一些专属于Client的回调
 	if (GetOwningPlayer()->GetNetMode() != NM_DedicatedServer)
 	{
 		InventoryComponent->OnItemEquipped.Broadcast(DraggedItem->GetInventoryItem());
 	}
+	
+	ClearDraggedItem();
 }
 
 void UDKWidgetEquipmentMenu::ClearDraggedItem()
@@ -163,4 +165,8 @@ void UDKWidgetEquipmentMenu::ClearDraggedItem()
 	DraggedItem = nullptr;
 	check(InventoryComponent.IsValid());
 	InventoryComponent->OnDraggedItemRemoved.Broadcast();
+}
+
+void UDKWidgetEquipmentMenu::HandleEquipSlotClicked(int GridIndex, const FPointerEvent& MouseEvent)
+{
 }

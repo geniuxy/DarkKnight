@@ -16,6 +16,7 @@ FReply UDkInventorySlottedItem::NativeOnMouseButtonDown(const FGeometry& InGeome
 	if (IsValid(ItemDescriptionMenu))
 	{
 		ItemDescriptionMenu->RemoveFromParent();
+		ItemDescriptionMenu = nullptr;
 	}
 
 	return FReply::Handled();
@@ -31,6 +32,7 @@ void UDkInventorySlottedItem::NativeOnMouseLeave(const FPointerEvent& MouseEvent
 	if (IsValid(ItemDescriptionMenu))
 	{
 		ItemDescriptionMenu->RemoveFromParent();
+		ItemDescriptionMenu = nullptr;
 	}
 }
 

@@ -8,8 +8,10 @@
 #include "Blueprint/WidgetTree.h"
 #include "Components/CanvasPanel.h"
 #include "Components/DkInventoryComponent.h"
+#include "FunctionLibrarys/DkCommonFunctionLibrary.h"
 #include "FunctionLibrarys/DkInventoryFunctionLibrary.h"
 #include "Inventory/DkInventoryItem.h"
+#include "Inventory/DkInventoryItemFragment.h"
 #include "Widgets/Inventory/DkInventoryDraggedItem.h"
 #include "Widgets/Inventory/Equipment/DkInventoryEquipmentGridSlot.h"
 #include "Widgets/Inventory/Equipment/DkInventoryEquipmentSlot.h"
@@ -24,6 +26,7 @@ void UDKWidgetEquipmentMenu::NativeOnInitialized()
 		if (IsValid(EquippedGridSlot))
 		{
 			EquippedGridSlots.Add(EquippedGridSlot);
+			EquippedGridSlot->GetEquipmentSlot()->SetTileIndex(EquippedGridSlots.Num() - 1);
 			EquippedGridSlot->GetEquipmentSlot()->GridSlotClicked.AddDynamic(this, &ThisClass::HandleEquipSlotClicked);
 		}
 	});
@@ -167,6 +170,129 @@ void UDKWidgetEquipmentMenu::ClearDraggedItem()
 	InventoryComponent->OnDraggedItemRemoved.Broadcast();
 }
 
+void UDKWidgetEquipmentMenu::DragItem(UDkInventoryItem* ClickedInventoryItem, const int32 GridIndex)
+{
+	AssignDraggedItem(ClickedInventoryItem, GridIndex, GridIndex);
+
+	// 从背包中移除被点击的Item
+	RemoveItemFromGrid(ClickedInventoryItem, GridIndex);
+}
+
+void UDKWidgetEquipmentMenu::AssignDraggedItem(UDkInventoryItem* InventoryItem)
+{
+	if (!IsValid(DraggedItem))
+	{
+		DraggedItem = CreateWidget<UDkInventoryDraggedItem>(GetOwningPlayer(), DraggedItemClass);
+	}
+
+	const FInventoryItemGridFragment* GridFragment =
+		GetFragment<FInventoryItemGridFragment>(InventoryItem, DkGameplayTags::Dk_Inventory_Fragment_Grid);
+	const FInventoryItemImageFragment* ImageFragment =
+		GetFragment<FInventoryItemImageFragment>(InventoryItem, DkGameplayTags::Dk_Inventory_Fragment_Icon);
+	if (!GridFragment || !ImageFragment) return;
+
+	FSlateBrush Brush;
+	Brush.SetResourceObject(ImageFragment->GetIcon());
+	Brush.DrawAs = ESlateBrushDrawType::Image;
+	Brush.ImageSize = EquippedGridSlots[0]->GetEquipmentSlot()->GetIconSize();
+
+	DraggedItem->SetImageBrush(Brush);
+	DraggedItem->SetGridDimension(GridFragment->GetGridSize());
+	DraggedItem->SetInventoryItem(InventoryItem);
+	DraggedItem->SetIsStackable(InventoryItem->IsItemStackable());
+	check(InventoryComponent.IsValid());
+	InventoryComponent->OnDraggedItemCreated.Broadcast(DraggedItem);
+	DraggedItem->OnDraggedItemClicked.AddUniqueDynamic(this, &ThisClass::HandleDraggedItemClicked);
+
+	DraggedItem->SetDesiredSizeInViewport(Brush.ImageSize);
+	DraggedItem->AddToViewport();
+}
+
+void UDKWidgetEquipmentMenu::AssignDraggedItem(
+	UDkInventoryItem* InventoryItem, const int32 GridIndex, const int32 PreviousGridIndex)
+{
+	AssignDraggedItem(InventoryItem);
+
+	DraggedItem->SetPreviousGridIndex(PreviousGridIndex);
+	// 默认装备的Count为1且不可叠加
+	DraggedItem->UpdateStackCount(0);
+}
+
+void UDKWidgetEquipmentMenu::RemoveItemFromGrid(UDkInventoryItem* InventoryItem, const int32 GridIndex)
+{
+	if (!EquippedGridSlots.IsValidIndex(GridIndex)) return;
+	EquippedGridSlots[GridIndex]->GetEquipmentSlot()->SetInventoryItem(nullptr);
+	EquippedGridSlots[GridIndex]->GetEquipmentSlot()->SetUnoccupiedTexture();
+	EquippedGridSlots[GridIndex]->GetEquipmentSlot()->SetIsAvailable(true);
+	EquippedGridSlots[GridIndex]->GetEquipmentSlot()->SetStackCount(0);
+	EquippedGridSlots[GridIndex]->SetDefaultBackGroundIcon();
+}
+
 void UDKWidgetEquipmentMenu::HandleEquipSlotClicked(int GridIndex, const FPointerEvent& MouseEvent)
 {
+	check(EquippedGridSlots.IsValidIndex(GridIndex));
+	UDkInventoryItem* ClickedInventoryItem = EquippedGridSlots[GridIndex]->GetInventoryItem();
+	if (!IsValid(DraggedItem) && UDkCommonFunctionLibrary::IsLeftMouseClick(MouseEvent))
+	{
+		// 拖拽Item
+		DragItem(ClickedInventoryItem, GridIndex);
+		return;
+	}
+
+	// if (UDkCommonFunctionLibrary::IsRightMouseClick(MouseEvent))
+	// {
+	// 	CreateItemPopUp(GridIndex);
+	// 	return;
+	// }
+	//
+	// // DraggedItem和被点击的Item是一个类型吗，他们都可堆叠吗？
+	// if (IsSameStackableWithDraggedItem(ClickedInventoryItem))
+	// {
+	// 	const int32 ClickedStackCount = GridSlots[GridIndex]->GetStackCount();
+	// 	const FInventoryItemStackableFragment* StackableFragment =
+	// 		ClickedInventoryItem->GetItemManifest().GetFragmentOfType<FInventoryItemStackableFragment>();
+	// 	const int32 MaxStackSize = StackableFragment->GetMaxStackSize();
+	// 	const int32 SpaceInClickedSlot = MaxStackSize - ClickedStackCount;
+	// 	const int32 DraggedStackCount = DraggedItem->GetStackCount();
+	// 	// 是否应该交换SlottedItem和DraggedItem
+	// 	if (SpaceInClickedSlot == 0 && DraggedStackCount < MaxStackSize)
+	// 	{
+	// 		// 交换SlottedItem和DraggedItem
+	// 		UDkInventoryGridSlot* GridSlot = GridSlots[GridIndex];
+	// 		GridSlot->SetStackCount(DraggedStackCount);
+	//
+	// 		UDkInventorySlottedItem* SlottedItem = SlottedItemMap.FindChecked(GridIndex);
+	// 		SlottedItem->UpdateStackCount(DraggedStackCount);
+	//
+	// 		DraggedItem->UpdateStackCount(ClickedStackCount);
+	//
+	// 		return;
+	// 	}
+	//
+	// 	//	是否可以合并DraggedItem
+	// 	if (SpaceInClickedSlot >= DraggedStackCount)
+	// 	{
+	// 		ConsumeDraggedItemStack(ClickedStackCount, DraggedStackCount, GridIndex);
+	// 		return;
+	// 	}
+	//
+	// 	//	是否可以填充ClickedItem,并更新DraggedItem
+	// 	if (SpaceInClickedSlot < DraggedStackCount)
+	// 	{
+	// 		// 填充ClickedItem,并更新DraggedItem
+	// 		UDkInventoryGridSlot* GridSlot = GridSlots[GridIndex];
+	// 		GridSlot->SetStackCount(MaxStackSize);
+	//
+	// 		UDkInventorySlottedItem* SlottedItem = SlottedItemMap.FindChecked(GridIndex);
+	// 		SlottedItem->UpdateStackCount(MaxStackSize);
+	//
+	// 		DraggedItem->UpdateStackCount(DraggedStackCount - SpaceInClickedSlot);
+	//
+	// 		return;
+	// 	}
+	//
+	// 	return;
+	// }
+	// // 和DraggedItem交换位置
+	// SwapWithDraggedItem(ClickedInventoryItem, GridIndex);
 }

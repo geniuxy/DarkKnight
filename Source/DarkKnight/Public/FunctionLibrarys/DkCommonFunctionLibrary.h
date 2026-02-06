@@ -30,4 +30,10 @@ public:
 
 		return StaticEnumOption->GetDisplayNameTextByIndex(static_cast<int64>(InEnumType));
 	}
+
+	UFUNCTION(BlueprintCallable, Category="Common Function Library")
+	static bool IsRightMouseClick(const FPointerEvent& MouseEvent);
+	
+	UFUNCTION(BlueprintCallable, Category="Common Function Library")
+	static bool IsLeftMouseClick(const FPointerEvent& MouseEvent);
 };

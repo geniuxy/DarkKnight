@@ -8,6 +8,7 @@
 #include "Widgets/Inventory/DkInventoryGridSlot.h"
 
 #include "Components/UniformGridPanel.h"
+#include "FunctionLibrarys/DkCommonFunctionLibrary.h"
 #include "FunctionLibrarys/DkInventoryFunctionLibrary.h"
 #include "Inventory/DkInventoryItemFragment.h"
 #include "Inventory/DkInventorySlotAvailabilty.h"
@@ -211,14 +212,14 @@ void UDkInventoryItemGrid::OnSlottedItemClicked(int32 GridIndex, const FPointerE
 {
 	check(GridSlots.IsValidIndex(GridIndex));
 	UDkInventoryItem* ClickedInventoryItem = GridSlots[GridIndex]->GetInventoryItem();
-	if (!IsValid(DraggedItem) && IsLeftMouseClick(MouseEvent))
+	if (!IsValid(DraggedItem) && UDkCommonFunctionLibrary::IsLeftMouseClick(MouseEvent))
 	{
 		// 拖拽Item
 		DragItem(ClickedInventoryItem, GridIndex);
 		return;
 	}
 
-	if (IsRightMouseClick(MouseEvent))
+	if (UDkCommonFunctionLibrary::IsRightMouseClick(MouseEvent))
 	{
 		CreateItemPopUp(GridIndex);
 		return;
@@ -290,16 +291,6 @@ void UDkInventoryItemGrid::SwapWithDraggedItem(UDkInventoryItem* ClickedInventor
 
 void UDkInventoryItemGrid::ConsumeDraggedItemStack(int32 ClickedStackCount, int32 DraggedStackCount, int32 GridIndex)
 {
-}
-
-bool UDkInventoryItemGrid::IsRightMouseClick(const FPointerEvent& MouseEvent) const
-{
-	return MouseEvent.GetEffectingButton() == EKeys::RightMouseButton;
-}
-
-bool UDkInventoryItemGrid::IsLeftMouseClick(const FPointerEvent& MouseEvent) const
-{
-	return MouseEvent.GetEffectingButton() == EKeys::LeftMouseButton;
 }
 
 void UDkInventoryItemGrid::DragItem(UDkInventoryItem* ClickedInventoryItem, const int32 GridIndex)

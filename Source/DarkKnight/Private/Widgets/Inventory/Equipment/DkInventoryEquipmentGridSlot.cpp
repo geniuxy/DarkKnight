@@ -55,10 +55,15 @@ void UDkInventoryEquipmentGridSlot::SetGrayedOutBrush()
 	EquipmentSlot->SetBrush(GrayedOutBrush);
 }
 
+void UDkInventoryEquipmentGridSlot::SetDefaultBackGroundIcon()
+{
+	EquipmentSlot->SetBackGroundIcon(EquipmentBgIcon);
+}
+
 void UDkInventoryEquipmentGridSlot::NativePreConstruct()
 {
 	Super::NativePreConstruct();
 
 	Text_Title->SetText(SlotTitle);
-	EquipmentSlot->SetBackGroundIcon(EquipmentBgIcon);
+	SetDefaultBackGroundIcon();
 }

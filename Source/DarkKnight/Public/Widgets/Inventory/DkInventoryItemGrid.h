@@ -122,9 +122,6 @@ protected:
 	virtual void SwapWithDraggedItem(UDkInventoryItem* ClickedInventoryItem, const int32 GridIndex);
 	virtual void ConsumeDraggedItemStack(int32 ClickedStackCount, int32 DraggedStackCount, int32 GridIndex);
 
-	bool IsRightMouseClick(const FPointerEvent& MouseEvent) const;
-	bool IsLeftMouseClick(const FPointerEvent& MouseEvent) const;
-
 	void DragItem(UDkInventoryItem* ClickedInventoryItem, const int32 GridIndex);
 	virtual void AssignDraggedItem(UDkInventoryItem* InventoryItem);
 	virtual void AssignDraggedItem(

@@ -8,6 +8,7 @@
 
 #define NUM_OF_COLUMNS 6
 
+class UDkInventoryItem;
 class UDkInventoryEquipmentGridSlot;
 class UCanvasPanel;
 class UDkInventoryDraggedItem;
@@ -63,12 +64,21 @@ private:
 
 	void ClearDraggedItem();
 
+	void DragItem(UDkInventoryItem* ClickedInventoryItem, const int32 GridIndex);
+
+	virtual void AssignDraggedItem(UDkInventoryItem* InventoryItem);
+	
+	virtual void AssignDraggedItem(
+		UDkInventoryItem* InventoryItem, const int32 GridIndex, const int32 PreviousGridIndex
+	);
+
+	virtual void RemoveItemFromGrid(UDkInventoryItem* InventoryItem, const int32 GridIndex);
+
 	/********/
 
 	/* 点击EquipSlot */
 	UFUNCTION()
 	void HandleEquipSlotClicked(int GridIndex, const FPointerEvent& MouseEvent);
-	
 	/********/
 
 	UPROPERTY()

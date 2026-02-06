@@ -4,10 +4,26 @@
 #include "Widgets/Inventory/Equipment/DkInventoryEquipmentSlot.h"
 
 #include "CommonLazyImage.h"
+#include "Blueprint/WidgetLayoutLibrary.h"
+#include "Components/OverlaySlot.h"
 #include "FunctionLibrarys/DkUIFunctionLibrary.h"
 #include "Inventory/DkInventoryItem.h"
 #include "Inventory/DkInventoryItemFragment.h"
 #include "Widgets/Inventory/DkInventoryItemDescriptionMenu.h"
+
+FReply UDkInventoryEquipmentSlot::NativeOnMouseButtonDown(
+	const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+	GridSlotClicked.Broadcast(TileIndex, InMouseEvent);
+
+	if (IsValid(ItemDescriptionMenu))
+	{
+		ItemDescriptionMenu->RemoveFromParent();
+		ItemDescriptionMenu = nullptr;
+	}
+
+	return FReply::Handled();
+}
 
 void UDkInventoryEquipmentSlot::NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
@@ -19,7 +35,7 @@ void UDkInventoryEquipmentSlot::NativeOnMouseEnter(const FGeometry& InGeometry, 
 void UDkInventoryEquipmentSlot::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
 {
 	Super::NativeOnMouseLeave(InMouseEvent);
-	
+
 	if (IsValid(ItemDescriptionMenu))
 	{
 		ItemDescriptionMenu->RemoveFromParent();
@@ -59,14 +75,19 @@ void UDkInventoryEquipmentSlot::SetEquipmentIcon()
 
 	const FInventoryItemImageFragment* ImageFragment =
 		GetInventoryItem()->GetItemManifest().GetFragmentOfType<FInventoryItemImageFragment>();
-	
+
 	Image_EquipIcon->SetBrushFromTexture(ImageFragment->GetIcon());
+}
+
+FVector2D UDkInventoryEquipmentSlot::GetIconSize() const
+{
+	return GetGridSlotSize() - UWidgetLayoutLibrary::SlotAsOverlaySlot(Image_EquipIcon)->GetPadding().GetTopLeft();
 }
 
 void UDkInventoryEquipmentSlot::CreateItemDescriptionMenu()
 {
 	if (!InventoryItem.IsValid()) return;
-	
+
 	if (!IsValid(ItemDescriptionMenu))
 	{
 		ItemDescriptionMenu = CreateWidget<UDkInventoryItemDescriptionMenu>(this, ItemDescriptionMenuClass);
@@ -74,6 +95,6 @@ void UDkInventoryEquipmentSlot::CreateItemDescriptionMenu()
 
 	// 根据Fragments，同化(渲染)ItemDescription的内容
 	InventoryItem->GetItemManifest().AssimilateInventoryFragments(ItemDescriptionMenu);
-	
+
 	ItemDescriptionMenu->AddToViewport();
 }

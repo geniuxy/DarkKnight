@@ -34,6 +34,7 @@ public:
 	virtual void SetEnabledBrush();
 	virtual void SetDisabledBrush();
 	virtual void SetGrayedOutBrush();
+	void SetDefaultBackGroundIcon();
 
 protected:
 	//~Begin UUserWidget

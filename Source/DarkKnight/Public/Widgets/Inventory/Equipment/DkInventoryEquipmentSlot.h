@@ -18,6 +18,7 @@ class DARKKNIGHT_API UDkInventoryEquipmentSlot : public UDkInventoryGridSlot
 
 public:
 	//~Begin UUserWidget Function
+	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 	virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 	virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
@@ -27,6 +28,8 @@ public:
 
 	void SetBackGroundIcon(const TSoftObjectPtr<UTexture2D>& InTexture);
 	void SetEquipmentIcon();
+	
+	FVector2D GetIconSize() const;
 
 private:
 	//***** Bound Widgets *****//

@@ -27,11 +27,14 @@ public:
 	//~End UUserWidget Function
 
 	FDraggedItemEvent OnDraggedItemClicked;
-	
+
 	void SetImageBrush(const FSlateBrush& Brush) const;
 	void UpdateStackCount(const int32 Count);
 
 	FGameplayTag GetItemTag() const;
+
+	bool IsPreviousEquipped() const { return bPreviousEquipped; }
+	void SetIsPreviousEquipped(bool bInPreviousEquipped) { bPreviousEquipped = bInPreviousEquipped; }
 
 	bool GetIsStackable() const { return bIsStackable; }
 	void SetIsStackable(bool bInIsStackable);
@@ -50,6 +53,7 @@ private:
 
 	TWeakObjectPtr<UDkInventoryItem> InventoryItem;
 	int32 PreviousGridIndex;
+	bool bPreviousEquipped;
 	FIntPoint GridDimension;
 	bool bIsStackable = false;
 	int32 StackCount = 0;

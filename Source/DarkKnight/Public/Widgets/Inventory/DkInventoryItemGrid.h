@@ -78,6 +78,8 @@ protected:
 	FDkInventorySlotAvailabilityResult HasRoomForItem(const UDkInventoryItem* Item);
 	virtual FDkInventorySlotAvailabilityResult HasRoomForItem(const FInventoryItemManifest& Manifest);
 
+	virtual void PutDownOnIndex(const int32 Index);
+
 	UPROPERTY(EditAnywhere, Category = "Inventory")
 	TSubclassOf<UDkInventorySlottedItem> SlottedItemClass;
 
@@ -140,6 +142,9 @@ protected:
 	UFUNCTION()
 	void HandleDraggedItemCreated(UDkInventoryDraggedItem* InDraggedItem);
 
+	UFUNCTION()
+	void HandleDraggedItemRecovered(UDkInventoryDraggedItem* InDraggedItem);
+	
 	UFUNCTION()
 	void HandleDraggedItemRemoved();
 

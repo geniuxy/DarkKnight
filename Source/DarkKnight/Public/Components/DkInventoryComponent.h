@@ -26,6 +26,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDraggedItemCreated, UDkInventoryD
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDraggedItemRemoved);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDraggedItemRecovered, UDkInventoryDraggedItem*, DraggedItem);
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FItemEquipStatusChanged, UDkInventoryItem*, Item);
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), Blueprintable)
@@ -96,9 +98,11 @@ public:
 	FOnRoomInInventoryDelegate OnNoRoomInInventory;
 	/********/
 
-	/* 判断是否背包有空间 */
+	/* DraggedItem相关Delegate */
 	FOnDraggedItemCreated OnDraggedItemCreated;
 	FOnDraggedItemRemoved OnDraggedItemRemoved;
+	FOnDraggedItemRecovered OnExitGameMenuRecoverEquippedItem;
+	FOnDraggedItemRecovered OnExitGameMenuRecoverGridItem;
 	/********/
 
 	/* 装备Item相关 */

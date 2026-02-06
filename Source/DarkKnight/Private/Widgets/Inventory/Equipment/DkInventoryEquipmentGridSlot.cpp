@@ -28,7 +28,7 @@ UDkInventoryItem* UDkInventoryEquipmentGridSlot::GetInventoryItem() const
 	return EquipmentSlot->GetInventoryItem();
 }
 
-void UDkInventoryEquipmentGridSlot::UpdateEquipmentIcon(UDkInventoryItem* InItem)
+void UDkInventoryEquipmentGridSlot::UpdateEquipmentInfo(UDkInventoryItem* InItem)
 {
 	if (!IsValid(InItem)) return;
 	EquipmentSlot->SetInventoryItem(InItem);
@@ -65,5 +65,8 @@ void UDkInventoryEquipmentGridSlot::NativePreConstruct()
 	Super::NativePreConstruct();
 
 	Text_Title->SetText(SlotTitle);
-	SetDefaultBackGroundIcon();
+	if (!IsValid(GetInventoryItem()))
+	{
+		SetDefaultBackGroundIcon();
+	}
 }

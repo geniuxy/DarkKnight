@@ -37,6 +37,10 @@ private:
 
 	bool bMouseWithInCanvas;
 
+	/* 装备Item */
+	void PutItemOnEquipSlot(int32 EquipIndex);
+	/********/
+	
 	/* 鼠标Hover装备网格，改变其样式 */
 	void CalculateHoveredSlot(const FVector2D& CanvasPosition, const FVector2D& MousePosition);
 	FIntPoint CalculateHoveredCoordinates(const FVector2D& CanvasPosition, const FVector2D& MousePosition) const;
@@ -55,6 +59,9 @@ private:
 
 	UFUNCTION()
 	void HandleDraggedItemCreated(UDkInventoryDraggedItem* InDraggedItem);
+	
+	UFUNCTION()
+	void HandleDraggedItemRecovered(UDkInventoryDraggedItem* InDraggedItem);
 
 	UFUNCTION()
 	void HandleDraggedItemRemoved();

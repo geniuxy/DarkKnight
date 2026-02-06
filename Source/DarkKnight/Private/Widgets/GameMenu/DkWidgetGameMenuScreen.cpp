@@ -52,6 +52,25 @@ void UDkWidgetGameMenuScreen::NativeOnDeactivated()
 	Super::NativeOnDeactivated();
 
 	UDkUIFunctionLibrary::ToggleInputMode(this, EDkInputMode::GameOnly);
+
+	if (DraggedItem.IsValid() && DraggedItem->IsInViewport())
+	{
+		check(InventoryComponent.IsValid());
+		if (DraggedItem->IsPreviousEquipped())
+		{
+			InventoryComponent->OnExitGameMenuRecoverEquippedItem.Broadcast(DraggedItem.Get());
+		}
+		else
+		{
+			InventoryComponent->OnExitGameMenuRecoverGridItem.Broadcast(DraggedItem.Get());
+		}
+		if (DraggedItem.IsValid())
+		{
+			DraggedItem->RemoveFromParent();
+		}
+		DraggedItem = nullptr;
+		InventoryComponent->OnDraggedItemRemoved.Broadcast();
+	}
 }
 
 void UDkWidgetGameMenuScreen::HandleDraggedItemCreated(UDkInventoryDraggedItem* InDraggedItem)

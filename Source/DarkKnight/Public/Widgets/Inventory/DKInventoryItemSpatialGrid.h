@@ -40,6 +40,8 @@ protected:
 	int32 GetStackAmount(const UDkInventoryGridSlot* GridSlot) const;
 
 	virtual FDkInventorySlotAvailabilityResult HasRoomForItem(const FInventoryItemManifest& Manifest) override;
+	
+	virtual void PutDownOnIndex(const int32 Index) override;
 	/********/
 
 	/* 更新GridSlot背景 */
@@ -89,7 +91,6 @@ protected:
 	void HighlightSlots(const int32 Index, const FIntPoint& Dimension);
 	void UnHighlightSlots(const int32 Index, const FIntPoint& Dimension);
 
-	void PutDownOnIndex(const int32 Index);
 
 	int32 ItemDropIndex = INDEX_NONE;
 	FInventorySpaceQueryResult CurrentSpaceQueryResult;

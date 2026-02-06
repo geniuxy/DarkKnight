@@ -31,6 +31,10 @@ FDkInventorySlotAvailabilityResult UDkInventoryItemGrid::HasRoomForItem(const FI
 	return FDkInventorySlotAvailabilityResult();
 }
 
+void UDkInventoryItemGrid::PutDownOnIndex(const int32 Index)
+{
+}
+
 void UDkInventoryItemGrid::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
@@ -48,6 +52,9 @@ void UDkInventoryItemGrid::NativeOnInitialized()
 	// 绑定DraggedItem创建相关的回调
 	InventoryComponent->OnDraggedItemCreated.AddUniqueDynamic(this, &ThisClass::HandleDraggedItemCreated);
 	InventoryComponent->OnDraggedItemRemoved.AddUniqueDynamic(this, &ThisClass::HandleDraggedItemRemoved);
+	InventoryComponent->OnExitGameMenuRecoverGridItem.AddUniqueDynamic(
+		this, &ThisClass::HandleDraggedItemRecovered
+	);
 }
 
 void UDkInventoryItemGrid::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -58,14 +65,6 @@ void UDkInventoryItemGrid::NativeTick(const FGeometry& MyGeometry, float InDelta
 void UDkInventoryItemGrid::NativeDestruct()
 {
 	Super::NativeDestruct();
-
-	if (DraggedItem && DraggedItem->IsInViewport())
-	{
-		DraggedItem->RemoveFromParent();
-		DraggedItem = nullptr;
-		check(InventoryComponent.IsValid());
-		InventoryComponent->OnDraggedItemRemoved.Broadcast();
-	}
 }
 
 void UDkInventoryItemGrid::AddItem(UDkInventoryItem* Item)
@@ -313,6 +312,7 @@ void UDkInventoryItemGrid::AssignDraggedItem(
 	AssignDraggedItem(InventoryItem);
 
 	DraggedItem->SetPreviousGridIndex(PreviousGridIndex);
+	DraggedItem->SetIsPreviousEquipped(false);
 	DraggedItem->UpdateStackCount(InventoryItem->IsItemStackable() ? GridSlots[GridIndex]->GetStackCount() : 0);
 }
 
@@ -330,22 +330,38 @@ void UDkInventoryItemGrid::ClearDraggedItem()
 	DraggedItem->UpdateStackCount(0);
 	DraggedItem->SetImageBrush(FSlateNoResource());
 
-	DraggedItem->RemoveFromParent();
-	DraggedItem = nullptr;
 	check(InventoryComponent.IsValid());
+	if (IsValid(DraggedItem))
+	{
+		DraggedItem->RemoveFromParent();
+	}
+	DraggedItem = nullptr;
 	InventoryComponent->OnDraggedItemRemoved.Broadcast();
 }
 
 void UDkInventoryItemGrid::HandleDraggedItemCreated(UDkInventoryDraggedItem* InDraggedItem)
 {
 	if (!IsValid(InDraggedItem)) return;
-	
+
 	if (IsValid(DraggedItem))
 	{
 		DraggedItem = nullptr;
 	}
 	DraggedItem = InDraggedItem;
 	DraggedItem->OnDraggedItemClicked.AddUniqueDynamic(this, &ThisClass::HandleDraggedItemClicked);
+}
+
+void UDkInventoryItemGrid::HandleDraggedItemRecovered(UDkInventoryDraggedItem* InDraggedItem)
+{
+	if (!IsValid(InDraggedItem->GetInventoryItem()) || !MatchesCategory(InDraggedItem->GetInventoryItem())) return;
+
+	if (!InDraggedItem->IsPreviousEquipped())
+	{
+		if (IsValid(InDraggedItem->GetInventoryItem()))
+		{
+			PutDownOnIndex(InDraggedItem->GetPreviousGridIndex());
+		}
+	}
 }
 
 void UDkInventoryItemGrid::HandleDraggedItemRemoved()
@@ -455,7 +471,7 @@ void UDkInventoryItemGrid::DropItem()
 	if (!IsValid(DraggedItem->GetInventoryItem())) return;
 
 	InventoryComponent->ServerDropItem(DraggedItem->GetInventoryItem(), DraggedItem->GetStackCount());
-	
+
 	ClearDraggedItem();
 }
 

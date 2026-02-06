@@ -28,7 +28,7 @@ public:
 
 	UDkInventoryItem* GetInventoryItem() const;
 
-	void UpdateEquipmentIcon(UDkInventoryItem* InItem);
+	void UpdateEquipmentInfo(UDkInventoryItem* InItem);
 
 	virtual void SetOccupiedBrush();
 	virtual void SetEnabledBrush();

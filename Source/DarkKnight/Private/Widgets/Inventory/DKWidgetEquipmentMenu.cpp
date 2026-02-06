@@ -27,6 +27,10 @@ void UDKWidgetEquipmentMenu::NativeOnInitialized()
 		{
 			EquippedGridSlots.Add(EquippedGridSlot);
 			EquippedGridSlot->GetEquipmentSlot()->SetTileIndex(EquippedGridSlots.Num() - 1);
+			if (!IsValid(EquippedGridSlot->GetInventoryItem()))
+			{
+				EquippedGridSlot->UpdateEquipmentInfo(EquippedGridSlot->GetInventoryItem());
+			}
 			EquippedGridSlot->GetEquipmentSlot()->GridSlotClicked.AddDynamic(this, &ThisClass::HandleEquipSlotClicked);
 		}
 	});
@@ -35,6 +39,9 @@ void UDKWidgetEquipmentMenu::NativeOnInitialized()
 	// 绑定DraggedItem创建相关的回调
 	InventoryComponent->OnDraggedItemCreated.AddUniqueDynamic(this, &ThisClass::HandleDraggedItemCreated);
 	InventoryComponent->OnDraggedItemRemoved.AddUniqueDynamic(this, &ThisClass::HandleDraggedItemRemoved);
+	InventoryComponent->OnExitGameMenuRecoverEquippedItem.AddUniqueDynamic(
+		this, &ThisClass::HandleDraggedItemRecovered
+	);
 }
 
 void UDKWidgetEquipmentMenu::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -59,6 +66,26 @@ void UDKWidgetEquipmentMenu::NativeTick(const FGeometry& MyGeometry, float InDel
 	}
 
 	CalculateHoveredSlot(CanvasPosition, MousePosition);
+}
+
+void UDKWidgetEquipmentMenu::PutItemOnEquipSlot(int32 EquipIndex)
+{
+	UDkInventoryEquipmentGridSlot* EquipmentGridSlot = EquippedGridSlots[EquipIndex];
+	if (!IsValid(EquipmentGridSlot->GetInventoryItem()))
+	{
+		EquipmentGridSlot->UpdateEquipmentInfo(DraggedItem->GetInventoryItem());
+	}
+
+	check(InventoryComponent.IsValid());
+	InventoryComponent->ServerUpdateEquippedItem(DraggedItem->GetInventoryItem(), nullptr);
+
+	// 执行一些专属于Client的回调
+	if (GetOwningPlayer()->GetNetMode() != NM_DedicatedServer)
+	{
+		InventoryComponent->OnItemEquipped.Broadcast(DraggedItem->GetInventoryItem());
+	}
+
+	ClearDraggedItem();
 }
 
 void UDKWidgetEquipmentMenu::CalculateHoveredSlot(const FVector2D& CanvasPosition, const FVector2D& MousePosition)
@@ -117,6 +144,17 @@ void UDKWidgetEquipmentMenu::HandleDraggedItemCreated(UDkInventoryDraggedItem* I
 	DraggedItem->OnDraggedItemClicked.AddUniqueDynamic(this, &ThisClass::HandleDraggedItemClicked);
 }
 
+void UDKWidgetEquipmentMenu::HandleDraggedItemRecovered(UDkInventoryDraggedItem* InDraggedItem)
+{
+	if (InDraggedItem->IsPreviousEquipped())
+	{
+		if (IsValid(InDraggedItem->GetInventoryItem()))
+		{
+			PutItemOnEquipSlot(InDraggedItem->GetPreviousGridIndex());
+		}
+	}
+}
+
 void UDKWidgetEquipmentMenu::HandleDraggedItemRemoved()
 {
 	DraggedItem = nullptr;
@@ -136,22 +174,7 @@ void UDKWidgetEquipmentMenu::HandleDraggedItemClicked(const FPointerEvent& Mouse
 	// 	return;
 	// }
 
-	UDkInventoryEquipmentGridSlot* EquipmentGridSlot = EquippedGridSlots[ItemEquipIndex];
-	if (!IsValid(EquipmentGridSlot->GetInventoryItem()))
-	{
-		EquipmentGridSlot->UpdateEquipmentIcon(DraggedItem->GetInventoryItem());
-	}
-
-	check(InventoryComponent.IsValid());
-	InventoryComponent->ServerUpdateEquippedItem(DraggedItem->GetInventoryItem(), nullptr);
-
-	// 执行一些专属于Client的回调
-	if (GetOwningPlayer()->GetNetMode() != NM_DedicatedServer)
-	{
-		InventoryComponent->OnItemEquipped.Broadcast(DraggedItem->GetInventoryItem());
-	}
-	
-	ClearDraggedItem();
+	PutItemOnEquipSlot(ItemEquipIndex);
 }
 
 void UDKWidgetEquipmentMenu::ClearDraggedItem()
@@ -164,9 +187,12 @@ void UDKWidgetEquipmentMenu::ClearDraggedItem()
 	DraggedItem->UpdateStackCount(0);
 	DraggedItem->SetImageBrush(FSlateNoResource());
 
-	DraggedItem->RemoveFromParent();
-	DraggedItem = nullptr;
 	check(InventoryComponent.IsValid());
+	if (IsValid(DraggedItem))
+	{
+		DraggedItem->RemoveFromParent();
+	}
+	DraggedItem = nullptr;
 	InventoryComponent->OnDraggedItemRemoved.Broadcast();
 }
 
@@ -214,6 +240,7 @@ void UDKWidgetEquipmentMenu::AssignDraggedItem(
 	AssignDraggedItem(InventoryItem);
 
 	DraggedItem->SetPreviousGridIndex(PreviousGridIndex);
+	DraggedItem->SetIsPreviousEquipped(true);
 	// 默认装备的Count为1且不可叠加
 	DraggedItem->UpdateStackCount(0);
 }

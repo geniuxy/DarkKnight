@@ -158,6 +158,14 @@ FDkInventorySlotAvailabilityResult UDKInventoryItemSpatialGrid::HasRoomForItem(c
 	return Result;
 }
 
+void UDKInventoryItemSpatialGrid::PutDownOnIndex(const int32 Index)
+{
+	AddItemToIndex(DraggedItem->GetInventoryItem(), Index, DraggedItem->GetStackCount(), DraggedItem->GetIsStackable());
+	UpdateGridSlots(DraggedItem->GetInventoryItem(), Index, DraggedItem->GetStackCount(),
+					DraggedItem->GetIsStackable());
+	ClearDraggedItem();
+}
+
 void UDKInventoryItemSpatialGrid::UpdateGridSlots(
 	UDkInventoryItem* NewItem, const int32 Index, int32 StackAmount, bool bStackable)
 {
@@ -550,14 +558,6 @@ void UDKInventoryItemSpatialGrid::UnHighlightSlots(const int32 Index, const FInt
 			}
 		}
 	);
-}
-
-void UDKInventoryItemSpatialGrid::PutDownOnIndex(const int32 Index)
-{
-	AddItemToIndex(DraggedItem->GetInventoryItem(), Index, DraggedItem->GetStackCount(), DraggedItem->GetIsStackable());
-	UpdateGridSlots(DraggedItem->GetInventoryItem(), Index, DraggedItem->GetStackCount(),
-	                DraggedItem->GetIsStackable());
-	ClearDraggedItem();
 }
 
 void UDKInventoryItemSpatialGrid::OnPopUpMenuSplit(int32 SplitAmount, int32 Index)

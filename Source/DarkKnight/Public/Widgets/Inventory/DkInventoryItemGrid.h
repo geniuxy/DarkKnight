@@ -137,13 +137,17 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<UDkInventoryDraggedItem> DraggedItem;
+	
+	void ClearDraggedItem();
+
+	UFUNCTION()
+	void HandleDraggedItemRemoved();
 	/********/
 
 	/* 鼠标Hover背包网格，改变其样式 */
 	FInventoryTileParameters TileParameters; // 鼠标所处格子的相关数据(索引、坐标、象限)
 	FInventoryTileParameters LastTileParameters;
 	
-	void ClearDraggedItem();
 
 	UFUNCTION()
 	void OnGridSlotHovered(int32 GridIndex, const FPointerEvent& MouseEvent);

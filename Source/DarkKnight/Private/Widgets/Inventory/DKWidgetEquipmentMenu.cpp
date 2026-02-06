@@ -136,4 +136,31 @@ void UDKWidgetEquipmentMenu::HandleDraggedItemClicked(const FPointerEvent& Mouse
 	{
 		EquipmentGridSlot->UpdateEquipmentIcon(DraggedItem->GetInventoryItem());
 	}
+
+	ClearDraggedItem();
+
+	check(InventoryComponent.IsValid());
+	InventoryComponent->ServerUpdateEquippedItem(DraggedItem->GetInventoryItem(), nullptr);
+	
+	// 执行一些专属于Client的回调
+	if (GetOwningPlayer()->GetNetMode() != NM_DedicatedServer)
+	{
+		InventoryComponent->OnItemEquipped.Broadcast(DraggedItem->GetInventoryItem());
+	}
+}
+
+void UDKWidgetEquipmentMenu::ClearDraggedItem()
+{
+	if (!IsValid(DraggedItem)) return;
+
+	DraggedItem->SetInventoryItem(nullptr);
+	DraggedItem->SetIsStackable(false);
+	DraggedItem->SetPreviousGridIndex(INDEX_NONE);
+	DraggedItem->UpdateStackCount(0);
+	DraggedItem->SetImageBrush(FSlateNoResource());
+
+	DraggedItem->RemoveFromParent();
+	DraggedItem = nullptr;
+	check(InventoryComponent.IsValid());
+	InventoryComponent->OnDraggedItemRemoved.Broadcast();
 }

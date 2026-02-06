@@ -169,8 +169,8 @@ void UDkInventoryComponent::SpawnDroppedItem(UDkInventoryItem* Item, int32 Dropp
 	FVector RotatedForward = OwningActor->GetActorForwardVector();
 	RotatedForward =
 		RotatedForward.RotateAngleAxis(FMath::FRandRange(DropSpawnAngleMin, DropSpawnAngleMax), FVector::UpVector);
-	FVector SpawnLocation =
-		OwningActor->GetActorLocation() + RotatedForward * FMath::FRandRange(DropSpawnDistanceMin, DropSpawnDistanceMax);
+	FVector SpawnLocation = OwningActor->GetActorLocation() +
+		RotatedForward * FMath::FRandRange(DropSpawnDistanceMin, DropSpawnDistanceMax);
 	SpawnLocation.Z -= RelativeSpawnElevation;
 	const FRotator SpawnRotation = FRotator::ZeroRotator;
 
@@ -195,13 +195,33 @@ void UDkInventoryComponent::ServerConsumeItem_Implementation(UDkInventoryItem* I
 	{
 		Item->SetTotalStackCount(NewStackCount);
 	}
-	
+
 	if (FInventoryItemConsumableFragment* ConsumableFragment =
 		Item->GetItemManifestMutable().GetFragmentOfTypeMutable<FInventoryItemConsumableFragment>())
 	{
 		ACharacter* OwnerCharacter = CastChecked<ACharacter>(GetOwner());
 		APlayerController* PlayerController = CastChecked<APlayerController>(OwnerCharacter->GetController());
 		ConsumableFragment->OnConsume(PlayerController);
+	}
+}
+
+void UDkInventoryComponent::ServerUpdateEquippedItem_Implementation(
+	UDkInventoryItem* EquippedItem, UDkInventoryItem* UnEquippedItem)
+{
+	MulticastUpdateEquippedItem(EquippedItem, UnEquippedItem);
+}
+
+void UDkInventoryComponent::MulticastUpdateEquippedItem_Implementation(
+	UDkInventoryItem* EquippedItem, UDkInventoryItem* UnEquippedItem)
+{
+	if (IsValid(EquippedItem))
+	{
+		OnItemEquipped.Broadcast(EquippedItem);
+	}
+
+	if (IsValid(UnEquippedItem))
+	{
+		OnItemUnEquipped.Broadcast(UnEquippedItem);
 	}
 }
 

@@ -33,7 +33,7 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UCanvasPanel> EquipmentCanvasPanel;
 	//***** Bound Widgets *****//
-	
+
 	bool bMouseWithInCanvas;
 
 	/* 鼠标Hover装备网格，改变其样式 */
@@ -44,22 +44,27 @@ private:
 
 	int32 ItemEquipIndex = INDEX_NONE;
 	/********/
-	
+
+	/* DraggedItem相关 */
 	UPROPERTY(EditAnywhere, Category = "Inventory")
 	TSubclassOf<UDkInventoryDraggedItem> DraggedItemClass;
 
 	UPROPERTY()
 	TObjectPtr<UDkInventoryDraggedItem> DraggedItem;
-	
+
 	UFUNCTION()
 	void HandleDraggedItemCreated(UDkInventoryDraggedItem* InDraggedItem);
-	
+
 	UFUNCTION()
 	void HandleDraggedItemRemoved();
-	
+
 	UFUNCTION()
 	void HandleDraggedItemClicked(const FPointerEvent& MouseEvent);
-	
+
+	void ClearDraggedItem();
+
+	/* 鼠标Hover装备网格，改变其样式 */
+
 	UPROPERTY()
 	TArray<TObjectPtr<UDkInventoryEquipmentGridSlot>> EquippedGridSlots;
 };

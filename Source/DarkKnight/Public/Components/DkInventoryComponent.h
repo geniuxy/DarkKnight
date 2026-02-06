@@ -17,10 +17,16 @@ class UDkInventoryItem;
 class ADkCharacterHero;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FInventoryItemChange, UDkInventoryItem*, Item);
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRoomInInventoryDelegate);
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FStackChange, const FDkInventorySlotAvailabilityResult&, Result);
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDraggedItemCreated, UDkInventoryDraggedItem*, DraggedItem);
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDraggedItemRemoved);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FItemEquipStatusChanged, UDkInventoryItem*, Item);
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), Blueprintable)
 class DARKKNIGHT_API UDkInventoryComponent : public UActorComponent, public ILoadingScreenInterface
@@ -48,12 +54,12 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void Server_AddNewItem(UDkItemComponent* ItemComponent, int32 StackCount);
-	
+
 	UFUNCTION(Server, Reliable)
 	void Server_AddStacksToItem(UDkItemComponent* ItemComponent, int32 StackCount, int32 Remainder);
 
 	void AddRepSubObj(UObject* SubObj);
-	
+
 	FInventoryItemChange OnItemAdded; // item从无到有
 	FInventoryItemChange OnItemRemoved; // item从有到无
 	FStackChange OnStackChange; // item从有到更多
@@ -67,16 +73,16 @@ public:
 
 	UPROPERTY(EditAnywhere, Category="Inventory")
 	float DropSpawnAngleMin = -85.f;
-	
+
 	UPROPERTY(EditAnywhere, Category="Inventory")
 	float DropSpawnAngleMax = 85.f;
-	
+
 	UPROPERTY(EditAnywhere, Category="Inventory")
 	float DropSpawnDistanceMin = 50.f;
-	
+
 	UPROPERTY(EditAnywhere, Category="Inventory")
 	float DropSpawnDistanceMax = 100.f;
-	
+
 	UPROPERTY(EditAnywhere, Category="Inventory")
 	float RelativeSpawnElevation = 70.f; // Spawn降低高度
 	/********/
@@ -93,6 +99,17 @@ public:
 	/* 判断是否背包有空间 */
 	FOnDraggedItemCreated OnDraggedItemCreated;
 	FOnDraggedItemRemoved OnDraggedItemRemoved;
+	/********/
+
+	/* 装备Item相关 */
+	UFUNCTION(Server, Reliable)
+	void ServerUpdateEquippedItem(UDkInventoryItem* EquippedItem, UDkInventoryItem* UnEquippedItem);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastUpdateEquippedItem(UDkInventoryItem* EquippedItem, UDkInventoryItem* UnEquippedItem);
+	
+	FItemEquipStatusChanged OnItemEquipped;
+	FItemEquipStatusChanged OnItemUnEquipped;
 	/********/
 
 protected:

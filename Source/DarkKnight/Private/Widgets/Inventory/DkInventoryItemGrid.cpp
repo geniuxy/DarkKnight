@@ -44,6 +44,7 @@ void UDkInventoryItemGrid::NativeOnInitialized()
 	InventoryComponent = UDkInventoryFunctionLibrary::GetInventoryComponent(GetOwningPlayer());
 	InventoryComponent->OnItemAdded.AddDynamic(this, &ThisClass::AddItem);
 	InventoryComponent->OnStackChange.AddDynamic(this, &ThisClass::AddStacks);
+	InventoryComponent->OnDraggedItemRemoved.AddUniqueDynamic(this, &ThisClass::HandleDraggedItemRemoved);
 }
 
 void UDkInventoryItemGrid::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -340,6 +341,11 @@ void UDkInventoryItemGrid::ClearDraggedItem()
 	DraggedItem = nullptr;
 	check(InventoryComponent.IsValid());
 	InventoryComponent->OnDraggedItemRemoved.Broadcast();
+}
+
+void UDkInventoryItemGrid::HandleDraggedItemRemoved()
+{
+	DraggedItem = nullptr;
 }
 
 void UDkInventoryItemGrid::OnGridSlotHovered(int32 GridIndex, const FPointerEvent& MouseEvent)

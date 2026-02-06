@@ -45,6 +45,8 @@ void UDkInventoryItemGrid::NativeOnInitialized()
 	InventoryComponent = UDkInventoryFunctionLibrary::GetInventoryComponent(GetOwningPlayer());
 	InventoryComponent->OnItemAdded.AddDynamic(this, &ThisClass::AddItem);
 	InventoryComponent->OnStackChange.AddDynamic(this, &ThisClass::AddStacks);
+	// 绑定DraggedItem创建相关的回调
+	InventoryComponent->OnDraggedItemCreated.AddUniqueDynamic(this, &ThisClass::HandleDraggedItemCreated);
 	InventoryComponent->OnDraggedItemRemoved.AddUniqueDynamic(this, &ThisClass::HandleDraggedItemRemoved);
 }
 
@@ -334,9 +336,30 @@ void UDkInventoryItemGrid::ClearDraggedItem()
 	InventoryComponent->OnDraggedItemRemoved.Broadcast();
 }
 
+void UDkInventoryItemGrid::HandleDraggedItemCreated(UDkInventoryDraggedItem* InDraggedItem)
+{
+	if (!IsValid(InDraggedItem)) return;
+	
+	if (IsValid(DraggedItem))
+	{
+		DraggedItem = nullptr;
+	}
+	DraggedItem = InDraggedItem;
+	DraggedItem->OnDraggedItemClicked.AddUniqueDynamic(this, &ThisClass::HandleDraggedItemClicked);
+}
+
 void UDkInventoryItemGrid::HandleDraggedItemRemoved()
 {
 	DraggedItem = nullptr;
+}
+
+void UDkInventoryItemGrid::HandleDraggedItemClicked(const FPointerEvent& MouseEvent)
+{
+	OnDraggedItemClicked(MouseEvent);
+}
+
+void UDkInventoryItemGrid::OnDraggedItemClicked(const FPointerEvent& MouseEvent)
+{
 }
 
 void UDkInventoryItemGrid::OnGridSlotHovered(int32 GridIndex, const FPointerEvent& MouseEvent)

@@ -134,17 +134,25 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<UDkInventoryDraggedItem> DraggedItem;
-	
+
 	void ClearDraggedItem();
 
 	UFUNCTION()
+	void HandleDraggedItemCreated(UDkInventoryDraggedItem* InDraggedItem);
+
+	UFUNCTION()
 	void HandleDraggedItemRemoved();
+
+	UFUNCTION()
+	void HandleDraggedItemClicked(const FPointerEvent& MouseEvent);
+
+	virtual void OnDraggedItemClicked(const FPointerEvent& MouseEvent);
 	/********/
 
 	/* 鼠标Hover背包网格，改变其样式 */
 	FInventoryTileParameters TileParameters; // 鼠标所处格子的相关数据(索引、坐标、象限)
 	FInventoryTileParameters LastTileParameters;
-	
+
 	UFUNCTION()
 	void OnGridSlotHovered(int32 GridIndex, const FPointerEvent& MouseEvent);
 
@@ -164,7 +172,7 @@ protected:
 	// 拆解Item
 	UFUNCTION()
 	void HandlePopUpMenuSplit(int32 SplitAmount, int32 Index);
-	
+
 	virtual void OnPopUpMenuSplit(int32 SplitAmount, int32 Index);
 
 	// 丢弃Item
@@ -176,10 +184,10 @@ protected:
 	// 消耗Item
 	UFUNCTION()
 	void HandlePopUpMenuConsume(int32 Index);
-	
+
 	virtual void OnPopUpMenuConsume(int32 Index);
 	/********/
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Inventory")
 	EInventoryItemCategory ItemCategory;
 

@@ -293,7 +293,7 @@ void UDKInventoryItemSpatialGrid::AssignDraggedItem(UDkInventoryItem* InventoryI
 	DraggedItem->SetIsStackable(InventoryItem->IsItemStackable());
 	check(InventoryComponent.IsValid());
 	InventoryComponent->OnDraggedItemCreated.Broadcast(DraggedItem);
-	DraggedItem->OnDraggedItemClicked.AddUniqueDynamic(this, &ThisClass::OnDraggedItemClicked);
+	DraggedItem->OnDraggedItemClicked.AddUniqueDynamic(this, &ThisClass::HandleDraggedItemClicked);
 
 	DraggedItem->SetDesiredSizeInViewport(Brush.ImageSize);
 	DraggedItem->AddToViewport();
@@ -304,6 +304,28 @@ void UDKInventoryItemSpatialGrid::AssignDraggedItem(
 {
 	Super::AssignDraggedItem(InventoryItem, GridIndex, PreviousGridIndex);
 }
+
+void UDKInventoryItemSpatialGrid::OnDraggedItemClicked(const FPointerEvent& MouseEvent)
+{
+	if (!IsValid(DraggedItem)) return;
+	if (!GridSlots.IsValidIndex(ItemDropIndex)) return;
+	if (!IsInGridBounds(ItemDropIndex, DraggedItem->GetGridDimension())) return;
+	if (DraggedItem->GetInventoryItem()->GetItemManifest().GetItemCategory() != ItemCategory) return;
+	if (!bMouseWithInCanvas) return;
+
+	if (CurrentSpaceQueryResult.ValidItem.IsValid() && GridSlots.IsValidIndex(CurrentSpaceQueryResult.UpperLeftIndex))
+	{
+		OnSlottedItemClicked(CurrentSpaceQueryResult.UpperLeftIndex, MouseEvent);
+		return;
+	}
+
+	UDkInventoryGridSlot* GridSlot = GridSlots[ItemDropIndex];
+	if (!IsValid(GridSlot->GetInventoryItem()))
+	{
+		PutDownOnIndex(ItemDropIndex);
+	}
+}
+
 
 void UDKInventoryItemSpatialGrid::UpdateTileParameters(
 	const FVector2D& CanvasPosition, const FVector2D& MousePosition)
@@ -354,6 +376,7 @@ EInventoryTileQuadrant UDKInventoryItemSpatialGrid::CalculateTileQuadrant(
 void UDKInventoryItemSpatialGrid::OnTileParametersUpdated(const FInventoryTileParameters& Parameters)
 {
 	if (!DraggedItem) return;
+	if (DraggedItem->GetInventoryItem()->GetItemManifest().GetItemCategory() != ItemCategory) return;
 
 	// 获取DraggedItem的尺寸/面积
 	const FIntPoint Dimension = DraggedItem->GetGridDimension();
@@ -527,26 +550,6 @@ void UDKInventoryItemSpatialGrid::UnHighlightSlots(const int32 Index, const FInt
 			}
 		}
 	);
-}
-
-void UDKInventoryItemSpatialGrid::OnDraggedItemClicked(const FPointerEvent& MouseEvent)
-{
-	if (!IsValid(DraggedItem)) return;
-	if (!GridSlots.IsValidIndex(ItemDropIndex)) return;
-	if (!IsInGridBounds(ItemDropIndex, DraggedItem->GetGridDimension())) return;
-	if (!bMouseWithInCanvas) return;
-
-	if (CurrentSpaceQueryResult.ValidItem.IsValid() && GridSlots.IsValidIndex(CurrentSpaceQueryResult.UpperLeftIndex))
-	{
-		OnSlottedItemClicked(CurrentSpaceQueryResult.UpperLeftIndex, MouseEvent);
-		return;
-	}
-
-	UDkInventoryGridSlot* GridSlot = GridSlots[ItemDropIndex];
-	if (!IsValid(GridSlot->GetInventoryItem()))
-	{
-		PutDownOnIndex(ItemDropIndex);
-	}
 }
 
 void UDKInventoryItemSpatialGrid::PutDownOnIndex(const int32 Index)

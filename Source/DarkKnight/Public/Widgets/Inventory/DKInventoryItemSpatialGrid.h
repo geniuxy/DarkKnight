@@ -64,6 +64,8 @@ protected:
 	virtual void AssignDraggedItem(
 		UDkInventoryItem* InventoryItem, const int32 GridIndex, const int32 PreviousGridIndex
 	) override;
+
+	virtual void OnDraggedItemClicked(const FPointerEvent& MouseEvent) override;
 	/********/
 
 	/* 鼠标Hover背包网格，改变其样式 */
@@ -86,9 +88,6 @@ protected:
 	// Highlight/UnHighlight DraggedItem覆盖的背后区域的格子
 	void HighlightSlots(const int32 Index, const FIntPoint& Dimension);
 	void UnHighlightSlots(const int32 Index, const FIntPoint& Dimension);
-
-	UFUNCTION()
-	void OnDraggedItemClicked(const FPointerEvent& MouseEvent);
 
 	void PutDownOnIndex(const int32 Index);
 

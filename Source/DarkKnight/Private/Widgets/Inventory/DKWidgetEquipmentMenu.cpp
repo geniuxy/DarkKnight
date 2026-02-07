@@ -76,16 +76,23 @@ void UDKWidgetEquipmentMenu::PutItemOnEquipSlot(int32 EquipIndex)
 		EquipmentGridSlot->UpdateEquipmentInfo(DraggedItem->GetInventoryItem());
 	}
 
+	BroadcastEquippedDelegate(DraggedItem->GetInventoryItem());
+
+	ClearDraggedItem();
+}
+
+void UDKWidgetEquipmentMenu::BroadcastEquippedDelegate(
+	UDkInventoryItem* ItemToEquipped, UDkInventoryItem* ItemToUnEquipped) const
+{
 	check(InventoryComponent.IsValid());
-	InventoryComponent->ServerUpdateEquippedItem(DraggedItem->GetInventoryItem(), nullptr);
+	InventoryComponent->ServerUpdateEquippedItem(ItemToEquipped, ItemToUnEquipped);
 
 	// 执行一些专属于Client的回调
 	if (GetOwningPlayer()->GetNetMode() != NM_DedicatedServer)
 	{
-		InventoryComponent->OnItemEquipped.Broadcast(DraggedItem->GetInventoryItem());
+		InventoryComponent->OnItemEquipped.Broadcast(ItemToEquipped);
+		InventoryComponent->OnItemUnEquipped.Broadcast(ItemToUnEquipped);
 	}
-
-	ClearDraggedItem();
 }
 
 void UDKWidgetEquipmentMenu::CalculateHoveredSlot(const FVector2D& CanvasPosition, const FVector2D& MousePosition)
@@ -200,8 +207,11 @@ void UDKWidgetEquipmentMenu::DragItem(UDkInventoryItem* ClickedInventoryItem, co
 {
 	AssignDraggedItem(ClickedInventoryItem, GridIndex, GridIndex);
 
-	// 从背包中移除被点击的Item
+	// 从装备栏中移除被点击的Item
 	RemoveItemFromGrid(ClickedInventoryItem, GridIndex);
+
+	// 取下装备后广播相关delegate
+	BroadcastEquippedDelegate(nullptr, ClickedInventoryItem);
 }
 
 void UDKWidgetEquipmentMenu::AssignDraggedItem(UDkInventoryItem* InventoryItem)

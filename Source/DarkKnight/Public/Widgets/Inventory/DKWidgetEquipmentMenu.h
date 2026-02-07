@@ -39,8 +39,12 @@ private:
 
 	/* 装备Item */
 	void PutItemOnEquipSlot(int32 EquipIndex);
+
+	void BroadcastEquippedDelegate(
+		UDkInventoryItem* ItemToEquipped, UDkInventoryItem* ItemToUnEquipped = nullptr
+	) const;
 	/********/
-	
+
 	/* 鼠标Hover装备网格，改变其样式 */
 	void CalculateHoveredSlot(const FVector2D& CanvasPosition, const FVector2D& MousePosition);
 	FIntPoint CalculateHoveredCoordinates(const FVector2D& CanvasPosition, const FVector2D& MousePosition) const;
@@ -59,7 +63,7 @@ private:
 
 	UFUNCTION()
 	void HandleDraggedItemCreated(UDkInventoryDraggedItem* InDraggedItem);
-	
+
 	UFUNCTION()
 	void HandleDraggedItemRecovered(UDkInventoryDraggedItem* InDraggedItem);
 
@@ -74,7 +78,7 @@ private:
 	void DragItem(UDkInventoryItem* ClickedInventoryItem, const int32 GridIndex);
 
 	virtual void AssignDraggedItem(UDkInventoryItem* InventoryItem);
-	
+
 	virtual void AssignDraggedItem(
 		UDkInventoryItem* InventoryItem, const int32 GridIndex, const int32 PreviousGridIndex
 	);

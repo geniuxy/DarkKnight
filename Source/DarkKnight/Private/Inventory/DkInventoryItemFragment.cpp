@@ -1,6 +1,7 @@
 ﻿#include "Inventory/DkInventoryItemFragment.h"
 
 #include "DarkKnightDebugHelper.h"
+#include "Equipment/DkEquipActorBase.h"
 #include "Widgets/Inventory/Composites/DkInventoryLeaf.h"
 #include "Widgets/Inventory/Composites/DkInventoryLeafImage.h"
 #include "Widgets/Inventory/Composites/DkInventoryLeafLabeledValue.h"
@@ -198,6 +199,26 @@ bool FInventoryItemEquipmentFragment::HasOptionalStats() const
 			ModRef.GetFragmentTag() == DkGameplayTags::Dk_Inventory_Fragment_LabeledValue_Stat_2;
 	}
 	return bHasOptionalStat;
+}
+
+ADkEquipActorBase* FInventoryItemEquipmentFragment::SpawnAttachActor(USkeletalMeshComponent* AttachMesh) const
+{
+	if (!IsValid(EquipActorClass) || !IsValid(AttachMesh)) return nullptr;
+
+	ADkEquipActorBase* SpawnedActor = AttachMesh->GetWorld()->SpawnActor<ADkEquipActorBase>(EquipActorClass);
+	SpawnedActor->AttachToComponent(
+		AttachMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, SocketAttachPoint
+	);
+
+	return SpawnedActor;
+}
+
+void FInventoryItemEquipmentFragment::DestroyAttachActor() const
+{
+	if (EquipActor.IsValid())
+	{
+		EquipActor->Destroy();
+	}
 }
 
 void FInventoryItemStrengthFragment::OnEquip(APlayerController* PC)

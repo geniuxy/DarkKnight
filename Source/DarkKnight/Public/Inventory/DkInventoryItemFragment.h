@@ -9,6 +9,7 @@
 #include "DkInventoryItemFragment.generated.h"
 
 
+class ADkEquipActorBase;
 class UDkInventoryCompositeBase;
 
 USTRUCT(BlueprintType)
@@ -294,9 +295,20 @@ struct FInventoryItemEquipmentFragment : public FInventoryItemFragment
 	virtual void Manifest() override;
 	bool HasOptionalStats() const;
 
+	ADkEquipActorBase* SpawnAttachActor(USkeletalMeshComponent* AttachMesh) const;
+	void DestroyAttachActor() const;
+
 private:
-	UPROPERTY(EditAnywhere, Category="Inventory", meta=(ExcludeBaseStruct))
+	UPROPERTY(EditAnywhere, Category="Equipment", meta=(ExcludeBaseStruct))
 	TArray<TInstancedStruct<FInventoryEquipModifier>> EquipModifiers;
+
+	UPROPERTY(EditAnywhere, Category="Equipment")
+	TSubclassOf<ADkEquipActorBase> EquipActorClass;
+
+	TWeakObjectPtr<ADkEquipActorBase> EquipActor;
+	
+	UPROPERTY(EditAnywhere, Category="Equipment")
+	FName SocketAttachPoint = NAME_None;
 };
 
 USTRUCT(BlueprintType)

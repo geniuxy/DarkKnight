@@ -168,6 +168,12 @@ void FInventoryItemEquipmentFragment::OnUnEquip(APlayerController* PC)
 void FInventoryItemEquipmentFragment::Assimilate(UDkInventoryCompositeBase* Composite) const
 {
 	FInventoryItemFragment::Assimilate(Composite);
+
+	for (const auto& Modifier : EquipModifiers)
+	{
+		const auto& ModRef = Modifier.Get();
+		ModRef.Assimilate(Composite);
+	}
 }
 
 void FInventoryItemEquipmentFragment::Manifest()

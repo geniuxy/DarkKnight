@@ -224,7 +224,6 @@ struct FInventoryConsumeModifier : public FInventoryItemLabeledValueFragment
 	}
 };
 
-
 USTRUCT(BlueprintType)
 struct FInventoryItemConsumableFragment : public FInventoryItemFragment
 {
@@ -285,7 +284,7 @@ struct FInventoryItemEquipmentFragment : public FInventoryItemFragment
 
 	FInventoryItemEquipmentFragment()
 	{
-		FragmentTag = DkGameplayTags::Dk_Inventory_Fragment_Consumable;
+		FragmentTag = DkGameplayTags::Dk_Inventory_Fragment_Equipment;
 	}
 
 	bool bEquipped = false;

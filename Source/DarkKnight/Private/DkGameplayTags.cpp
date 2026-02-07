@@ -71,6 +71,7 @@ namespace DkGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Inventory_Fragment_Icon, "Dk.Inventory.Fragment.Icon");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Inventory_Fragment_Stackable, "Dk.Inventory.Fragment.Stackable");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Inventory_Fragment_Consumable, "Dk.Inventory.Fragment.Consumable");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Inventory_Fragment_Equipment, "Dk.Inventory.Fragment.Equipment");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Inventory_Fragment_Name, "Dk.Inventory.Fragment.Name");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Inventory_Fragment_ItemType, "Dk.Inventory.Fragment.ItemType");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Inventory_Fragment_ItemDescription, "Dk.Inventory.Fragment.ItemDescription");

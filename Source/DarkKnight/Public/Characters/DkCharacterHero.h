@@ -6,6 +6,7 @@
 #include "DkCharacterBase.h"
 #include "DkCharacterHero.generated.h"
 
+class UDkEquipmentComponent;
 class UDkInventoryComponent;
 
 UCLASS()
@@ -20,6 +21,9 @@ protected:
 	/* Actor Components */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Inventory")
 	UDkInventoryComponent* InventoryComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Inventory")
+	UDkEquipmentComponent* EquipmentComponent;
 	/*********/
 
 public:

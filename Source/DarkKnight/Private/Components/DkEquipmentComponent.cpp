@@ -6,7 +6,16 @@
 #include "Characters/DkCharacterBase.h"
 #include "Components/DkInventoryComponent.h"
 #include "FunctionLibrarys/DkInventoryFunctionLibrary.h"
+#include "Inventory/DkInventoryItem.h"
+#include "Inventory/DkInventoryItemFragment.h"
 
+
+UDkEquipmentComponent::UDkEquipmentComponent()
+{
+	PrimaryComponentTick.bCanEverTick = false;
+
+	SetIsReplicatedByDefault(true);
+}
 
 void UDkEquipmentComponent::BeginPlay()
 {
@@ -34,10 +43,30 @@ void UDkEquipmentComponent::BeginPlay()
 
 void UDkEquipmentComponent::OnItemEquipped(UDkInventoryItem* EquippedItem)
 {
+	if (!IsValid(EquippedItem)) return;
+	if (!OwningCharacter->HasAuthority()) return;
+
+	FInventoryItemManifest& ItemManifest = EquippedItem->GetItemManifestMutable();
+	FInventoryItemEquipmentFragment* EquipmentFragment =
+		ItemManifest.GetFragmentOfTypeMutable<FInventoryItemEquipmentFragment>();
+	if (EquipmentFragment)
+	{
+		EquipmentFragment->OnEquip(OwningController.Get());
+	}
 }
 
-void UDkEquipmentComponent::OnItemUnEquipped(UDkInventoryItem* EquippedItem)
+void UDkEquipmentComponent::OnItemUnEquipped(UDkInventoryItem* UnEquippedItem)
 {
+	if (!IsValid(UnEquippedItem)) return;
+	if (!OwningCharacter->HasAuthority()) return;
+
+	FInventoryItemManifest& ItemManifest = UnEquippedItem->GetItemManifestMutable();
+	FInventoryItemEquipmentFragment* EquipmentFragment =
+		ItemManifest.GetFragmentOfTypeMutable<FInventoryItemEquipmentFragment>();
+	if (EquipmentFragment)
+	{
+		EquipmentFragment->OnUnEquip(OwningController.Get());
+	}
 }
 
 

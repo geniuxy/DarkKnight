@@ -16,6 +16,9 @@ class DARKKNIGHT_API UDkEquipmentComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
+public:
+	UDkEquipmentComponent();
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -29,5 +32,5 @@ private:
 	void OnItemEquipped(UDkInventoryItem* EquippedItem);
 
 	UFUNCTION()
-	void OnItemUnEquipped(UDkInventoryItem* EquippedItem);
+	void OnItemUnEquipped(UDkInventoryItem* UnEquippedItem);
 };

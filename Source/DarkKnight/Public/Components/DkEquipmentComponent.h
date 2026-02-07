@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "Components/ActorComponent.h"
 #include "DkEquipmentComponent.generated.h"
 
@@ -43,4 +44,8 @@ private:
 
 	UPROPERTY()
 	TArray<TObjectPtr<ADkEquippedActorBase>> EquippedActors;
+
+	ADkEquippedActorBase* FindEquippedActor(const FGameplayTag& EquippedActorTag);
+
+	void RemoveEquippedActor(const FGameplayTag& EquippedActorTag);
 };

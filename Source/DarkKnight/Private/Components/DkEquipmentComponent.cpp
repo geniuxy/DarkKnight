@@ -74,6 +74,8 @@ void UDkEquipmentComponent::OnItemUnEquipped(UDkInventoryItem* UnEquippedItem)
 	{
 		EquipmentFragment->OnUnEquip(OwningController.Get());
 	}
+
+	RemoveEquippedActor(EquipmentFragment->GetEquipmentTag());
 }
 
 ADkEquippedActorBase* UDkEquipmentComponent::SpawnEquippedActor(
@@ -84,4 +86,24 @@ ADkEquippedActorBase* UDkEquipmentComponent::SpawnEquippedActor(
 	SpawnedEquippedActor->SetOwner(GetOwner());
 	EquipmentFragment->SetEquippedActor(SpawnedEquippedActor);
 	return SpawnedEquippedActor;
+}
+
+ADkEquippedActorBase* UDkEquipmentComponent::FindEquippedActor(const FGameplayTag& EquippedActorTag)
+{
+	auto FoundActor = EquippedActors.FindByPredicate(
+		[EquippedActorTag](const ADkEquippedActorBase* EquippedActor)
+		{
+			return EquippedActor->GetEquipmentTag().MatchesTagExact(EquippedActorTag);
+		}
+	);
+	return FoundActor ? *FoundActor : nullptr;
+}
+
+void UDkEquipmentComponent::RemoveEquippedActor(const FGameplayTag& EquippedActorTag)
+{
+	if (ADkEquippedActorBase* EquippedActor = FindEquippedActor(EquippedActorTag); IsValid(EquippedActor))
+	{
+		EquippedActors.Remove(EquippedActor);
+		EquippedActor->Destroy();
+	}
 }

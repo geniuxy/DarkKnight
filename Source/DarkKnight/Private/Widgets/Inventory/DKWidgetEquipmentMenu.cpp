@@ -86,13 +86,6 @@ void UDKWidgetEquipmentMenu::BroadcastEquippedDelegate(
 {
 	check(InventoryComponent.IsValid());
 	InventoryComponent->ServerUpdateEquippedItem(ItemToEquipped, ItemToUnEquipped);
-
-	// 执行一些专属于Client的回调
-	if (GetOwningPlayer()->GetNetMode() != NM_DedicatedServer)
-	{
-		InventoryComponent->OnItemEquipped.Broadcast(ItemToEquipped);
-		InventoryComponent->OnItemUnEquipped.Broadcast(ItemToUnEquipped);
-	}
 }
 
 void UDKWidgetEquipmentMenu::CalculateHoveredSlot(const FVector2D& CanvasPosition, const FVector2D& MousePosition)

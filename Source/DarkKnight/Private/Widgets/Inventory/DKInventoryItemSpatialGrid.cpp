@@ -328,7 +328,7 @@ void UDKInventoryItemSpatialGrid::OnDraggedItemClicked(const FPointerEvent& Mous
 	}
 
 	UDkInventoryGridSlot* GridSlot = GridSlots[ItemDropIndex];
-	if (!IsValid(GridSlot->GetInventoryItem()))
+	if (!IsValid(GridSlot->GetInventoryItem()) && CurrentSpaceQueryResult.bHasSpace)
 	{
 		PutDownOnIndex(ItemDropIndex);
 	}

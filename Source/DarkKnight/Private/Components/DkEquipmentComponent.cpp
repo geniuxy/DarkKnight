@@ -22,23 +22,48 @@ void UDkEquipmentComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
+	InitPlayerCharacter();
+}
+
+void UDkEquipmentComponent::InitPlayerCharacter()
+{
 	OwningCharacter = Cast<ADkCharacterBase>(GetOwner());
 	if (OwningCharacter.IsValid())
 	{
-		OwningController = Cast<APlayerController>(OwningCharacter->GetController());
 		OwningSkeletalMesh = OwningCharacter->GetMesh();
+		OwningController = Cast<APlayerController>(OwningCharacter->GetController());
+		if (OwningController.IsValid())
+		{
+			InitInventoryComponent();
+		}
+		else
+		{
+			OwningCharacter->ReceiveControllerChangedDelegate.AddDynamic(this, &ThisClass::OnControllerChanged);
+		}
+	}
+}
 
-		// 初始化InventoryComponent
-		InventoryComponent = UDkInventoryFunctionLibrary::GetInventoryComponent(OwningController.Get());
-		if (!InventoryComponent.IsValid()) return;
-		if (!InventoryComponent->OnItemEquipped.IsAlreadyBound(this, &ThisClass::OnItemEquipped))
-		{
-			InventoryComponent->OnItemEquipped.AddDynamic(this, &ThisClass::OnItemEquipped);
-		}
-		if (!InventoryComponent->OnItemUnEquipped.IsAlreadyBound(this, &ThisClass::OnItemUnEquipped))
-		{
-			InventoryComponent->OnItemUnEquipped.AddDynamic(this, &ThisClass::OnItemUnEquipped);
-		}
+void UDkEquipmentComponent::OnControllerChanged(APawn* Pawn, AController* OldController, AController* NewController)
+{
+	if (APlayerController* NewPlayerController = Cast<APlayerController>(NewController); IsValid(NewPlayerController))
+	{
+		OwningController = NewPlayerController;
+		InitInventoryComponent();
+	}
+}
+
+void UDkEquipmentComponent::InitInventoryComponent()
+{
+	// 初始化InventoryComponent
+	InventoryComponent = UDkInventoryFunctionLibrary::GetInventoryComponent(OwningController.Get());
+	if (!InventoryComponent.IsValid()) return;
+	if (!InventoryComponent->OnItemEquipped.IsAlreadyBound(this, &ThisClass::OnItemEquipped))
+	{
+		InventoryComponent->OnItemEquipped.AddDynamic(this, &ThisClass::OnItemEquipped);
+	}
+	if (!InventoryComponent->OnItemUnEquipped.IsAlreadyBound(this, &ThisClass::OnItemUnEquipped))
+	{
+		InventoryComponent->OnItemUnEquipped.AddDynamic(this, &ThisClass::OnItemUnEquipped);
 	}
 }
 

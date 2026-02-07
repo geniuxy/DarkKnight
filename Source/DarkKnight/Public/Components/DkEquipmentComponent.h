@@ -32,6 +32,13 @@ private:
 	TWeakObjectPtr<APlayerController> OwningController;
 	TWeakObjectPtr<USkeletalMeshComponent> OwningSkeletalMesh;
 
+	void InitPlayerCharacter();
+
+	UFUNCTION()
+	void OnControllerChanged(APawn* Pawn, AController* OldController, AController* NewController);
+
+	void InitInventoryComponent();
+
 	UFUNCTION()
 	void OnItemEquipped(UDkInventoryItem* EquippedItem);
 

@@ -7,6 +7,9 @@
 #include "DkEquipmentComponent.generated.h"
 
 
+struct FInventoryItemManifest;
+struct FInventoryItemEquipmentFragment;
+class ADkEquippedActorBase;
 class UDkInventoryItem;
 class ADkCharacterBase;
 class UDkInventoryComponent;
@@ -33,4 +36,11 @@ private:
 
 	UFUNCTION()
 	void OnItemUnEquipped(UDkInventoryItem* UnEquippedItem);
+
+	ADkEquippedActorBase* SpawnEquippedActor(
+		FInventoryItemEquipmentFragment* EquipmentFragment, USkeletalMeshComponent* AttachMesh
+	);
+
+	UPROPERTY()
+	TArray<TObjectPtr<ADkEquippedActorBase>> EquippedActors;
 };

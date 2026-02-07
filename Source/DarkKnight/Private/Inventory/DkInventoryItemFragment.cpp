@@ -1,7 +1,7 @@
 ﻿#include "Inventory/DkInventoryItemFragment.h"
 
 #include "DarkKnightDebugHelper.h"
-#include "Equipment/DkEquipActorBase.h"
+#include "Equipment/DkEquippedActorBase.h"
 #include "Widgets/Inventory/Composites/DkInventoryLeaf.h"
 #include "Widgets/Inventory/Composites/DkInventoryLeafImage.h"
 #include "Widgets/Inventory/Composites/DkInventoryLeafLabeledValue.h"
@@ -201,11 +201,11 @@ bool FInventoryItemEquipmentFragment::HasOptionalStats() const
 	return bHasOptionalStat;
 }
 
-ADkEquipActorBase* FInventoryItemEquipmentFragment::SpawnAttachActor(USkeletalMeshComponent* AttachMesh) const
+ADkEquippedActorBase* FInventoryItemEquipmentFragment::SpawnAttachActor(USkeletalMeshComponent* AttachMesh) const
 {
-	if (!IsValid(EquipActorClass) || !IsValid(AttachMesh)) return nullptr;
+	if (!IsValid(EquippedActorClass) || !IsValid(AttachMesh)) return nullptr;
 
-	ADkEquipActorBase* SpawnedActor = AttachMesh->GetWorld()->SpawnActor<ADkEquipActorBase>(EquipActorClass);
+	ADkEquippedActorBase* SpawnedActor = AttachMesh->GetWorld()->SpawnActor<ADkEquippedActorBase>(EquippedActorClass);
 	SpawnedActor->AttachToComponent(
 		AttachMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, SocketAttachPoint
 	);
@@ -215,10 +215,15 @@ ADkEquipActorBase* FInventoryItemEquipmentFragment::SpawnAttachActor(USkeletalMe
 
 void FInventoryItemEquipmentFragment::DestroyAttachActor() const
 {
-	if (EquipActor.IsValid())
+	if (EquippedActor.IsValid())
 	{
-		EquipActor->Destroy();
+		EquippedActor->Destroy();
 	}
+}
+
+void FInventoryItemEquipmentFragment::SetEquippedActor(ADkEquippedActorBase* InEquippedActor)
+{
+	EquippedActor = InEquippedActor;
 }
 
 void FInventoryItemStrengthFragment::OnEquip(APlayerController* PC)

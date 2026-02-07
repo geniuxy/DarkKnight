@@ -9,7 +9,7 @@
 #include "DkInventoryItemFragment.generated.h"
 
 
-class ADkEquipActorBase;
+class ADkEquippedActorBase;
 class UDkInventoryCompositeBase;
 
 USTRUCT(BlueprintType)
@@ -295,20 +295,28 @@ struct FInventoryItemEquipmentFragment : public FInventoryItemFragment
 	virtual void Manifest() override;
 	bool HasOptionalStats() const;
 
-	ADkEquipActorBase* SpawnAttachActor(USkeletalMeshComponent* AttachMesh) const;
+	ADkEquippedActorBase* SpawnAttachActor(USkeletalMeshComponent* AttachMesh) const;
 	void DestroyAttachActor() const;
+
+	void SetEquippedActor(ADkEquippedActorBase* InEquippedActor);
 
 private:
 	UPROPERTY(EditAnywhere, Category="Equipment", meta=(ExcludeBaseStruct))
 	TArray<TInstancedStruct<FInventoryEquipModifier>> EquipModifiers;
 
 	UPROPERTY(EditAnywhere, Category="Equipment")
-	TSubclassOf<ADkEquipActorBase> EquipActorClass;
+	TSubclassOf<ADkEquippedActorBase> EquippedActorClass;
 
-	TWeakObjectPtr<ADkEquipActorBase> EquipActor;
+	TWeakObjectPtr<ADkEquippedActorBase> EquippedActor;
 	
 	UPROPERTY(EditAnywhere, Category="Equipment")
 	FName SocketAttachPoint = NAME_None;
+
+	UPROPERTY(EditAnywhere, meta = (Categories = "Dk.Item.Equipment"), Category="Equipment")
+	FGameplayTag EquipmentTag = FGameplayTag::EmptyTag;
+
+public:
+	LIST_DATA_ACCESSOR(FGameplayTag, EquipmentTag)
 };
 
 USTRUCT(BlueprintType)

@@ -1,10 +1,10 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Equipment/DkEquipActorBase.h"
+#include "Equipment/DkEquippedActorBase.h"
 
 
-ADkEquipActorBase::ADkEquipActorBase()
+ADkEquippedActorBase::ADkEquippedActorBase()
 {
 	PrimaryActorTick.bCanEverTick = false;
 	bReplicates = true;

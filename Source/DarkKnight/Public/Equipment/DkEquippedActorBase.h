@@ -6,16 +6,16 @@
 #include "GameplayTagContainer.h"
 #include "DarkKnight/DarkKnight.h"
 #include "GameFramework/Actor.h"
-#include "DkEquipActorBase.generated.h"
+#include "DkEquippedActorBase.generated.h"
 
 
 UCLASS()
-class DARKKNIGHT_API ADkEquipActorBase : public AActor
+class DARKKNIGHT_API ADkEquippedActorBase : public AActor
 {
 	GENERATED_BODY()
 
 public:
-	ADkEquipActorBase();
+	ADkEquippedActorBase();
 
 private:
 	UPROPERTY(EditAnywhere, Category="Equipment")

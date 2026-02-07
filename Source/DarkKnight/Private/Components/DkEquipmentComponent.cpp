@@ -5,6 +5,7 @@
 
 #include "Characters/DkCharacterBase.h"
 #include "Components/DkInventoryComponent.h"
+#include "Equipment/DkEquippedActorBase.h"
 #include "FunctionLibrarys/DkInventoryFunctionLibrary.h"
 #include "Inventory/DkInventoryItem.h"
 #include "Inventory/DkInventoryItemFragment.h"
@@ -53,6 +54,12 @@ void UDkEquipmentComponent::OnItemEquipped(UDkInventoryItem* EquippedItem)
 	{
 		EquipmentFragment->OnEquip(OwningController.Get());
 	}
+
+	if (OwningSkeletalMesh.IsValid())
+	{
+		ADkEquippedActorBase* SpawnedEquippedActor = SpawnEquippedActor(EquipmentFragment, OwningSkeletalMesh.Get());
+		EquippedActors.Add(SpawnedEquippedActor);
+	}
 }
 
 void UDkEquipmentComponent::OnItemUnEquipped(UDkInventoryItem* UnEquippedItem)
@@ -69,4 +76,12 @@ void UDkEquipmentComponent::OnItemUnEquipped(UDkInventoryItem* UnEquippedItem)
 	}
 }
 
-
+ADkEquippedActorBase* UDkEquipmentComponent::SpawnEquippedActor(
+	FInventoryItemEquipmentFragment* EquipmentFragment, USkeletalMeshComponent* AttachMesh)
+{
+	ADkEquippedActorBase* SpawnedEquippedActor = EquipmentFragment->SpawnAttachActor(AttachMesh);
+	SpawnedEquippedActor->SetEquipmentTag(EquipmentFragment->GetEquipmentTag());
+	SpawnedEquippedActor->SetOwner(GetOwner());
+	EquipmentFragment->SetEquippedActor(SpawnedEquippedActor);
+	return SpawnedEquippedActor;
+}

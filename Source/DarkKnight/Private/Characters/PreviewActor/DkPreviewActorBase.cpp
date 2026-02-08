@@ -11,8 +11,6 @@ ADkPreviewActorBase::ADkPreviewActorBase()
 {
 	PrimaryActorTick.bCanEverTick = false;
 
-	bReplicates = true;
-
 	RootComponent = CreateDefaultSubobject<USceneComponent>("Root");
 
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>("Mesh");

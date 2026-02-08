@@ -81,7 +81,14 @@ void UDkEquipmentComponent::InitInventoryComponent()
 void UDkEquipmentComponent::OnItemEquipped(UDkInventoryItem* EquippedItem)
 {
 	if (!IsValid(EquippedItem)) return;
-	if (!OwningController->HasAuthority()) return; // 对于PreviewActor,这里OwningCharacter为空，所以用OwningController
+	if (bIsPreview)
+	{
+		if (!OwningController->IsLocalController()) return; // 预览情况下，本地Client处理PreviewActor的装备/卸装备
+	}
+	else
+	{
+		if (!OwningController->HasAuthority()) return; // 对于PreviewActor,这里OwningCharacter为空，所以用OwningController
+	}
 
 	FInventoryItemManifest& ItemManifest = EquippedItem->GetItemManifestMutable();
 	FInventoryItemEquipmentFragment* EquipmentFragment =
@@ -96,6 +103,10 @@ void UDkEquipmentComponent::OnItemEquipped(UDkInventoryItem* EquippedItem)
 	if (OwningSkeletalMesh.IsValid())
 	{
 		ADkEquippedActorBase* SpawnedEquippedActor = SpawnEquippedActor(EquipmentFragment, OwningSkeletalMesh.Get());
+		if (bIsPreview) // 如果是多个Client且为Preview，自己管自己的PreviewActor，其对应的SpawnedEquippedActor不为复制
+		{
+			SpawnedEquippedActor->SetReplicates(false);
+		}
 		EquippedActors.Add(SpawnedEquippedActor);
 	}
 }
@@ -103,7 +114,14 @@ void UDkEquipmentComponent::OnItemEquipped(UDkInventoryItem* EquippedItem)
 void UDkEquipmentComponent::OnItemUnEquipped(UDkInventoryItem* UnEquippedItem)
 {
 	if (!IsValid(UnEquippedItem)) return;
-	if (!OwningController->HasAuthority()) return;
+	if (bIsPreview)
+	{
+		if (!OwningController->IsLocalController()) return; // 预览情况下，本地Client处理PreviewActor的装备/卸装备
+	}
+	else
+	{
+		if (!OwningController->HasAuthority()) return; // 对于PreviewActor,这里OwningCharacter为空，所以用OwningController
+	}
 
 	FInventoryItemManifest& ItemManifest = UnEquippedItem->GetItemManifestMutable();
 	FInventoryItemEquipmentFragment* EquipmentFragment =

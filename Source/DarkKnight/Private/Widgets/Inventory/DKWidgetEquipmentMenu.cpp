@@ -109,6 +109,8 @@ void UDKWidgetEquipmentMenu::CalculateHoveredSlot(const FVector2D& CanvasPositio
 	if (!IsValid(DraggedItem)) return;
 
 	ItemEquipIndex = HoveredTileCoordinate.X * NUM_OF_COLUMNS + HoveredTileCoordinate.Y;
+	if (!EquippedGridSlots.IsValidIndex(ItemEquipIndex)) return;
+	
 	// Debug::Print(DraggedItem->GetItemTag().ToString());
 	if (DraggedItem->GetItemTag().MatchesTag(EquippedGridSlots[ItemEquipIndex]->GetEquipmentTypeTag()))
 	{

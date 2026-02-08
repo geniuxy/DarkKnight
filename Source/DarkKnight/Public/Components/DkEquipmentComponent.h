@@ -25,6 +25,7 @@ public:
 
 	void SetOwningSkeletalMesh(USkeletalMeshComponent* InOwningMesh) { OwningSkeletalMesh = InOwningMesh; }
 	void SetIsPreview(bool bInIsPreview) { bIsPreview = bInIsPreview; }
+	void InitializeOwner(APlayerController* PlayerController);
 
 protected:
 	virtual void BeginPlay() override;

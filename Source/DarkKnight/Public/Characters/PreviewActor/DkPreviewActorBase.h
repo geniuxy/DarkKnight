@@ -29,4 +29,10 @@ private:
 	// PreviewActor对应的Mesh
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USkeletalMeshComponent> Mesh;
+
+	/* Init */
+	FTimerHandle TimerForNextTick;
+	void DelayedInitializeOwner();
+	void DelayedInitialization();
+	/********/
 };

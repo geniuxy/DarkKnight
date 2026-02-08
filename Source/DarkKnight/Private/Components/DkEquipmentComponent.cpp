@@ -18,6 +18,15 @@ UDkEquipmentComponent::UDkEquipmentComponent()
 	SetIsReplicatedByDefault(true);
 }
 
+void UDkEquipmentComponent::InitializeOwner(APlayerController* PlayerController)
+{
+	if (IsValid(PlayerController))
+	{
+		OwningController = PlayerController;
+		InitInventoryComponent();
+	}
+}
+
 void UDkEquipmentComponent::BeginPlay()
 {
 	Super::BeginPlay();
@@ -27,7 +36,8 @@ void UDkEquipmentComponent::BeginPlay()
 
 void UDkEquipmentComponent::InitPlayerCharacter()
 {
-	// 能BeginPlay，说明OwningCharacter肯定是有效的，因为EquipmentComponent是Character的一部分
+	// 能BeginPlay，说明OwningCharacter（GetOwner()）肯定是有效的，因为EquipmentComponent是Character的一部分
+	// 对于PreviewActor则是无效的，所以需要另外定义Controller、SkeletalMesh等
 	OwningCharacter = Cast<ADkCharacterBase>(GetOwner());
 	if (OwningCharacter.IsValid())
 	{
@@ -76,7 +86,9 @@ void UDkEquipmentComponent::OnItemEquipped(UDkInventoryItem* EquippedItem)
 	FInventoryItemManifest& ItemManifest = EquippedItem->GetItemManifestMutable();
 	FInventoryItemEquipmentFragment* EquipmentFragment =
 		ItemManifest.GetFragmentOfTypeMutable<FInventoryItemEquipmentFragment>();
-	if (EquipmentFragment)
+	if (!EquipmentFragment) return;
+	
+	if (!bIsPreview) // 预览时不需要调整属性等操作
 	{
 		EquipmentFragment->OnEquip(OwningController.Get());
 	}
@@ -96,7 +108,9 @@ void UDkEquipmentComponent::OnItemUnEquipped(UDkInventoryItem* UnEquippedItem)
 	FInventoryItemManifest& ItemManifest = UnEquippedItem->GetItemManifestMutable();
 	FInventoryItemEquipmentFragment* EquipmentFragment =
 		ItemManifest.GetFragmentOfTypeMutable<FInventoryItemEquipmentFragment>();
-	if (EquipmentFragment)
+	if (!EquipmentFragment) return;
+	
+	if (!bIsPreview) // 预览时不需要调整属性等操作
 	{
 		EquipmentFragment->OnUnEquip(OwningController.Get());
 	}

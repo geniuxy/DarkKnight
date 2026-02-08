@@ -16,6 +16,8 @@ class DARKKNIGHT_API ADkPreviewActorBase : public AActor
 public:
 	ADkPreviewActorBase();
 
+	USkeletalMeshComponent* GetMesh() const { return Mesh; }
+
 protected:
 	virtual void BeginPlay() override;
 

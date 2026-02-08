@@ -23,6 +23,9 @@ class DARKKNIGHT_API UDkEquipmentComponent : public UActorComponent
 public:
 	UDkEquipmentComponent();
 
+	void SetOwningSkeletalMesh(USkeletalMeshComponent* InOwningMesh) { OwningSkeletalMesh = InOwningMesh; }
+	void SetIsPreview(bool bInIsPreview) { bIsPreview = bInIsPreview; }
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -32,13 +35,16 @@ private:
 	TWeakObjectPtr<APlayerController> OwningController;
 	TWeakObjectPtr<USkeletalMeshComponent> OwningSkeletalMesh;
 
+	/* Init */
 	void InitPlayerCharacter();
 
 	UFUNCTION()
 	void OnControllerChanged(APawn* Pawn, AController* OldController, AController* NewController);
 
 	void InitInventoryComponent();
+	/********/
 
+	/* 装备Item */
 	UFUNCTION()
 	void OnItemEquipped(UDkInventoryItem* EquippedItem);
 
@@ -55,4 +61,9 @@ private:
 	ADkEquippedActorBase* FindEquippedActor(const FGameplayTag& EquippedActorTag);
 
 	void RemoveEquippedActor(const FGameplayTag& EquippedActorTag);
+	/********/
+
+	/* 预览装备 */
+	bool bIsPreview = false;
+	/********/
 };

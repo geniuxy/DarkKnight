@@ -27,6 +27,7 @@ void UDkEquipmentComponent::BeginPlay()
 
 void UDkEquipmentComponent::InitPlayerCharacter()
 {
+	// 能BeginPlay，说明OwningCharacter肯定是有效的，因为EquipmentComponent是Character的一部分
 	OwningCharacter = Cast<ADkCharacterBase>(GetOwner());
 	if (OwningCharacter.IsValid())
 	{

@@ -55,7 +55,7 @@ public:
 	void TryAddItem(UDkItemComponent* ItemComponent);
 
 	UFUNCTION(Server, Reliable)
-	void Server_AddNewItem(UDkItemComponent* ItemComponent, int32 StackCount);
+	void Server_AddNewItem(UDkItemComponent* ItemComponent, int32 StackCount, int32 Remainder);
 
 	UFUNCTION(Server, Reliable)
 	void Server_AddStacksToItem(UDkItemComponent* ItemComponent, int32 StackCount, int32 Remainder);

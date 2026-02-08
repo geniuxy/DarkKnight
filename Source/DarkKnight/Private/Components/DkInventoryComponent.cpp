@@ -94,7 +94,9 @@ void UDkInventoryComponent::TryAddItem(UDkItemComponent* ItemComponent)
 	else
 	{
 		// 此物品类型在物品栏中不存在。请创建一个新物品并更新所有相关栏位。
-		Server_AddNewItem(ItemComponent, AddItemResult.bStackable ? AddItemResult.TotalRoomToFill : 0);
+		Server_AddNewItem(
+			ItemComponent, AddItemResult.bStackable ? AddItemResult.TotalRoomToFill : 0, AddItemResult.Remainder
+		);
 	}
 }
 
@@ -106,7 +108,8 @@ void UDkInventoryComponent::AddRepSubObj(UObject* SubObj)
 	}
 }
 
-void UDkInventoryComponent::Server_AddNewItem_Implementation(UDkItemComponent* ItemComponent, int32 StackCount)
+void UDkInventoryComponent::Server_AddNewItem_Implementation(
+	UDkItemComponent* ItemComponent, int32 StackCount, int32 Remainder)
 {
 	// 服务器FastArray添加Item后，回调PostReplicatedAdd来达到OnItemAdded.Broadcast(NewItem)的目的，以更新Client
 	UDkInventoryItem* NewItem = InventoryList.AddEntry(ItemComponent);
@@ -121,8 +124,17 @@ void UDkInventoryComponent::Server_AddNewItem_Implementation(UDkItemComponent* I
 		}
 	}
 
-	// 通知 ItemComponent 执行PickedUp操作（销毁 Owner 道具Actor等）
-	ItemComponent->OnPickedUp();
+	// 如果Remainder零，则 执行PickedUp操作（销毁 Owner 道具Actor等）
+	if (Remainder == 0)
+	{
+		ItemComponent->OnPickedUp();
+	}
+	// 否则，更新想要捡起的Item的StackCount
+	else if (FInventoryItemStackableFragment* StackableFragment =
+		ItemComponent->GetItemManifestMutable().GetFragmentOfTypeMutable<FInventoryItemStackableFragment>())
+	{
+		StackableFragment->SetStackCount(Remainder);
+	}
 }
 
 void UDkInventoryComponent::Server_AddStacksToItem_Implementation(
@@ -142,7 +154,7 @@ void UDkInventoryComponent::Server_AddStacksToItem_Implementation(
 	}
 	// 否则，更新想要捡起的Item的StackCount
 	else if (FInventoryItemStackableFragment* StackableFragment =
-		ItemComponent->GetItemManifest().GetFragmentOfTypeMutable<FInventoryItemStackableFragment>())
+		ItemComponent->GetItemManifestMutable().GetFragmentOfTypeMutable<FInventoryItemStackableFragment>())
 	{
 		StackableFragment->SetStackCount(Remainder);
 	}

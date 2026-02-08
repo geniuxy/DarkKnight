@@ -22,6 +22,10 @@ public:
 
 	void InitItemManifest(FInventoryItemManifest InItemManifest);
 
+	FInventoryItemManifest GetItemManifest() const { return ItemManifest; }
+
+	FInventoryItemManifest& GetItemManifestMutable() { return ItemManifest; }
+
 protected:
 	UFUNCTION(BlueprintImplementableEvent, Category = "Inventory")
 	void BP_OnPickedUp();
@@ -35,5 +39,4 @@ private:
 
 public:
 	FORCEINLINE FString GetPickUpMessage() const { return PickUpMessage; }
-	FORCEINLINE FInventoryItemManifest GetItemManifest() const { return ItemManifest; }
 };

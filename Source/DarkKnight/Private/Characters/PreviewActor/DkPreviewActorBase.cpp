@@ -38,6 +38,16 @@ void ADkPreviewActorBase::DelayedInitializeOwner()
 		return;
 	}
 
+	// APlayerController* PlayerController = nullptr;
+	// for (FConstPlayerControllerIterator ControllerIterator = World->GetPlayerControllerIterator();
+	//      ControllerIterator; ++ControllerIterator)
+	// {
+	// 	if (IsValid(ControllerIterator->Get()) && ControllerIterator->Get()->IsLocalPlayerController())
+	// 	{
+	// 		PlayerController = ControllerIterator->Get();
+	// 		break;
+	// 	}
+	// }
 	APlayerController* PlayerController = World->GetFirstPlayerController();
 	if (!IsValid(PlayerController))
 	{
@@ -72,4 +82,3 @@ void ADkPreviewActorBase::DelayedInitialization()
 	TimerDelegate.BindUObject(this, &ThisClass::DelayedInitializeOwner);
 	GetWorld()->GetTimerManager().SetTimerForNextTick(TimerDelegate);
 }
-

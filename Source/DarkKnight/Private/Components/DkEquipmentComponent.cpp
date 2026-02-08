@@ -81,7 +81,7 @@ void UDkEquipmentComponent::InitInventoryComponent()
 void UDkEquipmentComponent::OnItemEquipped(UDkInventoryItem* EquippedItem)
 {
 	if (!IsValid(EquippedItem)) return;
-	if (!OwningCharacter->HasAuthority()) return;
+	if (!OwningController->HasAuthority()) return; // 对于PreviewActor,这里OwningCharacter为空，所以用OwningController
 
 	FInventoryItemManifest& ItemManifest = EquippedItem->GetItemManifestMutable();
 	FInventoryItemEquipmentFragment* EquipmentFragment =
@@ -103,7 +103,7 @@ void UDkEquipmentComponent::OnItemEquipped(UDkInventoryItem* EquippedItem)
 void UDkEquipmentComponent::OnItemUnEquipped(UDkInventoryItem* UnEquippedItem)
 {
 	if (!IsValid(UnEquippedItem)) return;
-	if (!OwningCharacter->HasAuthority()) return;
+	if (!OwningController->HasAuthority()) return;
 
 	FInventoryItemManifest& ItemManifest = UnEquippedItem->GetItemManifestMutable();
 	FInventoryItemEquipmentFragment* EquipmentFragment =

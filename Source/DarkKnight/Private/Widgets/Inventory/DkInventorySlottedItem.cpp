@@ -25,6 +25,8 @@ FReply UDkInventorySlottedItem::NativeOnMouseButtonDown(const FGeometry& InGeome
 void UDkInventorySlottedItem::NativeOnMouseEnter(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
 {
 	CreateItemDescriptionMenu();
+
+	// TODO: 如果有对应类型的装备已装备，则在左边或者右边显示其DescriptionMenu
 }
 
 void UDkInventorySlottedItem::NativeOnMouseLeave(const FPointerEvent& MouseEvent)

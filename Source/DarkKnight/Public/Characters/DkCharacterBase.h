@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "DkCharacterBase.generated.h"
 
+class UDkAbilitySystemComponent;
 class UMotionWarpingComponent;
 
 UCLASS()
@@ -15,6 +16,12 @@ class DARKKNIGHT_API ADkCharacterBase : public ACharacter
 
 public:
 	ADkCharacterBase();
+
+protected:
+	/* Actor Components */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "ASC")
+	UDkAbilitySystemComponent* AbilitySystemComponent;
+	/*********/
 
 private:
 	UPROPERTY(VisibleAnywhere)

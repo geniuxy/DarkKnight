@@ -3,3 +3,9 @@
 
 #include "GAS/DkAbilitySystemComponent.h"
 
+void UDkAbilitySystemComponent::BeginPlay()
+{
+	Super::BeginPlay();
+
+	InitStats(OwningAttributeSet, AttributeSetInitialTable);
+}

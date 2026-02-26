@@ -3,6 +3,7 @@
 
 #include "Characters/DkCharacterBase.h"
 #include "MotionWarpingComponent.h"
+#include "GAS/DkAbilitySystemComponent.h"
 
 ADkCharacterBase::ADkCharacterBase()
 {
@@ -24,5 +25,7 @@ ADkCharacterBase::ADkCharacterBase()
 	HelmetMesh->SetCollisionProfileName(FName("DkMesh"));
 
 	MotionWarping = CreateDefaultSubobject<UMotionWarpingComponent>(TEXT("MotionWarping"));
+
+	AbilitySystemComponent = CreateDefaultSubobject<UDkAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 }
 

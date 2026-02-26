@@ -8,24 +8,20 @@ ADkCharacterBase::ADkCharacterBase()
 {
 	PrimaryActorTick.bCanEverTick = false;
 
-	CharacterMesh = CreateDefaultSubobject<USkeletalMeshComponent>("CharacterMesh");
-	CharacterMesh->SetupAttachment(GetRootComponent());
-	CharacterMesh->SetCollisionProfileName(FName("DkMesh"));
+	GetMesh()->SetCollisionProfileName(FName("DkMesh"));
 	
 	BodyArmorMesh = CreateDefaultSubobject<USkeletalMeshComponent>("BodyArmorMesh");
-	BodyArmorMesh->SetupAttachment(CharacterMesh);
+	BodyArmorMesh->SetupAttachment(GetMesh());
 	BodyArmorMesh->SetCollisionProfileName(FName("DkMesh"));
 	ArmArmorMesh = CreateDefaultSubobject<USkeletalMeshComponent>("ArmArmorMesh");
-	ArmArmorMesh->SetupAttachment(CharacterMesh);
+	ArmArmorMesh->SetupAttachment(GetMesh());
 	ArmArmorMesh->SetCollisionProfileName(FName("DkMesh"));
 	BottomArmorMesh = CreateDefaultSubobject<USkeletalMeshComponent>("BottomArmorMesh");
-	BottomArmorMesh->SetupAttachment(CharacterMesh);
+	BottomArmorMesh->SetupAttachment(GetMesh());
 	BottomArmorMesh->SetCollisionProfileName(FName("DkMesh"));
 	HelmetMesh = CreateDefaultSubobject<USkeletalMeshComponent>("HelmetMesh");
-	HelmetMesh->SetupAttachment(CharacterMesh);
+	HelmetMesh->SetupAttachment(GetMesh());
 	HelmetMesh->SetCollisionProfileName(FName("DkMesh"));
-
-	CharacterMesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 
 	MotionWarping = CreateDefaultSubobject<UMotionWarpingComponent>(TEXT("MotionWarping"));
 }

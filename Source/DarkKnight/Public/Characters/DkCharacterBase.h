@@ -18,9 +18,6 @@ public:
 
 private:
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<USkeletalMeshComponent> CharacterMesh;
-
-	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USkeletalMeshComponent> BodyArmorMesh;
 
 	UPROPERTY(VisibleAnywhere)

@@ -16,7 +16,9 @@ public class DarkKnight : ModuleRules
 			"Engine",
 			"InputCore", // EKeys::LeftMouseButton 等
 			"EnhancedInput",
+			"GameplayAbilities",
 			"GameplayTags",
+			"GameplayTasks",
 			"UMG",
 			"CommonInput",
 			"PropertyPath",

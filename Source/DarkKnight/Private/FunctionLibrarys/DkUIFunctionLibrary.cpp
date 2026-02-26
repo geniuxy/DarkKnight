@@ -3,6 +3,7 @@
 
 #include "FunctionLibrarys/DkUIFunctionLibrary.h"
 
+#include "DarkKnightDebugHelper.h"
 #include "Blueprint/UserWidget.h"
 #include "Settings/DkUIDeveloperSettings.h"
 #include "Slate/SceneViewport.h"
@@ -101,13 +102,14 @@ bool UDkUIFunctionLibrary::PositionWidgetAtMouse(UUserWidget* Widget, FVector2D 
 	//
 	// 	FVector2D Desired = SlateWidget->GetDesiredSize();
 	// 	float DPIScale = World->GetGameViewport()->GetDPIScale();
-	// 	// FVector2D Actual = Widget->GetCachedGeometry().GetAbsoluteSize();
-	// 	// float AppScale = FSlateApplication::Get().GetApplicationScale();
+	// 	FVector2D Actual = Widget->GetCachedGeometry().GetAbsoluteSize();
+	// 	float AppScale = FSlateApplication::Get().GetApplicationScale();
 	//
-	// 	// Debug::Print(FString::Printf(TEXT("Desired: %s, DPI: %.2f, AppScale: %.2f, AbsoluteSize: %s, Ratio: %.2f"),
-	// 	// 	*Desired.ToString(), DPIScale, AppScale, *Actual.ToString(), 
-	// 	// 	Actual.X / (Desired.X * DPIScale)));
-	// 	WidgetSize = Desired * DPIScale * 1.25f; // TODO: 这个1.25是哪来的？如何造成的？
+	// 	Debug::Print(FString::Printf(TEXT("Desired: %s, DPI: %.2f, AppScale: %.2f, AbsoluteSize: %s, Ratio: %.2f"),
+	// 		*Desired.ToString(), DPIScale, AppScale, *Actual.ToString(), 
+	// 		Actual.X / (Desired.X * DPIScale)));
+	// 	// WidgetSize = Desired * DPIScale * 1.25f; // TODO: 这个1.25是哪来的？如何造成的？
+	// 	WidgetSize = Actual;
 	// }
 	// 这种算法在tick时，会得到WidgetSize为0,0，从而瞬闪
 	const FVector2D WidgetSize = Widget->GetCachedGeometry().GetAbsoluteSize();

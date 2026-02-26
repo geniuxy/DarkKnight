@@ -40,6 +40,9 @@ namespace DkGameplayTags
 		Dk_Item_Equipment_Cloaks_RedCloak, "Dk.Item.Equipment.Cloaks.RedCloak", "鲜红色斗篷"
 	);
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(
+		Dk_Item_Equipment_Cloaks_WarriorCloak, "Dk.Item.Equipment.Cloaks.WarriorCloak", "战士的斗篷"
+	);
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(
 		Dk_Item_Equipment_Masks_SteelMask, "Dk.Item.Equipment.Masks.SteelMask", "全覆式钢面具"
 	);
 

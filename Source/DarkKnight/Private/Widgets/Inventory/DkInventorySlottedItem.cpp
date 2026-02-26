@@ -58,8 +58,8 @@ void UDkInventorySlottedItem::NativeTick(const FGeometry& MyGeometry, float InDe
 		UDkUIFunctionLibrary::PositionWidgetAtMouse(
 			ItemDescriptionMenu,
 			FVector2D{8.f, 8.f},
-			true,
-			true,
+			false,
+			false,
 			4
 		);
 	}

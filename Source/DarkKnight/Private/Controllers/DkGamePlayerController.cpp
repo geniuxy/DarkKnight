@@ -200,6 +200,6 @@ void ADkGamePlayerController::RefreshInventoryComponent()
 	// 从PlayerController获取Character是通过GetPawn() (永远不要在 BeginPlay 里假设 Pawn 已准备好!）
 	InventoryComponent = CastChecked<ADkCharacterHero>(GetPawn())->FindComponentByClass<UDkInventoryComponent>();
 	UDkInventorySubsystem* InventorySubsystem = UDkInventorySubsystem::Get(this);
-	checkf(InventorySubsystem, TEXT("UISubsystem为空！"));
+	checkf(InventorySubsystem, TEXT("InventorySubsystem为空！"));
 	InventorySubsystem->RegisterCachedInventoryComponent(InventoryComponent.Get());
 }

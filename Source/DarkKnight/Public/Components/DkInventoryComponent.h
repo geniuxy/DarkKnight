@@ -9,6 +9,7 @@
 #include "DkInventoryComponent.generated.h"
 
 
+class UDkInventoryItemDescriptionMenu;
 class UDkInventoryDraggedItem;
 struct FDkInventorySlotAvailabilityResult;
 class UDkWidgetInventoryMenu;
@@ -27,6 +28,11 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDraggedItemCreated, UDkInventoryD
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDraggedItemRemoved);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDraggedItemRecovered, UDkInventoryDraggedItem*, DraggedItem);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
+	FOnItemDescriptionMenuCreated, UDkInventoryItemDescriptionMenu*, ItemDescription);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnItemDescriptionMenuRemoved);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FItemEquipStatusChanged, UDkInventoryItem*, Item);
 
@@ -105,13 +111,18 @@ public:
 	FOnDraggedItemRecovered OnExitGameMenuRecoverGridItem;
 	/********/
 
+	/* ItemDescriptionMenu相关Delegate */
+	FOnItemDescriptionMenuCreated OnItemDescriptionMenuCreated;
+	FOnItemDescriptionMenuRemoved OnItemDescriptionMenuRemoved;
+	/********/
+
 	/* 装备Item相关 */
 	UFUNCTION(Server, Reliable)
 	void ServerUpdateEquippedItem(UDkInventoryItem* EquippedItem, UDkInventoryItem* UnEquippedItem);
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastUpdateEquippedItem(UDkInventoryItem* EquippedItem, UDkInventoryItem* UnEquippedItem);
-	
+
 	FItemEquipStatusChanged OnItemEquipped;
 	FItemEquipStatusChanged OnItemUnEquipped;
 	/********/

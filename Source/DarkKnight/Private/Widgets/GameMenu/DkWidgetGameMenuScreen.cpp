@@ -4,6 +4,9 @@
 #include "Widgets/GameMenu/DkWidgetGameMenuScreen.h"
 
 #include "ICommonInputModule.h"
+#include "Blueprint/WidgetLayoutLibrary.h"
+#include "Components/CanvasPanel.h"
+#include "Components/CanvasPanelSlot.h"
 #include "Components/DkInventoryComponent.h"
 #include "FunctionLibrarys/DkInventoryFunctionLibrary.h"
 #include "FunctionLibrarys/DkUIFunctionLibrary.h"
@@ -26,6 +29,9 @@ void UDkWidgetGameMenuScreen::NativeOnInitialized()
 	// 绑定DraggedItem创建相关的回调
 	InventoryComponent->OnDraggedItemCreated.AddUniqueDynamic(this, &ThisClass::HandleDraggedItemCreated);
 	InventoryComponent->OnDraggedItemRemoved.AddUniqueDynamic(this, &ThisClass::HandleDraggedItemRemoved);
+	// 绑定ItemDescriptionMenu创建相关的回调
+	InventoryComponent->OnItemDescriptionMenuCreated.AddUniqueDynamic(this, &ThisClass::HandleItemDescriptionCreated);
+	InventoryComponent->OnItemDescriptionMenuRemoved.AddUniqueDynamic(this, &ThisClass::HandleItemDescriptionRemoved);
 }
 
 void UDkWidgetGameMenuScreen::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -44,6 +50,19 @@ void UDkWidgetGameMenuScreen::NativeTick(const FGeometry& MyGeometry, float InDe
 
 		const FVector2D ActualSize = DraggedItem->GetCachedGeometry().GetAbsoluteSize();
 		DraggedItem->SetPositionInViewport(MousePos - ActualSize * 0.5f);
+	}
+
+	if (ItemDescriptionMenu.IsValid())
+	{
+		UCanvasPanelSlot* ItemDescriptionCPS = UWidgetLayoutLibrary::SlotAsCanvasSlot(ItemDescriptionMenu.Get());
+		if (!IsValid(ItemDescriptionCPS)) return;
+
+		const FVector2D ItemDescriptionSize = ItemDescriptionMenu->GetBoxSize();
+		ItemDescriptionCPS->SetSize(ItemDescriptionSize);
+
+		FVector2D MousePos = UWidgetLayoutLibrary::GetMousePositionOnViewport(GetOwningPlayer());
+		FVector2D ClampedPosition = FVector2D(MousePos.X - ItemDescriptionSize.X * 0.6f, MousePos.Y + ItemDescriptionSize.Y * 0.05f);
+		ItemDescriptionCPS->SetPosition(ClampedPosition);
 	}
 }
 
@@ -87,6 +106,24 @@ void UDkWidgetGameMenuScreen::HandleDraggedItemCreated(UDkInventoryDraggedItem* 
 void UDkWidgetGameMenuScreen::HandleDraggedItemRemoved()
 {
 	DraggedItem = nullptr;
+}
+
+void UDkWidgetGameMenuScreen::HandleItemDescriptionCreated(UDkInventoryItemDescriptionMenu* InItemDescriptionMenu)
+{
+	if (!IsValid(InItemDescriptionMenu)) return;
+
+	if (ItemDescriptionMenu.IsValid())
+	{
+		ItemDescriptionMenu = nullptr;
+	}
+	ItemDescriptionMenu = InItemDescriptionMenu;
+	CanvasPanel->AddChild(ItemDescriptionMenu.Get());
+}
+
+void UDkWidgetGameMenuScreen::HandleItemDescriptionRemoved()
+{
+	CanvasPanel->RemoveChild(ItemDescriptionMenu.Get());
+	ItemDescriptionMenu = nullptr;
 }
 
 void UDkWidgetGameMenuScreen::OnBackBoundActionTriggered()

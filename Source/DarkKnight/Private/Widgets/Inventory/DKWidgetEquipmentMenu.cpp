@@ -8,6 +8,7 @@
 #include "Blueprint/WidgetTree.h"
 #include "Components/CanvasPanel.h"
 #include "Components/DkInventoryComponent.h"
+#include "Components/DkItemComponent.h"
 #include "FunctionLibrarys/DkCommonFunctionLibrary.h"
 #include "FunctionLibrarys/DkInventoryFunctionLibrary.h"
 #include "Inventory/DkInventoryItem.h"
@@ -70,15 +71,22 @@ void UDKWidgetEquipmentMenu::NativeTick(const FGeometry& MyGeometry, float InDel
 
 void UDKWidgetEquipmentMenu::PutItemOnEquipSlot(int32 EquipIndex)
 {
-	UDkInventoryEquipmentGridSlot* EquipmentGridSlot = EquippedGridSlots[EquipIndex];
-	if (!IsValid(EquipmentGridSlot->GetInventoryItem()))
+	if (IsValid(DraggedItem->GetInventoryItem()))
 	{
-		EquipmentGridSlot->UpdateEquipmentInfo(DraggedItem->GetInventoryItem());
+		UDkInventoryItem* EquipmentToUnEquip = EquippedGridSlots[EquipIndex]->GetInventoryItem();
+		EquippedGridSlots[EquipIndex]->UpdateEquipmentInfo(DraggedItem->GetInventoryItem());
+
+		if (IsValid(EquipmentToUnEquip))
+		{
+			BroadcastEquippedDelegate(DraggedItem->GetInventoryItem(), EquipmentToUnEquip);
+		}
+		else
+		{
+			BroadcastEquippedDelegate(DraggedItem->GetInventoryItem());
+		}
+
+		ClearDraggedItem();
 	}
-
-	BroadcastEquippedDelegate(DraggedItem->GetInventoryItem());
-
-	ClearDraggedItem();
 }
 
 void UDKWidgetEquipmentMenu::BroadcastEquippedDelegate(
@@ -110,7 +118,7 @@ void UDKWidgetEquipmentMenu::CalculateHoveredSlot(const FVector2D& CanvasPositio
 
 	ItemEquipIndex = HoveredTileCoordinate.X * NUM_OF_COLUMNS + HoveredTileCoordinate.Y;
 	if (!EquippedGridSlots.IsValidIndex(ItemEquipIndex)) return;
-	
+
 	// Debug::Print(DraggedItem->GetItemTag().ToString());
 	if (DraggedItem->GetItemTag().MatchesTag(EquippedGridSlots[ItemEquipIndex]->GetEquipmentTypeTag()))
 	{
@@ -165,16 +173,21 @@ void UDKWidgetEquipmentMenu::HandleDraggedItemRemoved()
 void UDKWidgetEquipmentMenu::HandleDraggedItemClicked(const FPointerEvent& MouseEvent)
 {
 	if (!IsValid(DraggedItem)) return;
+	if (!UDkCommonFunctionLibrary::IsLeftMouseClick(MouseEvent)) return;
 	if (!EquippedGridSlots.IsValidIndex(ItemEquipIndex)) return;
 	if (!DraggedItem->GetItemTag().MatchesTag(EquippedGridSlots[ItemEquipIndex]->GetEquipmentTypeTag())) return;
 	if (!bMouseWithInCanvas) return;
 
-	// TODO: 如何已有Equipment，则交换俩者的位置
-	// if (CurrentSpaceQueryResult.ValidItem.IsValid() && EquippedGridSlots.IsValidIndex(CurrentSpaceQueryResult.UpperLeftIndex))
-	// {
-	// 	OnSlottedItemClicked(CurrentSpaceQueryResult.UpperLeftIndex, MouseEvent);
-	// 	return;
-	// }
+	// 已有Equipment，则交换俩者的位置
+	if (UDkInventoryItem* LastInventoryItem = EquippedGridSlots[ItemEquipIndex]->GetInventoryItem())
+	{
+		FInventoryItemManifest& LastItemManifest = LastInventoryItem->GetItemManifestMutable();
+		PutItemOnEquipSlot(ItemEquipIndex);
+		UDkItemComponent* LastItemComponent = LastItemManifest.GetItemComponent(this);
+		if (!IsValid(LastItemComponent) || !InventoryComponent.IsValid()) return;
+		InventoryComponent->TryAddItem(LastItemComponent);
+		return;
+	}
 
 	PutItemOnEquipSlot(ItemEquipIndex);
 }

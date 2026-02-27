@@ -4,8 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "Widgets/DkWidgetActivatableBase.h"
+#include "Widgets/Inventory/DkInventoryItemDescriptionMenu.h"
 #include "DkWidgetGameMenuScreen.generated.h"
 
+class UCanvasPanel;
 class UDkInventoryComponent;
 class UDkInventoryDraggedItem;
 class UDKWidgetEquipmentMenu;
@@ -31,6 +33,9 @@ protected:
 private:
 	//***** Bound Widgets *****//
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget, AllowPrivateAccess="true"))
+	TObjectPtr<UCanvasPanel> CanvasPanel;
+	
+	UPROPERTY(BlueprintReadOnly, meta=(BindWidget, AllowPrivateAccess="true"))
 	TObjectPtr<UDkWidgetInventoryMenu> WBP_InventoryMenu;
 
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget, AllowPrivateAccess="true"))
@@ -46,6 +51,14 @@ private:
 	
 	UFUNCTION()
 	void HandleDraggedItemRemoved();
+
+	TWeakObjectPtr<UDkInventoryItemDescriptionMenu> ItemDescriptionMenu;
+	
+	UFUNCTION()
+	void HandleItemDescriptionCreated(UDkInventoryItemDescriptionMenu* InItemDescriptionMenu);
+
+	UFUNCTION()
+	void HandleItemDescriptionRemoved();
 
 	void OnBackBoundActionTriggered();
 

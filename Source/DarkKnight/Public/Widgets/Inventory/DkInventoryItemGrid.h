@@ -144,7 +144,7 @@ protected:
 
 	UFUNCTION()
 	void HandleDraggedItemRecovered(UDkInventoryDraggedItem* InDraggedItem);
-	
+
 	UFUNCTION()
 	void HandleDraggedItemRemoved();
 

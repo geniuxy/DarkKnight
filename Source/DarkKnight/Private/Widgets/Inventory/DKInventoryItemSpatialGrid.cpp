@@ -334,7 +334,6 @@ void UDKInventoryItemSpatialGrid::OnDraggedItemClicked(const FPointerEvent& Mous
 	}
 }
 
-
 void UDKInventoryItemSpatialGrid::UpdateTileParameters(
 	const FVector2D& CanvasPosition, const FVector2D& MousePosition)
 {

@@ -53,8 +53,7 @@ private:
 	UPROPERTY(EditAnywhere, Category="Inventory")
 	TSubclassOf<UDkInventoryItemDescriptionMenu> ItemDescriptionMenuClass;
 
-	UPROPERTY()
-	TObjectPtr<UDkInventoryItemDescriptionMenu> ItemDescriptionMenu;
+	TWeakObjectPtr<UDkInventoryItemDescriptionMenu> ItemDescriptionMenu;
 	/********/
 	
 	TWeakObjectPtr<UDkInventoryItem> InventoryItem;

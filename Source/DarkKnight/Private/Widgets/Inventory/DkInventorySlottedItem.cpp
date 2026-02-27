@@ -7,15 +7,20 @@
 
 #include "CommonLazyImage.h"
 #include "CommonTextBlock.h"
-#include "FunctionLibrarys/DkUIFunctionLibrary.h"
+#include "Components/DkInventoryComponent.h"
+#include "Subsytems/DkInventorySubsystem.h"
 
 FReply UDkInventorySlottedItem::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
 	OnSlottedItemClicked.Broadcast(GridIndex, InMouseEvent);
 
-	if (IsValid(ItemDescriptionMenu))
+	if (ItemDescriptionMenu.IsValid())
 	{
-		ItemDescriptionMenu->RemoveFromParent();
+		UDkInventorySubsystem* InventorySubsystem = UDkInventorySubsystem::Get(this);
+		checkf(InventorySubsystem, TEXT("InventorySubsystem为空！"));
+		UDkInventoryComponent* InventoryComponent = InventorySubsystem->GetCachedInventoryComponent();
+		checkf(InventoryComponent, TEXT("InventoryComponent未在InventorySubsystem中注册！"));
+		InventoryComponent->OnItemDescriptionMenuRemoved.Broadcast();
 		ItemDescriptionMenu = nullptr;
 	}
 
@@ -31,9 +36,13 @@ void UDkInventorySlottedItem::NativeOnMouseEnter(const FGeometry& MyGeometry, co
 
 void UDkInventorySlottedItem::NativeOnMouseLeave(const FPointerEvent& MouseEvent)
 {
-	if (IsValid(ItemDescriptionMenu))
+	if (ItemDescriptionMenu.IsValid())
 	{
-		ItemDescriptionMenu->RemoveFromParent();
+		UDkInventorySubsystem* InventorySubsystem = UDkInventorySubsystem::Get(this);
+		checkf(InventorySubsystem, TEXT("InventorySubsystem为空！"));
+		UDkInventoryComponent* InventoryComponent = InventorySubsystem->GetCachedInventoryComponent();
+		checkf(InventoryComponent, TEXT("InventoryComponent未在InventorySubsystem中注册！"));
+		InventoryComponent->OnItemDescriptionMenuRemoved.Broadcast();
 		ItemDescriptionMenu = nullptr;
 	}
 }
@@ -53,16 +62,34 @@ void UDkInventorySlottedItem::NativeTick(const FGeometry& MyGeometry, float InDe
 	// 	ItemDescriptionMenu->SetPositionInViewport(MousePos + FVector2D(1.f, 1.f));
 	// }
 
-	if (ItemDescriptionMenu && ItemDescriptionMenu->IsInViewport())
-	{
-		UDkUIFunctionLibrary::PositionWidgetAtMouse(
-			ItemDescriptionMenu,
-			FVector2D{8.f, 8.f},
-			false,
-			false,
-			4
-		);
-	}
+	// if (ItemDescriptionMenu.IsValid() && ItemDescriptionMenu->IsInViewport())
+	// {
+	// 	// UDkUIFunctionLibrary::PositionWidgetAtMouse(
+	// 	// 	ItemDescriptionMenu.Get(),
+	// 	// 	FVector2D{8.f, 8.f},
+	// 	// 	false,
+	// 	// 	false,
+	// 	// 	4
+	// 	// );
+	//
+	// 	// FVector2D MousePos;
+	// 	// if (UGameViewportClient* VP = GetWorld()->GetGameViewport())
+	// 	// {
+	// 	// 	VP->GetMousePosition(MousePos); // 系统硬件像素（受 DPI 缩放）
+	// 	// }
+	// 	//
+	// 	// const FVector2D ActualSize = ItemDescriptionMenu->GetCachedGeometry().GetAbsoluteSize();
+	// 	// ItemDescriptionMenu->SetPositionInViewport(FVector2D(MousePos.X - ActualSize.X * 0.6f, MousePos.Y));
+	//
+	// 	UCanvasPanelSlot* ItemDescriptionCPS = UWidgetLayoutLibrary::SlotAsCanvasSlot(ItemDescriptionMenu.Get());
+	// 	if (!IsValid(ItemDescriptionCPS)) return;
+	//
+	// 	FVector2D MousePos = UWidgetLayoutLibrary::GetMousePositionOnViewport(GetOwningPlayer());
+	// 	const FVector2D ItemDescriptionSize = ItemDescriptionMenu->GetBoxSize();
+	// 	FVector2D ClampedPosition = FVector2D(MousePos.X - ItemDescriptionSize.X * 0.6f, MousePos.Y);
+	// 	
+	// 	ItemDescriptionCPS->SetPosition(ClampedPosition);
+	// }
 }
 
 UDkInventoryItem* UDkInventorySlottedItem::GetInventoryItem() const
@@ -97,13 +124,17 @@ void UDkInventorySlottedItem::CreateItemDescriptionMenu()
 {
 	if (!InventoryItem.IsValid()) return;
 	
-	if (!IsValid(ItemDescriptionMenu))
+	if (!ItemDescriptionMenu.IsValid())
 	{
 		ItemDescriptionMenu = CreateWidget<UDkInventoryItemDescriptionMenu>(this, ItemDescriptionMenuClass);
 	}
 
 	// 根据Fragments，同化(渲染)ItemDescription的内容
-	InventoryItem->GetItemManifest().AssimilateInventoryFragments(ItemDescriptionMenu);
-	
-	ItemDescriptionMenu->AddToViewport();
+	InventoryItem->GetItemManifest().AssimilateInventoryFragments(ItemDescriptionMenu.Get());
+
+	UDkInventorySubsystem* InventorySubsystem = UDkInventorySubsystem::Get(this);
+	checkf(InventorySubsystem, TEXT("InventorySubsystem为空！"));
+	UDkInventoryComponent* InventoryComponent = InventorySubsystem->GetCachedInventoryComponent();
+	checkf(InventoryComponent, TEXT("InventoryComponent未在InventorySubsystem中注册！"));
+	InventoryComponent->OnItemDescriptionMenuCreated.Broadcast(ItemDescriptionMenu.Get());
 }

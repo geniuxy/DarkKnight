@@ -33,6 +33,21 @@ void FInventoryItemManifest::SpawnPickUpActor(
 	ItemComponent->InitItemManifest(*this);
 }
 
+UDkItemComponent* FInventoryItemManifest::GetItemComponent(const UObject* WorldContextObject) const
+{
+	if (!IsValid(PickUpActorClass) || !IsValid(WorldContextObject)) return nullptr;
+
+	AActor* SpawnActor = WorldContextObject->GetWorld()->SpawnActor<AActor>(PickUpActorClass);
+	if (!IsValid(SpawnActor)) return nullptr;
+
+	UDkItemComponent* ItemComponent = SpawnActor->FindComponentByClass<UDkItemComponent>();
+	check(ItemComponent);
+
+	ItemComponent->InitItemManifest(*this);
+
+	return ItemComponent;
+}
+
 void FInventoryItemManifest::AssimilateInventoryFragments(UDkInventoryCompositeBase* Composite) const
 {
 	const auto& InventoryItemFragments = GetAllFragmentsOfType<FInventoryItemFragment>();

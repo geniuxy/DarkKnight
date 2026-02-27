@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "DarkKnight/DarkKnight.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "DkInventorySubsystem.generated.h"
 
@@ -28,4 +29,7 @@ public:
 private:
 	UPROPERTY(Transient)
 	UDkInventoryComponent* CachedInventoryComponent;
+
+public:
+	LIST_DATA_ACCESSOR(UDkInventoryComponent*, CachedInventoryComponent)
 };

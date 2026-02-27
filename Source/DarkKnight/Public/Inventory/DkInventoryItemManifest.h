@@ -11,6 +11,7 @@
  * ItemManifest 包含创建新 InventoryItem 所需的所有数据。
  */
 
+class UDkItemComponent;
 class UDkInventoryCompositeBase;
 struct FItemFragment;
 class UDkInventoryItem;
@@ -29,6 +30,9 @@ struct DARKKNIGHT_API FInventoryItemManifest
 	void SpawnPickUpActor(
 		const UObject* WorldContextObject, const FVector& SpawnLocation, const FRotator& SpawnRotation
 	);
+
+	// 使用时搭配TryAddItem,需要将spawnActor删掉
+	UDkItemComponent* GetItemComponent(const UObject* WorldContextObject) const;
 
 	void AssimilateInventoryFragments(UDkInventoryCompositeBase* Composite) const;
 

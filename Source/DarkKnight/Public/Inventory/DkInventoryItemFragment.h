@@ -286,9 +286,10 @@ struct FInventoryItemEquipmentFragment : public FInventoryItemFragment
 	FInventoryItemEquipmentFragment()
 	{
 		FragmentTag = DkGameplayTags::Dk_Inventory_Fragment_Equipment;
+		bEquipped = false;
 	}
 
-	bool bEquipped = false;
+	bool bEquipped;
 	void OnEquip(APlayerController* PC);
 	void OnUnEquip(APlayerController* PC);
 	virtual void Assimilate(UDkInventoryCompositeBase* Composite) const override;

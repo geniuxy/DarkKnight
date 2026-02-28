@@ -24,6 +24,7 @@ class DARKKNIGHT_API UDkWidgetInventoryMenu : public UCommonUserWidget
 
 public:
 	virtual FDkInventorySlotAvailabilityResult HasRoomForItem(UDkItemComponent* ItemComponent) const;
+	virtual FDkInventorySlotAvailabilityResult HasRoomForItem(UDkInventoryItem* Item) const;
 
 protected:
 	//~Begin UUserWidget Function

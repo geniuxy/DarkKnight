@@ -57,14 +57,21 @@ public:
 	/********/
 
 	/* 道具物品的添加和删除 */
-	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category="true")
 	void TryAddItem(UDkItemComponent* ItemComponent);
 
+	void TryAddItem(UDkInventoryItem* Item);
+	
 	UFUNCTION(Server, Reliable)
 	void Server_AddNewItem(UDkItemComponent* ItemComponent, int32 StackCount, int32 Remainder);
 
 	UFUNCTION(Server, Reliable)
+	void Server_AddNewItemWithItem(UDkInventoryItem* Item, int32 StackCount, int32 Remainder);
+
+	UFUNCTION(Server, Reliable)
 	void Server_AddStacksToItem(UDkItemComponent* ItemComponent, int32 StackCount, int32 Remainder);
+
+	UFUNCTION(Server, Reliable)
+	void Server_AddStacksToItemWithItem(UDkInventoryItem* InItem, int32 StackCount, int32 Remainder);
 
 	void AddRepSubObj(UObject* SubObj);
 

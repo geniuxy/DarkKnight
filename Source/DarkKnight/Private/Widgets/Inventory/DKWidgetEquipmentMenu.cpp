@@ -181,12 +181,8 @@ void UDKWidgetEquipmentMenu::HandleDraggedItemClicked(const FPointerEvent& Mouse
 	// 已有Equipment，则交换俩者的位置
 	if (UDkInventoryItem* LastInventoryItem = EquippedGridSlots[ItemEquipIndex]->GetInventoryItem())
 	{
-		FInventoryItemManifest& LastItemManifest = LastInventoryItem->GetItemManifestMutable();
-		PutItemOnEquipSlot(ItemEquipIndex);
-		UDkItemComponent* LastItemComponent = LastItemManifest.GetItemComponent(this);
-		if (!IsValid(LastItemComponent) || !InventoryComponent.IsValid()) return;
-		InventoryComponent->TryAddItem(LastItemComponent);
-		return;
+		check(InventoryComponent.IsValid());
+		InventoryComponent->TryAddItem(LastInventoryItem);
 	}
 
 	PutItemOnEquipSlot(ItemEquipIndex);

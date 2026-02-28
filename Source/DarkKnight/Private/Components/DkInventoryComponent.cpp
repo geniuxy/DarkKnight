@@ -3,6 +3,7 @@
 
 #include "Components/DkInventoryComponent.h"
 
+#include "DarkKnightDebugHelper.h"
 #include "DkGameplayTags.h"
 #include "Characters/DkCharacterHero.h"
 #include "Components/DkItemComponent.h"
@@ -100,11 +101,34 @@ void UDkInventoryComponent::TryAddItem(UDkItemComponent* ItemComponent)
 	}
 }
 
-void UDkInventoryComponent::AddRepSubObj(UObject* SubObj)
+void UDkInventoryComponent::TryAddItem(UDkInventoryItem* Item)
 {
-	if (IsUsingRegisteredSubObjectList() && IsReadyForReplication() && IsValid(SubObj))
+	if (!CachedInventoryMenu.IsValid()) return;
+	FDkInventorySlotAvailabilityResult AddItemResult = CachedInventoryMenu->HasRoomForItem(Item);
+
+	UDkInventoryItem* FoundItem = InventoryList.FindFirstItemByTag(Item->GetItemManifest().GetItemTag());
+	AddItemResult.Item = FoundItem;
+
+	if (AddItemResult.TotalRoomToFill == 0)
 	{
-		AddReplicatedSubObject(SubObj);
+		OnNoRoomInInventory.Broadcast();
+		return;
+	}
+
+	// 将Item添加到Inventory中
+	if (AddItemResult.Item.IsValid() && AddItemResult.bStackable)
+	{
+		// 为背包中已存在的物品添加堆叠数量。我们只想更新堆叠数量，
+		// 而不是创建这种类型的新物品。
+		OnStackChange.Broadcast(AddItemResult); // OnStackChange在Server和Client都会执行，光在Server执行，无法同步到Client
+		Server_AddStacksToItemWithItem(Item, AddItemResult.TotalRoomToFill, AddItemResult.Remainder);
+	}
+	else
+	{
+		// 此物品类型在物品栏中不存在。请创建一个新物品并更新所有相关栏位。
+		Server_AddNewItemWithItem(
+			Item, AddItemResult.bStackable ? AddItemResult.TotalRoomToFill : 0, AddItemResult.Remainder
+		);
 	}
 }
 
@@ -137,6 +161,28 @@ void UDkInventoryComponent::Server_AddNewItem_Implementation(
 	}
 }
 
+void UDkInventoryComponent::Server_AddNewItemWithItem_Implementation(
+	UDkInventoryItem* Item, int32 StackCount, int32 Remainder)
+{
+	// 服务器FastArray添加Item后，回调PostReplicatedAdd来达到OnItemAdded.Broadcast(NewItem)的目的，以更新Client
+	UDkInventoryItem* NewItem = InventoryList.AddEntry(Item);
+	NewItem->SetTotalStackCount(StackCount);
+
+	if (OwningCharacter.IsValid())
+	{
+		if (OwningCharacter->GetController()->GetNetMode() == NM_ListenServer ||
+			OwningCharacter->GetController()->GetNetMode() == NM_Standalone)
+		{
+			OnItemAdded.Broadcast(NewItem);
+		}
+	}
+
+	if (Remainder != 0)
+	{
+		Debug::Print(TEXT("进入背包时，剩余数量不为0，请检查！"));
+	}
+}
+
 void UDkInventoryComponent::Server_AddStacksToItem_Implementation(
 	UDkItemComponent* ItemComponent, int32 StackCount, int32 Remainder)
 {
@@ -157,6 +203,29 @@ void UDkInventoryComponent::Server_AddStacksToItem_Implementation(
 		ItemComponent->GetItemManifestMutable().GetFragmentOfTypeMutable<FInventoryItemStackableFragment>())
 	{
 		StackableFragment->SetStackCount(Remainder);
+	}
+}
+
+void UDkInventoryComponent::Server_AddStacksToItemWithItem_Implementation(
+	UDkInventoryItem* InItem, int32 StackCount, int32 Remainder)
+{
+	const FGameplayTag& ItemTag = IsValid(InItem) ? InItem->GetItemManifest().GetItemTag() : FGameplayTag::EmptyTag;
+	UDkInventoryItem* Item = InventoryList.FindFirstItemByTag(ItemTag);
+	if (!IsValid(Item)) return;
+
+	Item->SetTotalStackCount(Item->GetTotalStackCount() + StackCount);
+
+	if (Remainder != 0)
+	{
+		Debug::Print(TEXT("进入背包时，剩余数量不为0，请检查！"));
+	}
+}
+
+void UDkInventoryComponent::AddRepSubObj(UObject* SubObj)
+{
+	if (IsUsingRegisteredSubObjectList() && IsReadyForReplication() && IsValid(SubObj))
+	{
+		AddReplicatedSubObject(SubObj);
 	}
 }
 

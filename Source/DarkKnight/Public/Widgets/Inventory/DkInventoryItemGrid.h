@@ -32,6 +32,7 @@ class DARKKNIGHT_API UDkInventoryItemGrid : public UCommonUserWidget
 
 public:
 	FDkInventorySlotAvailabilityResult HasRoomForItem(const UDkItemComponent* ItemComponent);
+	FDkInventorySlotAvailabilityResult HasRoomForItem(const UDkInventoryItem* Item);
 
 protected:
 	//~Begin UUserWidget Function
@@ -75,7 +76,6 @@ protected:
 	) const;
 	bool MatchesCategory(const UDkInventoryItem* Item) const;
 
-	FDkInventorySlotAvailabilityResult HasRoomForItem(const UDkInventoryItem* Item);
 	virtual FDkInventorySlotAvailabilityResult HasRoomForItem(const FInventoryItemManifest& Manifest);
 
 	virtual void PutDownOnIndex(const int32 Index);

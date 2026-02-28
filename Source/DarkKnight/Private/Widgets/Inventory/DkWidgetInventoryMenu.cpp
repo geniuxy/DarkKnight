@@ -27,6 +27,23 @@ FDkInventorySlotAvailabilityResult UDkWidgetInventoryMenu::HasRoomForItem(UDkIte
 	return FDkInventorySlotAvailabilityResult();
 }
 
+FDkInventorySlotAvailabilityResult UDkWidgetInventoryMenu::HasRoomForItem(UDkInventoryItem* Item) const
+{
+	switch (Item->GetItemManifest().GetItemCategory())
+	{
+	case EInventoryItemCategory::Equipment:
+		return GridEquipments->HasRoomForItem(Item);
+	case EInventoryItemCategory::Consumable:
+		return GridConsumables->HasRoomForItem(Item);
+	case EInventoryItemCategory::CraftingMaterial:
+		return GridCraftingMaterials->HasRoomForItem(Item);
+	case EInventoryItemCategory::None:
+		Debug::Print(TEXT("Item没有配置ItemCategory"));
+		return FDkInventorySlotAvailabilityResult();
+	}
+	return FDkInventorySlotAvailabilityResult();
+}
+
 void UDkWidgetInventoryMenu::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();

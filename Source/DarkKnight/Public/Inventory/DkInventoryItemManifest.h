@@ -31,9 +31,6 @@ struct DARKKNIGHT_API FInventoryItemManifest
 		const UObject* WorldContextObject, const FVector& SpawnLocation, const FRotator& SpawnRotation
 	);
 
-	// 使用时搭配TryAddItem,需要将spawnActor删掉
-	UDkItemComponent* GetItemComponent(const UObject* WorldContextObject) const;
-
 	void AssimilateInventoryFragments(UDkInventoryCompositeBase* Composite) const;
 
 	template <typename T> requires std::derived_from<T, FItemFragment>
@@ -47,10 +44,10 @@ struct DARKKNIGHT_API FInventoryItemManifest
 
 	template <typename T> requires std::derived_from<T, FItemFragment>
 	TArray<const T*> GetAllFragmentsOfType() const;
-	
+
 private:
 	void ClearFragments();
-	
+
 	UPROPERTY(EditAnywhere, Category="Inventory", meta=(ExcludeBaseStruct))
 	TArray<TInstancedStruct<FItemFragment>> Fragments;
 

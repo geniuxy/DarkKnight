@@ -323,6 +323,10 @@ void UDKInventoryItemSpatialGrid::OnDraggedItemClicked(const FPointerEvent& Mous
 
 	if (CurrentSpaceQueryResult.ValidItem.IsValid() && GridSlots.IsValidIndex(CurrentSpaceQueryResult.UpperLeftIndex))
 	{
+		if (DraggedItem->IsPreviousEquipped())
+		{
+			return;
+		}
 		OnSlottedItemClicked(CurrentSpaceQueryResult.UpperLeftIndex, MouseEvent);
 		return;
 	}

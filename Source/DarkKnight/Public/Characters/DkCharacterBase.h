@@ -20,8 +20,6 @@ class DARKKNIGHT_API ADkCharacterBase : public ACharacter
 public:
 	ADkCharacterBase();
 
-	bool WasAnimNotifyStateActiveInAnyState(const TSubclassOf<UAnimNotifyState>& AnimNotifyStateType) const;
-
 protected:
 	virtual void BeginPlay() override;
 

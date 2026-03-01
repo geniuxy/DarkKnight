@@ -5,6 +5,13 @@
 
 namespace DkGameplayTags
 {
+	// Input Actions
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Input_Action_Move, "Dk.Input.Action.Move");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Input_Action_Look, "Dk.Input.Action.Look");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Input_Action_Jump, "Dk.Input.Action.Jump");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Input_Action_Interact, "Dk.Input.Action.Interact");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Input_Action_OpenInventory, "Dk.Input.Action.OpenInventory");
+	
 	// UI Widget Stack
 	UE_DEFINE_GAMEPLAY_TAG(Dk_WidgetStack_Modal, "Dk.WidgetStack.Modal");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_WidgetStack_GameMenu, "Dk.WidgetStack.GameMenu");

@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "InputAction.h"
 #include "Inventory/DkInventoryItem.h"
 
 #include "DkStructs.generated.h"
@@ -62,7 +63,7 @@ private:
 
 /********/
 
-/* Inventory Types */
+/* Inventory Structs */
 USTRUCT(BlueprintType)
 struct FInventoryTileParameters
 {
@@ -91,5 +92,24 @@ struct FInventorySpaceQueryResult
 	bool bHasSpace = false;
 	TWeakObjectPtr<UDkInventoryItem> ValidItem = nullptr;
 	int32 UpperLeftIndex = INDEX_NONE;
+};
+/********/
+
+/* Input Structs */
+USTRUCT(BlueprintType)
+struct FDkInputActionConfig
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta=(Categories = "Dk.Input.Action"))
+	FGameplayTag InputTag;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UInputAction* InputAction;
+
+	bool IsValid() const
+	{
+		return InputTag.IsValid() && InputAction;
+	}
 };
 /********/

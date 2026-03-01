@@ -7,6 +7,8 @@
 #include "Interfaces/LoadingScreenInterface.h"
 #include "DkGamePlayerController.generated.h"
 
+class UInputConfig;
+struct FInputActionValue;
 class UDkInventoryComponent;
 class UDkWidgetInteractScreen;
 class UDkWidgetPrimaryLayout;
@@ -38,11 +40,17 @@ protected:
 	virtual void SetupInputComponent() override;
 
 private:
-	/* 交互 */
-	void OnInteract();
+	/* Input Actions */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input Config", meta=(AllowPrivateAccess="true"))
+	UInputConfig* InputConfigDataAsset;
+	/********/
 
-	UPROPERTY(EditDefaultsOnly, Category="Interact")
-	TObjectPtr<UInputAction> InteractAction;
+	/* Input Action CallBack */
+	void HandleGroundMovementInput(const FInputActionValue& InputActionValue);
+	void OnLookTriggered(const FInputActionValue& InputActionValue);
+	void OnJumpPressed();
+	void OnInteract();
+	void OnInventoryActionTriggered();
 	/********/
 
 	/* 捡拾物品 */
@@ -59,11 +67,6 @@ private:
 	/********/
 
 	/* 仓库 */
-	void OnInventoryActionTriggered();
-	
-	UPROPERTY(EditDefaultsOnly, Category="Inventory")
-	TObjectPtr<UInputAction> InventoryAction;
-
 	void RefreshInventoryComponent();
 	TWeakObjectPtr<UDkInventoryComponent> InventoryComponent;
 	/********/

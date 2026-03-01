@@ -9,6 +9,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "Blueprint/UserWidget.h"
 #include "Characters/DkCharacterHero.h"
+#include "Components/DkEnhancedInputComponent.h"
 #include "Components/DkInventoryComponent.h"
 #include "Components/DkItemComponent.h"
 #include "DarkKnight/DarkKnight.h"
@@ -24,6 +25,8 @@
 ADkGamePlayerController::ADkGamePlayerController()
 {
 	PrimaryActorTick.bCanEverTick = true;
+
+	TraceLength = 500.f;
 }
 
 void ADkGamePlayerController::Tick(float DeltaSeconds)
@@ -105,12 +108,71 @@ void ADkGamePlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
 
-	UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent);
+	checkf(InputConfigDataAsset, TEXT("忘记配置InputConfigDataAsset了！"));
 
-	EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &ThisClass::OnInteract);
-	EnhancedInputComponent->BindAction(
-		InventoryAction, ETriggerEvent::Completed, this, &ThisClass::OnInventoryActionTriggered
+	UDkEnhancedInputComponent* EnhancedInputComponent = CastChecked<UDkEnhancedInputComponent>(InputComponent);
+	EnhancedInputComponent->BindNativeInputAction(
+		InputConfigDataAsset, DkGameplayTags::Dk_Input_Action_Move, ETriggerEvent::Triggered, this,
+		&ThisClass::HandleGroundMovementInput
 	);
+	EnhancedInputComponent->BindNativeInputAction(
+		InputConfigDataAsset, DkGameplayTags::Dk_Input_Action_Look, ETriggerEvent::Triggered, this,
+		&ThisClass::OnLookTriggered
+	);
+	EnhancedInputComponent->BindNativeInputAction(
+		InputConfigDataAsset, DkGameplayTags::Dk_Input_Action_Jump, ETriggerEvent::Started, this,
+		&ThisClass::OnJumpPressed
+	);
+	EnhancedInputComponent->BindNativeInputAction(
+		InputConfigDataAsset, DkGameplayTags::Dk_Input_Action_Interact, ETriggerEvent::Started, this,
+		&ThisClass::OnInteract
+	);
+	EnhancedInputComponent->BindNativeInputAction(
+		InputConfigDataAsset, DkGameplayTags::Dk_Input_Action_OpenInventory, ETriggerEvent::Completed, this,
+		&ThisClass::OnInventoryActionTriggered
+	);
+}
+
+void ADkGamePlayerController::HandleGroundMovementInput(const FInputActionValue& InputActionValue)
+{
+	const FVector2D MoveVector = InputActionValue.Get<FVector2D>();
+
+	// 获取角色控制器的偏航角（Yaw），并将其转换为一个旋转值（FRotator）。
+	// 偏航角是角色在水平方向上的旋转角度，用于确定角色的朝向
+	const FRotator MovementRotation(0.f, GetControlRotation().Yaw, 0.f);
+
+	if (MoveVector.Y != 0.f)
+	{
+		// MovementRotation.RotateVector() 被用来将标准方向向量（如 FVector::ForwardVector 或 FVector::RightVector）旋转到角色的当前朝向。
+		const FVector ForwardVector = MovementRotation.RotateVector(FVector::ForwardVector);
+		GetPawn()->AddMovementInput(ForwardVector, MoveVector.Y);
+	}
+
+	if (MoveVector.X != 0.f)
+	{
+		const FVector RightVector = MovementRotation.RotateVector(FVector::RightVector);
+		GetPawn()->AddMovementInput(RightVector, MoveVector.X);
+	}
+}
+
+void ADkGamePlayerController::OnLookTriggered(const FInputActionValue& InputActionValue)
+{
+	const FVector2D LookAxisVector = InputActionValue.Get<FVector2D>();
+
+	if (LookAxisVector.Y != 0.f)
+	{
+		GetPawn()->AddControllerPitchInput(LookAxisVector.Y);
+	}
+
+	if (LookAxisVector.X != 0.f)
+	{
+		GetPawn()->AddControllerYawInput(LookAxisVector.X);
+	}
+}
+
+void ADkGamePlayerController::OnJumpPressed()
+{
+	GetCharacter()->Jump();
 }
 
 void ADkGamePlayerController::OnInteract()

@@ -16,6 +16,10 @@ ADkCharacterBase::ADkCharacterBase()
 {
 	PrimaryActorTick.bCanEverTick = false;
 
+	bUseControllerRotationPitch = false;
+	bUseControllerRotationYaw = false; // 操作角色的面朝方向不会跟着控制器“走”
+	bUseControllerRotationRoll = false;
+
 	GetMesh()->SetCollisionProfileName(FName("DkMesh"));
 
 	GetCapsuleComponent()->SetCollisionProfileName(FName("DkMesh"));
@@ -50,12 +54,6 @@ ADkCharacterBase::ADkCharacterBase()
 	GetCharacterMovement()->NavAgentProps.AgentHeight = 192.f; // 试图解决Ai的问题(但不知道是什么)
 
 	MotionWarping = CreateDefaultSubobject<UMotionWarpingComponent>(TEXT("MotionWarping"));
-}
-
-bool ADkCharacterBase::WasAnimNotifyStateActiveInAnyState(
-	const TSubclassOf<UAnimNotifyState>& AnimNotifyStateType) const
-{
-	return GetMesh()->GetAnimInstance()->WasAnimNotifyStateActiveInAnyState(AnimNotifyStateType);
 }
 
 void ADkCharacterBase::BeginPlay()

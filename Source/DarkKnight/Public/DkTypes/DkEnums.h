@@ -18,6 +18,18 @@ enum class EDkInputMode : uint8
 
 /********/
 
+/* Movement Types */
+UENUM(BlueprintType)
+enum class ELocomotionStyle :uint8
+{
+	Walk,
+	Run,
+	Sprint,
+	Unknown UMETA(Hidden)
+};
+
+/********/
+
 /* UI Types */
 UENUM(BlueprintType)
 enum class EConfirmScreenType :uint8

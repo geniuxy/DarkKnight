@@ -4,8 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "DkTypes/DkEnums.h"
 #include "DkCharacterBase.generated.h"
 
+class UCharacterInfo;
+class UDkAttributeSet;
 class UDkAbilitySystemComponent;
 class UMotionWarpingComponent;
 
@@ -17,13 +20,28 @@ class DARKKNIGHT_API ADkCharacterBase : public ACharacter
 public:
 	ADkCharacterBase();
 
+	bool WasAnimNotifyStateActiveInAnyState(const TSubclassOf<UAnimNotifyState>& AnimNotifyStateType) const;
+
 protected:
-	/* Actor Components */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "ASC")
-	UDkAbilitySystemComponent* AbilitySystemComponent;
+	virtual void BeginPlay() override;
+
+	/* GAS */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "GAS")
+	TObjectPtr<UDkAbilitySystemComponent> AbilitySystemComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "GAS")
+	TObjectPtr<UDkAttributeSet> AttributeSet;
 	/*********/
 
-private:
+	virtual void InitializeCharacterInfo();
+
+	virtual void InitAbilityActorInfo();
+
+	void SwitchLocomotionStyle(ELocomotionStyle InStyle);
+
+	UPROPERTY(EditDefaultsOnly, Category="Character Class Defaults")
+	TObjectPtr<UCharacterInfo> CharacterInfo;
+
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USkeletalMeshComponent> BodyArmorMesh;
 
@@ -35,7 +53,7 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USkeletalMeshComponent> HelmetMesh;
-	
+
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UMotionWarpingComponent> MotionWarping;
 };

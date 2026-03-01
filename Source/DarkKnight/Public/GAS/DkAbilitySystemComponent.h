@@ -14,8 +14,18 @@ class DARKKNIGHT_API UDkAbilitySystemComponent : public UAbilitySystemComponent
 {
 	GENERATED_BODY()
 
+public:
+	void AbilityActorInfoSet();
+
 protected:
 	virtual void BeginPlay() override;
+
+	UFUNCTION(Client, Reliable)
+	void ClientEffectApplied(
+		UAbilitySystemComponent* AbilitySystemComponent,
+		const FGameplayEffectSpec& GameplayEffectSpec,
+		FActiveGameplayEffectHandle ActiveGameplayEffectHandle
+	);
 
 private:
 	UPROPERTY(EditDefaultsOnly)

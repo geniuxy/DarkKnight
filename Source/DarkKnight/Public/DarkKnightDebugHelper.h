@@ -11,4 +11,9 @@ namespace Debug
 			UE_LOG(LogTemp, Warning, TEXT("%s"), *Msg);
 		}
 	}
+
+	static void Print(const FString& Msg, float InValue)
+	{
+		Print(FString::Printf(TEXT("%s: %f"), *Msg, InValue));
+	}
 }

@@ -21,6 +21,8 @@ public:
 	virtual void NativeInitializeAnimation() override;
 
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
+
+	virtual void NativePostEvaluateAnimation() override;
 	//~End UAnimInstance Function
 
 protected:
@@ -64,7 +66,7 @@ protected:
 	FRotator Rotation;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Animation State Factors|Locomotion")
-	float DeltaAngle;
+	float DeltaAngle; // 目前朝向与输入方向的差值角度
 
 	UPROPERTY(BlueprintReadOnly, Category = "Animation State Factors|Locomotion")
 	float ActorYaw;
@@ -83,4 +85,14 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Category = "Animation State Factors|Locomotion")
 	float StopFootSelection;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Animation State Factors|Locomotion")
+	bool bCanTurnBack;
+
+	bool bDoOnceAtTurnBack = true;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Animation State Factors|Locomotion")
+	float MoveStartAngle; // 开始旋转时，朝向与输入方向的差值角度
+	
+	bool bDoOnceAtSetMoveStartAngle = true;
 };

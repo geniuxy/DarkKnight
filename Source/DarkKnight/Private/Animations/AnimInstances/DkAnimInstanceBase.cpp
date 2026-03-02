@@ -47,9 +47,9 @@ void UDkAnimInstanceBase::NativeUpdateAnimation(float DeltaSeconds)
 
 	LastActorYaw = ActorYaw;
 	ActorYaw = Rotation.Yaw;
-	DeltaAngle = ActorYaw - LastActorYaw;
+	DeltaActorYaw = ActorYaw - LastActorYaw;
 
-	float YawAdjustmentRate = FMath::Clamp(DeltaAngle / (DeltaSeconds * YawAdjustmentFactor), -90.f, 90.f);
+	float YawAdjustmentRate = FMath::Clamp(DeltaActorYaw / (DeltaSeconds * YawAdjustmentFactor), -90.f, 90.f);
 
 	LeanAngle = 0.f;
 	if (LocomotionStyle == ELocomotionStyle::Walk)
@@ -65,4 +65,38 @@ void UDkAnimInstanceBase::NativeUpdateAnimation(float DeltaSeconds)
 	{
 		StopFootSelection = GetCurveValue("StopFootSelection");
 	}
+
+	// 等价完成即将转身动作的判断
+	if (bHasMovementInput)
+	{
+		if (bDoOnceAtSetMoveStartAngle)
+		{
+			MoveStartAngle = UKismetAnimationLibrary::CalculateDirection(InputVector, Rotation);
+			bDoOnceAtSetMoveStartAngle= false;
+		}
+		
+		if (DeltaAngle < -135.f || DeltaAngle > 135.f) // TODO: 还需要不在Combat状态中
+		{
+			if (bDoOnceAtTurnBack)
+			{
+				bCanTurnBack = true;
+				bDoOnceAtTurnBack = false;
+			}
+		}
+		else
+		{
+			bDoOnceAtTurnBack = true;
+		}
+	}
+	else
+	{
+		bDoOnceAtSetMoveStartAngle = true;
+	}
+}
+
+void UDkAnimInstanceBase::NativePostEvaluateAnimation()
+{
+	Super::NativePostEvaluateAnimation();
+
+	bCanTurnBack = false;
 }

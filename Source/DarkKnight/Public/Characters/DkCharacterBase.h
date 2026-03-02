@@ -3,10 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "DarkKnight/DarkKnight.h"
 #include "GameFramework/Character.h"
 #include "DkTypes/DkEnums.h"
 #include "DkCharacterBase.generated.h"
 
+class UDkActionComponent;
 class UCharacterInfo;
 class UDkAttributeSet;
 class UDkAbilitySystemComponent;
@@ -19,6 +21,8 @@ class DARKKNIGHT_API ADkCharacterBase : public ACharacter
 
 public:
 	ADkCharacterBase();
+
+	void SwitchLocomotionStyle(ELocomotionStyle InStyle);
 
 protected:
 	virtual void BeginPlay() override;
@@ -35,7 +39,8 @@ protected:
 
 	virtual void InitAbilityActorInfo();
 
-	void SwitchLocomotionStyle(ELocomotionStyle InStyle);
+	UPROPERTY(BlueprintReadOnly, Category= "Animation")
+	ELocomotionStyle CurrentLocomotionStyle;
 
 	UPROPERTY(EditDefaultsOnly, Category="Character Class Defaults")
 	TObjectPtr<UCharacterInfo> CharacterInfo;
@@ -54,4 +59,10 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UMotionWarpingComponent> MotionWarping;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UDkActionComponent> ActionComponent;
+
+public:
+	LIST_DATA_ACCESSOR(ELocomotionStyle, CurrentLocomotionStyle)
 };

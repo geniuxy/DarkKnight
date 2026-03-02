@@ -47,6 +47,7 @@ private:
 
 	/* Input Action CallBack */
 	void HandleGroundMovementInput(const FInputActionValue& InputActionValue);
+	void ToggleMovementStyle();
 	void OnLookTriggered(const FInputActionValue& InputActionValue);
 	void OnJumpPressed();
 	void OnInteract();

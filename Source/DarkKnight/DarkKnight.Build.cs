@@ -25,7 +25,8 @@ public class DarkKnight : ModuleRules
 			"CommonUI",
 			"PreLoadScreen",
 			"StructUtils", // FInstancedStruct
-			"MotionWarping"
+			"MotionWarping",
+			"AnimGraphRuntime" // UKismetAnimationLibrary
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {});

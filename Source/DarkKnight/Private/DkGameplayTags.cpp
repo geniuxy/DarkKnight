@@ -7,6 +7,7 @@ namespace DkGameplayTags
 {
 	// Input Actions
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Input_Action_Move, "Dk.Input.Action.Move");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Input_Action_ToggleMoveStyle, "Dk.Input.Action.ToggleMoveStyle");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Input_Action_Look, "Dk.Input.Action.Look");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Input_Action_Jump, "Dk.Input.Action.Jump");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Input_Action_Interact, "Dk.Input.Action.Interact");

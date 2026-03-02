@@ -112,24 +112,28 @@ void ADkGamePlayerController::SetupInputComponent()
 
 	UDkEnhancedInputComponent* EnhancedInputComponent = CastChecked<UDkEnhancedInputComponent>(InputComponent);
 	EnhancedInputComponent->BindNativeInputAction(
-		InputConfigDataAsset, DkGameplayTags::Dk_Input_Action_Move, ETriggerEvent::Triggered, this,
-		&ThisClass::HandleGroundMovementInput
+		InputConfigDataAsset, DkGameplayTags::Dk_Input_Action_Move, ETriggerEvent::Triggered,
+		this, &ThisClass::HandleGroundMovementInput
 	);
 	EnhancedInputComponent->BindNativeInputAction(
-		InputConfigDataAsset, DkGameplayTags::Dk_Input_Action_Look, ETriggerEvent::Triggered, this,
-		&ThisClass::OnLookTriggered
+		InputConfigDataAsset, DkGameplayTags::Dk_Input_Action_ToggleMoveStyle, ETriggerEvent::Started,
+		this, &ThisClass::ToggleMovementStyle
 	);
 	EnhancedInputComponent->BindNativeInputAction(
-		InputConfigDataAsset, DkGameplayTags::Dk_Input_Action_Jump, ETriggerEvent::Started, this,
-		&ThisClass::OnJumpPressed
+		InputConfigDataAsset, DkGameplayTags::Dk_Input_Action_Look, ETriggerEvent::Triggered,
+		this, &ThisClass::OnLookTriggered
 	);
 	EnhancedInputComponent->BindNativeInputAction(
-		InputConfigDataAsset, DkGameplayTags::Dk_Input_Action_Interact, ETriggerEvent::Started, this,
-		&ThisClass::OnInteract
+		InputConfigDataAsset, DkGameplayTags::Dk_Input_Action_Jump, ETriggerEvent::Started,
+		this, &ThisClass::OnJumpPressed
 	);
 	EnhancedInputComponent->BindNativeInputAction(
-		InputConfigDataAsset, DkGameplayTags::Dk_Input_Action_OpenInventory, ETriggerEvent::Completed, this,
-		&ThisClass::OnInventoryActionTriggered
+		InputConfigDataAsset, DkGameplayTags::Dk_Input_Action_Interact, ETriggerEvent::Started,
+		this, &ThisClass::OnInteract
+	);
+	EnhancedInputComponent->BindNativeInputAction(
+		InputConfigDataAsset, DkGameplayTags::Dk_Input_Action_OpenInventory, ETriggerEvent::Completed,
+		this, &ThisClass::OnInventoryActionTriggered
 	);
 }
 
@@ -152,6 +156,19 @@ void ADkGamePlayerController::HandleGroundMovementInput(const FInputActionValue&
 	{
 		const FVector RightVector = MovementRotation.RotateVector(FVector::RightVector);
 		GetPawn()->AddMovementInput(RightVector, MoveVector.X);
+	}
+}
+
+void ADkGamePlayerController::ToggleMovementStyle()
+{
+	ADkCharacterBase* OwningCharacter = Cast<ADkCharacterBase>(GetCharacter());
+	if (OwningCharacter->GetCurrentLocomotionStyle() == ELocomotionStyle::Walk)
+	{
+		OwningCharacter->SwitchLocomotionStyle(ELocomotionStyle::Run);
+	}
+	else if (OwningCharacter->GetCurrentLocomotionStyle() == ELocomotionStyle::Run)
+	{
+		OwningCharacter->SwitchLocomotionStyle(ELocomotionStyle::Walk);
 	}
 }
 

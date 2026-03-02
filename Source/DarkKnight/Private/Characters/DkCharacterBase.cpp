@@ -6,6 +6,7 @@
 #include "DarkKnightDebugHelper.h"
 #include "MotionWarpingComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/DkActionComponent.h"
 #include "DarkKnight/DarkKnight.h"
 #include "DataAssets/CharacterInfo.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -54,6 +55,8 @@ ADkCharacterBase::ADkCharacterBase()
 	GetCharacterMovement()->NavAgentProps.AgentHeight = 192.f; // 试图解决Ai的问题(但不知道是什么)
 
 	MotionWarping = CreateDefaultSubobject<UMotionWarpingComponent>(TEXT("MotionWarping"));
+	
+	ActionComponent = CreateDefaultSubobject<UDkActionComponent>(TEXT("DkActionComponent"));
 }
 
 void ADkCharacterBase::BeginPlay()
@@ -82,6 +85,8 @@ void ADkCharacterBase::SwitchLocomotionStyle(ELocomotionStyle InStyle)
 		Debug::Print("AttributeSet中没有配置MoveSpeed");
 	}
 
+	SetCurrentLocomotionStyle(InStyle);
+
 	checkf(CharacterInfo, TEXT("该Character类没有配置CharacterInfo"));
 	switch (InStyle)
 	{
@@ -99,7 +104,6 @@ void ADkCharacterBase::SwitchLocomotionStyle(ELocomotionStyle InStyle)
 	default:
 		break;
 	}
-
 
 	Debug::Print(TEXT("行走速度"), GetCharacterMovement()->MaxWalkSpeed);
 }

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "DarkKnight/DarkKnight.h"
 #include "DkActionComponent.generated.h"
 
 
@@ -13,15 +14,12 @@ class DARKKNIGHT_API UDkActionComponent : public UActorComponent
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this component's properties
 	UDkActionComponent();
 
-protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
+private:
+	bool bIsInCombat = false;
 
 public:
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
-	                           FActorComponentTickFunction* ThisTickFunction) override;
+	FORCEINLINE bool IsInCombatState() const { return bIsInCombat; }
+	void SetIsInCombatState(bool IsInCombat) { bIsInCombat = IsInCombat; }
 };

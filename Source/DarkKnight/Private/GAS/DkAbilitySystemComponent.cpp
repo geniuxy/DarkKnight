@@ -3,6 +3,8 @@
 
 #include "GAS/DkAbilitySystemComponent.h"
 
+#include "GAS/DkAttributeSet.h"
+
 void UDkAbilitySystemComponent::AbilityActorInfoSet()
 {
 	// 用于ApplyGameplayEffectToSelf后，在客户端还会执行一些操作
@@ -12,8 +14,6 @@ void UDkAbilitySystemComponent::AbilityActorInfoSet()
 void UDkAbilitySystemComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	InitStats(OwningAttributeSet, AttributeSetInitialTable);
 }
 
 void UDkAbilitySystemComponent::ClientEffectApplied_Implementation(

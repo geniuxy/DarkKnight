@@ -17,3 +17,10 @@ ADkPlayerStateBase::ADkPlayerStateBase()
 
 	NetUpdateFrequency = 100.f;
 }
+
+void ADkPlayerStateBase::BeginPlay()
+{
+	Super::BeginPlay();
+
+	AbilitySystemComponent->InitStats(UDkAttributeSet::StaticClass(), AttributeSetInitialTable);
+}

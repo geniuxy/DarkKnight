@@ -95,4 +95,7 @@ protected:
 	float MoveStartAngle; // 开始旋转时，朝向与输入方向的差值角度
 	
 	bool bDoOnceAtSetMoveStartAngle = true;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Animation State Factors|Essential Data")
+	bool bInCombatState;
 };

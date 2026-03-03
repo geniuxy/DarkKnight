@@ -38,8 +38,6 @@ void ADkCharacterHero::PossessedBy(AController* NewController)
 
 	// Init ability actor info for the Server
 	InitAbilityActorInfo();
-
-	SwitchLocomotionStyle(ELocomotionStyle::Walk);
 }
 
 void ADkCharacterHero::OnRep_PlayerState()

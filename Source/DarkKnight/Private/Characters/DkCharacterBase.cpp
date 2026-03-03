@@ -55,7 +55,7 @@ ADkCharacterBase::ADkCharacterBase()
 	GetCharacterMovement()->NavAgentProps.AgentHeight = 192.f; // 试图解决Ai的问题(但不知道是什么)
 
 	MotionWarping = CreateDefaultSubobject<UMotionWarpingComponent>(TEXT("MotionWarping"));
-	
+
 	ActionComponent = CreateDefaultSubobject<UDkActionComponent>(TEXT("DkActionComponent"));
 }
 
@@ -64,6 +64,33 @@ void ADkCharacterBase::BeginPlay()
 	Super::BeginPlay();
 
 	InitializeCharacterInfo();
+
+	if (HasAuthority() && IsLocallyControlled())
+	{
+		SwitchLocomotionStyle(ELocomotionStyle::Walk);
+	}
+
+	// FString NetModeStr;
+	// switch (GetNetMode())
+	// {
+	// case NM_Standalone: NetModeStr = "Standalone";
+	// 	break;
+	// case NM_DedicatedServer: NetModeStr = "DedicatedServer";
+	// 	break;
+	// case NM_ListenServer: NetModeStr = "ListenServer";
+	// 	break;
+	// case NM_Client: NetModeStr = "Client";
+	// 	break;
+	// }
+	//
+	// Debug::Print(FString::Printf(
+	// 		TEXT("[%s] HasAuthority: %s, IsLocallyControlled: %s, NetMode: %s"),
+	// 		*GetName(),
+	// 		HasAuthority() ? TEXT("True") : TEXT("False"),
+	// 		IsLocallyControlled() ? TEXT("True") : TEXT("False"),
+	// 		*NetModeStr
+	// 	)
+	// );
 }
 
 void ADkCharacterBase::InitializeCharacterInfo()
@@ -76,14 +103,8 @@ void ADkCharacterBase::InitAbilityActorInfo()
 
 void ADkCharacterBase::SwitchLocomotionStyle(ELocomotionStyle InStyle)
 {
-	checkf(AbilitySystemComponent, TEXT("该Character类没有配置AbilitySystemComponent"));
-	bool bFound = false;
-	float MoveSpeedPercent =
-		AbilitySystemComponent->GetGameplayAttributeValue(UDkAttributeSet::GetMoveSpeedAttribute(), bFound);
-	if (!bFound)
-	{
-		Debug::Print("AttributeSet中没有配置MoveSpeed");
-	}
+	checkf(AttributeSet, TEXT("该Character类没有配置AttributeSet"));
+	float MoveSpeedPercent = AttributeSet->GetMoveSpeed();
 
 	SetCurrentLocomotionStyle(InStyle);
 

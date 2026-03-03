@@ -22,6 +22,11 @@ public:
 	UDkAttributeSet* GetAttributeSet() const { return AttributeSet; }
 
 protected:
+	virtual void BeginPlay() override;
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UDataTable> AttributeSetInitialTable;
+	
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UDkAbilitySystemComponent> AbilitySystemComponent;
 

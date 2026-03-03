@@ -5,6 +5,7 @@
 
 #include "KismetAnimationLibrary.h"
 #include "Characters/DkCharacterBase.h"
+#include "Components/DkActionComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 void UDkAnimInstanceBase::NativeInitializeAnimation()
@@ -74,8 +75,9 @@ void UDkAnimInstanceBase::NativeUpdateAnimation(float DeltaSeconds)
 			MoveStartAngle = UKismetAnimationLibrary::CalculateDirection(InputVector, Rotation);
 			bDoOnceAtSetMoveStartAngle= false;
 		}
-		
-		if (DeltaAngle < -135.f || DeltaAngle > 135.f) // TODO: 还需要不在Combat状态中
+
+		// 企图往后转，且不在战斗状态中
+		if ((DeltaAngle < -135.f || DeltaAngle > 135.f) && !bInCombatState)
 		{
 			if (bDoOnceAtTurnBack)
 			{
@@ -92,6 +94,9 @@ void UDkAnimInstanceBase::NativeUpdateAnimation(float DeltaSeconds)
 	{
 		bDoOnceAtSetMoveStartAngle = true;
 	}
+
+	UDkActionComponent* ActionComponent = OwningCharacter->FindComponentByClass<UDkActionComponent>();
+	bInCombatState = ActionComponent->IsInCombatState();
 }
 
 void UDkAnimInstanceBase::NativePostEvaluateAnimation()

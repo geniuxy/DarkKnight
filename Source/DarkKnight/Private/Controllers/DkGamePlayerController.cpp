@@ -9,6 +9,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "Blueprint/UserWidget.h"
 #include "Characters/DkCharacterHero.h"
+#include "Components/DkActionComponent.h"
 #include "Components/DkEnhancedInputComponent.h"
 #include "Components/DkInventoryComponent.h"
 #include "Components/DkItemComponent.h"
@@ -189,7 +190,13 @@ void ADkGamePlayerController::OnLookTriggered(const FInputActionValue& InputActi
 
 void ADkGamePlayerController::OnJumpPressed()
 {
-	GetCharacter()->Jump();
+	ADkCharacterBase* OwningCharacter = Cast<ADkCharacterBase>(GetCharacter());
+	UDkActionComponent* ActionComponent = OwningCharacter->FindComponentByClass<UDkActionComponent>();
+	bool bInCombatState = ActionComponent->IsInCombatState();
+	if (!bInCombatState)
+	{
+		OwningCharacter->Jump();
+	}
 }
 
 void ADkGamePlayerController::OnInteract()

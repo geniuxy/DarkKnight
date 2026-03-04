@@ -25,6 +25,4 @@ private:
 		float FrameDeltaTime,
 		const FAnimNotifyEventReference& EventReference
 	) override;
-
-	
 };

@@ -15,7 +15,7 @@ void UDkAnimNSMovementRotate::NotifyTick(
 {
 	Super::NotifyTick(MeshComp, Animation, FrameDeltaTime, EventReference);
 
-	// 这一块是在Idle—>Walk, Start的时候，期望调用的，不知道为什么用不上。。
+	// 这一块是在Idle—>Walk/Run, Start的时候，期望调用的
 	if (ACharacter* OwningCharacter = Cast<ACharacter>(MeshComp->GetOwner()))
 	{
 		FRotator CurrentRotation = OwningCharacter->GetActorRotation();

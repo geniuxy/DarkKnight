@@ -14,6 +14,10 @@ void UDkAnimInstanceBase::NativeInitializeAnimation()
 
 	OwningCharacter = Cast<ADkCharacterBase>(GetOwningActor());
 
+	// Animation Sequence的Enable Root Motion也会生效
+	// 但不适合多人联网游戏时配置 在 Client 时，就会出现奇异的滚动
+	SetRootMotionMode(ERootMotionMode::RootMotionFromEverything);
+
 	LocomotionStyle = ELocomotionStyle::Walk;
 	LastLocomotionStyle = ELocomotionStyle::Walk;
 }
@@ -62,7 +66,7 @@ void UDkAnimInstanceBase::NativeUpdateAnimation(float DeltaSeconds)
 		LeanAngle = YawAdjustmentRate * 0.5f;
 	}
 
-	if (!bHasMovementInput)
+	if (bHasMovementInput)
 	{
 		StopFootSelection = GetCurveValue("StopFootSelection");
 	}

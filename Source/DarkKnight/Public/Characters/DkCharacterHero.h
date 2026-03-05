@@ -18,8 +18,11 @@ class DARKKNIGHT_API ADkCharacterHero : public ADkCharacterBase
 
 public:
 	ADkCharacterHero();
+	
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override;
+
+	virtual void OnMovementModeChanged(EMovementMode PrevMovementMode, uint8 PreviousCustomMode = 0) override;
 
 protected:
 	UPROPERTY(VisibleAnywhere)
@@ -37,6 +40,16 @@ protected:
 	/*********/
 
 	virtual void InitAbilityActorInfo() override;
+
+	/* 坠亡相关 */
+	FVector LastJumpStartPosition;
+
+	UPROPERTY(EditAnywhere)
+	float DeadlyFallHeight = 800.f;
+	
+	UFUNCTION()
+	void HandleOnLanded(const FHitResult& Hit);
+	/*********/
 
 public:
 	FORCEINLINE UDkInventoryComponent* GetInventoryComponent() const {return InventoryComponent;}

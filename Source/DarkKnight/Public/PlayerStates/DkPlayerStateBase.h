@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/DkActionComponent.h"
+#include "DarkKnight/DarkKnight.h"
 #include "GameFramework/PlayerState.h"
 #include "GAS/DkAbilitySystemComponent.h"
 #include "GAS/DkAttributeSet.h"
@@ -32,4 +34,9 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<UDkAttributeSet> AttributeSet;
+
+	EActionState CurrentActionState; // 记录目前玩家的动作状态
+
+public:
+	LIST_DATA_ACCESSOR(EActionState, CurrentActionState)
 };

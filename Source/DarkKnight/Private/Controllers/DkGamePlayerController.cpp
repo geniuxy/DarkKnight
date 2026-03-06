@@ -144,19 +144,19 @@ void ADkGamePlayerController::HandleGroundMovementInput(const FInputActionValue&
 
 	// 获取角色控制器的偏航角（Yaw），并将其转换为一个旋转值（FRotator）。
 	// 偏航角是角色在水平方向上的旋转角度，用于确定角色的朝向
-	const FRotator MovementRotation(0.f, GetControlRotation().Yaw, 0.f);
+	const FRotator ControllerRotation(0.f, GetControlRotation().Yaw, 0.f);
 
 	if (MoveVector.Y != 0.f)
 	{
-		// MovementRotation.RotateVector() 被用来将标准方向向量（如 FVector::ForwardVector 或 FVector::RightVector）旋转到角色的当前朝向。
-		const FVector ForwardVector = MovementRotation.RotateVector(FVector::ForwardVector);
-		GetPawn()->AddMovementInput(ForwardVector, MoveVector.Y);
+		// ControllerRotation.RotateVector() 被用来将标准方向向量（如 FVector::ForwardVector 或 FVector::RightVector）旋转到角色的目标朝向。
+		const FVector TargetForwardVector = ControllerRotation.RotateVector(FVector::ForwardVector);
+		GetPawn()->AddMovementInput(TargetForwardVector, MoveVector.Y);
 	}
 
 	if (MoveVector.X != 0.f)
 	{
-		const FVector RightVector = MovementRotation.RotateVector(FVector::RightVector);
-		GetPawn()->AddMovementInput(RightVector, MoveVector.X);
+		const FVector TargetRightVector = ControllerRotation.RotateVector(FVector::RightVector);
+		GetPawn()->AddMovementInput(TargetRightVector, MoveVector.X);
 	}
 }
 

@@ -18,13 +18,40 @@ enum class EDkInputMode : uint8
 
 /********/
 
-/* Movement Types */
+/* CharacterMovement/Action Types */
 UENUM(BlueprintType)
 enum class ELocomotionStyle :uint8
 {
 	Walk,
 	Run,
 	Sprint,
+	Unknown UMETA(Hidden)
+};
+
+UENUM(BlueprintType)
+enum class EActionState :uint8
+{
+	OutOfCombat,
+	InCombat,
+	InAir,
+	CombatFinisherAttacker,
+	CombatFinisherReceiver,
+	InUIInteractionDialogue,
+	Dialogue,
+	Death,
+	InUIMenu,
+	InUIInteractionLoot,
+	InUIInteractionMountHorse,
+	Riding,
+	Unknown UMETA(Hidden)
+};
+
+UENUM(BlueprintType)
+enum class EOwnerType :uint8 // ActionComponent的Owner类型
+{
+	Player,
+	NPC,
+	Dragon,
 	Unknown UMETA(Hidden)
 };
 

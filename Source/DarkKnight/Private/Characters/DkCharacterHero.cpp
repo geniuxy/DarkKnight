@@ -58,15 +58,35 @@ void ADkCharacterHero::OnMovementModeChanged(EMovementMode PrevMovementMode, uin
 {
 	Super::OnMovementModeChanged(PrevMovementMode, PreviousCustomMode);
 
-	if (PrevMovementMode == MOVE_Walking && GetCharacterMovement()->MovementMode == MOVE_Falling) // TODO: 并且没有骑上马
+	if (PrevMovementMode == MOVE_Walking) // TODO: 并且没有骑上马
 	{
-		LastJumpStartPosition = GetActorLocation();
+		if (GetCharacterMovement()->MovementMode == MOVE_Falling)
+		{
+			LastJumpStartPosition = GetActorLocation();
+		}
+
+		if (GetCharacterMovement()->MovementMode == MOVE_Falling || GetCharacterMovement()->MovementMode == MOVE_Flying)
+		{
+			EActionState CurrentActionState = ActionComponent->GetCurrentActionState();
+			if (CurrentActionState == EActionState::OutOfCombat || CurrentActionState == EActionState::InCombat)
+			{
+				ActionComponent->SetLastActionStateWhenOnGround(CurrentActionState);
+			}
+			else if (CurrentActionState == EActionState::InUIInteractionLoot ||
+				CurrentActionState == EActionState::InUIInteractionMountHorse ||
+				CurrentActionState == EActionState::Riding)
+			{
+				ActionComponent->SetLastActionStateWhenOnGround(EActionState::OutOfCombat);
+			}
+
+			ActionComponent->SetCurrentActionState(EActionState::InAir);
+		}
 	}
 }
 
 void ADkCharacterHero::InitAbilityActorInfo()
 {
-	ADkPlayerStateBase* OwningPlayerState = GetPlayerState<ADkPlayerStateBase>();
+	OwningPlayerState = GetPlayerState<ADkPlayerStateBase>();
 	check(OwningPlayerState);
 	OwningPlayerState->GetAbilitySystemComponent()->InitAbilityActorInfo(OwningPlayerState, this);
 	OwningPlayerState->GetAbilitySystemComponent()->AbilityActorInfoSet();
@@ -75,6 +95,22 @@ void ADkCharacterHero::InitAbilityActorInfo()
 }
 
 void ADkCharacterHero::HandleOnLanded(const FHitResult& Hit)
+{
+	HandleFallDeath();
+
+	checkf(OwningPlayerState, TEXT("在着陆时，PlayerState得到为空"));
+	EActionState CurrentActionState = OwningPlayerState->GetCurrentActionState();
+	if (CurrentActionState == EActionState::InAir)
+	{
+		if (ActionComponent)
+		{
+			// 着落后，将ActionState设置为跳跃前的ActionState
+			ActionComponent->SetCurrentActionState(ActionComponent->GetLastActionStateWhenOnGround());
+		}
+	}
+}
+
+void ADkCharacterHero::HandleFallDeath()
 {
 	// 跳跃高度过高
 	if (LastJumpStartPosition.Z - GetActorLocation().Z >= DeadlyFallHeight)

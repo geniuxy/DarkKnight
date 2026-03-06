@@ -6,6 +6,7 @@
 #include "DkCharacterBase.h"
 #include "DkCharacterHero.generated.h"
 
+class ADkPlayerStateBase;
 class USpringArmComponent;
 class UCameraComponent;
 class UDkEquipmentComponent;
@@ -39,6 +40,9 @@ protected:
 	UDkEquipmentComponent* EquipmentComponent;
 	/*********/
 
+	UPROPERTY()
+	TObjectPtr<ADkPlayerStateBase> OwningPlayerState;
+
 	virtual void InitAbilityActorInfo() override;
 
 	/* 坠亡相关 */
@@ -49,6 +53,8 @@ protected:
 	
 	UFUNCTION()
 	void HandleOnLanded(const FHitResult& Hit);
+
+	void HandleFallDeath();
 	/*********/
 
 public:

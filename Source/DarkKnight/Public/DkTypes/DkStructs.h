@@ -1,9 +1,14 @@
 ﻿#pragma once
+#include "ActiveGameplayEffectHandle.h"
 #include "InputAction.h"
 #include "Inventory/DkInventoryItem.h"
 
 #include "DkStructs.generated.h"
 
+struct FGameplayAbilitySpec;
+class UGameplayAbility;
+class UGameplayEffect;
+class ADkCharacterBase;
 /* UI Structs */
 USTRUCT()
 struct FOptionsDataEditConditionDescriptor
@@ -92,6 +97,93 @@ struct FInventorySpaceQueryResult
 	bool bHasSpace = false;
 	TWeakObjectPtr<UDkInventoryItem> ValidItem = nullptr;
 	int32 UpperLeftIndex = INDEX_NONE;
+};
+
+USTRUCT(BlueprintType)
+struct FDkItemInfo : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	int ItemID;
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	FName ItemName;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	int ItemRequiredLevel;
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	EItemQuality ItemQuality;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	FText ItemDescription;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (Categories = "Dk.Item"))
+	FGameplayTag ItemTag;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TObjectPtr<UTexture2D> ItemIcon;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TSubclassOf<ADkCharacterBase> EquipmentPlayerBPClass; // 装备对应的角色类
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TSubclassOf<ADkCharacterBase> EquipmentEnemyBPClass; // 装备对应的敌人类
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	int ItemPrice;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	float ItemWeight;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	int Stack;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	int MaxStack;
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	int MinEntryCount; // 最少词条数
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	int MaxEntryCount; // 最多词条数
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	int MinEntryLevel; // 最低词条等级
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	int MaxEntryLevel; // 最高词条等级
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	int UniqueEntryID; // 独特词条ID
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TMap<TSubclassOf<UGameplayEffect>, struct FItemEntryInfo> MainEntry;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TMap<TSubclassOf<UGameplayEffect>, struct FItemEntryInfo> SubEntry;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TMap<TSubclassOf<UGameplayAbility>, FGameplayAbilitySpec> UniqueEntry; // 独特词条可以给角色独特的Ability
+};
+
+USTRUCT(BlueprintType)
+struct FItemEntryInfo
+{
+	GENERATED_BODY()
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	FActiveGameplayEffectHandle GameplayEffectHandle;
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	int EntryLevel;
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	int EntryID;
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	FText EntryDescription;
 };
 /********/
 

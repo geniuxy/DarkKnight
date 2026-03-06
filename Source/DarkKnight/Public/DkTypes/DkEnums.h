@@ -117,6 +117,17 @@ enum class EInventoryTileQuadrant: uint8 // 位于背包一个格子的哪个象
 	None
 };
 
+UENUM(BlueprintType)
+enum class EItemQuality: uint8 // 位于背包一个格子的哪个象限
+{
+	Ordinary,
+	Rare,
+	Exquisite, // 精美的
+	Epic,
+	UniqueLegend,
+	Unknown UMETA(Hidden)
+};
+
 /********/
 
 /* Monster Types */
@@ -125,6 +136,6 @@ enum class EMonsterType: uint8
 {
 	EzMonster,
 	Dragon,
-	None
+	Unknown UMETA(Hidden)
 };
 /********/

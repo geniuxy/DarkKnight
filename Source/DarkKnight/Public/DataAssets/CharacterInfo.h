@@ -6,6 +6,7 @@
 #include "Engine/DataAsset.h"
 #include "CharacterInfo.generated.h"
 
+enum class EMonsterType : uint8;
 /**
  * 
  */
@@ -23,4 +24,7 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category="Character Basic Info")
 	float MaxSprintSpeed;
+
+	UPROPERTY(EditDefaultsOnly, Category="Moster Info Lists")
+	EMonsterType MonsterType;
 };

@@ -118,3 +118,13 @@ enum class EInventoryTileQuadrant: uint8 // 位于背包一个格子的哪个象
 };
 
 /********/
+
+/* Monster Types */
+UENUM(BlueprintType)
+enum class EMonsterType: uint8
+{
+	EzMonster,
+	Dragon,
+	None
+};
+/********/

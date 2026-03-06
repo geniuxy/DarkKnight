@@ -9,6 +9,8 @@
 #include "DkActionComponent.generated.h"
 
 
+class UCharacterInfo;
+class ADkCharacterBase;
 enum class EOwnerType : uint8;
 enum class EActionState : uint8;
 
@@ -20,9 +22,18 @@ class DARKKNIGHT_API UDkActionComponent : public UActorComponent
 public:
 	UDkActionComponent();
 
+	void InitializeActorComponent(UCharacterInfo* InCharacterInfo);
+	
 	void SetCurrentActionState(EActionState InActionState);
 
+protected:
+	/* Actor Components */
+	UPROPERTY()
+	TObjectPtr<ADkCharacterBase> OwningCharacter;
+	/*********/
+
 private:
+	
 	bool bIsInCombat = false;
 
 	EActionState CurrentActionState;
@@ -38,4 +49,5 @@ public:
 	FORCEINLINE EActionState GetCurrentActionState() const { return CurrentActionState; }
 
 	LIST_DATA_ACCESSOR(EActionState, LastActionStateWhenOnGround)
+	LIST_DATA_ACCESSOR(EOwnerType, OwnerType)
 };

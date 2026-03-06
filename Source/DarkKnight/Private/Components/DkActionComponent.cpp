@@ -4,11 +4,32 @@
 #include "Components/DkActionComponent.h"
 
 #include "Characters/DkCharacterHero.h"
+#include "DataAssets/CharacterInfo.h"
 #include "PlayerStates/DkPlayerStateBase.h"
 
 UDkActionComponent::UDkActionComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
+}
+
+void UDkActionComponent::InitializeActorComponent(UCharacterInfo* InCharacterInfo)
+{
+	OwningCharacter = Cast<ADkCharacterBase>(GetOwner());
+	if (OwningCharacter->ActorHasTag(TEXT("Player")))
+	{
+		SetOwnerType(EOwnerType::Player);
+	}
+	else if (OwningCharacter->ActorHasTag(TEXT("Monster")))
+	{
+		if (InCharacterInfo->MonsterType == EMonsterType::Dragon)
+		{
+			SetOwnerType(EOwnerType::Dragon);
+		}
+	}
+	else
+	{
+		SetOwnerType(EOwnerType::NPC);
+	}
 }
 
 void UDkActionComponent::SetCurrentActionState(EActionState InActionState)

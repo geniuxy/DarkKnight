@@ -65,6 +65,11 @@ void ADkCharacterBase::BeginPlay()
 
 	InitializeCharacterInfo();
 
+	if (ActionComponent && IsValid(CharacterInfo))
+	{
+		ActionComponent->InitializeActorComponent(CharacterInfo);
+	}
+
 	// 对于服务端的对象在BeginPlay后，设为行走状态
 	// 对于Client的对象在OnRep_PlayerState中，设为行走状态
 	if (HasAuthority() && IsLocallyControlled())

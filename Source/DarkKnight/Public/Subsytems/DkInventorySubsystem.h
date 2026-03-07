@@ -26,9 +26,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void RegisterCachedInventoryComponent(UDkInventoryComponent* InventoryComponent);
-	
+
 	void InitializeItemData();
-	
+
 	void InitializeEntryData();
 
 private:
@@ -40,7 +40,10 @@ private:
 
 	UPROPERTY(Transient)
 	TMap<int, FDkEntryInfo> CachedEntryTable;
-	
+
 public:
 	LIST_DATA_ACCESSOR(UDkInventoryComponent*, CachedInventoryComponent)
+
+	FORCEINLINE TMap<int, FDkItemInfo> GetCachedItemTable() const { return CachedItemTable; }
+	FORCEINLINE TMap<int, FDkEntryInfo> GetCachedEntryTable() const { return CachedEntryTable; }
 };

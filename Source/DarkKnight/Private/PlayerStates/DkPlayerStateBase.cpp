@@ -15,7 +15,7 @@ ADkPlayerStateBase::ADkPlayerStateBase()
 
 	AttributeSet = CreateDefaultSubobject<UDkAttributeSet>("AttributeSet");
 
-	NetUpdateFrequency = 100.f;
+	SetNetUpdateFrequency(100.f);
 }
 
 void ADkPlayerStateBase::BeginPlay()

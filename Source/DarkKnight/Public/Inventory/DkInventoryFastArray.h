@@ -22,7 +22,7 @@ struct FDkInventoryFastArrayEntry : public FFastArraySerializerItem
 
 private:
 	friend struct FDkInventoryFastArray;
-	friend UDkInventoryComponent;
+	// friend UDkInventoryComponent;
 
 	UPROPERTY()
 	TObjectPtr<UDkInventoryItem> Item = nullptr;
@@ -62,7 +62,7 @@ struct FDkInventoryFastArray : public FFastArraySerializer
 	UDkInventoryItem* FindFirstItemByTag(const FGameplayTag& ItemTag);
 
 private:
-	friend UDkInventoryComponent;
+	// friend UDkInventoryComponent;
 
 	// 复制的Items列表
 	UPROPERTY()

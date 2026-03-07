@@ -60,10 +60,13 @@ UDkInventoryItem* FDkInventoryFastArray::AddEntry(UDkInventoryItem* Item)
 	check(OwnerComponent);
 	AActor* OwningActor = OwnerComponent->GetOwner();
 	check(OwningActor->HasAuthority());
+	UDkInventoryComponent* InventoryComponent = Cast<UDkInventoryComponent>(OwnerComponent);
+	if (!IsValid(InventoryComponent)) return nullptr;
 
 	FDkInventoryFastArrayEntry& NewEntry = Entries.AddDefaulted_GetRef();
 	NewEntry.Item = Item;
 
+	InventoryComponent->AddRepSubObj(NewEntry.Item);
 	MarkItemDirty(NewEntry);
 	return Item;
 }

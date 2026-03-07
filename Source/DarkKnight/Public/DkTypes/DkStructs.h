@@ -133,7 +133,7 @@ struct FDkEntryInfo : public FTableRowBase
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	int MaxValue;
-	
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (Categories = "Dk.Item.Entry"))
 	FGameplayTag GameplayEffectTag;
 
@@ -145,16 +145,16 @@ USTRUCT(BlueprintType)
 struct FItemEntryInfo
 {
 	GENERATED_BODY()
-	
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FActiveGameplayEffectHandle GameplayEffectHandle;
-	
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	int EntryLevel;
-	
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	int EntryID;
-	
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FText EntryDescription;
 };
@@ -166,13 +166,13 @@ struct FDkItemInfo : public FTableRowBase
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	int ItemID;
-	
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FName ItemName;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	int ItemRequiredLevel;
-	
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	EItemQuality ItemQuality;
 
@@ -202,7 +202,7 @@ struct FDkItemInfo : public FTableRowBase
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	int MaxStack;
-	
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	int MinEntryCount; // 最少词条数
 
@@ -211,7 +211,7 @@ struct FDkItemInfo : public FTableRowBase
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	int MinEntryLevel; // 最低词条等级
-	
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	int MaxEntryLevel; // 最高词条等级
 
@@ -227,6 +227,7 @@ struct FDkItemInfo : public FTableRowBase
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TMap<TSubclassOf<UGameplayAbility>, FGameplayAbilitySpec> UniqueEntry; // 独特词条可以给角色独特的Ability
 };
+
 /********/
 
 /* Input Structs */
@@ -246,4 +247,5 @@ struct FDkInputActionConfig
 		return InputTag.IsValid() && InputAction;
 	}
 };
+
 /********/

@@ -25,7 +25,7 @@ struct FItemFragment
 	{
 	}
 
-	virtual void Manifest()
+	virtual void Manifest() // 显现
 	{
 	}
 

@@ -33,7 +33,7 @@ private:
 	FInstancedStruct ItemManifest;
 
 	UPROPERTY(Replicated)
-	int32 TotalStackCount = 0;
+	int32 TotalStackCount = 0; // 该UDkInventoryItem所有物品的总数量
 
 public:
 	LIST_DATA_ACCESSOR(int32, TotalStackCount)

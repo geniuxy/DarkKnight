@@ -28,5 +28,6 @@ bool UDkInventoryItem::DoesItemTagMatch(const FGameplayTag& ItemTag) const
 
 void UDkInventoryItem::SetItemManifest(const FInventoryItemManifest& Manifest)
 {
+	// 这里复制了一份Manifest给ItemManifest
 	ItemManifest = FInstancedStruct::Make<FInventoryItemManifest>(Manifest);
 }

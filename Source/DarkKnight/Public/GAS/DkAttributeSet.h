@@ -128,16 +128,16 @@ public:
 	ATTRIBUTE_ACCESSORS(UDkAttributeSet, MaxBreakingDefenseValue);
 	
 	UPROPERTY(BlueprintReadOnly, Category = "Primary Attribute")
-	FGameplayAttributeData Burden;
-	ATTRIBUTE_ACCESSORS(UDkAttributeSet, Burden);
+	FGameplayAttributeData CarryWeight;
+	ATTRIBUTE_ACCESSORS(UDkAttributeSet, CarryWeight);
 	
 	UPROPERTY(BlueprintReadOnly, Category = "Primary Attribute")
-	FGameplayAttributeData MaxBurden;
-	ATTRIBUTE_ACCESSORS(UDkAttributeSet, MaxBurden);
+	FGameplayAttributeData WeightLimit;
+	ATTRIBUTE_ACCESSORS(UDkAttributeSet, WeightLimit);
 	
 	UPROPERTY(BlueprintReadOnly, Category = "Primary Attribute")
-	FGameplayAttributeData ExecuctionChance;
-	ATTRIBUTE_ACCESSORS(UDkAttributeSet, ExecuctionChance);
+	FGameplayAttributeData ExecutionChance;
+	ATTRIBUTE_ACCESSORS(UDkAttributeSet, ExecutionChance);
 	
 	UPROPERTY(BlueprintReadOnly, Category = "Primary Attribute")
 	FGameplayAttributeData MonsterExperienceAcquisition;

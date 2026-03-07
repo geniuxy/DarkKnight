@@ -1,11 +1,11 @@
 ﻿#pragma once
 #include "ActiveGameplayEffectHandle.h"
+#include "GameplayAbilitySpec.h"
 #include "InputAction.h"
 #include "Inventory/DkInventoryItem.h"
 
 #include "DkStructs.generated.h"
 
-struct FGameplayAbilitySpec;
 class UGameplayAbility;
 class UGameplayEffect;
 class ADkCharacterBase;
@@ -100,6 +100,66 @@ struct FInventorySpaceQueryResult
 };
 
 USTRUCT(BlueprintType)
+struct FDkGameplayEffectInfo : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	int GameplayEffectID;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (Categories = "Dk.Item.Entry"))
+	FGameplayTag GameplayEffectTag;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TSubclassOf<UGameplayEffect> Attribute;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	FText Description;
+};
+
+USTRUCT(BlueprintType)
+struct FDkEntryInfo : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	int EntryID;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	int EntryRarity;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	int MinValue;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	int MaxValue;
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (Categories = "Dk.Item.Entry"))
+	FGameplayTag GameplayEffectTag;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	FText Tips;
+};
+
+USTRUCT(BlueprintType)
+struct FItemEntryInfo
+{
+	GENERATED_BODY()
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	FActiveGameplayEffectHandle GameplayEffectHandle;
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	int EntryLevel;
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	int EntryID;
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	FText EntryDescription;
+};
+
+USTRUCT(BlueprintType)
 struct FDkItemInfo : public FTableRowBase
 {
 	GENERATED_BODY()
@@ -159,31 +219,13 @@ struct FDkItemInfo : public FTableRowBase
 	int UniqueEntryID; // 独特词条ID
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	TMap<TSubclassOf<UGameplayEffect>, struct FItemEntryInfo> MainEntry;
+	TMap<TSubclassOf<UGameplayEffect>, FItemEntryInfo> MainEntry;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	TMap<TSubclassOf<UGameplayEffect>, struct FItemEntryInfo> SubEntry;
+	TMap<TSubclassOf<UGameplayEffect>, FItemEntryInfo> SubEntry;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TMap<TSubclassOf<UGameplayAbility>, FGameplayAbilitySpec> UniqueEntry; // 独特词条可以给角色独特的Ability
-};
-
-USTRUCT(BlueprintType)
-struct FItemEntryInfo
-{
-	GENERATED_BODY()
-	
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	FActiveGameplayEffectHandle GameplayEffectHandle;
-	
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	int EntryLevel;
-	
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	int EntryID;
-	
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	FText EntryDescription;
 };
 /********/
 

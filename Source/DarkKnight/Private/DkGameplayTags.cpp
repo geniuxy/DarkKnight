@@ -94,4 +94,21 @@ namespace DkGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Inventory_Fragment_LabeledValue_Stat_0, "Dk.Inventory.Fragment.LabeledValue.Stat.0");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Inventory_Fragment_LabeledValue_Stat_1, "Dk.Inventory.Fragment.LabeledValue.Stat.1");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Inventory_Fragment_LabeledValue_Stat_2, "Dk.Inventory.Fragment.LabeledValue.Stat.2");
+
+	// Item Entry Tag
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Item_Entry_Attack_Percent, "Dk.Item.Entry.Attack.Percent");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Item_Entry_CritRate, "Dk.Item.Entry.CritRate");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Item_Entry_CritDamage, "Dk.Item.Entry.CritDamage");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Item_Entry_ExecutionChance, "Dk.Item.Entry.ExecutionChance");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Item_Entry_PunctureResistance, "Dk.Item.Entry.PunctureResistance");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Item_Entry_ChopResistance, "Dk.Item.Entry.ChopResistance");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Item_Entry_MaxHealth_Percent, "Dk.Item.Entry.MaxHealth.Percent");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Item_Entry_MonsterExperienceAcquisition, "Dk.Item.Entry.MonsterExperienceAcquisition");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Item_Entry_ShopSellingPrice, "Dk.Item.Entry.ShopSellingPrice");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Item_Entry_EnergyRecoveryBonus, "Dk.Item.Entry.EnergyRecoveryBonus");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Item_Entry_AdrenalineRecoveryBonus, "Dk.Item.Entry.AdrenalineRecoveryBonus");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Item_Entry_WeightLimit, "Dk.Item.Entry.WeightLimit");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Item_Entry_SpellPower, "Dk.Item.Entry.SpellPower");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Item_Entry_MaxToxin, "Dk.Item.Entry.MaxToxin");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Item_Entry_MaxAdrenaline, "Dk.Item.Entry.MaxAdrenaline");
 }

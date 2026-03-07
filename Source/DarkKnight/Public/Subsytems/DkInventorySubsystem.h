@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "DarkKnight/DarkKnight.h"
+#include "DkTypes/DkStructs.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "DkInventorySubsystem.generated.h"
 
@@ -25,11 +26,21 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void RegisterCachedInventoryComponent(UDkInventoryComponent* InventoryComponent);
+	
+	void InitializeItemData();
+	
+	void InitializeEntryData();
 
 private:
 	UPROPERTY(Transient)
 	UDkInventoryComponent* CachedInventoryComponent;
 
+	UPROPERTY(Transient)
+	TMap<int, FDkItemInfo> CachedItemTable;
+
+	UPROPERTY(Transient)
+	TMap<int, FDkEntryInfo> CachedEntryTable;
+	
 public:
 	LIST_DATA_ACCESSOR(UDkInventoryComponent*, CachedInventoryComponent)
 };

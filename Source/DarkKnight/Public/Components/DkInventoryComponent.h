@@ -9,6 +9,7 @@
 #include "DkInventoryComponent.generated.h"
 
 
+class UDkAbilitySystemComponent;
 class UDkInventoryItemDescriptionMenu;
 class UDkInventoryDraggedItem;
 struct FDkInventorySlotAvailabilityResult;
@@ -52,7 +53,8 @@ public:
 
 	/* 构建背包界面 */
 	void ConstructInventoryMenu();
-
+	void InitializeInventoryComponent();
+	
 	bool bHasInitInventoryMenu = false;
 	/********/
 
@@ -139,6 +141,8 @@ protected:
 
 private:
 	TWeakObjectPtr<ADkCharacterHero> OwningCharacter; // 仅在客户端上存在， 这个在初始化的时候用了一下。直接用GetOwner获取角色即可
+	
+	TWeakObjectPtr<UDkAbilitySystemComponent> OwnerASC;
 
 	TWeakObjectPtr<UDkWidgetInventoryMenu> CachedInventoryMenu; // 仅在客户端上存在
 

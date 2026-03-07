@@ -3,6 +3,11 @@
 
 #include "Subsytems/DkInventorySubsystem.h"
 
+#include "DarkKnightDebugHelper.h"
+#include "Kismet/DataTableFunctionLibrary.h"
+#include "Settings/DkGameUserSettings.h"
+#include "Settings/DkInventoryDeveloperSettings.h"
+
 UDkInventorySubsystem* UDkInventorySubsystem::Get(const UObject* WorldContextObject)
 {
 	if (GEngine)
@@ -36,4 +41,40 @@ void UDkInventorySubsystem::RegisterCachedInventoryComponent(UDkInventoryCompone
 {
 	check(InventoryComponent);
 	CachedInventoryComponent = InventoryComponent;
+}
+
+void UDkInventorySubsystem::InitializeItemData()
+{
+	const UDkInventoryDeveloperSettings* UIDeveloperSettings = GetDefault<UDkInventoryDeveloperSettings>();
+	const UDataTable* ItemDataTable = UIDeveloperSettings->GetItemDataTable();
+	checkf(ItemDataTable, TEXT("整体Item信息表还没有配置！"));
+	TArray<FName> ItemDataTableRowNames;
+	UDataTableFunctionLibrary::GetDataTableRowNames(ItemDataTable, ItemDataTableRowNames);
+
+	for (FName RowName : ItemDataTableRowNames)
+	{
+		FDkItemInfo* ItemInfo = ItemDataTable->FindRow<FDkItemInfo>(RowName, TEXT("没找到RowName对应的Row"));
+		if (!CachedItemTable.Contains(ItemInfo->ItemID))
+		{
+			CachedItemTable.Add(ItemInfo->ItemID, *ItemInfo);
+		}
+	}
+}
+
+void UDkInventorySubsystem::InitializeEntryData()
+{
+	const UDkInventoryDeveloperSettings* UIDeveloperSettings = GetDefault<UDkInventoryDeveloperSettings>();
+	const UDataTable* EntryTable = UIDeveloperSettings->GetEntryTable();
+	checkf(EntryTable, TEXT("整体Entry信息表还没有配置！"));
+	TArray<FName> EntryDataTableRowNames;
+	UDataTableFunctionLibrary::GetDataTableRowNames(EntryTable, EntryDataTableRowNames);
+
+	for (FName RowName : EntryDataTableRowNames)
+	{
+		FDkEntryInfo* EntryInfo = EntryTable->FindRow<FDkEntryInfo>(RowName, TEXT("没找到RowName对应的Row"));
+		if (!CachedEntryTable.Contains(EntryInfo->EntryID))
+		{
+			CachedEntryTable.Add(EntryInfo->EntryID, *EntryInfo);
+		}
+	}
 }

@@ -8,9 +8,12 @@
 #include "Characters/DkCharacterHero.h"
 #include "Components/DkItemComponent.h"
 #include "FunctionLibrarys/DkUIFunctionLibrary.h"
+#include "AbilitySystemGlobals.h"
+#include "GAS/DkAbilitySystemComponent.h"
 #include "Inventory/DkInventoryItem.h"
 #include "Inventory/DkInventoryItemFragment.h"
 #include "Net/UnrealNetwork.h"
+#include "Subsytems/DkInventorySubsystem.h"
 #include "Subsytems/DkUISubsystem.h"
 #include "Widgets/DkWidgetActivatableBase.h"
 #include "Widgets/GameMenu/DkWidgetGameMenuScreen.h"
@@ -33,7 +36,16 @@ void UDkInventoryComponent::GetLifetimeReplicatedProps(TArray<class FLifetimePro
 
 void UDkInventoryComponent::OnLoadingScreenDeactivated_Implementation()
 {
+	// 当Loading界面结束后，进行InventoryComponent的初始化
+
 	ConstructInventoryMenu();
+
+	InitializeInventoryComponent();
+
+	UDkInventorySubsystem* InventorySubsystem = UDkInventorySubsystem::Get(this);
+	checkf(InventorySubsystem, TEXT("InventorySubsystem为空！"));
+	InventorySubsystem->InitializeItemData();
+	InventorySubsystem->InitializeEntryData();
 }
 
 void UDkInventoryComponent::ConstructInventoryMenu()
@@ -68,6 +80,16 @@ void UDkInventoryComponent::ConstructInventoryMenu()
 			}
 		}
 	);
+}
+
+void UDkInventoryComponent::InitializeInventoryComponent()
+{
+	if (ACharacter* OwnerCharacter = CastChecked<ACharacter>(GetOwner()))
+	{
+		OwnerASC = Cast<UDkAbilitySystemComponent>(
+			UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(OwnerCharacter)
+		);
+	}
 }
 
 void UDkInventoryComponent::TryAddItem(UDkItemComponent* ItemComponent)

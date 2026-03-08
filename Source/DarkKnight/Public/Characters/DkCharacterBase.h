@@ -8,6 +8,7 @@
 #include "DkTypes/DkEnums.h"
 #include "DkCharacterBase.generated.h"
 
+struct FRewardItemEntry;
 class UDkActionComponent;
 class UCharacterInfo;
 class UDkAttributeSet;
@@ -62,6 +63,30 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UDkActionComponent> ActionComponent;
+
+	/* 掉落物品 */
+	void SpawnRewardItemActor();
+
+	void SpawnRewardItemActor(int ItemID);
+
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	float SpawnAngleMin = -135.f;
+
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	float SpawnAngleMax = 135.f;
+
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	float SpawnDistanceMin = 25.f;
+
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	float SpawnDistanceMax = 50.f;
+
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	float RelativeSpawnElevation = 70.f; // Spawn降低高度
+
+	UPROPERTY(EditDefaultsOnly, Category="Reward")
+	TArray<FRewardItemEntry> RewardItemIDList;
+	/*********/
 
 public:
 	LIST_DATA_ACCESSOR(ELocomotionStyle, CurrentLocomotionStyle)

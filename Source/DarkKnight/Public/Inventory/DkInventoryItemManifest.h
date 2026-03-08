@@ -4,6 +4,8 @@
 #include "GameplayTagContainer.h"
 
 #include "DkTypes/DkEnums.h"
+#include "DkTypes/DkStructs.h"
+#include "Equipment/DkEquippedActorBase.h"
 #include "StructUtils/InstancedStruct.h"
 #include "DkInventoryItemManifest.generated.h"
 
@@ -22,6 +24,7 @@ struct DARKKNIGHT_API FInventoryItemManifest
 {
 	GENERATED_BODY()
 
+	void InitializeFragments(const FDkItemInfo* ItemInfo, int32 InItemStack);
 	UDkInventoryItem* Manifest(UObject* NewOuter);
 	TArray<TInstancedStruct<FItemFragment>>& GetFragmentsMutable() { return Fragments; }
 	EInventoryItemCategory GetItemCategory() const { return ItemCategory; }
@@ -45,6 +48,12 @@ struct DARKKNIGHT_API FInventoryItemManifest
 	template <typename T> requires std::derived_from<T, FItemFragment>
 	TArray<const T*> GetAllFragmentsOfType() const;
 
+	template <typename T> requires std::derived_from<T, FItemFragment>
+	void AddFragment(T Fragment)
+	{
+		Fragments.Add(TInstancedStruct<FItemFragment>::Make<T>(MoveTemp(Fragment))); // 
+	}
+
 private:
 	void ClearFragments();
 
@@ -62,6 +71,9 @@ private:
 
 	UPROPERTY(EditAnywhere, Category="Inventory")
 	TSubclassOf<AActor> PickUpActorClass;
+
+public:
+	LIST_DATA_ACCESSOR(int, ItemID)
 };
 
 template <typename T> requires std::derived_from<T, FItemFragment>

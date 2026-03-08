@@ -87,6 +87,12 @@ struct FInventoryItemImageFragment : public FInventoryItemFragment
 	{
 		FragmentTag = DkGameplayTags::Dk_Inventory_Fragment_Icon;
 	}
+	
+	FInventoryItemImageFragment(UTexture2D* InTexture)
+	{
+		FragmentTag = DkGameplayTags::Dk_Inventory_Fragment_Icon;
+		Icon = InTexture;
+	}
 
 	virtual void Assimilate(UDkInventoryCompositeBase* Composite) const override;
 
@@ -111,6 +117,13 @@ struct FInventoryItemStackableFragment : public FItemFragment
 		FragmentTag = DkGameplayTags::Dk_Inventory_Fragment_Stackable;
 	}
 
+	FInventoryItemStackableFragment(int InStackNum, int InMaxStackNum)
+	{
+		FragmentTag = DkGameplayTags::Dk_Inventory_Fragment_Stackable;
+		StackCount = InStackNum;
+		MaxStackSize = InMaxStackNum;
+	}
+
 private:
 	UPROPERTY(EditAnywhere, Category="Inventory")
 	int32 MaxStackSize = 1;
@@ -131,6 +144,12 @@ struct FInventoryItemTextFragment : public FInventoryItemFragment
 	FInventoryItemTextFragment()
 	{
 		FragmentTag = DkGameplayTags::Dk_Inventory_Fragment_Name;
+	}
+
+	FInventoryItemTextFragment(FText InText)
+	{
+		FragmentTag = DkGameplayTags::Dk_Inventory_Fragment_Name;
+		FragmentText = InText;
 	}
 
 	virtual void Assimilate(UDkInventoryCompositeBase* Composite) const override;
@@ -177,6 +196,17 @@ struct FInventoryItemLabeledValueFragment : public FInventoryItemFragment
 	FInventoryItemLabeledValueFragment()
 	{
 		FragmentTag = DkGameplayTags::Dk_Inventory_Fragment_LabeledValue;
+	}
+	
+	FInventoryItemLabeledValueFragment(
+		const FText& InText,
+		int InValue,
+		FGameplayTag InFragmentTag = DkGameplayTags::Dk_Inventory_Fragment_LabeledValue)
+	{
+		FragmentTag = InFragmentTag;
+		Text_Label = InText;
+		Min = InValue;
+		Max = InValue;
 	}
 
 	virtual void Assimilate(UDkInventoryCompositeBase* Composite) const override;

@@ -2,10 +2,14 @@
 #include "ActiveGameplayEffectHandle.h"
 #include "GameplayAbilitySpec.h"
 #include "InputAction.h"
-#include "Inventory/DkInventoryItem.h"
+#include "DarkKnight/DarkKnight.h"
+#include "DkTypes/DkEnums.h"
 
 #include "DkStructs.generated.h"
 
+class UDkInventoryItem;
+class ADkPickUpActorBase;
+class ADkEquippedActorBase;
 class UGameplayAbility;
 class UGameplayEffect;
 class ADkCharacterBase;
@@ -171,7 +175,7 @@ struct FDkItemInfo : public FTableRowBase
 	FName ItemName;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	int ItemRequiredLevel;
+	int ItemRequiredLevel = INVALID_INDEX;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	EItemQuality ItemQuality;
@@ -186,13 +190,28 @@ struct FDkItemInfo : public FTableRowBase
 	TObjectPtr<UTexture2D> ItemIcon;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	bool bStaticMesh = true;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TObjectPtr<UStaticMesh> ItemStaticMesh;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TObjectPtr<USkeletalMesh> ItemSkeletalMesh;
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TSubclassOf<ADkPickUpActorBase> PickUpActorBPClass;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TSubclassOf<ADkEquippedActorBase> EquippedActorBPClass;
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TSubclassOf<ADkCharacterBase> EquipmentPlayerBPClass; // 装备对应的角色类
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TSubclassOf<ADkCharacterBase> EquipmentEnemyBPClass; // 装备对应的敌人类
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	int ItemPrice;
+	int ItemPrice = INVALID_INDEX;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	float ItemWeight;
@@ -201,7 +220,7 @@ struct FDkItemInfo : public FTableRowBase
 	int Stack;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	int MaxStack;
+	int MaxStack = INVALID_INDEX;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	int MinEntryCount; // 最少词条数
@@ -226,6 +245,30 @@ struct FDkItemInfo : public FTableRowBase
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TMap<TSubclassOf<UGameplayAbility>, FGameplayAbilitySpec> UniqueEntry; // 独特词条可以给角色独特的Ability
+};
+
+USTRUCT(BlueprintType)
+struct FRewardItemEntry // 奖励物品信息
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	int ItemID = 0;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	int Stack = 0;
+};
+
+USTRUCT(BlueprintType)
+struct FRewardItemListInfo : public FTableRowBase// TODO: 关卡掉落、死亡掉落等奖励物品信息
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	int TargetID;
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TArray<FRewardItemEntry> RewardItemList;
 };
 
 /********/

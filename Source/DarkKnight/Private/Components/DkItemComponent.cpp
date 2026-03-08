@@ -28,6 +28,11 @@ void UDkItemComponent::OnPickedUp()
 	GetOwner()->Destroy();
 }
 
+void UDkItemComponent::InitializeItemComponent(const FDkItemInfo* ItemInfo, int32 InItemStack)
+{
+	ItemManifest.InitializeFragments(ItemInfo, InItemStack);
+}
+
 void UDkItemComponent::InitItemManifest(FInventoryItemManifest InItemManifest)
 {
 	ItemManifest = InItemManifest;

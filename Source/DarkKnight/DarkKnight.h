@@ -10,6 +10,8 @@
 #define ECC_Fire ECollisionChannel::ECC_GameTraceChannel4
 #define ECC_WeaponTrace ECollisionChannel::ECC_GameTraceChannel5
 
+#define INVALID_INDEX -1
+
 #define LIST_DATA_ACCESSOR(DataType, PropertyName) \
 	FORCEINLINE DataType Get##PropertyName() const { return PropertyName; } \
 	void Set##PropertyName(DataType In##PropertyName) { PropertyName = In##PropertyName; }

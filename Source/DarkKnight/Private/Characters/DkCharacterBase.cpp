@@ -12,6 +12,8 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GAS/DkAbilitySystemComponent.h"
 #include "GAS/DkAttributeSet.h"
+#include "PickUp/DkPickUpActorBase.h"
+#include "Subsytems/DkInventorySubsystem.h"
 
 ADkCharacterBase::ADkCharacterBase()
 {
@@ -105,6 +107,42 @@ void ADkCharacterBase::InitializeCharacterInfo()
 }
 
 void ADkCharacterBase::InitAbilityActorInfo()
+{
+}
+
+void ADkCharacterBase::SpawnRewardItemActor()
+{
+	if (RewardItemIDList.IsEmpty()) return;
+
+	int32 RandIndex = FMath::RandRange(0, RewardItemIDList.Num() - 1);
+	int32 RewardItemID = RewardItemIDList[RandIndex].ItemID;
+	int32 RewardItemStack = RewardItemIDList[RandIndex].Stack;
+	checkf(RewardItemStack > 0, TEXT("生成RewardItem时，Stack数量为0！"))
+	
+	UDkInventorySubsystem* InventorySubsystem = UDkInventorySubsystem::Get(this);
+	checkf(InventorySubsystem, TEXT("生成RewardItem时，InventorySubsystem为空！"));
+	
+	if (FDkItemInfo* RewardItemInfo = InventorySubsystem->GetCachedItemTable().Find(RewardItemID))
+	{
+		FVector RotatedForward = GetActorForwardVector();
+		RotatedForward =
+			RotatedForward.RotateAngleAxis(FMath::FRandRange(SpawnAngleMin, SpawnAngleMax), FVector::UpVector);
+		FVector SpawnLocation =
+			GetActorLocation() + RotatedForward * FMath::FRandRange(SpawnDistanceMin, SpawnDistanceMax);
+		SpawnLocation.Z -= RelativeSpawnElevation;
+		const FRotator SpawnRotation = FRotator::ZeroRotator;
+		ADkPickUpActorBase* SpawnActor = GetWorld()->SpawnActor<ADkPickUpActorBase>(
+			RewardItemInfo->PickUpActorBPClass, SpawnLocation, SpawnRotation
+		);
+
+		if (IsValid(SpawnActor))
+		{
+			SpawnActor->SetPickUpItemInfo(RewardItemInfo, RewardItemStack);
+		}
+	}
+}
+
+void ADkCharacterBase::SpawnRewardItemActor(int ItemID)
 {
 }
 

@@ -32,6 +32,9 @@ public:
 	}
 
 	UFUNCTION(BlueprintCallable, Category="Common Function Library")
+	static bool IsStringPureNumber(const FString& Str);
+
+	UFUNCTION(BlueprintCallable, Category="Common Function Library")
 	static bool IsRightMouseClick(const FPointerEvent& MouseEvent);
 	
 	UFUNCTION(BlueprintCallable, Category="Common Function Library")

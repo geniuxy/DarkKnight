@@ -11,6 +11,8 @@
 #define ECC_WeaponTrace ECollisionChannel::ECC_GameTraceChannel5
 
 #define INVALID_INDEX -1
+#define MAX_MAIN_ENTRY_NUM 2 // Item最大主词条个数
+#define MAX_SUB_ENTRY_NUM 4	// Item最大子词条个数
 
 #define LIST_DATA_ACCESSOR(DataType, PropertyName) \
 	FORCEINLINE DataType Get##PropertyName() const { return PropertyName; } \

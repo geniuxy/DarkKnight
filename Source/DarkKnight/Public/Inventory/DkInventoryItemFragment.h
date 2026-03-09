@@ -87,7 +87,7 @@ struct FInventoryItemImageFragment : public FInventoryItemFragment
 	{
 		FragmentTag = DkGameplayTags::Dk_Inventory_Fragment_Icon;
 	}
-	
+
 	FInventoryItemImageFragment(UTexture2D* InTexture)
 	{
 		FragmentTag = DkGameplayTags::Dk_Inventory_Fragment_Icon;
@@ -197,7 +197,12 @@ struct FInventoryItemLabeledValueFragment : public FInventoryItemFragment
 	{
 		FragmentTag = DkGameplayTags::Dk_Inventory_Fragment_LabeledValue;
 	}
-	
+
+	FInventoryItemLabeledValueFragment(FGameplayTag InFragmentTag)
+	{
+		FragmentTag = InFragmentTag;
+	}
+
 	FInventoryItemLabeledValueFragment(
 		const FText& InText,
 		int InValue,
@@ -209,9 +214,23 @@ struct FInventoryItemLabeledValueFragment : public FInventoryItemFragment
 		Max = InValue;
 	}
 
+	FInventoryItemLabeledValueFragment(
+		const FText& InText,
+		int InMaxValue,
+		int InMinValue,
+		FGameplayTag InFragmentTag = DkGameplayTags::Dk_Inventory_Fragment_LabeledValue)
+	{
+		FragmentTag = InFragmentTag;
+		Text_Label = InText;
+		Min = InMinValue;
+		Max = InMaxValue;
+	}
+
 	virtual void Assimilate(UDkInventoryCompositeBase* Composite) const override;
 	virtual void Manifest() override;
 	float GetValue() const { return Value; }
+	void SetMinValue(int32 InValue) { Min = InValue; }
+	void SetMaxValue(int32 InValue) { Max = InValue; }
 
 	// 第一次出现的时候，该Fragment会随机数值。但是，之后装备或者丢弃，都会保持原有数值
 	bool bRandomizeOnManifest{true};
@@ -234,6 +253,76 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Inventory")
 	bool bCollapseValue{false};
+
+	UPROPERTY(EditAnywhere, Category = "Inventory")
+	int32 MinFractionalDigits{1};
+
+	UPROPERTY(EditAnywhere, Category = "Inventory")
+	int32 MaxFractionalDigits{1};
+};
+
+USTRUCT(BlueprintType)
+struct FInventoryItemEntryFragment : public FInventoryItemFragment // 用于词条描述、随机数值并生效的Fragment
+{
+	GENERATED_BODY()
+
+	FInventoryItemEntryFragment()
+	{
+		FragmentTag = DkGameplayTags::Dk_Inventory_Fragment_Entry;
+	}
+
+	FInventoryItemEntryFragment(FGameplayTag InFragmentTag)
+	{
+		FragmentTag = InFragmentTag;
+	}
+
+	FInventoryItemEntryFragment(
+		const FText& InText,
+		int InValue,
+		FGameplayTag InFragmentTag = DkGameplayTags::Dk_Inventory_Fragment_Entry)
+	{
+		FragmentTag = InFragmentTag;
+		Description = InText;
+		Min = InValue;
+		Max = InValue;
+	}
+
+	FInventoryItemEntryFragment(
+		const FText& InText,
+		int InMaxValue,
+		int InMinValue,
+		FGameplayTag InFragmentTag = DkGameplayTags::Dk_Inventory_Fragment_Entry)
+	{
+		FragmentTag = InFragmentTag;
+		Description = InText;
+		Min = InMinValue;
+		Max = InMaxValue;
+	}
+
+	virtual void Assimilate(UDkInventoryCompositeBase* Composite) const override;
+	virtual void Manifest() override;
+	float GetValue() const { return Value; }
+	void SetMinValue(int32 InValue) { Min = InValue; }
+	void SetMaxValue(int32 InValue) { Max = InValue; }
+
+	// 第一次出现的时候，该Fragment会随机数值。但是，之后装备或者丢弃，都会保持原有数值
+	bool bRandomizeOnManifest{true};
+
+private:
+	UPROPERTY(EditAnywhere, Category = "Inventory")
+	FText Description{};
+
+	UPROPERTY(VisibleAnywhere, Category = "Inventory")
+	int Value{0};
+
+	UPROPERTY(EditAnywhere, Category = "Inventory")
+	int Min{0};
+
+	UPROPERTY(EditAnywhere, Category = "Inventory")
+	int Max{0};
+
+	UPROPERTY(EditAnywhere, Category = "Inventory")
+	bool bPercent{false};
 
 	UPROPERTY(EditAnywhere, Category = "Inventory")
 	int32 MinFractionalDigits{1};
@@ -339,7 +428,7 @@ private:
 	TSubclassOf<ADkEquippedActorBase> EquippedActorClass;
 
 	TWeakObjectPtr<ADkEquippedActorBase> EquippedActor;
-	
+
 	UPROPERTY(EditAnywhere, Category="Equipment")
 	FName SocketAttachPoint = NAME_None;
 

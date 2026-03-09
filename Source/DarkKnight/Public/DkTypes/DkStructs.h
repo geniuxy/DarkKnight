@@ -104,7 +104,7 @@ struct FInventorySpaceQueryResult
 };
 
 USTRUCT(BlueprintType)
-struct FDkGameplayEffectInfo : public FTableRowBase
+struct FDkGameplayEffectInfo : public FTableRowBase // TODO:看一下这个Struct还是否有必要(估计是没有用了)
 {
 	GENERATED_BODY()
 
@@ -127,26 +127,20 @@ struct FDkEntryInfo : public FTableRowBase
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	int EntryID;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	int EntryRarity;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	int MinValue;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	int MaxValue;
+	FName EntryID;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (Categories = "Dk.Item.Entry"))
 	FGameplayTag GameplayEffectTag;
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TSubclassOf<UGameplayEffect> GameplayEffectClass;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	FText Tips;
+	FText Description;
 };
 
 USTRUCT(BlueprintType)
-struct FItemEntryInfo
+struct FItemEntryInfo // TODO:看一下这个Struct还是否有必要(估计是没有用了)
 {
 	GENERATED_BODY()
 
@@ -223,28 +217,31 @@ struct FDkItemInfo : public FTableRowBase
 	int MaxStack = INVALID_INDEX;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	int MinEntryCount; // 最少词条数
+	FText MainEntry; // 规范：EntryID/MinValue/MaxValue或者EntryID/Value，比如"1001/5/10或者1002/15",词条之间用逗号隔开
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	int MaxEntryCount; // 最多词条数
+	FText SubEntry;	// 规范：EntryID/MinValue/MaxValue或者EntryID/Value，比如"1001/5/10或者1002/15",词条之间用逗号隔开
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	int UniqueEntryID = INVALID_INDEX; // 独特词条ID（独特词条可以给角色独特的Ability）
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	int MinEntryLevel; // 最低词条等级
+	FText UniqueEntry;	// 规范：EntryID/MinValue/MaxValue或者EntryID/Value，比如"1001/5/10或者1002/15",词条之间用逗号隔开
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	bool bHasRandomSubEntry = false;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	int MaxEntryLevel; // 最高词条等级
+	int MinEntryCount = 1; // 最少随机子词条数
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	int UniqueEntryID; // 独特词条ID
+	int MaxEntryCount = 1; // 最多随机子词条数
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	TMap<TSubclassOf<UGameplayEffect>, FItemEntryInfo> MainEntry;
+	int MinEntryLevel = 1; // 最低随机子词条等级
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	TMap<TSubclassOf<UGameplayEffect>, FItemEntryInfo> SubEntry;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	TMap<TSubclassOf<UGameplayAbility>, FGameplayAbilitySpec> UniqueEntry; // 独特词条可以给角色独特的Ability
+	int MaxEntryLevel = 1; // 最高随机子词条等级
 };
 
 USTRUCT(BlueprintType)

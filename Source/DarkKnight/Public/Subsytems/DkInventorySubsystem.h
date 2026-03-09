@@ -39,11 +39,11 @@ private:
 	TMap<int, FDkItemInfo> CachedItemTable;
 
 	UPROPERTY(Transient)
-	TMap<int, FDkEntryInfo> CachedEntryTable;
+	TMap<FName, FDkEntryInfo> CachedEntryTable;
 
 public:
 	LIST_DATA_ACCESSOR(UDkInventoryComponent*, CachedInventoryComponent)
 
 	FORCEINLINE TMap<int, FDkItemInfo> GetCachedItemTable() const { return CachedItemTable; }
-	FORCEINLINE TMap<int, FDkEntryInfo> GetCachedEntryTable() const { return CachedEntryTable; }
+	FORCEINLINE TMap<FName, FDkEntryInfo> GetCachedEntryTable() const { return CachedEntryTable; }
 };

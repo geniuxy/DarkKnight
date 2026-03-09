@@ -24,7 +24,16 @@ struct DARKKNIGHT_API FInventoryItemManifest
 {
 	GENERATED_BODY()
 
+	/* 初始化Fragments */
 	void InitializeFragments(const FDkItemInfo* ItemInfo, int32 InItemStack);
+	void InitializeItemEntryFragment(int32 InItemID, const FText& InEntry, bool bMainEntry = true);
+	void AddItemEntryFragment(
+		bool bMainEntry, int32 EntryIndex, int32 InEntryID, int32 InMinValue, int32 InMaxValue = INVALID_INDEX
+	);
+	static FGameplayTag GetMainEntryTagByIndex(int32 InIndex);
+	static FGameplayTag GetSubEntryTagByIndex(int32 InIndex);
+	/********/
+
 	UDkInventoryItem* Manifest(UObject* NewOuter);
 	TArray<TInstancedStruct<FItemFragment>>& GetFragmentsMutable() { return Fragments; }
 	EInventoryItemCategory GetItemCategory() const { return ItemCategory; }

@@ -84,6 +84,16 @@ void FInventoryItemLabeledValueFragment::Manifest()
 	bRandomizeOnManifest = false;
 }
 
+void FInventoryItemEntryFragment::Assimilate(UDkInventoryCompositeBase* Composite) const
+{
+	FInventoryItemFragment::Assimilate(Composite);
+}
+
+void FInventoryItemEntryFragment::Manifest()
+{
+	FInventoryItemFragment::Manifest();
+}
+
 void FInventoryItemConsumableFragment::OnConsume(APlayerController* PC)
 {
 	for (auto& Modifier : ConsumeModifiers)

@@ -1,7 +1,10 @@
 ﻿#include "Inventory/DkInventoryItemFragment.h"
 
 #include "DarkKnightDebugHelper.h"
+#include "DkTypes/DkStructs.h"
 #include "Equipment/DkEquippedActorBase.h"
+#include "FunctionLibrarys/DkInventoryFunctionLibrary.h"
+#include "Subsytems/DkInventorySubsystem.h"
 #include "Widgets/Inventory/Composites/DkInventoryLeaf.h"
 #include "Widgets/Inventory/Composites/DkInventoryLeafImage.h"
 #include "Widgets/Inventory/Composites/DkInventoryLeafLabeledValue.h"
@@ -87,11 +90,46 @@ void FInventoryItemLabeledValueFragment::Manifest()
 void FInventoryItemEntryFragment::Assimilate(UDkInventoryCompositeBase* Composite) const
 {
 	FInventoryItemFragment::Assimilate(Composite);
+	if (!MatchesWidgetTag(Composite)) return;
+
+	UDkInventoryLeafText* Text = Cast<UDkInventoryLeafText>(Composite);
+	if (!IsValid(Text)) return;
+
+	Text->SetText(GetFormattedText());
 }
 
 void FInventoryItemEntryFragment::Manifest()
 {
 	FInventoryItemFragment::Manifest();
+
+	if (bRandomizeOnManifest)
+	{
+		Value = FMath::RandRange(Min, Max);
+	}
+	bRandomizeOnManifest = false;
+}
+
+FText FInventoryItemEntryFragment::GetFormattedText() const
+{
+	FFormatNamedArguments Args;
+
+	FNumberFormattingOptions Options;
+	Options.MinimumFractionalDigits = MinFractionalDigits;
+	Options.MaximumFractionalDigits = MaxFractionalDigits;
+
+	FText FormattedNumber;
+	if (bPercent)
+	{
+		FormattedNumber = FText::AsPercent(Value, &Options);
+	}
+	else
+	{
+		FormattedNumber = FText::AsNumber(Value, &Options);
+	}
+
+	Args.Add(TEXT("X"), FormattedNumber);
+
+	return FText::Format(Description, Args);
 }
 
 void FInventoryItemConsumableFragment::OnConsume(APlayerController* PC)
@@ -154,14 +192,29 @@ void FInventoryItemManaConsumableFragment::OnConsume(APlayerController* PC)
 	Debug::Print(FString::Printf(TEXT("法力值相关Item已被使用！恢复量为: %f"), GetValue()));
 }
 
+void FConsumableEntryFragment::OnConsume(APlayerController* PC)
+{
+	Debug::Print(FString::Printf(TEXT("消耗品类Item已被使用！量为: %f"), GetValue()));
+}
+
+void FEquipmentEntryFragment::OnEquip(APlayerController* PC)
+{
+	Debug::Print(FString::Printf(TEXT("装备！！值为: %f"), GetValue()));
+}
+
+void FEquipmentEntryFragment::OnUnEquip(APlayerController* PC)
+{
+	Debug::Print(FString::Printf(TEXT("卸甲！！值为: %f"), GetValue()));
+}
+
 void FInventoryItemEquipmentFragment::OnEquip(APlayerController* PC)
 {
 	if (bEquipped) return;
 	bEquipped = true;
-	for (auto& Modifier : EquipModifiers)
+	for (auto& Entry : EquipEntries)
 	{
-		auto& ModRef = Modifier.GetMutable();
-		ModRef.OnEquip(PC);
+		auto& EntryRef = Entry.GetMutable();
+		EntryRef.OnEquip(PC);
 	}
 }
 
@@ -169,10 +222,10 @@ void FInventoryItemEquipmentFragment::OnUnEquip(APlayerController* PC)
 {
 	if (!bEquipped) return;
 	bEquipped = false;
-	for (auto& Modifier : EquipModifiers)
+	for (auto& Entry : EquipEntries)
 	{
-		auto& ModRef = Modifier.GetMutable();
-		ModRef.OnUnEquip(PC);
+		auto& EntryRef = Entry.GetMutable();
+		EntryRef.OnUnEquip(PC);
 	}
 }
 
@@ -180,10 +233,10 @@ void FInventoryItemEquipmentFragment::Assimilate(UDkInventoryCompositeBase* Comp
 {
 	FInventoryItemFragment::Assimilate(Composite);
 
-	for (const auto& Modifier : EquipModifiers)
+	for (const auto& Entry : EquipEntries)
 	{
-		const auto& ModRef = Modifier.Get();
-		ModRef.Assimilate(Composite);
+		const auto& EntryRef = Entry.Get();
+		EntryRef.Assimilate(Composite);
 	}
 }
 
@@ -191,24 +244,57 @@ void FInventoryItemEquipmentFragment::Manifest()
 {
 	FInventoryItemFragment::Manifest();
 
-	for (auto& Modifier : EquipModifiers)
+	for (auto& Entry : EquipEntries)
 	{
-		auto& ModRef = Modifier.GetMutable();
-		ModRef.Manifest();
+		auto& EntryRef = Entry.GetMutable();
+		EntryRef.Manifest();
 	}
 }
 
 bool FInventoryItemEquipmentFragment::HasOptionalStats() const
 {
 	bool bHasOptionalStat = false;
-	for (const auto& Modifier : EquipModifiers)
+	for (const auto& Entry : EquipEntries)
 	{
-		const auto& ModRef = Modifier.Get();
-		bHasOptionalStat = ModRef.GetFragmentTag() == DkGameplayTags::Dk_Inventory_Fragment_LabeledValue_Stat_0 ||
-			ModRef.GetFragmentTag() == DkGameplayTags::Dk_Inventory_Fragment_LabeledValue_Stat_1 ||
-			ModRef.GetFragmentTag() == DkGameplayTags::Dk_Inventory_Fragment_LabeledValue_Stat_2;
+		const auto& EntryRef = Entry.Get();
+		bHasOptionalStat = EntryRef.GetFragmentTag() == DkGameplayTags::Dk_Inventory_Fragment_LabeledValue_Stat_0 ||
+			EntryRef.GetFragmentTag() == DkGameplayTags::Dk_Inventory_Fragment_LabeledValue_Stat_1 ||
+			EntryRef.GetFragmentTag() == DkGameplayTags::Dk_Inventory_Fragment_LabeledValue_Stat_2;
 	}
 	return bHasOptionalStat;
+}
+
+void FInventoryItemEquipmentFragment::UpdateEquipEntries(
+	const UObject* WorldContextObject, TArray<FItemEntryInfo> InEntries, bool bMainEntry)
+{
+	UDkInventorySubsystem* InventorySubsystem = UDkInventorySubsystem::Get(WorldContextObject);
+	checkf(InventorySubsystem, TEXT("添加Item词条时，InventorySubsystem为空！"));
+	for (int Index = 0; Index < InEntries.Num(); ++Index)
+	{
+		const FItemEntryInfo& EntryStrInfo = InEntries[Index];
+		FDkEntryInfo EntryInfo = InventorySubsystem->GetCachedEntryTable().FindChecked(EntryStrInfo.EntryID);
+		FGameplayTag EntryFragmentTag;
+		if (bMainEntry)
+		{
+			EntryFragmentTag = UDkInventoryFunctionLibrary::GetMainEntryTagByIndex(Index);
+		}
+		else
+		{
+			EntryFragmentTag = UDkInventoryFunctionLibrary::GetSubEntryTagByIndex(Index);
+		}
+		FEquipmentEntryFragment NewItemEntryFragment = FEquipmentEntryFragment(
+			EntryInfo.Description,
+			EntryInfo.GameplayEffectClass,
+			EntryStrInfo.MinValue,
+			EntryInfo.bPercent,
+			EntryFragmentTag
+		);
+		if (EntryStrInfo.MaxValue != INVALID_INDEX)
+		{
+			NewItemEntryFragment.SetMaxValue(EntryStrInfo.MaxValue);
+		}
+		EquipEntries.Add(TInstancedStruct<FEquipmentEntryFragment>::Make(MoveTemp(NewItemEntryFragment)));
+	}
 }
 
 ADkEquippedActorBase* FInventoryItemEquipmentFragment::SpawnAttachActor(USkeletalMeshComponent* AttachMesh) const

@@ -98,9 +98,9 @@ namespace DkGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Inventory_Fragment_Entry_Main_0, "Dk.Inventory.Fragment.Entry.Main.0");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Inventory_Fragment_Entry_Main_1, "Dk.Inventory.Fragment.Entry.Main.1");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Inventory_Fragment_Entry_Sub_0, "Dk.Inventory.Fragment.Entry.Sub.0");
-	UE_DEFINE_GAMEPLAY_TAG(Dk_Inventory_Fragment_Entry_Sub_1, "Dk.Inventory.Fragment.Entry.Sub.0");
-	UE_DEFINE_GAMEPLAY_TAG(Dk_Inventory_Fragment_Entry_Sub_2, "Dk.Inventory.Fragment.Entry.Sub.0");
-	UE_DEFINE_GAMEPLAY_TAG(Dk_Inventory_Fragment_Entry_Sub_3, "Dk.Inventory.Fragment.Entry.Sub.0");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Inventory_Fragment_Entry_Sub_1, "Dk.Inventory.Fragment.Entry.Sub.1");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Inventory_Fragment_Entry_Sub_2, "Dk.Inventory.Fragment.Entry.Sub.2");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Inventory_Fragment_Entry_Sub_3, "Dk.Inventory.Fragment.Entry.Sub.3");
 
 	// Item Entry Tag
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Item_Entry_Attack_Percent, "Dk.Item.Entry.Attack.Percent");

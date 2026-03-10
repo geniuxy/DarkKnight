@@ -44,6 +44,7 @@ private:
 public:
 	LIST_DATA_ACCESSOR(UDkInventoryComponent*, CachedInventoryComponent)
 
-	FORCEINLINE TMap<int, FDkItemInfo> GetCachedItemTable() const { return CachedItemTable; }
-	FORCEINLINE TMap<FName, FDkEntryInfo> GetCachedEntryTable() const { return CachedEntryTable; }
+	// 返回TMap的引用比较好，不容易指针悬空
+	FORCEINLINE const TMap<int, FDkItemInfo>& GetCachedItemTable() const { return CachedItemTable; }
+	FORCEINLINE const TMap<FName, FDkEntryInfo>& GetCachedEntryTable() const { return CachedEntryTable; }
 };

@@ -162,7 +162,7 @@ void ADkGamePlayerController::HandleGroundMovementInput(const FInputActionValue&
 
 void ADkGamePlayerController::ToggleMovementStyle()
 {
-	ADkCharacterBase* OwningCharacter = Cast<ADkCharacterBase>(GetCharacter());
+	ADkCharacterHero* OwningCharacter = Cast<ADkCharacterHero>(GetCharacter());
 	if (OwningCharacter->GetCurrentLocomotionStyle() == ELocomotionStyle::Walk)
 	{
 		OwningCharacter->SwitchLocomotionStyle(ELocomotionStyle::Run);

@@ -9,6 +9,8 @@
 #include "DkInventoryItemFragment.generated.h"
 
 
+struct FItemEntryInfo;
+class UGameplayEffect;
 class ADkEquippedActorBase;
 class UDkInventoryCompositeBase;
 
@@ -101,7 +103,7 @@ private:
 	TObjectPtr<UTexture2D> Icon = nullptr;
 
 	UPROPERTY(EditAnywhere, Category="Inventory")
-	FVector2D IconDimension{44.f, 44.f};
+	FVector2D IconDimension{100.f, 100.f};
 
 public:
 	FORCEINLINE UTexture2D* GetIcon() const { return Icon; }
@@ -146,9 +148,9 @@ struct FInventoryItemTextFragment : public FInventoryItemFragment
 		FragmentTag = DkGameplayTags::Dk_Inventory_Fragment_Name;
 	}
 
-	FInventoryItemTextFragment(FText InText)
+	FInventoryItemTextFragment(FText InText, FGameplayTag InTag = DkGameplayTags::Dk_Inventory_Fragment_Name)
 	{
-		FragmentTag = DkGameplayTags::Dk_Inventory_Fragment_Name;
+		FragmentTag = InTag;
 		FragmentText = InText;
 	}
 
@@ -172,6 +174,16 @@ struct FInventoryItemEnumTextFragment : public FInventoryItemFragment
 		FragmentTag = DkGameplayTags::Dk_Inventory_Fragment_ItemType;
 		EnumTypePath = "/Script/DarkKnight.EInventoryItemCategory";
 		EnumValue = 0;
+	}
+
+	FInventoryItemEnumTextFragment(
+		int InEnumValue,
+		FString InEnumTypePath = "/Script/DarkKnight.EInventoryItemCategory",
+		FGameplayTag InFragmentTag = DkGameplayTags::Dk_Inventory_Fragment_ItemType)
+	{
+		FragmentTag = InFragmentTag;
+		EnumTypePath = InEnumTypePath;
+		EnumValue = InEnumValue;
 	}
 
 	virtual void Assimilate(UDkInventoryCompositeBase* Composite) const override;
@@ -278,32 +290,42 @@ struct FInventoryItemEntryFragment : public FInventoryItemFragment // 用于词�
 
 	FInventoryItemEntryFragment(
 		const FText& InText,
+		const TSubclassOf<UGameplayEffect>& InGameplayEffectClass,
 		int InValue,
+		bool bInPercent = false,
 		FGameplayTag InFragmentTag = DkGameplayTags::Dk_Inventory_Fragment_Entry)
 	{
 		FragmentTag = InFragmentTag;
 		Description = InText;
+		EntryGameplayEffectClass = InGameplayEffectClass;
 		Min = InValue;
 		Max = InValue;
+		bPercent = bInPercent;
 	}
 
 	FInventoryItemEntryFragment(
 		const FText& InText,
+		const TSubclassOf<UGameplayEffect>& InGameplayEffectClass,
 		int InMaxValue,
 		int InMinValue,
+		bool bInPercent = false,
 		FGameplayTag InFragmentTag = DkGameplayTags::Dk_Inventory_Fragment_Entry)
 	{
 		FragmentTag = InFragmentTag;
 		Description = InText;
+		EntryGameplayEffectClass = InGameplayEffectClass;
 		Min = InMinValue;
 		Max = InMaxValue;
+		bPercent = bInPercent;
 	}
 
 	virtual void Assimilate(UDkInventoryCompositeBase* Composite) const override;
 	virtual void Manifest() override;
 	float GetValue() const { return Value; }
+	FText GetFormattedText() const;
 	void SetMinValue(int32 InValue) { Min = InValue; }
 	void SetMaxValue(int32 InValue) { Max = InValue; }
+	void SetIsPercent(bool bInPercent) { bPercent = bInPercent; }
 
 	// 第一次出现的时候，该Fragment会随机数值。但是，之后装备或者丢弃，都会保持原有数值
 	bool bRandomizeOnManifest{true};
@@ -313,22 +335,25 @@ private:
 	FText Description{};
 
 	UPROPERTY(VisibleAnywhere, Category = "Inventory")
-	int Value{0};
+	float Value{0.f};
 
 	UPROPERTY(EditAnywhere, Category = "Inventory")
-	int Min{0};
+	float Min{0.f};
 
 	UPROPERTY(EditAnywhere, Category = "Inventory")
-	int Max{0};
+	float Max{0.f};
 
 	UPROPERTY(EditAnywhere, Category = "Inventory")
 	bool bPercent{false};
 
 	UPROPERTY(EditAnywhere, Category = "Inventory")
-	int32 MinFractionalDigits{1};
+	int32 MinFractionalDigits{0};
 
 	UPROPERTY(EditAnywhere, Category = "Inventory")
 	int32 MaxFractionalDigits{1};
+
+	UPROPERTY(EditAnywhere, Category = "Inventory")
+	TSubclassOf<UGameplayEffect> EntryGameplayEffectClass;
 };
 
 /*
@@ -380,6 +405,44 @@ struct FInventoryItemManaConsumableFragment : public FInventoryConsumeModifier
 	virtual void OnConsume(APlayerController* PC) override;
 };
 
+USTRUCT(BlueprintType)
+struct FConsumableEntryFragment : public FInventoryItemEntryFragment // 用于消耗品类型的词条描述、随机数值并生效的Fragment
+{
+	GENERATED_BODY()
+
+	FConsumableEntryFragment() : FInventoryItemEntryFragment()
+	{
+	}
+
+	FConsumableEntryFragment(FGameplayTag InFragmentTag)
+		: FInventoryItemEntryFragment(InFragmentTag)
+	{
+	}
+
+	FConsumableEntryFragment(
+		const FText& InText,
+		const TSubclassOf<UGameplayEffect>& InGameplayEffectClass,
+		int InValue,
+		bool bInPercent = false,
+		FGameplayTag InFragmentTag = DkGameplayTags::Dk_Inventory_Fragment_Entry)
+		: FInventoryItemEntryFragment(InText, InGameplayEffectClass, InValue, bInPercent, InFragmentTag)
+	{
+	}
+
+	FConsumableEntryFragment(
+		const FText& InText,
+		const TSubclassOf<UGameplayEffect>& InGameplayEffectClass,
+		int InMaxValue,
+		int InMinValue,
+		bool bInPercent = false,
+		FGameplayTag InFragmentTag = DkGameplayTags::Dk_Inventory_Fragment_Entry)
+		: FInventoryItemEntryFragment(InText, InGameplayEffectClass, InMaxValue, InMinValue, bInPercent, InFragmentTag)
+	{
+	}
+
+	void OnConsume(APlayerController* PC);
+};
+
 /*
  *  装备 相关的Fragment
  */
@@ -398,6 +461,45 @@ struct FInventoryEquipModifier : public FInventoryItemLabeledValueFragment
 };
 
 USTRUCT(BlueprintType)
+struct FEquipmentEntryFragment : public FInventoryItemEntryFragment // 用于装备类型的词条描述、随机数值并生效的Fragment
+{
+	GENERATED_BODY()
+
+	FEquipmentEntryFragment() : FInventoryItemEntryFragment()
+	{
+	}
+
+	FEquipmentEntryFragment(FGameplayTag InFragmentTag)
+		: FInventoryItemEntryFragment(InFragmentTag)
+	{
+	}
+
+	FEquipmentEntryFragment(
+		const FText& InText,
+		const TSubclassOf<UGameplayEffect>& InGameplayEffectClass,
+		int InValue,
+		bool bInPercent = false,
+		FGameplayTag InFragmentTag = DkGameplayTags::Dk_Inventory_Fragment_Entry)
+		: FInventoryItemEntryFragment(InText, InGameplayEffectClass, InValue, bInPercent, InFragmentTag)
+	{
+	}
+
+	FEquipmentEntryFragment(
+		const FText& InText,
+		const TSubclassOf<UGameplayEffect>& InGameplayEffectClass,
+		int InMaxValue,
+		int InMinValue,
+		bool bInPercent = false,
+		FGameplayTag InFragmentTag = DkGameplayTags::Dk_Inventory_Fragment_Entry)
+		: FInventoryItemEntryFragment(InText, InGameplayEffectClass, InMaxValue, InMinValue, bInPercent, InFragmentTag)
+	{
+	}
+
+	void OnEquip(APlayerController* PC);
+	void OnUnEquip(APlayerController* PC);
+};
+
+USTRUCT(BlueprintType)
 struct FInventoryItemEquipmentFragment : public FInventoryItemFragment
 {
 	GENERATED_BODY()
@@ -405,15 +507,27 @@ struct FInventoryItemEquipmentFragment : public FInventoryItemFragment
 	FInventoryItemEquipmentFragment()
 	{
 		FragmentTag = DkGameplayTags::Dk_Inventory_Fragment_Equipment;
-		bEquipped = false;
 	}
 
-	bool bEquipped;
+	FInventoryItemEquipmentFragment(
+		const TSubclassOf<ADkEquippedActorBase>& InEquippedActorClass,
+		FGameplayTag InEquipmentTag = FGameplayTag::EmptyTag,
+		FName InSocketAttachPoint = NAME_None)
+	{
+		FragmentTag = DkGameplayTags::Dk_Inventory_Fragment_Equipment;
+		EquippedActorClass = InEquippedActorClass;
+		EquipmentTag = InEquipmentTag;
+		SocketAttachPoint = InSocketAttachPoint;
+	}
+
+	bool bEquipped{false};
 	void OnEquip(APlayerController* PC);
 	void OnUnEquip(APlayerController* PC);
 	virtual void Assimilate(UDkInventoryCompositeBase* Composite) const override;
 	virtual void Manifest() override;
 	bool HasOptionalStats() const;
+
+	void UpdateEquipEntries(const UObject* WorldContextObject, TArray<FItemEntryInfo> InEntries, bool bMainEntry);
 
 	ADkEquippedActorBase* SpawnAttachActor(USkeletalMeshComponent* AttachMesh) const;
 	void DestroyAttachActor() const;
@@ -422,18 +536,18 @@ struct FInventoryItemEquipmentFragment : public FInventoryItemFragment
 
 private:
 	UPROPERTY(EditAnywhere, Category="Equipment", meta=(ExcludeBaseStruct))
-	TArray<TInstancedStruct<FInventoryEquipModifier>> EquipModifiers;
+	TArray<TInstancedStruct<FEquipmentEntryFragment>> EquipEntries;
 
 	UPROPERTY(EditAnywhere, Category="Equipment")
 	TSubclassOf<ADkEquippedActorBase> EquippedActorClass;
-
-	TWeakObjectPtr<ADkEquippedActorBase> EquippedActor;
 
 	UPROPERTY(EditAnywhere, Category="Equipment")
 	FName SocketAttachPoint = NAME_None;
 
 	UPROPERTY(EditAnywhere, meta = (Categories = "Dk.Item.Equipment"), Category="Equipment")
 	FGameplayTag EquipmentTag = FGameplayTag::EmptyTag;
+
+	TWeakObjectPtr<ADkEquippedActorBase> EquippedActor;
 
 public:
 	LIST_DATA_ACCESSOR(FGameplayTag, EquipmentTag)

@@ -5,18 +5,30 @@
 #include "FunctionLibrarys/DkCommonFunctionLibrary.h"
 #include "Inventory/DkInventoryItem.h"
 #include "Inventory/DkInventoryItemFragment.h"
+#include "PickUp/DkPickUpActorBase.h"
 #include "Subsytems/DkInventorySubsystem.h"
 #include "Widgets/Inventory/DkInventoryItemDescriptionMenu.h"
 
-void FInventoryItemManifest::InitializeFragments(const FDkItemInfo* ItemInfo, int32 InItemStack)
+void FInventoryItemManifest::InitializeFragments(
+	const UObject* WorldContextObject, const FDkItemInfo* ItemInfo, int32 InItemStack)
 {
 	// ItemName
-	if (ItemInfo->ItemName.IsValid())
+	if (!ItemInfo->ItemName.IsEmpty())
 	{
 		FInventoryItemTextFragment NewItemTextFragment = FInventoryItemTextFragment(
-			FText::FromName(ItemInfo->ItemName)
+			ItemInfo->ItemName
 		);
 		AddFragment(NewItemTextFragment);
+	}
+
+	// ItemCategory
+	if (GetItemCategory() != EInventoryItemCategory::None)
+	{
+		FInventoryItemEnumTextFragment NewItemEnumTextFragment = FInventoryItemEnumTextFragment(
+			static_cast<int>(GetItemCategory()),
+			StaticEnum<EInventoryItemCategory>()->GetPathName()
+		);
+		AddFragment(NewItemEnumTextFragment);
 	}
 
 	// ItemRequiredLevel
@@ -34,7 +46,7 @@ void FInventoryItemManifest::InitializeFragments(const FDkItemInfo* ItemInfo, in
 	if (!ItemInfo->ItemDescription.IsEmpty())
 	{
 		FInventoryItemTextFragment NewItemDescriptionFragment = FInventoryItemTextFragment(
-			ItemInfo->ItemDescription
+			ItemInfo->ItemDescription, DkGameplayTags::Dk_Inventory_Fragment_ItemDescription
 		);
 		AddFragment(NewItemDescriptionFragment);
 	}
@@ -70,29 +82,59 @@ void FInventoryItemManifest::InitializeFragments(const FDkItemInfo* ItemInfo, in
 		AddFragment(NewItemStackableFragment);
 	}
 
+	// PickUpActorBPClass
+	if (IsValid(ItemInfo->PickUpActorBPClass))
+	{
+		PickUpActorClass = ItemInfo->PickUpActorBPClass;
+	}
+
+	TArray<FItemEntryInfo> MainEntries;
+	TArray<FItemEntryInfo> SubEntries;
 	// 根据MainEntry生成主词条
 	if (!ItemInfo->MainEntry.IsEmpty())
 	{
-		InitializeItemEntryFragment(ItemInfo->ItemID, ItemInfo->MainEntry, true);
+		MainEntries = GetItemEntryInfoList(ItemInfo->ItemID, ItemInfo->MainEntry, true);
 	}
 
 	// 根据SubEntry生成主词条
 	if (!ItemInfo->SubEntry.IsEmpty())
 	{
-		InitializeItemEntryFragment(ItemInfo->ItemID, ItemInfo->SubEntry, false);
+		SubEntries = GetItemEntryInfoList(ItemInfo->ItemID, ItemInfo->SubEntry, false);
 	}
+
+	// EquippedActorBPClass
+	if (IsValid(ItemInfo->EquippedActorBPClass) && GetItemCategory() == EInventoryItemCategory::Equipment)
+	{
+		FInventoryItemEquipmentFragment NewItemEquipmentFragment = FInventoryItemEquipmentFragment(
+			ItemInfo->EquippedActorBPClass,
+			GetItemTag()
+		);
+		if (!MainEntries.IsEmpty())
+		{
+			NewItemEquipmentFragment.UpdateEquipEntries(WorldContextObject, MainEntries, true);
+		}
+		if (!SubEntries.IsEmpty())
+		{
+			NewItemEquipmentFragment.UpdateEquipEntries(WorldContextObject, SubEntries, false);
+		}
+		AddFragment(NewItemEquipmentFragment);
+	}
+
+	// TODO: 消耗品相关
 }
 
-void FInventoryItemManifest::InitializeItemEntryFragment(const int32 InItemID, const FText& InEntry, bool bMainEntry)
+TArray<FItemEntryInfo> FInventoryItemManifest::GetItemEntryInfoList(
+	int32 InItemID, const FText& InEntry, bool bMainEntry)
 {
 	FString EntryStr = InEntry.ToString();
 	TArray<FString> EntryList;
 	EntryStr.ParseIntoArray(EntryList, TEXT(","), true);
+	TArray<FItemEntryInfo> EntryInfos;
 
 	if ((bMainEntry && EntryList.Num() > MAX_MAIN_ENTRY_NUM) || (!bMainEntry && EntryList.Num() > MAX_SUB_ENTRY_NUM))
 	{
 		Debug::Print(FString::Printf(TEXT("ItemID[%d]的词条数目超出规定个数！"), InItemID));
-		return;
+		return EntryInfos;
 	}
 
 	for (int Index = 0; Index < EntryList.Num(); ++Index)
@@ -119,7 +161,7 @@ void FInventoryItemManifest::InitializeItemEntryFragment(const int32 InItemID, c
 			EntryID = EntryParts[0].TrimStartAndEnd();
 			Value = EntryParts[1].TrimStartAndEnd();
 
-			if (EntryID.IsEmpty() || Value.IsEmpty() || UDkCommonFunctionLibrary::IsStringPureNumber(Value))
+			if (EntryID.IsEmpty() || Value.IsEmpty() || !UDkCommonFunctionLibrary::IsStringPureNumber(Value))
 			{
 				bFormatValid = false;
 			}
@@ -131,8 +173,8 @@ void FInventoryItemManifest::InitializeItemEntryFragment(const int32 InItemID, c
 			MinValue = EntryParts[1].TrimStartAndEnd();
 			MaxValue = EntryParts[2].TrimStartAndEnd();
 
-			if (EntryID.IsEmpty() || MinValue.IsEmpty() || UDkCommonFunctionLibrary::IsStringPureNumber(MinValue)
-				|| MaxValue.IsEmpty() || UDkCommonFunctionLibrary::IsStringPureNumber(MaxValue))
+			if (EntryID.IsEmpty() || MinValue.IsEmpty() || !UDkCommonFunctionLibrary::IsStringPureNumber(MinValue)
+				|| MaxValue.IsEmpty() || !UDkCommonFunctionLibrary::IsStringPureNumber(MaxValue))
 			{
 				bFormatValid = false;
 			}
@@ -148,21 +190,11 @@ void FInventoryItemManifest::InitializeItemEntryFragment(const int32 InItemID, c
 
 			if (EntryParts.Num() == 2)
 			{
-				Debug::Print(FString::Printf(TEXT("EntryID: %s, Value: %s"), *EntryID, *Value));
-
-				AddItemEntryFragment(
-					bMainEntry, Index, FCString::Atoi(*EntryID), FCString::Atoi(*Value)
-				);
+				EntryInfos.Add(FItemEntryInfo(FName(*EntryID), FCString::Atof(*Value), FCString::Atof(*Value)));
 			}
-			else
+			else if (EntryParts.Num() == 3)
 			{
-				Debug::Print(FString::Printf(
-						TEXT("EntryID: %s, MinValue: %s, MaxValue: %s"), *EntryID, *MinValue, *MaxValue)
-				);
-
-				AddItemEntryFragment(
-					bMainEntry, Index, FCString::Atoi(*EntryID), FCString::Atoi(*MinValue), FCString::Atoi(*MaxValue)
-				);
+				EntryInfos.Add(FItemEntryInfo(FName(*EntryID), FCString::Atof(*MinValue), FCString::Atof(*MaxValue)));
 			}
 		}
 		else
@@ -174,55 +206,7 @@ void FInventoryItemManifest::InitializeItemEntryFragment(const int32 InItemID, c
 			);
 		}
 	}
-}
-
-void FInventoryItemManifest::AddItemEntryFragment(
-	bool bMainEntry, int32 EntryIndex, int32 InEntryID, int32 InMinValue, int32 InMaxValue)
-{
-	FInventoryItemLabeledValueFragment NewItemEntryFragment = FInventoryItemLabeledValueFragment(
-		bMainEntry ? GetMainEntryTagByIndex(EntryIndex) : GetSubEntryTagByIndex(EntryIndex)
-	);
-	NewItemEntryFragment.SetMinValue(InMinValue);
-	NewItemEntryFragment.SetMaxValue(InMinValue);
-	if (InMaxValue != INVALID_INDEX)
-	{
-		NewItemEntryFragment.SetMaxValue(InMaxValue);
-	}
-	AddFragment(NewItemEntryFragment);
-}
-
-FGameplayTag FInventoryItemManifest::GetMainEntryTagByIndex(int32 InIndex)
-{
-	checkf(InIndex >= 0 && InIndex < MAX_MAIN_ENTRY_NUM, TEXT("主词条的数目不符合规定！"));
-	switch (InIndex)
-	{
-	case 0:
-		return DkGameplayTags::Dk_Inventory_Fragment_Entry_Main_0;
-	case 1:
-		return DkGameplayTags::Dk_Inventory_Fragment_Entry_Main_1;
-	default:
-		break;
-	}
-	return FGameplayTag::EmptyTag;
-}
-
-FGameplayTag FInventoryItemManifest::GetSubEntryTagByIndex(int32 InIndex)
-{
-	checkf(InIndex >= 0 && InIndex < MAX_SUB_ENTRY_NUM, TEXT("子词条的数目不符合规定！"));
-	switch (InIndex)
-	{
-	case 0:
-		return DkGameplayTags::Dk_Inventory_Fragment_Entry_Sub_0;
-	case 1:
-		return DkGameplayTags::Dk_Inventory_Fragment_Entry_Sub_1;
-	case 2:
-		return DkGameplayTags::Dk_Inventory_Fragment_Entry_Sub_2;
-	case 3:
-		return DkGameplayTags::Dk_Inventory_Fragment_Entry_Sub_3;
-	default:
-		break;
-	}
-	return FGameplayTag::EmptyTag;
+	return EntryInfos;
 }
 
 UDkInventoryItem* FInventoryItemManifest::Manifest(UObject* NewOuter) // 这函数在ItemComponent转换为UDkInventoryItem时调用

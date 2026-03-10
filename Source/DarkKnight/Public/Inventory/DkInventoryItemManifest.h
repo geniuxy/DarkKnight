@@ -13,6 +13,7 @@
  * ItemManifest 包含创建新 InventoryItem 所需的所有数据。
  */
 
+struct FInventoryItemEntryFragment;
 class UDkItemComponent;
 class UDkInventoryCompositeBase;
 struct FItemFragment;
@@ -25,19 +26,12 @@ struct DARKKNIGHT_API FInventoryItemManifest
 	GENERATED_BODY()
 
 	/* 初始化Fragments */
-	void InitializeFragments(const FDkItemInfo* ItemInfo, int32 InItemStack);
-	void InitializeItemEntryFragment(int32 InItemID, const FText& InEntry, bool bMainEntry = true);
-	void AddItemEntryFragment(
-		bool bMainEntry, int32 EntryIndex, int32 InEntryID, int32 InMinValue, int32 InMaxValue = INVALID_INDEX
-	);
-	static FGameplayTag GetMainEntryTagByIndex(int32 InIndex);
-	static FGameplayTag GetSubEntryTagByIndex(int32 InIndex);
+	void InitializeFragments(const UObject* WorldContextObject, const FDkItemInfo* ItemInfo, int32 InItemStack);
+	static TArray<FItemEntryInfo> GetItemEntryInfoList(int32 InItemID, const FText& InEntry, bool bMainEntry);
 	/********/
 
 	UDkInventoryItem* Manifest(UObject* NewOuter);
 	TArray<TInstancedStruct<FItemFragment>>& GetFragmentsMutable() { return Fragments; }
-	EInventoryItemCategory GetItemCategory() const { return ItemCategory; }
-	FGameplayTag GetItemTag() const { return ItemTag; }
 
 	void SpawnPickUpActor(
 		const UObject* WorldContextObject, const FVector& SpawnLocation, const FRotator& SpawnRotation
@@ -79,10 +73,12 @@ private:
 	FGameplayTag ItemTag;
 
 	UPROPERTY(EditAnywhere, Category="Inventory")
-	TSubclassOf<AActor> PickUpActorClass;
+	TSubclassOf<AActor> PickUpActorClass;  // 用于丢弃Item时使用
 
 public:
 	LIST_DATA_ACCESSOR(int, ItemID)
+	LIST_DATA_ACCESSOR(EInventoryItemCategory, ItemCategory)
+	LIST_DATA_ACCESSOR(FGameplayTag, ItemTag)
 };
 
 template <typename T> requires std::derived_from<T, FItemFragment>

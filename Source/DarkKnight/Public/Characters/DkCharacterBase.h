@@ -23,8 +23,6 @@ class DARKKNIGHT_API ADkCharacterBase : public ACharacter
 public:
 	ADkCharacterBase();
 
-	void SwitchLocomotionStyle(ELocomotionStyle InStyle);
-
 protected:
 	virtual void BeginPlay() override;
 

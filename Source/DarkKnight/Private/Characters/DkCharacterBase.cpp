@@ -71,35 +71,6 @@ void ADkCharacterBase::BeginPlay()
 	{
 		ActionComponent->InitializeActorComponent(CharacterInfo);
 	}
-
-	// 对于服务端的对象在BeginPlay后，设为行走状态
-	// 对于Client的对象在OnRep_PlayerState中，设为行走状态
-	if (HasAuthority() && IsLocallyControlled())
-	{
-		SwitchLocomotionStyle(ELocomotionStyle::Walk);
-	}
-
-	// FString NetModeStr;
-	// switch (GetNetMode())
-	// {
-	// case NM_Standalone: NetModeStr = "Standalone";
-	// 	break;
-	// case NM_DedicatedServer: NetModeStr = "DedicatedServer";
-	// 	break;
-	// case NM_ListenServer: NetModeStr = "ListenServer";
-	// 	break;
-	// case NM_Client: NetModeStr = "Client";
-	// 	break;
-	// }
-	//
-	// Debug::Print(FString::Printf(
-	// 		TEXT("[%s] HasAuthority: %s, IsLocallyControlled: %s, NetMode: %s"),
-	// 		*GetName(),
-	// 		HasAuthority() ? TEXT("True") : TEXT("False"),
-	// 		IsLocallyControlled() ? TEXT("True") : TEXT("False"),
-	// 		*NetModeStr
-	// 	)
-	// );
 }
 
 void ADkCharacterBase::InitializeCharacterInfo()
@@ -122,7 +93,7 @@ void ADkCharacterBase::SpawnRewardItemActor()
 	UDkInventorySubsystem* InventorySubsystem = UDkInventorySubsystem::Get(this);
 	checkf(InventorySubsystem, TEXT("生成RewardItem时，InventorySubsystem为空！"));
 	
-	if (FDkItemInfo* RewardItemInfo = InventorySubsystem->GetCachedItemTable().Find(RewardItemID))
+	if (const FDkItemInfo* RewardItemInfo = InventorySubsystem->GetCachedItemTable().Find(RewardItemID))
 	{
 		FVector RotatedForward = GetActorForwardVector();
 		RotatedForward =
@@ -144,32 +115,4 @@ void ADkCharacterBase::SpawnRewardItemActor()
 
 void ADkCharacterBase::SpawnRewardItemActor(int ItemID)
 {
-}
-
-void ADkCharacterBase::SwitchLocomotionStyle(ELocomotionStyle InStyle)
-{
-	checkf(AttributeSet, TEXT("该Character类没有配置AttributeSet"));
-	float MoveSpeedPercent = AttributeSet->GetMoveSpeed();
-
-	SetCurrentLocomotionStyle(InStyle);
-
-	checkf(CharacterInfo, TEXT("该Character类没有配置CharacterInfo"));
-	switch (InStyle)
-	{
-	case ELocomotionStyle::Walk:
-		GetCharacterMovement()->MaxWalkSpeed = CharacterInfo->MaxWalkSpeed * MoveSpeedPercent;
-		break;
-	case ELocomotionStyle::Run:
-		GetCharacterMovement()->MaxWalkSpeed = CharacterInfo->MaxRunSpeed * MoveSpeedPercent;
-		break;
-	case ELocomotionStyle::Sprint:
-		GetCharacterMovement()->MaxWalkSpeed = CharacterInfo->MaxSprintSpeed * MoveSpeedPercent;
-		break;
-	case ELocomotionStyle::Unknown:
-		break;
-	default:
-		break;
-	}
-
-	Debug::Print(TEXT("行走速度"), GetCharacterMovement()->MaxWalkSpeed);
 }

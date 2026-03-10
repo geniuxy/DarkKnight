@@ -30,7 +30,10 @@ void UDkItemComponent::OnPickedUp()
 
 void UDkItemComponent::InitializeItemComponent(const FDkItemInfo* ItemInfo, int32 InItemStack)
 {
-	ItemManifest.InitializeFragments(ItemInfo, InItemStack);
+	ItemManifest.SetItemID(ItemInfo->ItemID);
+	ItemManifest.SetItemCategory(ItemInfo->ItemCategory);
+	ItemManifest.SetItemTag(ItemInfo->ItemTag);
+	ItemManifest.InitializeFragments(GetOwner(), ItemInfo, InItemStack);
 }
 
 void UDkItemComponent::InitItemManifest(FInventoryItemManifest InItemManifest)

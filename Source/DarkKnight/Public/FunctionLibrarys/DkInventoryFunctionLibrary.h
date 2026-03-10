@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "DkInventoryFunctionLibrary.generated.h"
 
@@ -38,6 +39,12 @@ public:
 	static void ForEach2D(
 		TArray<T>& Array, int32 Index, const FIntPoint& Range2D, int32 GridColumns, const FuncT& Function
 	);
+
+	UFUNCTION(BlueprintCallable, Category="Inventory Function Library")
+	static FGameplayTag GetMainEntryTagByIndex(int32 InIndex);
+	
+	UFUNCTION(BlueprintCallable, Category="Inventory Function Library")
+	static FGameplayTag GetSubEntryTagByIndex(int32 InIndex);
 };
 
 template <typename T, typename FuncT>

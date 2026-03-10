@@ -43,19 +43,25 @@ private:
 	TObjectPtr<UDkInventoryLeafText> Text_ItemType;
 
 	UPROPERTY(meta=(BindWidgetOptional))
-	TObjectPtr<UDkInventoryLeafLabeledValue> Text_ItemLabeledValue;
+	TObjectPtr<UDkInventoryLeafText> Text_ItemEntry_Main_0;
+
+	UPROPERTY(meta=(BindWidgetOptional))
+	TObjectPtr<UDkInventoryLeafText> Text_ItemEntry_Main_1;
 
 	UPROPERTY(meta=(BindWidgetOptional))
 	TObjectPtr<UCommonTextBlock> Text_ItemOptionalTitle;
 
 	UPROPERTY(meta=(BindWidgetOptional))
-	TObjectPtr<UDkInventoryLeafLabeledValue> Text_ItemOptionalStat0;
+	TObjectPtr<UDkInventoryLeafText> Text_ItemEntry_Sub_0;
 
 	UPROPERTY(meta=(BindWidgetOptional))
-	TObjectPtr<UDkInventoryLeafLabeledValue> Text_ItemOptionalStat1;
+	TObjectPtr<UDkInventoryLeafText> Text_ItemEntry_Sub_1;
 
 	UPROPERTY(meta=(BindWidgetOptional))
-	TObjectPtr<UDkInventoryLeafLabeledValue> Text_ItemOptionalStat2;
+	TObjectPtr<UDkInventoryLeafText> Text_ItemEntry_Sub_2;
+
+	UPROPERTY(meta=(BindWidgetOptional))
+	TObjectPtr<UDkInventoryLeafText> Text_ItemEntry_Sub_3;
 
 	UPROPERTY(meta=(BindWidgetOptional))
 	TObjectPtr<UDkInventoryLeafText> Text_ItemDescription;

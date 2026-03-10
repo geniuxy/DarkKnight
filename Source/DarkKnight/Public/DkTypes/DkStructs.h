@@ -136,25 +136,36 @@ struct FDkEntryInfo : public FTableRowBase
 	TSubclassOf<UGameplayEffect> GameplayEffectClass;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	bool bPercent = false;
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FText Description;
 };
 
 USTRUCT(BlueprintType)
-struct FItemEntryInfo // TODO:看一下这个Struct还是否有必要(估计是没有用了)
+struct FItemEntryInfo
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	FActiveGameplayEffectHandle GameplayEffectHandle;
+	FItemEntryInfo(): MinValue(0.f), MaxValue(0.f)
+	{
+	}
+
+	FItemEntryInfo(FName InEntryID, float InMinValue, float InMaxValue)
+	{
+		EntryID = InEntryID;
+		MinValue = InMinValue;
+		MaxValue = InMaxValue;
+	}
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	int EntryLevel;
+	FName EntryID;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	int EntryID;
-
+	float MinValue;
+	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	FText EntryDescription;
+	float MaxValue;
 };
 
 USTRUCT(BlueprintType)
@@ -166,7 +177,7 @@ struct FDkItemInfo : public FTableRowBase
 	int ItemID;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	FName ItemName;
+	FText ItemName;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	int ItemRequiredLevel = INVALID_INDEX;
@@ -180,6 +191,9 @@ struct FDkItemInfo : public FTableRowBase
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (Categories = "Dk.Item"))
 	FGameplayTag ItemTag;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	EInventoryItemCategory ItemCategory;
+	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TObjectPtr<UTexture2D> ItemIcon;
 
@@ -214,7 +228,7 @@ struct FDkItemInfo : public FTableRowBase
 	int Stack;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	int MaxStack = INVALID_INDEX;
+	int MaxStack = INVALID_INDEX; // 当MaxStack = INVALID_INDEX时，为不可堆叠
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FText MainEntry; // 规范：EntryID/MinValue/MaxValue或者EntryID/Value，比如"1001/5/10或者1002/15",词条之间用逗号隔开

@@ -3,6 +3,7 @@
 
 #include "FunctionLibrarys/DkInventoryFunctionLibrary.h"
 
+#include "DkGameplayTags.h"
 #include "Blueprint/SlateBlueprintLibrary.h"
 #include "Characters/DkCharacterHero.h"
 #include "Components/DkInventoryComponent.h"
@@ -48,4 +49,38 @@ bool UDkInventoryFunctionLibrary::IsWithInBounds(
 {
 	return MousePos.X >= BoundaryPos.X && MousePos.X <= (BoundaryPos.X + WidgetSize.X) &&
 		MousePos.Y >= BoundaryPos.Y && MousePos.Y <= (BoundaryPos.Y + WidgetSize.Y);
+}
+
+FGameplayTag UDkInventoryFunctionLibrary::GetMainEntryTagByIndex(int32 InIndex)
+{
+	checkf(InIndex >= 0 && InIndex < MAX_MAIN_ENTRY_NUM, TEXT("主词条的数目不符合规定！"));
+	switch (InIndex)
+	{
+	case 0:
+		return DkGameplayTags::Dk_Inventory_Fragment_Entry_Main_0;
+	case 1:
+		return DkGameplayTags::Dk_Inventory_Fragment_Entry_Main_1;
+	default:
+		break;
+	}
+	return FGameplayTag::EmptyTag;
+}
+
+FGameplayTag UDkInventoryFunctionLibrary::GetSubEntryTagByIndex(int32 InIndex)
+{
+	checkf(InIndex >= 0 && InIndex < MAX_SUB_ENTRY_NUM, TEXT("子词条的数目不符合规定！"));
+	switch (InIndex)
+	{
+	case 0:
+		return DkGameplayTags::Dk_Inventory_Fragment_Entry_Sub_0;
+	case 1:
+		return DkGameplayTags::Dk_Inventory_Fragment_Entry_Sub_1;
+	case 2:
+		return DkGameplayTags::Dk_Inventory_Fragment_Entry_Sub_2;
+	case 3:
+		return DkGameplayTags::Dk_Inventory_Fragment_Entry_Sub_3;
+	default:
+		break;
+	}
+	return FGameplayTag::EmptyTag;
 }

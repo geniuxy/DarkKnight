@@ -3,10 +3,12 @@
 
 #include "Characters/DkCharacterHero.h"
 
+#include "DarkKnightDebugHelper.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/DkEquipmentComponent.h"
 #include "Components/DkInventoryComponent.h"
+#include "DataAssets/CharacterInfo.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GAS/DkAbilitySystemComponent.h"
@@ -54,6 +56,34 @@ void ADkCharacterHero::OnRep_PlayerState()
 	SwitchLocomotionStyle(ELocomotionStyle::Walk);
 }
 
+void ADkCharacterHero::SwitchLocomotionStyle(ELocomotionStyle InStyle)
+{
+	checkf(AttributeSet, TEXT("该Character类没有配置AttributeSet"));
+	float MoveSpeedPercent = AttributeSet->GetMoveSpeed();
+
+	SetCurrentLocomotionStyle(InStyle);
+
+	checkf(CharacterInfo, TEXT("该Character类没有配置CharacterInfo"));
+	switch (InStyle)
+	{
+	case ELocomotionStyle::Walk:
+		GetCharacterMovement()->MaxWalkSpeed = CharacterInfo->MaxWalkSpeed * MoveSpeedPercent;
+		break;
+	case ELocomotionStyle::Run:
+		GetCharacterMovement()->MaxWalkSpeed = CharacterInfo->MaxRunSpeed * MoveSpeedPercent;
+		break;
+	case ELocomotionStyle::Sprint:
+		GetCharacterMovement()->MaxWalkSpeed = CharacterInfo->MaxSprintSpeed * MoveSpeedPercent;
+		break;
+	case ELocomotionStyle::Unknown:
+		break;
+	default:
+		break;
+	}
+
+	Debug::Print(TEXT("行走速度"), GetCharacterMovement()->MaxWalkSpeed);
+}
+
 void ADkCharacterHero::OnMovementModeChanged(EMovementMode PrevMovementMode, uint8 PreviousCustomMode)
 {
 	Super::OnMovementModeChanged(PrevMovementMode, PreviousCustomMode);
@@ -82,6 +112,40 @@ void ADkCharacterHero::OnMovementModeChanged(EMovementMode PrevMovementMode, uin
 			ActionComponent->SetCurrentActionState(EActionState::InAir);
 		}
 	}
+}
+
+void ADkCharacterHero::BeginPlay()
+{
+	Super::BeginPlay();
+
+	// 对于服务端的对象在BeginPlay后，设为行走状态
+	// 对于Client的对象在OnRep_PlayerState中，设为行走状态
+	if (HasAuthority() && IsLocallyControlled())
+	{
+		SwitchLocomotionStyle(ELocomotionStyle::Walk);
+	}
+
+	// FString NetModeStr;
+	// switch (GetNetMode())
+	// {
+	// case NM_Standalone: NetModeStr = "Standalone";
+	// 	break;
+	// case NM_DedicatedServer: NetModeStr = "DedicatedServer";
+	// 	break;
+	// case NM_ListenServer: NetModeStr = "ListenServer";
+	// 	break;
+	// case NM_Client: NetModeStr = "Client";
+	// 	break;
+	// }
+	//
+	// Debug::Print(FString::Printf(
+	// 		TEXT("[%s] HasAuthority: %s, IsLocallyControlled: %s, NetMode: %s"),
+	// 		*GetName(),
+	// 		HasAuthority() ? TEXT("True") : TEXT("False"),
+	// 		IsLocallyControlled() ? TEXT("True") : TEXT("False"),
+	// 		*NetModeStr
+	// 	)
+	// );
 }
 
 void ADkCharacterHero::InitAbilityActorInfo()

@@ -93,7 +93,8 @@ void UDkEquipmentComponent::OnItemEquipped(UDkInventoryItem* EquippedItem)
 	FInventoryItemManifest& ItemManifest = EquippedItem->GetItemManifestMutable();
 	FInventoryItemEquipmentFragment* EquipmentFragment =
 		ItemManifest.GetFragmentOfTypeMutable<FInventoryItemEquipmentFragment>();
-	if (!EquipmentFragment) return;
+	int32 EquipmentID = ItemManifest.GetItemID();
+	if (!EquipmentFragment || EquipmentID == INVALID_INDEX) return;
 	
 	if (!bIsPreview) // 预览时不需要调整属性等操作
 	{
@@ -102,7 +103,8 @@ void UDkEquipmentComponent::OnItemEquipped(UDkInventoryItem* EquippedItem)
 
 	if (OwningSkeletalMesh.IsValid())
 	{
-		ADkEquippedActorBase* SpawnedEquippedActor = SpawnEquippedActor(EquipmentFragment, OwningSkeletalMesh.Get());
+		ADkEquippedActorBase* SpawnedEquippedActor =
+			SpawnEquippedActor(EquipmentID, EquipmentFragment, OwningSkeletalMesh.Get());
 		if (bIsPreview) // 如果是多个Client且为Preview，自己管自己的PreviewActor，其对应的SpawnedEquippedActor不为复制
 		{
 			SpawnedEquippedActor->SetReplicates(false);
@@ -137,9 +139,9 @@ void UDkEquipmentComponent::OnItemUnEquipped(UDkInventoryItem* UnEquippedItem)
 }
 
 ADkEquippedActorBase* UDkEquipmentComponent::SpawnEquippedActor(
-	FInventoryItemEquipmentFragment* EquipmentFragment, USkeletalMeshComponent* AttachMesh)
+	int32 EquipmentID, FInventoryItemEquipmentFragment* EquipmentFragment, USkeletalMeshComponent* AttachMesh)
 {
-	ADkEquippedActorBase* SpawnedEquippedActor = EquipmentFragment->SpawnAttachActor(AttachMesh);
+	ADkEquippedActorBase* SpawnedEquippedActor = EquipmentFragment->SpawnAttachActor(EquipmentID, AttachMesh);
 	SpawnedEquippedActor->SetEquipmentTag(EquipmentFragment->GetEquipmentTag());
 	SpawnedEquippedActor->SetOwner(GetOwner());
 	EquipmentFragment->SetEquippedActor(SpawnedEquippedActor);

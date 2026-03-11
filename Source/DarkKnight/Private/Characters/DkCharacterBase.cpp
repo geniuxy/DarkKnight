@@ -13,6 +13,8 @@
 #include "GAS/DkAbilitySystemComponent.h"
 #include "GAS/DkAttributeSet.h"
 #include "PickUp/DkPickUpActorBase.h"
+#include "PickUp/DkPickUpActorSkeletalMesh.h"
+#include "PickUp/DkPickUpActorStaticMesh.h"
 #include "Subsytems/DkInventorySubsystem.h"
 
 ADkCharacterBase::ADkCharacterBase()
@@ -108,7 +110,14 @@ void ADkCharacterBase::SpawnRewardItemActor()
 
 		if (IsValid(SpawnActor))
 		{
-			SpawnActor->SetPickUpItemInfo(RewardItemInfo, RewardItemStack);
+			if (RewardItemInfo->bStaticMesh)
+			{
+				CastChecked<ADkPickUpActorStaticMesh>(SpawnActor)->SetPickUpItemInfo(RewardItemInfo, RewardItemStack);
+			}
+			else
+			{
+				CastChecked<ADkPickUpActorSkeletalMesh>(SpawnActor)->SetPickUpItemInfo(RewardItemInfo, RewardItemStack);
+			}
 		}
 	}
 }

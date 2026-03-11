@@ -131,13 +131,13 @@ struct FDkEntryInfo : public FTableRowBase
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (Categories = "Dk.Item.Entry"))
 	FGameplayTag GameplayEffectTag;
-	
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TSubclassOf<UGameplayEffect> GameplayEffectClass;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	bool bPercent = false;
-	
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FText Description;
 };
@@ -163,24 +163,26 @@ struct FItemEntryInfo
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	float MinValue;
-	
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	float MaxValue;
 };
 
 USTRUCT(BlueprintType)
-struct FDkItemInfo : public FTableRowBase
+struct FDkItemInfo : public FTableRowBase //项目的整体Item表格
 {
 	GENERATED_BODY()
+	
+	// TODO：可以添加校验唯一性函数，在开局等时机调用，用来判断变量是否唯一
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	int ItemID;
+	int32 ItemID = INVALID_INDEX;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FText ItemName;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	int ItemRequiredLevel = INVALID_INDEX;
+	int32 ItemRequiredLevel = INVALID_INDEX;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	EItemQuality ItemQuality;
@@ -189,11 +191,11 @@ struct FDkItemInfo : public FTableRowBase
 	FText ItemDescription;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (Categories = "Dk.Item"))
-	FGameplayTag ItemTag;
+	FGameplayTag ItemTag; // 用于指示Item之间的不同Tag，程序中需要用Tag来区分Item，而不是ItemID，因此表格中也需要保持唯一性
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	EInventoryItemCategory ItemCategory;
-	
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TObjectPtr<UTexture2D> ItemIcon;
 
@@ -205,13 +207,13 @@ struct FDkItemInfo : public FTableRowBase
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TObjectPtr<USkeletalMesh> ItemSkeletalMesh;
-	
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TSubclassOf<ADkPickUpActorBase> PickUpActorBPClass;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TSubclassOf<ADkEquippedActorBase> EquippedActorBPClass;
-	
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TSubclassOf<ADkCharacterBase> EquipmentPlayerBPClass; // 装备对应的角色类
 
@@ -219,43 +221,40 @@ struct FDkItemInfo : public FTableRowBase
 	TSubclassOf<ADkCharacterBase> EquipmentEnemyBPClass; // 装备对应的敌人类
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	int ItemPrice = INVALID_INDEX;
+	int32 ItemPrice = INVALID_INDEX;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	float ItemWeight;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	int Stack;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	int MaxStack = INVALID_INDEX; // 当MaxStack = INVALID_INDEX时，为不可堆叠
+	int32 MaxStack = INVALID_INDEX; // 当MaxStack = INVALID_INDEX时，为不可堆叠
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FText MainEntry; // 规范：EntryID/MinValue/MaxValue或者EntryID/Value，比如"1001/5/10或者1002/15",词条之间用逗号隔开
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	FText SubEntry;	// 规范：EntryID/MinValue/MaxValue或者EntryID/Value，比如"1001/5/10或者1002/15",词条之间用逗号隔开
-	
+	FText SubEntry; // 规范：EntryID/MinValue/MaxValue或者EntryID/Value，比如"1001/5/10或者1002/15",词条之间用逗号隔开
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	int UniqueEntryID = INVALID_INDEX; // 独特词条ID（独特词条可以给角色独特的Ability）
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	FText UniqueEntry;	// 规范：EntryID/MinValue/MaxValue或者EntryID/Value，比如"1001/5/10或者1002/15",词条之间用逗号隔开
-	
+	FText UniqueEntry; // 规范：EntryID/MinValue/MaxValue或者EntryID/Value，比如"1001/5/10或者1002/15",词条之间用逗号隔开
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	bool bHasRandomSubEntry = false;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	int MinEntryCount = 1; // 最少随机子词条数
+	int32 MinEntryCount = 1; // 最少随机子词条数
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	int MaxEntryCount = 1; // 最多随机子词条数
+	int32 MaxEntryCount = 1; // 最多随机子词条数
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	int MinEntryLevel = 1; // 最低随机子词条等级
+	int32 MinEntryLevel = 1; // 最低随机子词条等级
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	int MaxEntryLevel = 1; // 最高随机子词条等级
+	int32 MaxEntryLevel = 1; // 最高随机子词条等级
 };
 
 USTRUCT(BlueprintType)
@@ -271,13 +270,13 @@ struct FRewardItemEntry // 奖励物品信息
 };
 
 USTRUCT(BlueprintType)
-struct FRewardItemListInfo : public FTableRowBase// TODO: 关卡掉落、死亡掉落等奖励物品信息
+struct FRewardItemListInfo : public FTableRowBase // TODO: 关卡掉落、死亡掉落等奖励物品信息
 {
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	int TargetID;
-	
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TArray<FRewardItemEntry> RewardItemList;
 };

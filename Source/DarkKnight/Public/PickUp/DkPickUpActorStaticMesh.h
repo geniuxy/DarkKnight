@@ -18,6 +18,8 @@ public:
 
 	virtual void SetPickUpItemInfo(const FDkItemInfo* PickUpItemInfo, int32 InItemStack) override;
 
+	void SetItemStaticMesh(const FDkItemInfo* PickUpItemInfo);
+	
 protected:
 	/* Actor Components */
 	UPROPERTY(VisibleAnywhere)

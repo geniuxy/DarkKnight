@@ -217,7 +217,7 @@ struct FInventoryItemLabeledValueFragment : public FInventoryItemFragment
 
 	FInventoryItemLabeledValueFragment(
 		const FText& InText,
-		int InValue,
+		float InValue,
 		FGameplayTag InFragmentTag = DkGameplayTags::Dk_Inventory_Fragment_LabeledValue)
 	{
 		FragmentTag = InFragmentTag;
@@ -228,8 +228,8 @@ struct FInventoryItemLabeledValueFragment : public FInventoryItemFragment
 
 	FInventoryItemLabeledValueFragment(
 		const FText& InText,
-		int InMaxValue,
-		int InMinValue,
+		float InMaxValue,
+		float InMinValue,
 		FGameplayTag InFragmentTag = DkGameplayTags::Dk_Inventory_Fragment_LabeledValue)
 	{
 		FragmentTag = InFragmentTag;
@@ -291,7 +291,7 @@ struct FInventoryItemEntryFragment : public FInventoryItemFragment // 用于词�
 	FInventoryItemEntryFragment(
 		const FText& InText,
 		const TSubclassOf<UGameplayEffect>& InGameplayEffectClass,
-		int InValue,
+		float InValue,
 		bool bInPercent = false,
 		FGameplayTag InFragmentTag = DkGameplayTags::Dk_Inventory_Fragment_Entry)
 	{
@@ -306,8 +306,8 @@ struct FInventoryItemEntryFragment : public FInventoryItemFragment // 用于词�
 	FInventoryItemEntryFragment(
 		const FText& InText,
 		const TSubclassOf<UGameplayEffect>& InGameplayEffectClass,
-		int InMaxValue,
-		int InMinValue,
+		float InMaxValue,
+		float InMinValue,
 		bool bInPercent = false,
 		FGameplayTag InFragmentTag = DkGameplayTags::Dk_Inventory_Fragment_Entry)
 	{
@@ -323,8 +323,8 @@ struct FInventoryItemEntryFragment : public FInventoryItemFragment // 用于词�
 	virtual void Manifest() override;
 	float GetValue() const { return Value; }
 	FText GetFormattedText() const;
-	void SetMinValue(int32 InValue) { Min = InValue; }
-	void SetMaxValue(int32 InValue) { Max = InValue; }
+	void SetMinValue(float InValue) { Min = InValue; }
+	void SetMaxValue(float InValue) { Max = InValue; }
 	void SetIsPercent(bool bInPercent) { bPercent = bInPercent; }
 
 	// 第一次出现的时候，该Fragment会随机数值。但是，之后装备或者丢弃，都会保持原有数值
@@ -370,26 +370,6 @@ struct FInventoryConsumeModifier : public FInventoryItemLabeledValueFragment
 };
 
 USTRUCT(BlueprintType)
-struct FInventoryItemConsumableFragment : public FInventoryItemFragment
-{
-	GENERATED_BODY()
-
-	FInventoryItemConsumableFragment()
-	{
-		FragmentTag = DkGameplayTags::Dk_Inventory_Fragment_Consumable;
-	}
-
-	virtual void OnConsume(APlayerController* PC);
-	virtual void Assimilate(UDkInventoryCompositeBase* Composite) const override;
-	virtual void Manifest() override;
-	bool HasOptionalStats() const;
-
-private:
-	UPROPERTY(EditAnywhere, Category="Inventory", meta=(ExcludeBaseStruct))
-	TArray<TInstancedStruct<FInventoryConsumeModifier>> ConsumeModifiers;
-};
-
-USTRUCT(BlueprintType)
 struct FInventoryItemHealthConsumableFragment : public FInventoryConsumeModifier
 {
 	GENERATED_BODY()
@@ -422,7 +402,7 @@ struct FConsumableEntryFragment : public FInventoryItemEntryFragment // 用于�
 	FConsumableEntryFragment(
 		const FText& InText,
 		const TSubclassOf<UGameplayEffect>& InGameplayEffectClass,
-		int InValue,
+		float InValue,
 		bool bInPercent = false,
 		FGameplayTag InFragmentTag = DkGameplayTags::Dk_Inventory_Fragment_Entry)
 		: FInventoryItemEntryFragment(InText, InGameplayEffectClass, InValue, bInPercent, InFragmentTag)
@@ -432,8 +412,8 @@ struct FConsumableEntryFragment : public FInventoryItemEntryFragment // 用于�
 	FConsumableEntryFragment(
 		const FText& InText,
 		const TSubclassOf<UGameplayEffect>& InGameplayEffectClass,
-		int InMaxValue,
-		int InMinValue,
+		float InMaxValue,
+		float InMinValue,
 		bool bInPercent = false,
 		FGameplayTag InFragmentTag = DkGameplayTags::Dk_Inventory_Fragment_Entry)
 		: FInventoryItemEntryFragment(InText, InGameplayEffectClass, InMaxValue, InMinValue, bInPercent, InFragmentTag)
@@ -441,6 +421,33 @@ struct FConsumableEntryFragment : public FInventoryItemEntryFragment // 用于�
 	}
 
 	void OnConsume(APlayerController* PC);
+};
+
+USTRUCT(BlueprintType)
+struct FInventoryItemConsumableFragment : public FInventoryItemFragment
+{
+	GENERATED_BODY()
+
+	FInventoryItemConsumableFragment()
+	{
+		FragmentTag = DkGameplayTags::Dk_Inventory_Fragment_Consumable;
+	}
+
+	FInventoryItemConsumableFragment(FGameplayTag InFragmentTag)
+	{
+		FragmentTag = InFragmentTag;
+	}
+
+	virtual void OnConsume(APlayerController* PC);
+	virtual void Assimilate(UDkInventoryCompositeBase* Composite) const override;
+	virtual void Manifest() override;
+	bool HasOptionalStats() const;
+
+	void UpdateConsumableEntries(const UObject* WorldContextObject, TArray<FItemEntryInfo> InEntries, bool bMainEntry);
+
+private:
+	UPROPERTY(EditAnywhere, Category="Inventory", meta=(ExcludeBaseStruct))
+	TArray<TInstancedStruct<FConsumableEntryFragment>> ConsumableEntries;
 };
 
 /*
@@ -477,7 +484,7 @@ struct FEquipmentEntryFragment : public FInventoryItemEntryFragment // 用于装
 	FEquipmentEntryFragment(
 		const FText& InText,
 		const TSubclassOf<UGameplayEffect>& InGameplayEffectClass,
-		int InValue,
+		float InValue,
 		bool bInPercent = false,
 		FGameplayTag InFragmentTag = DkGameplayTags::Dk_Inventory_Fragment_Entry)
 		: FInventoryItemEntryFragment(InText, InGameplayEffectClass, InValue, bInPercent, InFragmentTag)
@@ -487,8 +494,8 @@ struct FEquipmentEntryFragment : public FInventoryItemEntryFragment // 用于装
 	FEquipmentEntryFragment(
 		const FText& InText,
 		const TSubclassOf<UGameplayEffect>& InGameplayEffectClass,
-		int InMaxValue,
-		int InMinValue,
+		float InMaxValue,
+		float InMinValue,
 		bool bInPercent = false,
 		FGameplayTag InFragmentTag = DkGameplayTags::Dk_Inventory_Fragment_Entry)
 		: FInventoryItemEntryFragment(InText, InGameplayEffectClass, InMaxValue, InMinValue, bInPercent, InFragmentTag)
@@ -529,7 +536,7 @@ struct FInventoryItemEquipmentFragment : public FInventoryItemFragment
 
 	void UpdateEquipEntries(const UObject* WorldContextObject, TArray<FItemEntryInfo> InEntries, bool bMainEntry);
 
-	ADkEquippedActorBase* SpawnAttachActor(USkeletalMeshComponent* AttachMesh) const;
+	ADkEquippedActorBase* SpawnAttachActor(int32 EquipmentID, USkeletalMeshComponent* AttachMesh) const;
 	void DestroyAttachActor() const;
 
 	void SetEquippedActor(ADkEquippedActorBase* InEquippedActor);

@@ -53,7 +53,7 @@ private:
 	void OnItemUnEquipped(UDkInventoryItem* UnEquippedItem);
 
 	ADkEquippedActorBase* SpawnEquippedActor(
-		FInventoryItemEquipmentFragment* EquipmentFragment, USkeletalMeshComponent* AttachMesh
+		int32 EquipmentID, FInventoryItemEquipmentFragment* EquipmentFragment, USkeletalMeshComponent* AttachMesh
 	);
 
 	UPROPERTY()

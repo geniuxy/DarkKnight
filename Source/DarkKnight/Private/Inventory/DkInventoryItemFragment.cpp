@@ -134,10 +134,10 @@ FText FInventoryItemEntryFragment::GetFormattedText() const
 
 void FInventoryItemConsumableFragment::OnConsume(APlayerController* PC)
 {
-	for (auto& Modifier : ConsumeModifiers)
+	for (auto& Entry : ConsumableEntries)
 	{
-		auto& ModRef = Modifier.GetMutable();
-		ModRef.OnConsume(PC);
+		auto& EntryRef = Entry.GetMutable();
+		EntryRef.OnConsume(PC);
 	}
 }
 
@@ -145,10 +145,10 @@ void FInventoryItemConsumableFragment::Assimilate(UDkInventoryCompositeBase* Com
 {
 	FInventoryItemFragment::Assimilate(Composite);
 
-	for (const auto& Modifier : ConsumeModifiers)
+	for (const auto& Entry : ConsumableEntries)
 	{
-		const auto& ModRef = Modifier.Get();
-		ModRef.Assimilate(Composite);
+		const auto& EntryRef = Entry.Get();
+		EntryRef.Assimilate(Composite);
 	}
 }
 
@@ -156,24 +156,62 @@ void FInventoryItemConsumableFragment::Manifest()
 {
 	FInventoryItemFragment::Manifest();
 
-	for (auto& Modifier : ConsumeModifiers)
+	for (auto& Entry : ConsumableEntries)
 	{
-		auto& ModRef = Modifier.GetMutable();
-		ModRef.Manifest();
+		auto& EntryRef = Entry.GetMutable();
+		EntryRef.Manifest();
 	}
 }
 
 bool FInventoryItemConsumableFragment::HasOptionalStats() const
 {
 	bool bHasOptionalStat = false;
-	for (const auto& Modifier : ConsumeModifiers)
+	for (const auto& Entry : ConsumableEntries)
 	{
-		const auto& ModRef = Modifier.Get();
-		bHasOptionalStat = ModRef.GetFragmentTag() == DkGameplayTags::Dk_Inventory_Fragment_LabeledValue_Stat_0 ||
-			ModRef.GetFragmentTag() == DkGameplayTags::Dk_Inventory_Fragment_LabeledValue_Stat_1 ||
-			ModRef.GetFragmentTag() == DkGameplayTags::Dk_Inventory_Fragment_LabeledValue_Stat_2;
+		const auto& EntryRef = Entry.Get();
+		bHasOptionalStat = EntryRef.GetFragmentTag() == DkGameplayTags::Dk_Inventory_Fragment_Entry_Sub_0 ||
+			EntryRef.GetFragmentTag() == DkGameplayTags::Dk_Inventory_Fragment_Entry_Sub_1 ||
+			EntryRef.GetFragmentTag() == DkGameplayTags::Dk_Inventory_Fragment_Entry_Sub_2 ||
+			EntryRef.GetFragmentTag() == DkGameplayTags::Dk_Inventory_Fragment_Entry_Sub_3;
+		if (bHasOptionalStat)
+		{
+			break;
+		}
 	}
 	return bHasOptionalStat;
+}
+
+void FInventoryItemConsumableFragment::UpdateConsumableEntries(
+	const UObject* WorldContextObject, TArray<FItemEntryInfo> InEntries, bool bMainEntry)
+{
+	UDkInventorySubsystem* InventorySubsystem = UDkInventorySubsystem::Get(WorldContextObject);
+	checkf(InventorySubsystem, TEXT("添加Item词条时，InventorySubsystem为空！"));
+	for (int Index = 0; Index < InEntries.Num(); ++Index)
+	{
+		const FItemEntryInfo& EntryStrInfo = InEntries[Index];
+		FDkEntryInfo EntryInfo = InventorySubsystem->GetCachedEntryTable().FindChecked(EntryStrInfo.EntryID);
+		FGameplayTag EntryFragmentTag;
+		if (bMainEntry)
+		{
+			EntryFragmentTag = UDkInventoryFunctionLibrary::GetMainEntryTagByIndex(Index);
+		}
+		else
+		{
+			EntryFragmentTag = UDkInventoryFunctionLibrary::GetSubEntryTagByIndex(Index);
+		}
+		FConsumableEntryFragment NewItemEntryFragment = FConsumableEntryFragment(
+			EntryInfo.Description,
+			EntryInfo.GameplayEffectClass,
+			EntryStrInfo.MinValue,
+			EntryInfo.bPercent,
+			EntryFragmentTag
+		);
+		if (EntryStrInfo.MaxValue != INVALID_INDEX)
+		{
+			NewItemEntryFragment.SetMaxValue(EntryStrInfo.MaxValue);
+		}
+		ConsumableEntries.Add(TInstancedStruct<FConsumableEntryFragment>::Make(MoveTemp(NewItemEntryFragment)));
+	}
 }
 
 void FInventoryItemHealthConsumableFragment::OnConsume(APlayerController* PC)
@@ -257,9 +295,14 @@ bool FInventoryItemEquipmentFragment::HasOptionalStats() const
 	for (const auto& Entry : EquipEntries)
 	{
 		const auto& EntryRef = Entry.Get();
-		bHasOptionalStat = EntryRef.GetFragmentTag() == DkGameplayTags::Dk_Inventory_Fragment_LabeledValue_Stat_0 ||
-			EntryRef.GetFragmentTag() == DkGameplayTags::Dk_Inventory_Fragment_LabeledValue_Stat_1 ||
-			EntryRef.GetFragmentTag() == DkGameplayTags::Dk_Inventory_Fragment_LabeledValue_Stat_2;
+		bHasOptionalStat = EntryRef.GetFragmentTag() == DkGameplayTags::Dk_Inventory_Fragment_Entry_Sub_0 ||
+			EntryRef.GetFragmentTag() == DkGameplayTags::Dk_Inventory_Fragment_Entry_Sub_1 ||
+			EntryRef.GetFragmentTag() == DkGameplayTags::Dk_Inventory_Fragment_Entry_Sub_2 ||
+			EntryRef.GetFragmentTag() == DkGameplayTags::Dk_Inventory_Fragment_Entry_Sub_3;
+		if (bHasOptionalStat)
+		{
+			break;
+		}
 	}
 	return bHasOptionalStat;
 }
@@ -297,14 +340,31 @@ void FInventoryItemEquipmentFragment::UpdateEquipEntries(
 	}
 }
 
-ADkEquippedActorBase* FInventoryItemEquipmentFragment::SpawnAttachActor(USkeletalMeshComponent* AttachMesh) const
+ADkEquippedActorBase* FInventoryItemEquipmentFragment::SpawnAttachActor(
+	int32 EquipmentID, USkeletalMeshComponent* AttachMesh) const
 {
 	if (!IsValid(EquippedActorClass) || !IsValid(AttachMesh)) return nullptr;
 
 	ADkEquippedActorBase* SpawnedActor = AttachMesh->GetWorld()->SpawnActor<ADkEquippedActorBase>(EquippedActorClass);
-	SpawnedActor->AttachToComponent(
-		AttachMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, SocketAttachPoint
-	);
+	if (IsValid(SpawnedActor))
+	{
+		UDkInventorySubsystem* InventorySubsystem = UDkInventorySubsystem::Get(AttachMesh);
+		checkf(InventorySubsystem, TEXT("生成RewardItem时，InventorySubsystem为空！"));
+		if (const FDkItemInfo* ItemInfo = InventorySubsystem->GetCachedItemTable().Find(EquipmentID))
+		{
+			if (ItemInfo->bStaticMesh)
+			{
+				Debug::Print(TEXT("EquipmentItem暂不支持StaticMesh"));
+			}
+			else
+			{
+				SpawnedActor->SetEquipmentSkeletalMesh(ItemInfo->ItemSkeletalMesh);
+			}
+		}
+		SpawnedActor->AttachToComponent(
+			AttachMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, SocketAttachPoint
+		);
+	}
 
 	return SpawnedActor;
 }

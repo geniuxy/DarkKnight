@@ -9,6 +9,8 @@
 #include "DkEquippedActorBase.generated.h"
 
 
+class UDkHighlightableSkeletalMesh;
+
 UCLASS()
 class DARKKNIGHT_API ADkEquippedActorBase : public AActor
 {
@@ -17,9 +19,16 @@ class DARKKNIGHT_API ADkEquippedActorBase : public AActor
 public:
 	ADkEquippedActorBase();
 
+	void SetEquipmentSkeletalMesh(USkeletalMesh* InEquipmentItemMesh) const;
+
 private:
 	UPROPERTY(EditAnywhere, Category="Equipment")
 	FGameplayTag EquipmentTag;
+
+	/* Actor Components */
+	UPROPERTY(VisibleAnywhere)
+	USkeletalMeshComponent* EquipmentItemSkeletalMesh;
+	/*********/
 
 public:
 	LIST_DATA_ACCESSOR(FGameplayTag, EquipmentTag)

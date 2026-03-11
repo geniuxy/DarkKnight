@@ -18,6 +18,11 @@ void ADkPickUpActorStaticMesh::SetPickUpItemInfo(const FDkItemInfo* PickUpItemIn
 {
 	Super::SetPickUpItemInfo(PickUpItemInfo, InItemStack);
 
+	SetItemStaticMesh(PickUpItemInfo);
+}
+
+void ADkPickUpActorStaticMesh::SetItemStaticMesh(const FDkItemInfo* PickUpItemInfo)
+{
 	if (PickUpItemInfo->bStaticMesh)
 	{
 		checkf(IsValid(PickUpItemInfo->ItemStaticMesh), TEXT("生成PickUpItem时，表格配置是StaticMesh，却没有配置StaticMesh"));

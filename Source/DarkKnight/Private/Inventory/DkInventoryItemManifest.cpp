@@ -6,6 +6,8 @@
 #include "Inventory/DkInventoryItem.h"
 #include "Inventory/DkInventoryItemFragment.h"
 #include "PickUp/DkPickUpActorBase.h"
+#include "PickUp/DkPickUpActorSkeletalMesh.h"
+#include "PickUp/DkPickUpActorStaticMesh.h"
 #include "Subsytems/DkInventorySubsystem.h"
 #include "Widgets/Inventory/DkInventoryItemDescriptionMenu.h"
 
@@ -120,7 +122,20 @@ void FInventoryItemManifest::InitializeFragments(
 		AddFragment(NewItemEquipmentFragment);
 	}
 
-	// TODO: 消耗品相关
+	// 消耗品Consumable
+	if (GetItemCategory() == EInventoryItemCategory::Consumable)
+	{
+		FInventoryItemConsumableFragment NewItemConsumableFragment = FInventoryItemConsumableFragment();
+		if (!MainEntries.IsEmpty())
+		{
+			NewItemConsumableFragment.UpdateConsumableEntries(WorldContextObject, MainEntries, true);
+		}
+		if (!SubEntries.IsEmpty())
+		{
+			NewItemConsumableFragment.UpdateConsumableEntries(WorldContextObject, SubEntries, false);
+		}
+		AddFragment(NewItemConsumableFragment);
+	}
 }
 
 TArray<FItemEntryInfo> FInventoryItemManifest::GetItemEntryInfoList(
@@ -235,9 +250,24 @@ void FInventoryItemManifest::SpawnPickUpActor(
 		WorldContextObject->GetWorld()->SpawnActor<AActor>(PickUpActorClass, SpawnLocation, SpawnRotation);
 	if (!IsValid(SpawnActor)) return;
 
+	// 更新Item的Mesh
+	UDkInventorySubsystem* InventorySubsystem = UDkInventorySubsystem::Get(WorldContextObject);
+	checkf(InventorySubsystem, TEXT("生成RewardItem时，InventorySubsystem为空！"));
+	if (const FDkItemInfo* ItemInfo = InventorySubsystem->GetCachedItemTable().Find(ItemID))
+	{
+		if (ItemInfo->bStaticMesh)
+		{
+			CastChecked<ADkPickUpActorStaticMesh>(SpawnActor)->SetItemStaticMesh(ItemInfo);
+		}
+		else
+		{
+			CastChecked<ADkPickUpActorSkeletalMesh>(SpawnActor)->SetItemSkeletalMesh(ItemInfo);
+		}
+	}
+	
 	UDkItemComponent* ItemComponent = SpawnActor->FindComponentByClass<UDkItemComponent>();
 	check(ItemComponent);
-
+	
 	ItemComponent->InitItemManifest(*this);
 }
 

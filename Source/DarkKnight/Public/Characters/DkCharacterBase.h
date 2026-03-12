@@ -86,6 +86,12 @@ protected:
 	TArray<FRewardItemEntry> RewardItemIDList;
 	/*********/
 
+	/* 网络 */
+	UPROPERTY(EditDefaultsOnly, Category="Net")
+	bool bDebugNetworkInfo = false;
+	
+	void GetNetworkDebugInfo() const;
+	/*********/
 public:
 	LIST_DATA_ACCESSOR(ELocomotionStyle, CurrentLocomotionStyle)
 };

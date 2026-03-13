@@ -8,6 +8,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "DkUIFunctionLibrary.generated.h"
 
+class UWidget;
 class UDkWidgetActivatableBase;
 /**
  * 
@@ -52,4 +53,25 @@ public:
 	 */
 	UFUNCTION(BlueprintPure, Category="UI|Layout", meta=(WorldContext="WorldContextObject"))
 	static FVector2D GetViewportSizeInPixels(const UObject* WorldContextObject);
+
+	/**
+	 * 获取当前Widget在Viewport中的位置
+	 */
+	UFUNCTION(BlueprintPure, Category="UI|Layout")
+	static FVector2D GetWidgetPosition(UWidget* Widget);
+
+	UFUNCTION(BlueprintPure, Category="UI|Layout")
+	static FVector2D GetWidgetSize(UWidget* Widget);
+
+	UFUNCTION(BlueprintPure, Category="UI|Layout")
+	static bool IsWithInBounds(const FVector2D& BoundaryPos, const FVector2D& WidgetSize, const FVector2D& MousePos);
+
+	UFUNCTION(BlueprintPure, Category="UI|Layout")
+	static FVector2D GetRelativeWidgetPosition(
+		const FVector2D& BoundaryLeftTopPos,
+		const FVector2D& BoundarySize,
+		const FVector2D& WidgetSize,
+		const FVector2D& MousePos,
+		const FVector2D& Margin = FVector2D(4.f, 4.f)
+	);
 };

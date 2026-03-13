@@ -27,30 +27,6 @@ UDkInventoryComponent* UDkInventoryFunctionLibrary::GetInventoryComponent(const 
 	return InventoryComponent;
 }
 
-FVector2D UDkInventoryFunctionLibrary::GetWidgetPosition(UWidget* Widget)
-{
-	const FGeometry Geometry = Widget->GetCachedGeometry();
-	FVector2D PixelPosition; // 物理像素, 操作系统认的硬件像素
-	FVector2D ViewportPosition; // 逻辑/虚拟像素, 数值不受 DPI 缩放影响
-	USlateBlueprintLibrary::LocalToViewport(
-		Widget, Geometry, USlateBlueprintLibrary::GetLocalTopLeft(Geometry), PixelPosition, ViewportPosition
-	);
-	return ViewportPosition;
-}
-
-FVector2D UDkInventoryFunctionLibrary::GetWidgetSize(UWidget* Widget)
-{
-	const FGeometry Geometry = Widget->GetCachedGeometry();
-	return Geometry.GetLocalSize();
-}
-
-bool UDkInventoryFunctionLibrary::IsWithInBounds(
-	const FVector2D& BoundaryPos, const FVector2D& WidgetSize, const FVector2D& MousePos)
-{
-	return MousePos.X >= BoundaryPos.X && MousePos.X <= (BoundaryPos.X + WidgetSize.X) &&
-		MousePos.Y >= BoundaryPos.Y && MousePos.Y <= (BoundaryPos.Y + WidgetSize.Y);
-}
-
 FGameplayTag UDkInventoryFunctionLibrary::GetMainEntryTagByIndex(int32 InIndex)
 {
 	checkf(InIndex >= 0 && InIndex < MAX_MAIN_ENTRY_NUM, TEXT("主词条的数目不符合规定！"));

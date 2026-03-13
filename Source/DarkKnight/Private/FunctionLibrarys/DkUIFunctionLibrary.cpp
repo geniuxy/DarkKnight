@@ -3,7 +3,7 @@
 
 #include "FunctionLibrarys/DkUIFunctionLibrary.h"
 
-#include "DarkKnightDebugHelper.h"
+#include "Blueprint/SlateBlueprintLibrary.h"
 #include "Blueprint/UserWidget.h"
 #include "Settings/DkUIDeveloperSettings.h"
 #include "Slate/SceneViewport.h"
@@ -151,4 +151,61 @@ FVector2D UDkUIFunctionLibrary::GetViewportSizeInPixels(const UObject* WorldCont
 		}
 	}
 	return FVector2D::ZeroVector;
+}
+
+FVector2D UDkUIFunctionLibrary::GetWidgetPosition(UWidget* Widget)
+{
+	const FGeometry Geometry = Widget->GetCachedGeometry();
+	FVector2D PixelPosition; // 物理像素, 操作系统认的硬件像素
+	FVector2D ViewportPosition; // 逻辑/虚拟像素, 数值不受 DPI 缩放影响
+	USlateBlueprintLibrary::LocalToViewport(
+		Widget, Geometry, USlateBlueprintLibrary::GetLocalTopLeft(Geometry), PixelPosition, ViewportPosition
+	);
+	return ViewportPosition;
+}
+
+FVector2D UDkUIFunctionLibrary::GetWidgetSize(UWidget* Widget)
+{
+	const FGeometry Geometry = Widget->GetCachedGeometry();
+	return Geometry.GetLocalSize();
+}
+
+bool UDkUIFunctionLibrary::IsWithInBounds(
+	const FVector2D& BoundaryPos, const FVector2D& WidgetSize, const FVector2D& MousePos)
+{
+	return MousePos.X >= BoundaryPos.X && MousePos.X <= (BoundaryPos.X + WidgetSize.X) &&
+		MousePos.Y >= BoundaryPos.Y && MousePos.Y <= (BoundaryPos.Y + WidgetSize.Y);
+}
+
+FVector2D UDkUIFunctionLibrary::GetRelativeWidgetPosition(
+	const FVector2D& BoundaryLeftTopPos,	// 这是相对于ViewPort的Boundary左上角的位置(Local Space)
+	const FVector2D& BoundarySize,			// 这是相对于ViewPort的Boundary的Local Size
+	const FVector2D& WidgetSize,			// 这是相对于ViewPort的Widget(比如ItemDescription)的LocalSize
+	const FVector2D& MousePos,				// 这是相对于ViewPort的鼠标的位置(Local Space)
+	const FVector2D& Margin)				// 这个是与其他控件的间距
+{
+	FVector2D RelativePos =
+		FVector2D(MousePos.X - Margin.X - WidgetSize.X * 0.6f - BoundaryLeftTopPos.X,
+		          MousePos.Y + Margin.Y - BoundaryLeftTopPos.Y
+		);
+
+	if (RelativePos.X + WidgetSize.X > BoundarySize.X)
+	{
+		RelativePos.X = BoundarySize.X - WidgetSize.X;
+	}
+	if (RelativePos.X < 0.f)
+	{
+		RelativePos.X = 0.f;
+	}
+
+	if (RelativePos.Y + WidgetSize.Y > BoundarySize.Y)
+	{
+		RelativePos.Y = MousePos.Y - BoundaryLeftTopPos.Y - Margin.Y - WidgetSize.Y;
+	}
+	if (RelativePos.Y < 0.f)
+	{
+		RelativePos.Y = 0.f;
+	}
+
+	return RelativePos;
 }

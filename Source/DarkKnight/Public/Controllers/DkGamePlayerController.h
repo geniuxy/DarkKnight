@@ -51,6 +51,7 @@ private:
 	void OnLookTriggered(const FInputActionValue& InputActionValue);
 	void OnJumpPressed();
 	void OnInteract();
+	void OnOpenSystemMenu();
 	void OnInventoryActionTriggered();
 	/********/
 
@@ -72,10 +73,10 @@ private:
 	TWeakObjectPtr<UDkInventoryComponent> InventoryComponent;
 	/********/
 
-	UPROPERTY(EditDefaultsOnly, Category="Inventory")
+	UPROPERTY(EditDefaultsOnly, Category= "Primary")
 	TObjectPtr<UInputMappingContext> IMCGamePlay;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Inventory")
+	UPROPERTY(EditDefaultsOnly, Category = "Primary")
 	TSubclassOf<UDkWidgetPrimaryLayout> PrimaryLayoutClass;
 
 	UPROPERTY()

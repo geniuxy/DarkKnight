@@ -25,15 +25,6 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="Inventory Function Library")
 	static UDkInventoryComponent* GetInventoryComponent(const APlayerController* PlayerController);
-
-	UFUNCTION(BlueprintCallable, Category="Inventory Function Library")
-	static FVector2D GetWidgetPosition(UWidget* Widget);
-
-	UFUNCTION(BlueprintCallable, Category="Inventory Function Library")
-	static FVector2D GetWidgetSize(UWidget* Widget);
-	
-	UFUNCTION(BlueprintCallable, Category="Inventory Function Library")
-	static bool IsWithInBounds(const FVector2D& BoundaryPos, const FVector2D& WidgetSize, const FVector2D& MousePos);
 	
 	template <typename T, typename FuncT>
 	static void ForEach2D(

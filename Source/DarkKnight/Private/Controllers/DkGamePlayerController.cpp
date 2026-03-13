@@ -133,6 +133,10 @@ void ADkGamePlayerController::SetupInputComponent()
 		this, &ThisClass::OnInteract
 	);
 	EnhancedInputComponent->BindNativeInputAction(
+		InputConfigDataAsset, DkGameplayTags::Dk_Input_Action_OpenSystemMenu, ETriggerEvent::Completed,
+		this, &ThisClass::OnOpenSystemMenu
+	);
+	EnhancedInputComponent->BindNativeInputAction(
 		InputConfigDataAsset, DkGameplayTags::Dk_Input_Action_OpenInventory, ETriggerEvent::Completed,
 		this, &ThisClass::OnInventoryActionTriggered
 	);
@@ -209,6 +213,35 @@ void ADkGamePlayerController::OnInteract()
 	InventoryComponent->TryAddItem(ItemComponent);
 }
 
+void ADkGamePlayerController::OnOpenSystemMenu()
+{
+	if (!IsLocalController()) return;
+
+	UDkUISubsystem::Get(this)->PushSoftWidgetToStackAsync(
+		DkGameplayTags::Dk_WidgetStack_GameMenu,
+		UDkUIFunctionLibrary::GetUISoftWidgetClassByTag(DkGameplayTags::Dk_Widget_SystemMenu),
+		[this](EAsyncPushWidgetState InPushState, UDkWidgetActivatableBase* PushedWidget)
+		{
+			if (InPushState == EAsyncPushWidgetState::OnCreatedBeforePush)
+			{
+				UDkUIFunctionLibrary::ToggleInputMode(this, EDkInputMode::UIOnly);
+			}
+			if (InPushState == EAsyncPushWidgetState::AfterPush)
+			{
+			}
+		}
+	);
+}
+
+void ADkGamePlayerController::OnInventoryActionTriggered()
+{
+	checkf(InventoryComponent.IsValid(), TEXT("打开库存失败，InventoryComponent未有效"));
+
+	Debug::Print(TEXT("我正在打开库存！"));
+
+	InventoryComponent->ConstructInventoryMenu();
+}
+
 void ADkGamePlayerController::TraceForItem()
 {
 	if (!IsValid(GEngine) || !IsValid(GEngine->GameViewport)) return;
@@ -270,15 +303,6 @@ void ADkGamePlayerController::TraceForItem()
 			}
 		}
 	}
-}
-
-void ADkGamePlayerController::OnInventoryActionTriggered()
-{
-	checkf(InventoryComponent.IsValid(), TEXT("打开库存失败，InventoryComponent未有效"));
-
-	Debug::Print(TEXT("我正在打开库存！"));
-
-	InventoryComponent->ConstructInventoryMenu();
 }
 
 void ADkGamePlayerController::RefreshInventoryComponent()

@@ -3,14 +3,13 @@
 
 #include "Widgets/Inventory/DKWidgetEquipmentMenu.h"
 
-#include "DarkKnightDebugHelper.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Blueprint/WidgetTree.h"
 #include "Components/CanvasPanel.h"
 #include "Components/DkInventoryComponent.h"
-#include "Components/DkItemComponent.h"
 #include "FunctionLibrarys/DkCommonFunctionLibrary.h"
 #include "FunctionLibrarys/DkInventoryFunctionLibrary.h"
+#include "FunctionLibrarys/DkUIFunctionLibrary.h"
 #include "Inventory/DkInventoryItem.h"
 #include "Inventory/DkInventoryItemFragment.h"
 #include "Widgets/Inventory/DkInventoryDraggedItem.h"
@@ -55,11 +54,11 @@ void UDKWidgetEquipmentMenu::NativeTick(const FGeometry& MyGeometry, float InDel
 	}
 
 	// 根据鼠标的位置，更改Hover的格子样式
-	const FVector2D CanvasPosition = UDkInventoryFunctionLibrary::GetWidgetPosition(EquipmentCanvasPanel);
+	const FVector2D CanvasPosition = UDkUIFunctionLibrary::GetWidgetPosition(EquipmentCanvasPanel);
 	const FVector2D MousePosition = UWidgetLayoutLibrary::GetMousePositionOnViewport(GetOwningPlayer());
 
-	bMouseWithInCanvas = UDkInventoryFunctionLibrary::IsWithInBounds(
-		CanvasPosition, UDkInventoryFunctionLibrary::GetWidgetSize(EquipmentCanvasPanel), MousePosition
+	bMouseWithInCanvas = UDkUIFunctionLibrary::IsWithInBounds(
+		CanvasPosition, UDkUIFunctionLibrary::GetWidgetSize(EquipmentCanvasPanel), MousePosition
 	);
 	if (!bMouseWithInCanvas && LastHighlightIndex != INDEX_NONE)
 	{

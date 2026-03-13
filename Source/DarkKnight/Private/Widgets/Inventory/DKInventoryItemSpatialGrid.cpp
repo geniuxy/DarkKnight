@@ -10,6 +10,7 @@
 #include "Components/CanvasPanelSlot.h"
 #include "Components/DkInventoryComponent.h"
 #include "FunctionLibrarys/DkInventoryFunctionLibrary.h"
+#include "FunctionLibrarys/DkUIFunctionLibrary.h"
 #include "Inventory/DkInventoryItemFragment.h"
 #include "Widgets/Inventory/DkInventoryDraggedItem.h"
 #include "Widgets/Inventory/DkInventoryGridSlot.h"
@@ -20,10 +21,11 @@ void UDKInventoryItemSpatialGrid::NativeTick(const FGeometry& MyGeometry, float 
 	Super::NativeTick(MyGeometry, InDeltaTime);
 
 	// 根据鼠标的位置，更改Hover的格子样式
-	const FVector2D CanvasPosition = UDkInventoryFunctionLibrary::GetWidgetPosition(GridCanvasPanel);
+	const FVector2D CanvasPosition = UDkUIFunctionLibrary::GetWidgetPosition(GridCanvasPanel);
+	// 这里的MousePosition是逻辑/虚拟像素大小，不受DPI影响
 	const FVector2D MousePosition = UWidgetLayoutLibrary::GetMousePositionOnViewport(GetOwningPlayer());
 
-	if (CursorExitedCanvas(CanvasPosition, UDkInventoryFunctionLibrary::GetWidgetSize(GridCanvasPanel), MousePosition))
+	if (CursorExitedCanvas(CanvasPosition, UDkUIFunctionLibrary::GetWidgetSize(GridCanvasPanel), MousePosition))
 	{
 		return;
 	}
@@ -521,7 +523,7 @@ bool UDKInventoryItemSpatialGrid::CursorExitedCanvas(
 	const FVector2D& BoundaryPos, const FVector2D& BoundarySize, const FVector2D& MousePos)
 {
 	bLastMouseWithInCanvas = bMouseWithInCanvas;
-	bMouseWithInCanvas = UDkInventoryFunctionLibrary::IsWithInBounds(BoundaryPos, BoundarySize, MousePos);
+	bMouseWithInCanvas = UDkUIFunctionLibrary::IsWithInBounds(BoundaryPos, BoundarySize, MousePos);
 	if (!bMouseWithInCanvas && bLastMouseWithInCanvas)
 	{
 		UnHighlightSlots(LastHighlightedIndex, LastHighlightedDimension);

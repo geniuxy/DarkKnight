@@ -4,14 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "Widgets/DkWidgetActivatableBase.h"
-#include "Widgets/Inventory/DkInventoryItemDescriptionMenu.h"
 #include "DkWidgetGameMenuScreen.generated.h"
 
-class UCanvasPanel;
-class UDkInventoryComponent;
-class UDkInventoryDraggedItem;
-class UDKWidgetEquipmentMenu;
 class UDkWidgetInventoryMenu;
+class UDkGameMenuCenterAreaInventory;
 /**
  * 
  */
@@ -20,48 +16,19 @@ class DARKKNIGHT_API UDkWidgetGameMenuScreen : public UDkWidgetActivatableBase
 {
 	GENERATED_BODY()
 
-protected:
+public:
 	//~Begin UUserWidget Function
 	virtual void NativeOnInitialized() override;
-	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 	//~End UUserWidget Function
-
-	//~ Begin UCommonActivatableWidget Function
-	virtual void NativeOnDeactivated() override;
-	//~ End UCommonActivatableWidget Function
+	
+	UDkWidgetInventoryMenu* GetInventoryMenu() const;
 
 private:
 	//***** Bound Widgets *****//
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget, AllowPrivateAccess="true"))
-	TObjectPtr<UCanvasPanel> CanvasPanel;
-	
-	UPROPERTY(BlueprintReadOnly, meta=(BindWidget, AllowPrivateAccess="true"))
-	TObjectPtr<UDkWidgetInventoryMenu> WBP_InventoryMenu;
-
-	UPROPERTY(BlueprintReadOnly, meta=(BindWidget, AllowPrivateAccess="true"))
-	TObjectPtr<UDKWidgetEquipmentMenu> WBP_EquipmentMenu;
+	TObjectPtr<UDkGameMenuCenterAreaInventory> CenterArea_Inventory;
 	//***** Bound Widgets *****//
 
-	TWeakObjectPtr<UDkInventoryDraggedItem> DraggedItem;
-	
-	TWeakObjectPtr<UDkInventoryComponent> InventoryComponent;
-	
-	UFUNCTION()
-	void HandleDraggedItemCreated(UDkInventoryDraggedItem* InDraggedItem);
-	
-	UFUNCTION()
-	void HandleDraggedItemRemoved();
-
-	TWeakObjectPtr<UDkInventoryItemDescriptionMenu> ItemDescriptionMenu;
-	
-	UFUNCTION()
-	void HandleItemDescriptionCreated(UDkInventoryItemDescriptionMenu* InItemDescriptionMenu);
-
-	UFUNCTION()
-	void HandleItemDescriptionRemoved();
-
 	void OnBackBoundActionTriggered();
-
 public:
-	FORCEINLINE UDkWidgetInventoryMenu* GetInventoryMenu() const { return WBP_InventoryMenu; }
 };

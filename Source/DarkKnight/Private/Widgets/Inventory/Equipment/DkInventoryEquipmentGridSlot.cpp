@@ -10,7 +10,7 @@
 
 FVector2D UDkInventoryEquipmentGridSlot::GetTotalSlotSize() const
 {
-	return VertivalBox->GetDesiredSize();
+	return VerticalBox->GetDesiredSize();
 }
 
 FVector2D UDkInventoryEquipmentGridSlot::GetSlotSize() const
@@ -35,24 +35,24 @@ void UDkInventoryEquipmentGridSlot::UpdateEquipmentInfo(UDkInventoryItem* InItem
 	EquipmentSlot->SetEquipmentIcon();
 }
 
-void UDkInventoryEquipmentGridSlot::SetOccupiedBrush()
+void UDkInventoryEquipmentGridSlot::SetUnoccupiedBrush()
 {
-	EquipmentSlot->SetBrush(NormalBrush);
+	EquipmentSlot->SetUnoccupiedBrush();
 }
 
 void UDkInventoryEquipmentGridSlot::SetEnabledBrush()
 {
-	EquipmentSlot->SetBrush(EnabledBrush);
+	EquipmentSlot->SetEnabledBrush();
 }
 
 void UDkInventoryEquipmentGridSlot::SetDisabledBrush()
 {
-	EquipmentSlot->SetBrush(DisabledBrush);
+	EquipmentSlot->SetDisabledBrush();
 }
 
 void UDkInventoryEquipmentGridSlot::SetGrayedOutBrush()
 {
-	EquipmentSlot->SetBrush(GrayedOutBrush);
+	EquipmentSlot->SetGrayedOutBrush();
 }
 
 void UDkInventoryEquipmentGridSlot::SetDefaultBackGroundIcon()

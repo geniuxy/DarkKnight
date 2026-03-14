@@ -7,7 +7,6 @@
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Components/DkInventoryComponent.h"
 #include "Components/OverlaySlot.h"
-#include "FunctionLibrarys/DkUIFunctionLibrary.h"
 #include "Inventory/DkInventoryItem.h"
 #include "Inventory/DkInventoryItemFragment.h"
 #include "Subsytems/DkInventorySubsystem.h"
@@ -78,14 +77,9 @@ void UDkInventoryEquipmentSlot::NativeTick(const FGeometry& MyGeometry, float In
 	// }
 }
 
-void UDkInventoryEquipmentSlot::SetBrush(FSlateBrush InBrush)
-{
-	Image_GridSlot->SetBrush(InBrush);
-}
-
 void UDkInventoryEquipmentSlot::SetBackGroundIcon(const TSoftObjectPtr<UTexture2D>& InTexture)
 {
-	Image_EquipIcon->SetBrushFromLazyTexture(InTexture);
+	Image_ItemIcon->SetBrushFromLazyTexture(InTexture);
 }
 
 void UDkInventoryEquipmentSlot::SetEquipmentIcon()
@@ -95,12 +89,12 @@ void UDkInventoryEquipmentSlot::SetEquipmentIcon()
 	const FInventoryItemImageFragment* ImageFragment =
 		GetInventoryItem()->GetItemManifest().GetFragmentOfType<FInventoryItemImageFragment>();
 
-	Image_EquipIcon->SetBrushFromTexture(ImageFragment->GetIcon());
+	Image_ItemIcon->SetBrushFromLazyTexture(ImageFragment->GetIcon());
 }
 
 FVector2D UDkInventoryEquipmentSlot::GetIconSize() const
 {
-	return GetGridSlotSize() - UWidgetLayoutLibrary::SlotAsOverlaySlot(Image_EquipIcon)->GetPadding().GetTopLeft();
+	return GetGridSlotSize() - UWidgetLayoutLibrary::SlotAsOverlaySlot(Image_ItemIcon)->GetPadding().GetTopLeft();
 }
 
 void UDkInventoryEquipmentSlot::CreateItemDescriptionMenu()

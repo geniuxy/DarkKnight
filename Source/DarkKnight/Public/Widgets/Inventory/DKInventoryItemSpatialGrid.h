@@ -26,6 +26,8 @@ protected:
 	//***** Bound Widgets *****//
 
 	/* 添加/删除Item */
+	virtual void AddStacks(const FDkInventorySlotAvailabilityResult& Result) override;
+	
 	virtual void AddItemToIndex(UDkInventoryItem* NewItem, int32 Index, int32 StackAmount, bool bStackable) override;
 	FVector2D GetDrawSize(const FInventoryItemGridFragment* GridFragment) const;
 	void AddSlottedItemToCanvas(
@@ -42,6 +44,12 @@ protected:
 	virtual FDkInventorySlotAvailabilityResult HasRoomForItem(const FInventoryItemManifest& Manifest) override;
 	
 	virtual void PutDownOnIndex(const int32 Index) override;
+
+	UPROPERTY(EditAnywhere, Category = "Inventory")
+	TSubclassOf<UDkInventorySlottedItem> SlottedItemClass;
+
+	UPROPERTY()
+	TMap<int32, TObjectPtr<UDkInventorySlottedItem>> SlottedItemMap;
 	/********/
 
 	/* 更新GridSlot背景 */
@@ -57,6 +65,11 @@ protected:
 	/********/
 
 	/* 拖拽Item */
+	UFUNCTION()
+	void HandleSlottedItemClicked(int32 GridIndex, const FPointerEvent& MouseEvent);
+
+	virtual void OnSlottedItemClicked(int32 GridIndex, const FPointerEvent& MouseEvent);
+	
 	virtual void SwapWithDraggedItem(UDkInventoryItem* ClickedInventoryItem, const int32 GridIndex) override;
 
 	virtual void ConsumeDraggedItemStack(int32 ClickedStackCount, int32 DraggedStackCount, int32 GridIndex) override;
@@ -84,14 +97,20 @@ protected:
 	// 更改DraggedItem覆盖的背后区域的格子的样式
 	void ChangeHoverType(const int32 StartingIndex, const FIntPoint& Dimension, EInventoryGridSlotState GridSlotState);
 
+	// 没有DraggedItem时，更改鼠标覆盖区域的格子的样式
+	UFUNCTION()
+	void OnGridSlotHovered(int32 GridIndex, const FPointerEvent& MouseEvent);
+
+	UFUNCTION()
+	void OnGridSlotUnhovered(int32 GridIndex, const FPointerEvent& MouseEvent);
+	
 	// 鼠标是否离开GridCanvasPanel对应的区域
 	bool CursorExitedCanvas(const FVector2D& BoundaryPos, const FVector2D& BoundarySize, const FVector2D& MousePos);
-
+	
 	// Highlight/UnHighlight DraggedItem覆盖的背后区域的格子
 	void HighlightSlots(const int32 Index, const FIntPoint& Dimension);
 	void UnHighlightSlots(const int32 Index, const FIntPoint& Dimension);
-
-
+	
 	int32 ItemDropIndex = INDEX_NONE;
 	FInventorySpaceQueryResult CurrentSpaceQueryResult;
 	bool bMouseWithInCanvas;

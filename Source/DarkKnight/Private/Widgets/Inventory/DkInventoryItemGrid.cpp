@@ -8,13 +8,10 @@
 #include "Widgets/Inventory/DkInventoryGridSlot.h"
 
 #include "Components/UniformGridPanel.h"
-#include "FunctionLibrarys/DkCommonFunctionLibrary.h"
 #include "FunctionLibrarys/DkInventoryFunctionLibrary.h"
-#include "Inventory/DkInventoryItemFragment.h"
 #include "Inventory/DkInventorySlotAvailabilty.h"
 #include "Widgets/Inventory/DkInventoryDraggedItem.h"
 #include "Widgets/Inventory/DkInventoryPopUpMenu.h"
-#include "Widgets/Inventory/DkInventorySlottedItem.h"
 
 FDkInventorySlotAvailabilityResult UDkInventoryItemGrid::HasRoomForItem(const UDkItemComponent* ItemComponent)
 {
@@ -48,23 +45,13 @@ void UDkInventoryItemGrid::NativeOnInitialized()
 
 	InventoryComponent = UDkInventoryFunctionLibrary::GetInventoryComponent(GetOwningPlayer());
 	InventoryComponent->OnItemAdded.AddDynamic(this, &ThisClass::AddItem);
-	InventoryComponent->OnStackChange.AddDynamic(this, &ThisClass::AddStacks);
+	InventoryComponent->OnStackChange.AddDynamic(this, &ThisClass::HandleStackChanged);
 	// 绑定DraggedItem创建相关的回调
 	InventoryComponent->OnDraggedItemCreated.AddUniqueDynamic(this, &ThisClass::HandleDraggedItemCreated);
 	InventoryComponent->OnDraggedItemRemoved.AddUniqueDynamic(this, &ThisClass::HandleDraggedItemRemoved);
 	InventoryComponent->OnExitGameMenuRecoverGridItem.AddUniqueDynamic(
 		this, &ThisClass::HandleDraggedItemRecovered
 	);
-}
-
-void UDkInventoryItemGrid::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
-{
-	Super::NativeTick(MyGeometry, InDeltaTime);
-}
-
-void UDkInventoryItemGrid::NativeDestruct()
-{
-	Super::NativeDestruct();
 }
 
 void UDkInventoryItemGrid::AddItem(UDkInventoryItem* Item)
@@ -75,25 +62,13 @@ void UDkInventoryItemGrid::AddItem(UDkInventoryItem* Item)
 	AddItemToIndices(AvailabilityResult, Item);
 }
 
+void UDkInventoryItemGrid::HandleStackChanged(const FDkInventorySlotAvailabilityResult& Result)
+{
+	AddStacks(Result);
+}
+
 void UDkInventoryItemGrid::AddStacks(const FDkInventorySlotAvailabilityResult& Result)
 {
-	if (!Result.Item.IsValid() || !MatchesCategory(Result.Item.Get())) return;
-
-	for (const auto& Availability : Result.SlotAvailabilities)
-	{
-		if (Availability.bItemAtIndex)
-		{
-			const TObjectPtr<UDkInventoryGridSlot>& GridSlot = GridSlots[Availability.Index];
-			const TObjectPtr<UDkInventorySlottedItem>& SlottedItem = SlottedItemMap.FindChecked(Availability.Index);
-			SlottedItem->UpdateStackCount(GridSlot->GetStackCount() + Availability.AmountToFill);
-			GridSlot->SetStackCount(GridSlot->GetStackCount() + Availability.AmountToFill);
-		}
-		else
-		{
-			AddItemToIndex(Result.Item.Get(), Availability.Index, Availability.AmountToFill, Result.bStackable);
-			UpdateGridSlots(Result.Item.Get(), Availability.Index, Availability.AmountToFill, Result.bStackable);
-		}
-	}
 }
 
 void UDkInventoryItemGrid::AddItemToIndices(const FDkInventorySlotAvailabilityResult& Result, UDkInventoryItem* NewItem)
@@ -181,7 +156,7 @@ void UDkInventoryItemGrid::UpdateGridSlots(
 	check(GridSlots.IsValidIndex(Index));
 
 	UDkInventoryGridSlot* GridSlot = GridSlots[Index];
-	GridSlot->SetOccupiedTexture();
+	GridSlot->SetUnoccupiedBrush();
 }
 
 void UDkInventoryItemGrid::ConstructGrid()
@@ -202,80 +177,6 @@ void UDkInventoryItemGrid::ConstructGrid()
 			GridSlots.Add(GridSlot);
 		}
 	}
-}
-
-void UDkInventoryItemGrid::HandleSlottedItemClicked(int32 GridIndex, const FPointerEvent& MouseEvent)
-{
-	OnSlottedItemClicked(GridIndex, MouseEvent);
-}
-
-void UDkInventoryItemGrid::OnSlottedItemClicked(int32 GridIndex, const FPointerEvent& MouseEvent)
-{
-	check(GridSlots.IsValidIndex(GridIndex));
-	UDkInventoryItem* ClickedInventoryItem = GridSlots[GridIndex]->GetInventoryItem();
-	if (!IsValid(DraggedItem) && UDkCommonFunctionLibrary::IsLeftMouseClick(MouseEvent))
-	{
-		// 拖拽Item
-		DragItem(ClickedInventoryItem, GridIndex);
-		return;
-	}
-
-	if (UDkCommonFunctionLibrary::IsRightMouseClick(MouseEvent))
-	{
-		CreateItemPopUp(GridIndex);
-		return;
-	}
-
-	// DraggedItem和被点击的Item是一个类型吗，他们都可堆叠吗？
-	if (IsSameStackableWithDraggedItem(ClickedInventoryItem))
-	{
-		const int32 ClickedStackCount = GridSlots[GridIndex]->GetStackCount();
-		const FInventoryItemStackableFragment* StackableFragment =
-			ClickedInventoryItem->GetItemManifest().GetFragmentOfType<FInventoryItemStackableFragment>();
-		const int32 MaxStackSize = StackableFragment->GetMaxStackSize();
-		const int32 SpaceInClickedSlot = MaxStackSize - ClickedStackCount;
-		const int32 DraggedStackCount = DraggedItem->GetStackCount();
-		// 是否应该交换SlottedItem和DraggedItem
-		if (SpaceInClickedSlot == 0 && DraggedStackCount < MaxStackSize)
-		{
-			// 交换SlottedItem和DraggedItem
-			UDkInventoryGridSlot* GridSlot = GridSlots[GridIndex];
-			GridSlot->SetStackCount(DraggedStackCount);
-
-			UDkInventorySlottedItem* SlottedItem = SlottedItemMap.FindChecked(GridIndex);
-			SlottedItem->UpdateStackCount(DraggedStackCount);
-
-			DraggedItem->UpdateStackCount(ClickedStackCount);
-
-			return;
-		}
-
-		//	是否可以合并DraggedItem
-		if (SpaceInClickedSlot >= DraggedStackCount)
-		{
-			ConsumeDraggedItemStack(ClickedStackCount, DraggedStackCount, GridIndex);
-			return;
-		}
-
-		//	是否可以填充ClickedItem,并更新DraggedItem
-		if (SpaceInClickedSlot < DraggedStackCount)
-		{
-			// 填充ClickedItem,并更新DraggedItem
-			UDkInventoryGridSlot* GridSlot = GridSlots[GridIndex];
-			GridSlot->SetStackCount(MaxStackSize);
-
-			UDkInventorySlottedItem* SlottedItem = SlottedItemMap.FindChecked(GridIndex);
-			SlottedItem->UpdateStackCount(MaxStackSize);
-
-			DraggedItem->UpdateStackCount(DraggedStackCount - SpaceInClickedSlot);
-
-			return;
-		}
-
-		return;
-	}
-	// 和DraggedItem交换位置
-	SwapWithDraggedItem(ClickedInventoryItem, GridIndex);
 }
 
 bool UDkInventoryItemGrid::IsSameStackableWithDraggedItem(const UDkInventoryItem* ClickedInventoryItem)
@@ -376,28 +277,6 @@ void UDkInventoryItemGrid::HandleDraggedItemClicked(const FPointerEvent& MouseEv
 
 void UDkInventoryItemGrid::OnDraggedItemClicked(const FPointerEvent& MouseEvent)
 {
-}
-
-void UDkInventoryItemGrid::OnGridSlotHovered(int32 GridIndex, const FPointerEvent& MouseEvent)
-{
-	if (IsValid(DraggedItem)) return;
-
-	UDkInventoryGridSlot* GridSlot = GridSlots[GridIndex];
-	if (GridSlot->IsAvailable())
-	{
-		GridSlot->SetOccupiedTexture();
-	}
-}
-
-void UDkInventoryItemGrid::OnGridSlotUnhovered(int32 GridIndex, const FPointerEvent& MouseEvent)
-{
-	if (IsValid(DraggedItem)) return;
-
-	UDkInventoryGridSlot* GridSlot = GridSlots[GridIndex];
-	if (GridSlot->IsAvailable())
-	{
-		GridSlot->SetUnoccupiedTexture();
-	}
 }
 
 void UDkInventoryItemGrid::CreateItemPopUp(const int32 GridIndex)

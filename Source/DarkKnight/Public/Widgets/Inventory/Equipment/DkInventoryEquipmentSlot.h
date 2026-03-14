@@ -24,8 +24,6 @@ public:
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 	//~End UUserWidget Function
 
-	void SetBrush(FSlateBrush InBrush);
-
 	void SetBackGroundIcon(const TSoftObjectPtr<UTexture2D>& InTexture);
 	void SetEquipmentIcon();
 	
@@ -33,8 +31,6 @@ public:
 
 private:
 	//***** Bound Widgets *****//
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UCommonLazyImage> Image_EquipIcon;
 	//***** Bound Widgets *****//
 
 	/* 鼠标Hover时，显示Item详细信息 */

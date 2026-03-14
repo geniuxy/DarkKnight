@@ -30,10 +30,10 @@ public:
 
 	void UpdateEquipmentInfo(UDkInventoryItem* InItem);
 
-	virtual void SetOccupiedBrush();
-	virtual void SetEnabledBrush();
-	virtual void SetDisabledBrush();
-	virtual void SetGrayedOutBrush();
+	void SetUnoccupiedBrush();
+	void SetEnabledBrush();
+	void SetDisabledBrush();
+	void SetGrayedOutBrush();
 	void SetDefaultBackGroundIcon();
 
 protected:
@@ -43,7 +43,7 @@ protected:
 	
 	//***** Bound Widgets *****//
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UVerticalBox> VertivalBox;
+	TObjectPtr<UVerticalBox> VerticalBox;
 
 	UPROPERTY(meta = (BindWidgetOptional))
 	TObjectPtr<UCommonTextBlock> Text_Title;
@@ -51,18 +51,6 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UDkInventoryEquipmentSlot> EquipmentSlot;
 	//***** Bound Widgets *****//
-
-	UPROPERTY(EditAnywhere, Category="Inventory")
-	FSlateBrush NormalBrush;
-
-	UPROPERTY(EditAnywhere, Category="Inventory")
-	FSlateBrush EnabledBrush;
-
-	UPROPERTY(EditAnywhere, Category="Inventory")
-	FSlateBrush DisabledBrush;
-
-	UPROPERTY(EditAnywhere, Category="Inventory")
-	FSlateBrush GrayedOutBrush;
 
 	UPROPERTY(EditAnywhere, Category="Inventory")
 	FText SlotTitle;

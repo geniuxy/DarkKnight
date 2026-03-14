@@ -30,28 +30,34 @@ void UDkInventoryGridSlot::SetGridSlotSize(float InSlotSize)
 	SizeBox_GridSlot->SetHeightOverride(InSlotSize);
 }
 
-void UDkInventoryGridSlot::SetUnoccupiedTexture()
+void UDkInventoryGridSlot::SetUnoccupiedBrush()
 {
 	GridSlotState = EInventoryGridSlotState::Unoccupied;
-	Image_GridSlot->SetBrushFromLazyTexture(GridSlotBgImageUnoccupied);
+	Image_GridSlot->SetBrush(UnoccupiedBrush);
 }
 
-void UDkInventoryGridSlot::SetOccupiedTexture()
+void UDkInventoryGridSlot::SetOccupiedBrush()
 {
 	GridSlotState = EInventoryGridSlotState::Occupied;
-	Image_GridSlot->SetBrushFromLazyTexture(GridSlotBgImageOccupied);
+	Image_GridSlot->SetBrush(OccupiedBrush);
 }
 
-void UDkInventoryGridSlot::SetSelectedTexture()
+void UDkInventoryGridSlot::SetEnabledBrush()
 {
-	GridSlotState = EInventoryGridSlotState::Selected;
-	Image_GridSlot->SetBrushFromLazyTexture(GridSlotBgImageSelected);
+	GridSlotState = EInventoryGridSlotState::Enabled;
+	Image_GridSlot->SetBrush(EnabledBrush);
 }
 
-void UDkInventoryGridSlot::SetGrayedOutTexture()
+void UDkInventoryGridSlot::SetDisabledBrush()
+{
+	GridSlotState = EInventoryGridSlotState::Disabled;
+	Image_GridSlot->SetBrush(DisabledBrush);
+}
+
+void UDkInventoryGridSlot::SetGrayedOutBrush()
 {
 	GridSlotState = EInventoryGridSlotState::GrayedOut;
-	Image_GridSlot->SetBrushFromLazyTexture(GridSlotBgImageGrayedOut);
+	Image_GridSlot->SetBrush(GrayedOutBrush);
 }
 
 UDkInventoryItem* UDkInventoryGridSlot::GetInventoryItem() const

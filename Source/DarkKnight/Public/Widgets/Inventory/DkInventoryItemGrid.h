@@ -37,8 +37,6 @@ public:
 protected:
 	//~Begin UUserWidget Function
 	virtual void NativeOnInitialized() override;
-	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
-	virtual void NativeDestruct() override;
 	//~End UUserWidget Function
 
 	//***** Bound Widgets *****//
@@ -53,7 +51,9 @@ protected:
 	void AddItem(UDkInventoryItem* Item);
 
 	UFUNCTION()
-	void AddStacks(const FDkInventorySlotAvailabilityResult& Result);
+	void HandleStackChanged(const FDkInventorySlotAvailabilityResult& Result);
+	
+	virtual void AddStacks(const FDkInventorySlotAvailabilityResult& Result);
 
 	void AddItemToIndices(const FDkInventorySlotAvailabilityResult& Result, UDkInventoryItem* NewItem);
 	virtual void AddItemToIndex(UDkInventoryItem* NewItem, int32 Index, int32 StackAmount, bool bStackable);
@@ -79,12 +79,6 @@ protected:
 	virtual FDkInventorySlotAvailabilityResult HasRoomForItem(const FInventoryItemManifest& Manifest);
 
 	virtual void PutDownOnIndex(const int32 Index);
-
-	UPROPERTY(EditAnywhere, Category = "Inventory")
-	TSubclassOf<UDkInventorySlottedItem> SlottedItemClass;
-
-	UPROPERTY()
-	TMap<int32, TObjectPtr<UDkInventorySlottedItem>> SlottedItemMap;
 	/********/
 
 	/* 更新GridSlot背景 */
@@ -114,11 +108,6 @@ protected:
 	/********/
 
 	/* 拖拽Item */
-	UFUNCTION()
-	void HandleSlottedItemClicked(int32 GridIndex, const FPointerEvent& MouseEvent);
-
-	virtual void OnSlottedItemClicked(int32 GridIndex, const FPointerEvent& MouseEvent);
-
 	bool IsSameStackableWithDraggedItem(const UDkInventoryItem* ClickedInventoryItem);
 
 	virtual void SwapWithDraggedItem(UDkInventoryItem* ClickedInventoryItem, const int32 GridIndex);
@@ -157,12 +146,6 @@ protected:
 	/* 鼠标Hover背包网格，改变其样式 */
 	FInventoryTileParameters TileParameters; // 鼠标所处格子的相关数据(索引、坐标、象限)
 	FInventoryTileParameters LastTileParameters;
-
-	UFUNCTION()
-	void OnGridSlotHovered(int32 GridIndex, const FPointerEvent& MouseEvent);
-
-	UFUNCTION()
-	void OnGridSlotUnhovered(int32 GridIndex, const FPointerEvent& MouseEvent);
 	/********/
 
 	/* 右键菜单 */

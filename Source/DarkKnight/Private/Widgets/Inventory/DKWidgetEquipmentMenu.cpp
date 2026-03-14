@@ -50,7 +50,7 @@ void UDKWidgetEquipmentMenu::NativeTick(const FGeometry& MyGeometry, float InDel
 
 	if (LastHighlightIndex != INDEX_NONE)
 	{
-		EquippedGridSlots[LastHighlightIndex]->SetOccupiedBrush();
+		EquippedGridSlots[LastHighlightIndex]->SetUnoccupiedBrush();
 	}
 
 	// 根据鼠标的位置，更改Hover的格子样式
@@ -208,6 +208,8 @@ void UDKWidgetEquipmentMenu::ClearDraggedItem()
 
 void UDKWidgetEquipmentMenu::DragItem(UDkInventoryItem* ClickedInventoryItem, const int32 GridIndex)
 {
+	if (!IsValid(ClickedInventoryItem)) return;
+	
 	AssignDraggedItem(ClickedInventoryItem, GridIndex, GridIndex);
 
 	// 从装备栏中移除被点击的Item
@@ -262,7 +264,7 @@ void UDKWidgetEquipmentMenu::RemoveItemFromGrid(UDkInventoryItem* InventoryItem,
 {
 	if (!EquippedGridSlots.IsValidIndex(GridIndex)) return;
 	EquippedGridSlots[GridIndex]->GetEquipmentSlot()->SetInventoryItem(nullptr);
-	EquippedGridSlots[GridIndex]->GetEquipmentSlot()->SetUnoccupiedTexture();
+	EquippedGridSlots[GridIndex]->GetEquipmentSlot()->SetUnoccupiedBrush();
 	EquippedGridSlots[GridIndex]->GetEquipmentSlot()->SetIsAvailable(true);
 	EquippedGridSlots[GridIndex]->GetEquipmentSlot()->SetStackCount(0);
 	EquippedGridSlots[GridIndex]->SetDefaultBackGroundIcon();
@@ -272,6 +274,8 @@ void UDKWidgetEquipmentMenu::HandleEquipSlotClicked(int GridIndex, const FPointe
 {
 	check(EquippedGridSlots.IsValidIndex(GridIndex));
 	UDkInventoryItem* ClickedInventoryItem = EquippedGridSlots[GridIndex]->GetInventoryItem();
+	if (!IsValid(ClickedInventoryItem)) return;
+
 	if (!IsValid(DraggedItem) && UDkCommonFunctionLibrary::IsLeftMouseClick(MouseEvent))
 	{
 		// 拖拽Item

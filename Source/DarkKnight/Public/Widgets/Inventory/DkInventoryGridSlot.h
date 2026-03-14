@@ -33,10 +33,11 @@ public:
 
 	EInventoryGridSlotState GetGridSlotState() const { return GridSlotState; }
 
-	virtual void SetUnoccupiedTexture();
-	virtual void SetOccupiedTexture();
-	virtual void SetSelectedTexture();
-	virtual void SetGrayedOutTexture();
+	virtual void SetUnoccupiedBrush();
+	virtual void SetOccupiedBrush();
+	virtual void SetEnabledBrush();
+	virtual void SetDisabledBrush();
+	virtual void SetGrayedOutBrush();
 
 	UDkInventoryItem* GetInventoryItem() const;
 	void SetInventoryItem(UDkInventoryItem* InItem);
@@ -52,19 +53,25 @@ protected:
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UCommonLazyImage> Image_GridSlot;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UCommonLazyImage> Image_ItemIcon;
 	//***** Bound Widgets *****//
 
 	UPROPERTY(EditAnywhere, Category="Inventory")
-	TSoftObjectPtr<UTexture2D> GridSlotBgImageUnoccupied;
+	FSlateBrush UnoccupiedBrush;
 
 	UPROPERTY(EditAnywhere, Category="Inventory")
-	TSoftObjectPtr<UTexture2D> GridSlotBgImageOccupied;
+	FSlateBrush OccupiedBrush;
 
 	UPROPERTY(EditAnywhere, Category="Inventory")
-	TSoftObjectPtr<UTexture2D> GridSlotBgImageSelected;
+	FSlateBrush EnabledBrush;
 
 	UPROPERTY(EditAnywhere, Category="Inventory")
-	TSoftObjectPtr<UTexture2D> GridSlotBgImageGrayedOut;
+	FSlateBrush DisabledBrush;
+
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	FSlateBrush GrayedOutBrush;
 
 	EInventoryGridSlotState GridSlotState;
 

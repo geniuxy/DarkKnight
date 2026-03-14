@@ -9,6 +9,7 @@
 #include "Components/CanvasPanel.h"
 #include "Components/CanvasPanelSlot.h"
 #include "Components/DkInventoryComponent.h"
+#include "FunctionLibrarys/DkCommonFunctionLibrary.h"
 #include "FunctionLibrarys/DkInventoryFunctionLibrary.h"
 #include "FunctionLibrarys/DkUIFunctionLibrary.h"
 #include "Inventory/DkInventoryItemFragment.h"
@@ -31,6 +32,27 @@ void UDKInventoryItemSpatialGrid::NativeTick(const FGeometry& MyGeometry, float 
 	}
 
 	UpdateTileParameters(CanvasPosition, MousePosition);
+}
+
+void UDKInventoryItemSpatialGrid::AddStacks(const FDkInventorySlotAvailabilityResult& Result)
+{
+	if (!Result.Item.IsValid() || !MatchesCategory(Result.Item.Get())) return;
+
+	for (const auto& Availability : Result.SlotAvailabilities)
+	{
+		if (Availability.bItemAtIndex)
+		{
+			const TObjectPtr<UDkInventoryGridSlot>& GridSlot = GridSlots[Availability.Index];
+			const TObjectPtr<UDkInventorySlottedItem>& SlottedItem = SlottedItemMap.FindChecked(Availability.Index);
+			SlottedItem->UpdateStackCount(GridSlot->GetStackCount() + Availability.AmountToFill);
+			GridSlot->SetStackCount(GridSlot->GetStackCount() + Availability.AmountToFill);
+		}
+		else
+		{
+			AddItemToIndex(Result.Item.Get(), Availability.Index, Availability.AmountToFill, Result.bStackable);
+			UpdateGridSlots(Result.Item.Get(), Availability.Index, Availability.AmountToFill, Result.bStackable);
+		}
+	}
 }
 
 void UDKInventoryItemSpatialGrid::AddItemToIndex(
@@ -190,7 +212,7 @@ void UDKInventoryItemSpatialGrid::UpdateGridSlots(
 		{
 			GridSlot->SetInventoryItem(NewItem);
 			GridSlot->SetUpperLeftIndex(Index);
-			GridSlot->SetOccupiedTexture();
+			GridSlot->SetOccupiedBrush();
 			GridSlot->SetIsAvailable(false);
 		}
 	);
@@ -235,7 +257,7 @@ void UDKInventoryItemSpatialGrid::RemoveItemFromGrid(UDkInventoryItem* Inventory
 		{
 			GridSlot->SetInventoryItem(nullptr);
 			GridSlot->SetUpperLeftIndex(INDEX_NONE);
-			GridSlot->SetUnoccupiedTexture();
+			GridSlot->SetUnoccupiedBrush();
 			GridSlot->SetIsAvailable(true);
 			GridSlot->SetStackCount(0);
 		}
@@ -247,6 +269,80 @@ void UDKInventoryItemSpatialGrid::RemoveItemFromGrid(UDkInventoryItem* Inventory
 		SlottedItemMap.RemoveAndCopyValue(GridIndex, FoundSlottedItem);
 		FoundSlottedItem->RemoveFromParent();
 	}
+}
+
+void UDKInventoryItemSpatialGrid::HandleSlottedItemClicked(int32 GridIndex, const FPointerEvent& MouseEvent)
+{
+	OnSlottedItemClicked(GridIndex, MouseEvent);
+}
+
+void UDKInventoryItemSpatialGrid::OnSlottedItemClicked(int32 GridIndex, const FPointerEvent& MouseEvent)
+{
+	check(GridSlots.IsValidIndex(GridIndex));
+	UDkInventoryItem* ClickedInventoryItem = GridSlots[GridIndex]->GetInventoryItem();
+	if (!IsValid(DraggedItem) && UDkCommonFunctionLibrary::IsLeftMouseClick(MouseEvent))
+	{
+		// 拖拽Item
+		DragItem(ClickedInventoryItem, GridIndex);
+		return;
+	}
+
+	if (UDkCommonFunctionLibrary::IsRightMouseClick(MouseEvent))
+	{
+		CreateItemPopUp(GridIndex);
+		return;
+	}
+
+	// DraggedItem和被点击的Item是一个类型吗，他们都可堆叠吗？
+	if (IsSameStackableWithDraggedItem(ClickedInventoryItem))
+	{
+		const int32 ClickedStackCount = GridSlots[GridIndex]->GetStackCount();
+		const FInventoryItemStackableFragment* StackableFragment =
+			ClickedInventoryItem->GetItemManifest().GetFragmentOfType<FInventoryItemStackableFragment>();
+		const int32 MaxStackSize = StackableFragment->GetMaxStackSize();
+		const int32 SpaceInClickedSlot = MaxStackSize - ClickedStackCount;
+		const int32 DraggedStackCount = DraggedItem->GetStackCount();
+		// 是否应该交换SlottedItem和DraggedItem
+		if (SpaceInClickedSlot == 0 && DraggedStackCount < MaxStackSize)
+		{
+			// 交换SlottedItem和DraggedItem
+			UDkInventoryGridSlot* GridSlot = GridSlots[GridIndex];
+			GridSlot->SetStackCount(DraggedStackCount);
+
+			// UDkInventorySlottedItem* SlottedItem = SlottedItemMap.FindChecked(GridIndex);
+			// SlottedItem->UpdateStackCount(DraggedStackCount);
+
+			DraggedItem->UpdateStackCount(ClickedStackCount);
+
+			return;
+		}
+
+		//	是否可以合并DraggedItem
+		if (SpaceInClickedSlot >= DraggedStackCount)
+		{
+			ConsumeDraggedItemStack(ClickedStackCount, DraggedStackCount, GridIndex);
+			return;
+		}
+
+		//	是否可以填充ClickedItem,并更新DraggedItem
+		if (SpaceInClickedSlot < DraggedStackCount)
+		{
+			// 填充ClickedItem,并更新DraggedItem
+			UDkInventoryGridSlot* GridSlot = GridSlots[GridIndex];
+			GridSlot->SetStackCount(MaxStackSize);
+
+			// UDkInventorySlottedItem* SlottedItem = SlottedItemMap.FindChecked(GridIndex);
+			// SlottedItem->UpdateStackCount(MaxStackSize);
+
+			DraggedItem->UpdateStackCount(DraggedStackCount - SpaceInClickedSlot);
+
+			return;
+		}
+
+		return;
+	}
+	// 和DraggedItem交换位置
+	SwapWithDraggedItem(ClickedInventoryItem, GridIndex);
 }
 
 void UDKInventoryItemSpatialGrid::SwapWithDraggedItem(UDkInventoryItem* ClickedInventoryItem, const int32 GridIndex)
@@ -500,16 +596,19 @@ void UDKInventoryItemSpatialGrid::ChangeHoverType(
 			switch (GridSlotState)
 			{
 			case EInventoryGridSlotState::Unoccupied:
-				CurrentSlot->SetUnoccupiedTexture();
+				CurrentSlot->SetUnoccupiedBrush();
 				break;
 			case EInventoryGridSlotState::Occupied:
-				CurrentSlot->SetOccupiedTexture();
+				CurrentSlot->SetUnoccupiedBrush();
 				break;
-			case EInventoryGridSlotState::Selected:
-				CurrentSlot->SetSelectedTexture();
+			case EInventoryGridSlotState::Enabled:
+				CurrentSlot->SetEnabledBrush();
+				break;
+			case EInventoryGridSlotState::Disabled:
+				CurrentSlot->SetDisabledBrush();
 				break;
 			case EInventoryGridSlotState::GrayedOut:
-				CurrentSlot->SetGrayedOutTexture();
+				CurrentSlot->SetGrayedOutBrush();
 				break;
 			}
 		}
@@ -532,6 +631,28 @@ bool UDKInventoryItemSpatialGrid::CursorExitedCanvas(
 	return false;
 }
 
+void UDKInventoryItemSpatialGrid::OnGridSlotHovered(int32 GridIndex, const FPointerEvent& MouseEvent)
+{
+	if (IsValid(DraggedItem)) return;
+
+	UDkInventoryGridSlot* GridSlot = GridSlots[GridIndex];
+	if (GridSlot->IsAvailable())
+	{
+		GridSlot->SetOccupiedBrush();
+	}
+}
+
+void UDKInventoryItemSpatialGrid::OnGridSlotUnhovered(int32 GridIndex, const FPointerEvent& MouseEvent)
+{
+	if (IsValid(DraggedItem)) return;
+
+	UDkInventoryGridSlot* GridSlot = GridSlots[GridIndex];
+	if (GridSlot->IsAvailable())
+	{
+		GridSlot->SetUnoccupiedBrush();
+	}
+}
+
 void UDKInventoryItemSpatialGrid::HighlightSlots(const int32 Index, const FIntPoint& Dimension)
 {
 	if (!bMouseWithInCanvas) return;
@@ -540,7 +661,7 @@ void UDKInventoryItemSpatialGrid::HighlightSlots(const int32 Index, const FIntPo
 		GridSlots, Index, Dimension, Columns,
 		[](UDkInventoryGridSlot* CurrentSlot)
 		{
-			CurrentSlot->SetOccupiedTexture();
+			CurrentSlot->SetOccupiedBrush();
 		}
 	);
 	LastHighlightedIndex = Index;
@@ -555,11 +676,11 @@ void UDKInventoryItemSpatialGrid::UnHighlightSlots(const int32 Index, const FInt
 		{
 			if (CurrentSlot->IsAvailable())
 			{
-				CurrentSlot->SetUnoccupiedTexture();
+				CurrentSlot->SetUnoccupiedBrush();
 			}
 			else
 			{
-				CurrentSlot->SetOccupiedTexture();
+				CurrentSlot->SetOccupiedBrush();
 			}
 		}
 	);

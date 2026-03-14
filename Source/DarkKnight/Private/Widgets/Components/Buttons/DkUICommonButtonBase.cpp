@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Widgets/Components/DkUICommonButtonBase.h"
+#include "Widgets/Components/Buttons/DkUICommonButtonBase.h"
 #include "CommonTextBlock.h"
 #include "DkTypes/DkEnums.h"
 #include "Subsytems/DkUISubsystem.h"
@@ -35,43 +35,11 @@ FText UDkUICommonButtonBase::GetButtonDisplayText() const
 	return FText();
 }
 
-void UDkUICommonButtonBase::SetButtonDisplayImage(const FSlateBrush& InBrush)
-{
-	if (CommonLazyImage_ButtonImage)
-	{
-		CommonLazyImage_ButtonImage->SetBrush(InBrush);
-	}
-}
-
-void UDkUICommonButtonBase::ToggleHighlightState(bool bShouldHighlight)
-{
-	if (!CommonLazyImage_ButtonImage) return;
-	
-	if (bShouldHighlight)
-	{
-		CommonLazyImage_ButtonImage->SetColorAndOpacity(HighlightButtonImageColor);
-	}
-	else
-	{
-		CommonLazyImage_ButtonImage->SetColorAndOpacity(DefaultButtonImageColor);
-	}
-}
-
 void UDkUICommonButtonBase::NativePreConstruct()
 {
 	Super::NativePreConstruct();
 
 	SetButtonText(ButtonDisplayText, ButtonDisplayTextJustification);
-}
-
-void UDkUICommonButtonBase::NativeOnInitialized()
-{
-	Super::NativeOnInitialized();
-
-	if (CommonLazyImage_ButtonImage)
-	{
-		CommonLazyImage_ButtonImage->SetColorAndOpacity(DefaultButtonImageColor);
-	}
 }
 
 void UDkUICommonButtonBase::NativeOnCurrentTextStyleChanged()

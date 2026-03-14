@@ -6,6 +6,7 @@
 #include "Widgets/Options/ListEntries/DkUIWidgetListEntryBase.h"
 #include "DkUIWidgetListEntryKeyRemap.generated.h"
 
+class UDkUICommonButtonImage;
 class UDkUIListDataObjectKeyRemap;
 class UDkUICommonButtonBase;
 /**
@@ -38,11 +39,12 @@ private:
 	
 	//***** Bound Widgets *****//
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget, AllowPrivateAccess = "true"))
-	UDkUICommonButtonBase* CommonButton_RemapKey;
+	UDkUICommonButtonImage* CommonButton_RemapKey;
 
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget, AllowPrivateAccess = "true"))
 	UDkUICommonButtonBase* CommonButton_ResetKeyBinding;
 	//***** Bound Widgets *****//
 
+	UPROPERTY()
 	UDkUIListDataObjectKeyRemap* CachedOwningKeyRemapDataObject;
 };

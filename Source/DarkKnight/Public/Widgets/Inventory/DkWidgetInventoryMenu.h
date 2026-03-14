@@ -8,6 +8,7 @@
 #include "Widgets/DkWidgetActivatableBase.h"
 #include "DkWidgetInventoryMenu.generated.h"
 
+class UDkUICommonButtonImage;
 class UDkItemComponent;
 class UCommonLazyImage;
 class UDkUICommonButtonBase;
@@ -36,13 +37,13 @@ protected:
 	TObjectPtr<UCommonTextBlock> InventoryTitleTxt;
 
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget))
-	TObjectPtr<UDkUICommonButtonBase> Button_Equipment;
+	TObjectPtr<UDkUICommonButtonImage> Button_Equipment;
 
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget))
-	TObjectPtr<UDkUICommonButtonBase> Button_Consumable;
+	TObjectPtr<UDkUICommonButtonImage> Button_Consumable;
 
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget))
-	TObjectPtr<UDkUICommonButtonBase> Button_CraftingMaterial;
+	TObjectPtr<UDkUICommonButtonImage> Button_CraftingMaterial;
 
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget))
 	TObjectPtr<UCommonLazyImage> SelectedEquipmentUnderline;
@@ -67,7 +68,7 @@ protected:
 	//***** Bound Widgets *****//
 
 	/* 切换ItemCategory */
-	TMap<EInventoryItemCategory, TObjectPtr<UDkUICommonButtonBase>> CategoryButtonMap;
+	TMap<EInventoryItemCategory, TObjectPtr<UDkUICommonButtonImage>> CategoryButtonMap;
 	TMap<EInventoryItemCategory, TObjectPtr<UCommonLazyImage>> SelectedUnderlineMap;
 
 	TWeakObjectPtr<UDkInventoryItemGrid> ActiveGrid;
@@ -76,8 +77,8 @@ protected:
 	void ShowConsumables();
 	void ShowCraftingMaterials();
 
-	void SelectButton(UDkUICommonButtonBase* Button);
+	void SelectButton(UDkUICommonButtonImage* Button);
 	void ShowSelectedUnderline(UDkInventoryItemGrid* Grid);
-	void SetActiveGrid(UDkInventoryItemGrid* Grid, UDkUICommonButtonBase* Button);
+	void SetActiveGrid(UDkInventoryItemGrid* Grid, UDkUICommonButtonImage* Button);
 	/********/
 };

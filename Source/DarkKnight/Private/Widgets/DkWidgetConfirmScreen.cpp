@@ -6,7 +6,7 @@
 #include "CommonTextBlock.h"
 #include "Components/DynamicEntryBox.h"
 #include "ICommonInputModule.h"
-#include "Widgets/Components/DkUICommonButtonBase.h"
+#include "Widgets/Components/Buttons/DkUICommonButtonBase.h"
 
 UConfirmScreenInfoObject* UConfirmScreenInfoObject::CreateOKScreen(const FText& InScreenTitle, const FText& InScreenMsg)
 {

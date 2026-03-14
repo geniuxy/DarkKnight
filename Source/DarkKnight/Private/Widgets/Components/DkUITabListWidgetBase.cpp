@@ -4,7 +4,7 @@
 #include "Widgets/Components/DkUITabListWidgetBase.h"
 
 #include "Editor/WidgetCompilerLog.h"
-#include "Widgets/Components/DkUICommonButtonBase.h"
+#include "Widgets/Components/Buttons/DkUICommonButtonBase.h"
 
 void UDkUITabListWidgetBase::RequestRegisterTab(const FName& InTabID, const FText& InTabDisplayName)
 {

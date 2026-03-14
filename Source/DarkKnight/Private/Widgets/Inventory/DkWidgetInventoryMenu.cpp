@@ -8,7 +8,8 @@
 #include "Components/DkItemComponent.h"
 #include "Components/WidgetSwitcher.h"
 #include "Widgets/Inventory/DkInventoryItemGrid.h"
-#include "Widgets/Components/DkUICommonButtonBase.h"
+#include "Widgets/Components/Buttons/DkUICommonButtonBase.h"
+#include "Widgets/Components/Buttons/DkUICommonButtonImage.h"
 
 FDkInventorySlotAvailabilityResult UDkWidgetInventoryMenu::HasRoomForItem(UDkItemComponent* ItemComponent) const
 {
@@ -78,9 +79,9 @@ void UDkWidgetInventoryMenu::ShowCraftingMaterials()
 	SetActiveGrid(GridCraftingMaterials, Button_CraftingMaterial);
 }
 
-void UDkWidgetInventoryMenu::SelectButton(UDkUICommonButtonBase* Button)
+void UDkWidgetInventoryMenu::SelectButton(UDkUICommonButtonImage* Button)
 {
-	for (TTuple<EInventoryItemCategory, TObjectPtr<UDkUICommonButtonBase>> Pair : CategoryButtonMap)
+	for (TTuple<EInventoryItemCategory, TObjectPtr<UDkUICommonButtonImage>> Pair : CategoryButtonMap)
 	{
 		Pair.Value->ToggleHighlightState(false);
 	}
@@ -96,7 +97,7 @@ void UDkWidgetInventoryMenu::ShowSelectedUnderline(UDkInventoryItemGrid* Grid)
 	SelectedUnderlineMap[Grid->GetItemCategory()]->SetVisibility(ESlateVisibility::Visible);
 }
 
-void UDkWidgetInventoryMenu::SetActiveGrid(UDkInventoryItemGrid* Grid, UDkUICommonButtonBase* Button)
+void UDkWidgetInventoryMenu::SetActiveGrid(UDkInventoryItemGrid* Grid, UDkUICommonButtonImage* Button)
 {
 	SelectButton(Button);
 

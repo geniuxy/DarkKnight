@@ -8,7 +8,7 @@
 #include "Input/CommonUIInputTypes.h"
 #include "Settings/DkGameUserSettings.h"
 #include "Subsytems/DkUISubsystem.h"
-#include "Widgets/Components/DkUICommonButtonBase.h"
+#include "Widgets/Components/Buttons/DkUICommonButtonBase.h"
 #include "Widgets/Components/DkUICommonListView.h"
 #include "Widgets/Components/DkUITabListWidgetBase.h"
 #include "Widgets/Options/DkUIOptionListEntryDataMapping.h"

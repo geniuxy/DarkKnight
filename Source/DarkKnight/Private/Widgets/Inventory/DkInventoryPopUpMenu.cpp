@@ -6,7 +6,7 @@
 #include "CommonTextBlock.h"
 #include "Components/SizeBox.h"
 #include "Components/Slider.h"
-#include "Widgets/Components/DkUICommonButtonBase.h"
+#include "Widgets/Components/Buttons/DkUICommonButtonBase.h"
 
 void UDkInventoryPopUpMenu::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
 {

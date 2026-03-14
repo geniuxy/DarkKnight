@@ -3,11 +3,11 @@
 
 #include "Widgets/Options/ListEntries/DkUIWidgetListEntryKeyRemap.h"
 
-#include "DarkKnightDebugHelper.h"
 #include "DkGameplayTags.h"
 #include "FunctionLibrarys/DkUIFunctionLibrary.h"
 #include "Subsytems/DkUISubsystem.h"
-#include "Widgets/Components/DkUICommonButtonBase.h"
+#include "Widgets/Components/Buttons/DkUICommonButtonBase.h"
+#include "Widgets/Components/Buttons/DkUICommonButtonImage.h"
 #include "Widgets/Options/DkWidgetKeyRemapScreen.h"
 #include "Widgets/Options/DataObjects/DkUIListDataObjectKeyRemap.h"
 

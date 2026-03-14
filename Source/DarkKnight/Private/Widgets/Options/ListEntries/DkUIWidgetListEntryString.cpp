@@ -4,7 +4,7 @@
 #include "Widgets/Options/ListEntries/DkUIWidgetListEntryString.h"
 
 #include "CommonInputSubsystem.h"
-#include "Widgets/Components/DkUICommonButtonBase.h"
+#include "Widgets/Components/Buttons/DkUICommonButtonBase.h"
 #include "Widgets/Components/DkUICommonRotator.h"
 #include "Widgets/Options/DataObjects/DkUIListDataObjectString.h"
 

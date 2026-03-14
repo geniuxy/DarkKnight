@@ -648,6 +648,8 @@ void UDkUIOptionsDataRegistry::InitControlCollectionTab(ULocalPlayer* InOwningLo
 	check(EISubsystem);
 	UEnhancedInputUserSettings* EIUserSettings = EISubsystem->GetUserSettings();
 	check(EIUserSettings);
+	// 设置文件在{ProjectName}\Saved\SaveGames\DarkKnight\Saved\SaveGames中
+	// 如果出问题了，把这个文件删掉试试
 
 	// 鼠标&键盘 类别
 	{

@@ -6,8 +6,10 @@
 #include "Widgets/DkWidgetActivatableBase.h"
 #include "DkWidgetGameMenuScreen.generated.h"
 
+struct FGameplayTag;
 class UDkWidgetInventoryMenu;
 class UDkGameMenuCenterAreaInventory;
+class UCommonVisibilitySwitcher;
 /**
  * 
  */
@@ -20,14 +22,29 @@ public:
 	//~Begin UUserWidget Function
 	virtual void NativeOnInitialized() override;
 	//~End UUserWidget Function
+
+	//~ Begin UCommonActivatableWidget Function
+	virtual void NativeOnActivated() override;
+	virtual void NativeOnDeactivated() override;
+	//~ End UCommonActivatableWidget Function
 	
 	UDkWidgetInventoryMenu* GetInventoryMenu() const;
+
+	void SetVisibleCenterArea(const FGameplayTag& InTag) const;
 
 private:
 	//***** Bound Widgets *****//
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget, AllowPrivateAccess="true"))
 	TObjectPtr<UDkGameMenuCenterAreaInventory> CenterArea_Inventory;
+
+	UPROPERTY(BlueprintReadOnly, meta=(BindWidget, AllowPrivateAccess="true"))
+	TObjectPtr<UDkWidgetActivatableBase> CenterArea_Map;
+
+	UPROPERTY(BlueprintReadOnly, meta=(BindWidget, AllowPrivateAccess="true"))
+	TObjectPtr<UCommonVisibilitySwitcher> CommonVisibilitySwitcher;
 	//***** Bound Widgets *****//
+
+	UDkWidgetActivatableBase* GetActivatableCenterAreaWidget(const FGameplayTag& InTag) const;
 
 	void OnBackBoundActionTriggered();
 public:

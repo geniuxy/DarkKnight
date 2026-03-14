@@ -117,3 +117,10 @@ void UDkUISubsystem::PushConfirmScreenToModalStackAsync(
 		}
 	);
 }
+
+bool UDkUISubsystem::IsWidgetStackEmpty(const FGameplayTag& InWidgetStackTag) const
+{
+	UCommonActivatableWidgetContainerBase* FoundWidgetStack =
+		CreatedPrimaryLayout->FindWidgetStackByTag(InWidgetStackTag);
+	return FoundWidgetStack->GetNumWidgets() == 0;
+}

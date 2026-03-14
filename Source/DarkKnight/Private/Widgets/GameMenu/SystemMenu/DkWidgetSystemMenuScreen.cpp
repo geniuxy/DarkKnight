@@ -3,10 +3,14 @@
 
 #include "Widgets/GameMenu/SystemMenu/DkWidgetSystemMenuScreen.h"
 
+#include "DkGameplayTags.h"
 #include "ICommonInputModule.h"
 #include "DkTypes/DkEnums.h"
 #include "FunctionLibrarys/DkUIFunctionLibrary.h"
 #include "Input/CommonUIInputTypes.h"
+#include "Subsytems/DkUISubsystem.h"
+#include "Widgets/Components/Buttons/DkUICommonButtonImage.h"
+#include "Widgets/GameMenu/DkWidgetGameMenuScreen.h"
 
 void UDkWidgetSystemMenuScreen::NativeOnInitialized()
 {
@@ -19,6 +23,16 @@ void UDkWidgetSystemMenuScreen::NativeOnInitialized()
 			FSimpleDelegate::CreateUObject(this, &ThisClass::OnBackBoundActionTriggered)
 		)
 	);
+
+	SelectButton_Inventory->OnClicked().AddUObject(this, &ThisClass::HandleSelectButtonInventory);
+	SelectButton_Map->OnClicked().AddUObject(this, &ThisClass::HandleSelectButtonMap);
+}
+
+void UDkWidgetSystemMenuScreen::NativeOnActivated()
+{
+	Super::NativeOnActivated();
+
+	UDkUIFunctionLibrary::ToggleInputMode(this, EDkInputMode::UIOnly);
 }
 
 void UDkWidgetSystemMenuScreen::NativeOnDeactivated()
@@ -26,6 +40,46 @@ void UDkWidgetSystemMenuScreen::NativeOnDeactivated()
 	Super::NativeOnDeactivated();
 
 	UDkUIFunctionLibrary::ToggleInputMode(this, EDkInputMode::GameOnly);
+}
+
+void UDkWidgetSystemMenuScreen::HandleSelectButtonInventory()
+{
+	UDkUISubsystem::Get(this)->PushSoftWidgetToStackAsync(
+		DkGameplayTags::Dk_WidgetStack_GameMenu,
+		UDkUIFunctionLibrary::GetUISoftWidgetClassByTag(DkGameplayTags::Dk_Widget_GameMenu),
+		[this](EAsyncPushWidgetState InPushState, UDkWidgetActivatableBase* PushedWidget)
+		{
+			if (InPushState == EAsyncPushWidgetState::OnCreatedBeforePush)
+			{
+				UDkUIFunctionLibrary::ToggleInputMode(this, EDkInputMode::UIOnly);
+			}
+			if (InPushState == EAsyncPushWidgetState::AfterPush)
+			{
+				UDkWidgetGameMenuScreen* GameMenuScreen = CastChecked<UDkWidgetGameMenuScreen>(PushedWidget);
+				GameMenuScreen->SetVisibleCenterArea(DkGameplayTags::Dk_Widget_GameMenu_Inventory);
+			}
+		}
+	);
+}
+
+void UDkWidgetSystemMenuScreen::HandleSelectButtonMap()
+{
+	UDkUISubsystem::Get(this)->PushSoftWidgetToStackAsync(
+		DkGameplayTags::Dk_WidgetStack_GameMenu,
+		UDkUIFunctionLibrary::GetUISoftWidgetClassByTag(DkGameplayTags::Dk_Widget_GameMenu),
+		[this](EAsyncPushWidgetState InPushState, UDkWidgetActivatableBase* PushedWidget)
+		{
+			if (InPushState == EAsyncPushWidgetState::OnCreatedBeforePush)
+			{
+				UDkUIFunctionLibrary::ToggleInputMode(this, EDkInputMode::UIOnly);
+			}
+			if (InPushState == EAsyncPushWidgetState::AfterPush)
+			{
+				UDkWidgetGameMenuScreen* GameMenuScreen = CastChecked<UDkWidgetGameMenuScreen>(PushedWidget);
+				GameMenuScreen->SetVisibleCenterArea(DkGameplayTags::Dk_Widget_GameMenu_Map);
+			}
+		}
+	);
 }
 
 void UDkWidgetSystemMenuScreen::OnBackBoundActionTriggered()

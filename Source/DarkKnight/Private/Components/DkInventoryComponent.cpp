@@ -75,8 +75,11 @@ void UDkInventoryComponent::ConstructInventoryMenu()
 				{
 					CachedInventoryMenu = CastChecked<UDkWidgetGameMenuScreen>(PushedWidget)->GetInventoryMenu();
 					PushedWidget->DeactivateWidget();
+					UDkUIFunctionLibrary::ToggleInputMode(this, EDkInputMode::GameOnly);
 					bHasInitInventoryMenu = true;
 				}
+				UDkWidgetGameMenuScreen* GameMenuScreen = CastChecked<UDkWidgetGameMenuScreen>(PushedWidget);
+				GameMenuScreen->SetVisibleCenterArea(DkGameplayTags::Dk_Widget_GameMenu_Inventory);
 			}
 		}
 	);

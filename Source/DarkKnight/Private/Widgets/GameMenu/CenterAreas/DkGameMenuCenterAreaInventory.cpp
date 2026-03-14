@@ -66,8 +66,6 @@ void UDkGameMenuCenterAreaInventory::NativeOnDeactivated()
 {
 	Super::NativeOnDeactivated();
 
-	UDkUIFunctionLibrary::ToggleInputMode(this, EDkInputMode::GameOnly);
-
 	if (DraggedItem.IsValid() && DraggedItem->IsInViewport())
 	{
 		check(InventoryComponent.IsValid());

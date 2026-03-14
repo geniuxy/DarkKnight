@@ -54,6 +54,8 @@ public:
 		TFunction<void(EConfirmScreenButtonType)> ButtonClickedCallback
 	);
 
+	bool IsWidgetStackEmpty(const FGameplayTag& InWidgetStackTag) const;
+
 	UPROPERTY(BlueprintAssignable)
 	FOnButtonDescriptionTextUpdatedDelegate OnButtonDescriptionTextUpdated;
 

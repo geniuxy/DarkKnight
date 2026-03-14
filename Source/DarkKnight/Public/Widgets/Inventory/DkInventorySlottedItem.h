@@ -14,7 +14,7 @@ class UCommonTextBlock;
 class UDkInventoryItem;
 class UCommonLazyImage;
 /**
- * 
+ * 背包中叠加在物品网格上的物品图标（项目中用于SpatialGrid）
  */
 UCLASS()
 class DARKKNIGHT_API UDkInventorySlottedItem : public UCommonUserWidget

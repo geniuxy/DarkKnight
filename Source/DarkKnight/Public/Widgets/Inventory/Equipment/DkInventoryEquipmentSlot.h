@@ -9,7 +9,7 @@
 
 class UDkInventoryItemDescriptionMenu;
 /**
- * 
+ * 装备物品网格(仅包括网格，不包括装备类标题)
  */
 UCLASS()
 class DARKKNIGHT_API UDkInventoryEquipmentSlot : public UDkInventoryGridSlot

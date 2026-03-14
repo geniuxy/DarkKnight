@@ -14,7 +14,7 @@ class UDkInventoryItem;
 class UCommonTextBlock;
 class UCommonLazyImage;
 /**
- * 
+ * 背包拖拽物品后，出现的图标
  */
 UCLASS()
 class DARKKNIGHT_API UDkInventoryDraggedItem : public UCommonUserWidget

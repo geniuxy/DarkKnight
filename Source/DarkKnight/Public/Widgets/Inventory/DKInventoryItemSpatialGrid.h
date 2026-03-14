@@ -8,7 +8,7 @@
 
 class UCanvasPanel;
 /**
- * 
+ * 背包中每一类物品的网格整体(支持物品图标不同大小)
  */
 UCLASS()
 class DARKKNIGHT_API UDKInventoryItemSpatialGrid : public UDkInventoryItemGrid

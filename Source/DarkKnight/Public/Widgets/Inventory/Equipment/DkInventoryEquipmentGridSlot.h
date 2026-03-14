@@ -14,7 +14,7 @@ class UVerticalBox;
 class UDkInventoryEquipmentSlot;
 class USizeBox;
 /**
- * 
+ * 装备物品网格(包括网格和装备类标题)
  */
 UCLASS()
 class DARKKNIGHT_API UDkInventoryEquipmentGridSlot : public UCommonUserWidget

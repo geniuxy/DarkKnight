@@ -23,7 +23,7 @@ class UDkInventoryComponent;
 class UUniformGridPanel;
 class UDkInventoryGridSlot;
 /**
- * 
+ * 背包中每一类物品的网格整体
  */
 UCLASS()
 class DARKKNIGHT_API UDkInventoryItemGrid : public UCommonUserWidget

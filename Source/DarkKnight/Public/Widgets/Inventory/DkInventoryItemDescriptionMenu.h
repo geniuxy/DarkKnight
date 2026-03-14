@@ -12,7 +12,7 @@ class UDkInventoryLeafText;
 class UDkInventoryLeafImage;
 class USizeBox;
 /**
- * 
+ * 背包中物品鼠标Hover后自动出现的物品描述界面
  */
 UCLASS()
 class DARKKNIGHT_API UDkInventoryItemDescriptionMenu : public UDkInventoryComposite

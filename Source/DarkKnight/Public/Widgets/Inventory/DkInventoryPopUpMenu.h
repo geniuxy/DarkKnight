@@ -18,7 +18,7 @@ class USlider;
 class USizeBox;
 class UDkUICommonButtonBase;
 /**
- * 
+ * 背包物品右键后弹出的菜单
  */
 UCLASS()
 class DARKKNIGHT_API UDkInventoryPopUpMenu : public UCommonUserWidget

@@ -11,7 +11,9 @@
 #include "DkInventoryItem.generated.h"
 
 /**
- * 
+ * 背包中Item的数据，所有同种Item(占用不同格子)共用一个UDkInventoryItem
+ * 比如，ItemManifest中的StackFragment是可以单独使用的
+ * 拖拽1个Item时，StackableFragment的StackCount为1；拖拽4个Item时，StackableFragment的StackCount为4
  */
 UCLASS()
 class DARKKNIGHT_API UDkInventoryItem : public UObject

@@ -7,9 +7,9 @@
 #include "DarkKnight/DarkKnight.h"
 #include "DkInventorySlottedItem.generated.h"
 
-class UDkInventoryItemDescriptionMenu;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FSlottedItemClicked, int32, GridIndex, const FPointerEvent&, MouseEvent);
 
+class UDkInventoryItemDescriptionMenu;
 class UCommonTextBlock;
 class UDkInventoryItem;
 class UCommonLazyImage;

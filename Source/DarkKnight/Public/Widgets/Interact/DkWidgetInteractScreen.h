@@ -27,12 +27,12 @@ protected:
 
 private:
 	UFUNCTION()
-	void ShowNoRoomInInventory();
-	
+	void ShowGameMessageInHUD(const FText& InText);
+
 	//***** Bound Widgets *****//
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget, AllowPrivateAccess="true"))
 	UDkWidgetPickUpBox* WBP_PickUpBox;
-	
+
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget, AllowPrivateAccess="true"))
 	UDkWidgetInfoMessage* WBP_InfoMessage;
 	//***** Bound Widgets *****//

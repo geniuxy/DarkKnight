@@ -27,7 +27,7 @@ protected:
 
 	/* 添加/删除Item */
 	virtual void AddStacks(const FDkInventorySlotAvailabilityResult& Result) override;
-	
+
 	virtual void AddItemToIndex(UDkInventoryItem* NewItem, int32 Index, int32 StackAmount, bool bStackable) override;
 	FVector2D GetDrawSize(const FInventoryItemGridFragment* GridFragment) const;
 	void AddSlottedItemToCanvas(
@@ -36,13 +36,26 @@ protected:
 
 	bool IsInGridBounds(const int32 StartIndex, const FIntPoint& ItemDimension) const;
 
-	int32 CalculateFillAmountForSlot(
-		const bool bStackable, const int32 MaxStackSize, const int32 AmountToFill, const UDkInventoryGridSlot* GridSlot
+	bool CheckSlotConstraints(
+		const UDkInventoryGridSlot* CurIndexGridSlot,
+		const UDkInventoryGridSlot* SubGridSlot,
+		const TSet<int32>& CheckedIndices,
+		TSet<int32>& OutTemporarilyClaimed,
+		const FGameplayTag& ItemTag,
+		const int32 MaxStackCount
 	) const;
-	int32 GetStackAmount(const UDkInventoryGridSlot* GridSlot) const;
+
+	bool HasRoomAtIndex(
+		const UDkInventoryGridSlot* CurIndexGridSlot,
+		const FIntPoint& Dimension,
+		const TSet<int32>& CheckedIndices,
+		TSet<int32>& OutTemporarilyClaimed,
+		const FGameplayTag& ItemTag,
+		const int32 MaxStackCount
+	);
 
 	virtual FDkInventorySlotAvailabilityResult HasRoomForItem(const FInventoryItemManifest& Manifest) override;
-	
+
 	virtual void PutDownOnIndex(const int32 Index) override;
 
 	UPROPERTY(EditAnywhere, Category = "Inventory")
@@ -68,12 +81,12 @@ protected:
 	UFUNCTION()
 	void HandleSlottedItemClicked(int32 GridIndex, const FPointerEvent& MouseEvent);
 
-	virtual void OnSlottedItemClicked(int32 GridIndex, const FPointerEvent& MouseEvent);
-	
+	void OnSlottedItemClicked(int32 GridIndex, const FPointerEvent& MouseEvent);
+
 	virtual void SwapWithDraggedItem(UDkInventoryItem* ClickedInventoryItem, const int32 GridIndex) override;
 
 	virtual void ConsumeDraggedItemStack(int32 ClickedStackCount, int32 DraggedStackCount, int32 GridIndex) override;
-	
+
 	virtual void AssignDraggedItem(UDkInventoryItem* InventoryItem) override;
 
 	virtual void AssignDraggedItem(
@@ -88,40 +101,36 @@ protected:
 	FIntPoint CalculateHoveredCoordinates(const FVector2D& CanvasPosition, const FVector2D& MousePosition) const;
 	EInventoryTileQuadrant CalculateTileQuadrant(const FVector2D& CanvasPosition, const FVector2D& MousePosition) const;
 	void OnTileParametersUpdated(const FInventoryTileParameters& Parameters);
+
+	FInventoryTileParameters TileParameters; // 鼠标所处格子的相关数据(索引、坐标、象限)
+	FInventoryTileParameters LastTileParameters;
+
 	FIntPoint CalculateStartingCoordinate(
 		const FIntPoint& Coordinate, const FIntPoint& Dimension, const EInventoryTileQuadrant Quadrant
 	) const;
 
 	// 查看DraggedItem覆盖的背后区域的格子(是否有别的Item)
 	FInventorySpaceQueryResult CheckHoverPosition(const FIntPoint& Dimension);
+	FInventorySpaceQueryResult CurrentSpaceQueryResult;
+
 	// 更改DraggedItem覆盖的背后区域的格子的样式
 	void ChangeHoverType(const int32 StartingIndex, const FIntPoint& Dimension, EInventoryGridSlotState GridSlotState);
 
-	// 没有DraggedItem时，更改鼠标覆盖区域的格子的样式
-	UFUNCTION()
-	void OnGridSlotHovered(int32 GridIndex, const FPointerEvent& MouseEvent);
-
-	UFUNCTION()
-	void OnGridSlotUnhovered(int32 GridIndex, const FPointerEvent& MouseEvent);
-	
 	// 鼠标是否离开GridCanvasPanel对应的区域
-	bool CursorExitedCanvas(const FVector2D& BoundaryPos, const FVector2D& BoundarySize, const FVector2D& MousePos);
-	
+	virtual bool CursorExitedCanvas(
+		const FVector2D& BoundaryPos, const FVector2D& BoundarySize, const FVector2D& MousePos
+	) override;
+
 	// Highlight/UnHighlight DraggedItem覆盖的背后区域的格子
 	void HighlightSlots(const int32 Index, const FIntPoint& Dimension);
 	void UnHighlightSlots(const int32 Index, const FIntPoint& Dimension);
-	
-	int32 ItemDropIndex = INDEX_NONE;
-	FInventorySpaceQueryResult CurrentSpaceQueryResult;
-	bool bMouseWithInCanvas;
-	bool bLastMouseWithInCanvas;
-	int32 LastHighlightedIndex;
+
 	FIntPoint LastHighlightedDimension;
 	/********/
 
 	/* 右键菜单 */
 	virtual void OnPopUpMenuSplit(int32 SplitAmount, int32 Index) override;
-	
+
 	virtual void OnPopUpMenuConsume(int32 Index) override;
 	/********/
 };

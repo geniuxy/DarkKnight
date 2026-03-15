@@ -5,9 +5,9 @@
 
 #include "CommonTextBlock.h"
 
-void UDkWidgetInfoMessage::SetMessage(const FString& Message)
+void UDkWidgetInfoMessage::SetMessage(const FText& Message)
 {
-	CommonText_Message->SetText(FText::FromString(Message));
+	CommonText_Message->SetText(Message);
 
 	if (!bIsMessageActive)
 	{

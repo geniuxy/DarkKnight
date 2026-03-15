@@ -20,7 +20,7 @@ class ADkCharacterHero;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FInventoryItemChange, UDkInventoryItem*, Item);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRoomInInventoryDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRoomInInventoryDelegate, const FText&, InText);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FStackChange, const FDkInventorySlotAvailabilityResult&, Result);
 

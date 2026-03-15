@@ -11,6 +11,7 @@
 #include "Inventory/DkInventorySlotAvailabilty.h"
 #include "DkInventoryItemGrid.generated.h"
 
+class UDkInventoryItemDescriptionMenu;
 class UDkInventoryPopUpMenu;
 struct FInventoryTileParameters;
 struct FInventoryItemGridFragment;
@@ -37,11 +38,12 @@ public:
 protected:
 	//~Begin UUserWidget Function
 	virtual void NativeOnInitialized() override;
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 	//~End UUserWidget Function
 
 	//***** Bound Widgets *****//
 	UPROPERTY(meta = (BindWidgetOptional))
-	TObjectPtr<UUniformGridPanel> GridPanel;
+	TObjectPtr<UUniformGridPanel> UniformGridPanel;
 	//***** Bound Widgets *****//
 
 	TWeakObjectPtr<UDkInventoryComponent> InventoryComponent;
@@ -52,31 +54,20 @@ protected:
 
 	UFUNCTION()
 	void HandleStackChanged(const FDkInventorySlotAvailabilityResult& Result);
-	
+
 	virtual void AddStacks(const FDkInventorySlotAvailabilityResult& Result);
 
 	void AddItemToIndices(const FDkInventorySlotAvailabilityResult& Result, UDkInventoryItem* NewItem);
 	virtual void AddItemToIndex(UDkInventoryItem* NewItem, int32 Index, int32 StackAmount, bool bStackable);
 
-	bool HasRoomAtIndex(
-		const UDkInventoryGridSlot* CurIndexGridSlot,
-		const FIntPoint& Dimension,
-		const TSet<int32>& CheckedIndices,
-		TSet<int32>& OutTemporarilyClaimed,
-		const FGameplayTag& ItemTag,
-		const int32 MaxStackCount
-	);
-	bool CheckSlotConstraints(
-		const UDkInventoryGridSlot* CurIndexGridSlot,
-		const UDkInventoryGridSlot* SubGridSlot,
-		const TSet<int32>& CheckedIndices,
-		TSet<int32>& OutTemporarilyClaimed,
-		const FGameplayTag& ItemTag,
-		const int32 MaxStackCount
-	) const;
 	bool MatchesCategory(const UDkInventoryItem* Item) const;
 
 	virtual FDkInventorySlotAvailabilityResult HasRoomForItem(const FInventoryItemManifest& Manifest);
+
+	int32 CalculateFillAmountForSlot(
+		const bool bStackable, const int32 MaxStackSize, const int32 AmountToFill, const UDkInventoryGridSlot* GridSlot
+	) const;
+	int32 GetStackAmount(const UDkInventoryGridSlot* GridSlot) const;
 
 	virtual void PutDownOnIndex(const int32 Index);
 	/********/
@@ -144,9 +135,40 @@ protected:
 	/********/
 
 	/* 鼠标Hover背包网格，改变其样式 */
-	FInventoryTileParameters TileParameters; // 鼠标所处格子的相关数据(索引、坐标、象限)
-	FInventoryTileParameters LastTileParameters;
+	void UpdateItemDropIndex(const FVector2D& PanelPosition, const FVector2D& MousePosition);
+
+	// 更改DraggedItem覆盖的背后区域的格子的样式
+	void ChangeHoverType(const int32 InIndex, EInventoryGridSlotState GridSlotState);
+
+	// 鼠标是否离开GridCanvasPanel对应的区域
+	virtual bool CursorExitedCanvas(
+		const FVector2D& BoundaryPos, const FVector2D& BoundarySize, const FVector2D& MousePos
+	);
+
+	bool bMouseWithInCanvas;
+	bool bLastMouseWithInCanvas;
+
+	int32 ItemDropIndex = INDEX_NONE;
+
+	int32 LastHighlightedIndex;
+
+	// Highlight/UnHighlight DraggedItem覆盖的背后区域的格子
+	void HighlightSlot(const int32 Index);
+	void UnHighlightSlot(const int32 Index);
+
+	// 没有DraggedItem时，更改鼠标覆盖区域的格子的样式
+	UFUNCTION()
+	void OnGridSlotHovered(int32 GridIndex, const FPointerEvent& MouseEvent);
+
+	UFUNCTION()
+	void OnGridSlotUnhovered(int32 GridIndex, const FPointerEvent& MouseEvent);
 	/********/
+
+	/*
+	 * 左键点击GridSlot
+	 */
+	UFUNCTION()
+	void OnGridSlotClicked(int GridIndex, const FPointerEvent& MouseEvent);
 
 	/* 右键菜单 */
 	void CreateItemPopUp(const int32 GridIndex);

@@ -209,7 +209,7 @@ void UDKWidgetEquipmentMenu::ClearDraggedItem()
 void UDKWidgetEquipmentMenu::DragItem(UDkInventoryItem* ClickedInventoryItem, const int32 GridIndex)
 {
 	if (!IsValid(ClickedInventoryItem)) return;
-	
+
 	AssignDraggedItem(ClickedInventoryItem, GridIndex, GridIndex);
 
 	// 从装备栏中移除被点击的Item

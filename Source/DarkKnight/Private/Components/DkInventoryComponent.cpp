@@ -105,7 +105,7 @@ void UDkInventoryComponent::TryAddItem(UDkItemComponent* ItemComponent)
 
 	if (AddItemResult.TotalRoomToFill == 0)
 	{
-		OnNoRoomInInventory.Broadcast();
+		OnNoRoomInInventory.Broadcast(FText::FromString(TEXT("背包中没有足够的空间了")));
 		return;
 	}
 
@@ -136,7 +136,7 @@ void UDkInventoryComponent::TryAddItem(UDkInventoryItem* Item)
 
 	if (AddItemResult.TotalRoomToFill == 0)
 	{
-		OnNoRoomInInventory.Broadcast();
+		OnNoRoomInInventory.Broadcast(FText::FromString(TEXT("背包中没有足够的空间了")));
 		return;
 	}
 

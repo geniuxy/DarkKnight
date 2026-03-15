@@ -6,6 +6,7 @@
 #include "CommonLazyImage.h"
 #include "CommonTextBlock.h"
 #include "Inventory/DkInventoryItem.h"
+#include "Inventory/DkInventoryItemFragment.h"
 
 FReply UDkInventoryDraggedItem::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
@@ -21,6 +22,15 @@ void UDkInventoryDraggedItem::SetImageBrush(const FSlateBrush& Brush) const
 void UDkInventoryDraggedItem::UpdateStackCount(const int32 Count)
 {
 	StackCount = Count;
+	if (InventoryItem.IsValid())
+	{
+		FInventoryItemStackableFragment* StackableFragment =
+			InventoryItem->GetItemManifestMutable().GetFragmentOfTypeMutable<FInventoryItemStackableFragment>();
+		if (StackableFragment)
+		{
+			StackableFragment->SetStackCount(Count);
+		}
+	}
 	if (Count > 0)
 	{
 		Text_StackCount->SetText(FText::AsNumber(Count));

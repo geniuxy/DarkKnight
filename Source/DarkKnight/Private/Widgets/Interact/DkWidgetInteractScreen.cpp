@@ -30,12 +30,12 @@ void UDkWidgetInteractScreen::NativeOnInitialized()
 		CastChecked<ADkCharacterHero>(GetOwningPlayerPawn())->GetInventoryComponent();
 	if (IsValid(InventoryComponent))
 	{
-		InventoryComponent->OnNoRoomInInventory.AddDynamic(this, &ThisClass::ShowNoRoomInInventory);
+		InventoryComponent->OnNoRoomInInventory.AddDynamic(this, &ThisClass::ShowGameMessageInHUD);
 	}
 }
 
-void UDkWidgetInteractScreen::ShowNoRoomInInventory()
+void UDkWidgetInteractScreen::ShowGameMessageInHUD(const FText& InText)
 {
 	if (!IsValid(WBP_InfoMessage)) return;
-	WBP_InfoMessage->SetMessage(TEXT("背包中没有足够的空间了"));
+	WBP_InfoMessage->SetMessage(InText);
 }

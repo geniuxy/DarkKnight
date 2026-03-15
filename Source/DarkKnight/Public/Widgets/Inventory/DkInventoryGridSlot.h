@@ -10,6 +10,8 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FGridSlotEvent, int32, GridIndex, const FPointerEvent&, MouseEvent);
 
+class UDkInventoryItemDescriptionMenu;
+class UCommonTextBlock;
 class UDkInventoryItem;
 class USizeBox;
 class UCommonLazyImage;
@@ -23,6 +25,7 @@ class DARKKNIGHT_API UDkInventoryGridSlot : public UCommonUserWidget
 
 public:
 	//~Begin UUserWidget Function
+	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 	virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 	virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
 	//~End UUserWidget Function
@@ -38,6 +41,10 @@ public:
 	virtual void SetEnabledBrush();
 	virtual void SetDisabledBrush();
 	virtual void SetGrayedOutBrush();
+	void SetDefaultItemIcon() const;
+	void SetItemIcon(const FSlateBrush& InBrush) const;
+
+	void SetItemStackNum(int32 InStack);
 
 	UDkInventoryItem* GetInventoryItem() const;
 	void SetInventoryItem(UDkInventoryItem* InItem);
@@ -56,6 +63,9 @@ protected:
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UCommonLazyImage> Image_ItemIcon;
+
+	UPROPERTY(meta = (BindWidgetOptional))
+	TObjectPtr<UCommonTextBlock> Text_StackNum;
 	//***** Bound Widgets *****//
 
 	UPROPERTY(EditAnywhere, Category="Inventory")
@@ -72,6 +82,21 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category="Inventory")
 	FSlateBrush GrayedOutBrush;
+
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	FSlateBrush DefaultItemIconBrush;
+
+	/* 鼠标Hover时，显示Item详细信息 */
+	void CreateItemDescriptionMenu();
+
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	bool bShouldCreateItemDescriptionMenu = false;
+	
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	TSubclassOf<UDkInventoryItemDescriptionMenu> ItemDescriptionMenuClass;
+
+	TWeakObjectPtr<UDkInventoryItemDescriptionMenu> ItemDescriptionMenu;
+	/********/
 
 	EInventoryGridSlotState GridSlotState;
 

@@ -103,10 +103,11 @@ private:
 	TObjectPtr<UTexture2D> Icon = nullptr;
 
 	UPROPERTY(EditAnywhere, Category="Inventory")
-	FVector2D IconDimension{100.f, 100.f};
+	FVector2D IconDimension{90.f, 90.f};
 
 public:
 	FORCEINLINE UTexture2D* GetIcon() const { return Icon; }
+	FORCEINLINE FVector2D GetIconDimension() const { return IconDimension; }
 };
 
 USTRUCT(BlueprintType)

@@ -22,7 +22,7 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category="Inventory")
 	void MessageHide();
 
-	void SetMessage(const FString& Message);
+	void SetMessage(const FText& Message);
 
 protected:
 	//~Begin UUserWidget

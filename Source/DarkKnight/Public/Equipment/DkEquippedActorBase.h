@@ -20,6 +20,7 @@ public:
 	ADkEquippedActorBase();
 
 	void SetEquipmentSkeletalMesh(USkeletalMesh* InEquipmentItemMesh) const;
+	void SetEquipmentStaticMesh(UStaticMesh* InEquipmentItemMesh) const;
 
 private:
 	UPROPERTY(EditAnywhere, Category="Equipment")
@@ -28,6 +29,9 @@ private:
 	/* Actor Components */
 	UPROPERTY(VisibleAnywhere)
 	USkeletalMeshComponent* EquipmentItemSkeletalMesh;
+
+	UPROPERTY(VisibleAnywhere)
+	UStaticMeshComponent* EquipmentItemStaticMesh;
 	/*********/
 
 public:

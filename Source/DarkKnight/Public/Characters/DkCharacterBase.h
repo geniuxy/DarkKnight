@@ -63,9 +63,8 @@ protected:
 	TObjectPtr<UDkActionComponent> ActionComponent;
 
 	/* 掉落物品 */
-	void SpawnRewardItemActor();
-
-	void SpawnRewardItemActor(int ItemID);
+	UFUNCTION(Server, Reliable)
+	void ServerSpawnRewardItemActor();
 
 	UPROPERTY(EditAnywhere, Category="Inventory")
 	float SpawnAngleMin = -135.f;

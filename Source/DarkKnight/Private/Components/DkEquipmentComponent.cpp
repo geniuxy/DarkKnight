@@ -93,9 +93,8 @@ void UDkEquipmentComponent::OnItemEquipped(UDkInventoryItem* EquippedItem)
 	FInventoryItemManifest& ItemManifest = EquippedItem->GetItemManifestMutable();
 	FInventoryItemEquipmentFragment* EquipmentFragment =
 		ItemManifest.GetFragmentOfTypeMutable<FInventoryItemEquipmentFragment>();
-	int32 EquipmentID = ItemManifest.GetItemID();
-	if (!EquipmentFragment || EquipmentID == INVALID_INDEX) return;
-	
+	if (!EquipmentFragment) return;
+
 	if (!bIsPreview) // 预览时不需要调整属性等操作
 	{
 		EquipmentFragment->OnEquip(OwningController.Get());
@@ -104,12 +103,26 @@ void UDkEquipmentComponent::OnItemEquipped(UDkInventoryItem* EquippedItem)
 	if (OwningSkeletalMesh.IsValid())
 	{
 		ADkEquippedActorBase* SpawnedEquippedActor =
-			SpawnEquippedActor(EquipmentID, EquipmentFragment, OwningSkeletalMesh.Get());
-		if (bIsPreview) // 如果是多个Client且为Preview，自己管自己的PreviewActor，其对应的SpawnedEquippedActor不为复制
+			SpawnEquippedActor(EquipmentFragment, OwningSkeletalMesh.Get());
+		if (SpawnedEquippedActor)
 		{
-			SpawnedEquippedActor->SetReplicates(false);
+			if (bIsPreview) // 如果是多个Client且为Preview，自己管自己的PreviewActor，其对应的SpawnedEquippedActor不为复制
+			{
+				SpawnedEquippedActor->SetReplicates(false);
+			}
+			EquippedActors.Add(SpawnedEquippedActor);
 		}
-		EquippedActors.Add(SpawnedEquippedActor);
+
+		ADkEquippedActorBase* SpawnedExtraEquippedActor =
+			SpawnExtraEquippedActor(EquipmentFragment, OwningSkeletalMesh.Get());
+		if (SpawnedExtraEquippedActor)
+		{
+			if (bIsPreview)
+			{
+				SpawnedExtraEquippedActor->SetReplicates(false);
+			}
+			EquippedActors.Add(SpawnedExtraEquippedActor);
+		}
 	}
 }
 
@@ -129,23 +142,39 @@ void UDkEquipmentComponent::OnItemUnEquipped(UDkInventoryItem* UnEquippedItem)
 	FInventoryItemEquipmentFragment* EquipmentFragment =
 		ItemManifest.GetFragmentOfTypeMutable<FInventoryItemEquipmentFragment>();
 	if (!EquipmentFragment) return;
-	
+
 	if (!bIsPreview) // 预览时不需要调整属性等操作
 	{
 		EquipmentFragment->OnUnEquip(OwningController.Get());
 	}
 
-	RemoveEquippedActor(EquipmentFragment->GetEquipmentTag());
+	RemoveEquippedActor(EquipmentFragment);
 }
 
 ADkEquippedActorBase* UDkEquipmentComponent::SpawnEquippedActor(
-	int32 EquipmentID, FInventoryItemEquipmentFragment* EquipmentFragment, USkeletalMeshComponent* AttachMesh)
+	FInventoryItemEquipmentFragment* EquipmentFragment, USkeletalMeshComponent* AttachMesh)
 {
-	ADkEquippedActorBase* SpawnedEquippedActor = EquipmentFragment->SpawnAttachActor(EquipmentID, AttachMesh);
-	SpawnedEquippedActor->SetEquipmentTag(EquipmentFragment->GetEquipmentTag());
-	SpawnedEquippedActor->SetOwner(GetOwner());
-	EquipmentFragment->SetEquippedActor(SpawnedEquippedActor);
+	ADkEquippedActorBase* SpawnedEquippedActor = EquipmentFragment->SpawnAttachActor(AttachMesh);
+	if (IsValid(SpawnedEquippedActor))
+	{
+		SpawnedEquippedActor->SetOwner(GetOwner());
+		EquipmentFragment->SetEquippedActorTag(SpawnedEquippedActor->GetEquipmentTag());
+	}
+
 	return SpawnedEquippedActor;
+}
+
+ADkEquippedActorBase* UDkEquipmentComponent::SpawnExtraEquippedActor(
+	FInventoryItemEquipmentFragment* EquipmentFragment, USkeletalMeshComponent* AttachMesh)
+{
+	ADkEquippedActorBase* SpawnedExtraEquippedActor = EquipmentFragment->SpawnExtraAttachActor(AttachMesh);
+	if (IsValid(SpawnedExtraEquippedActor))
+	{
+		SpawnedExtraEquippedActor->SetOwner(GetOwner());
+		EquipmentFragment->SetExtraEquippedActorTag(SpawnedExtraEquippedActor->GetEquipmentTag());
+	}
+
+	return SpawnedExtraEquippedActor;
 }
 
 ADkEquippedActorBase* UDkEquipmentComponent::FindEquippedActor(const FGameplayTag& EquippedActorTag)
@@ -159,11 +188,19 @@ ADkEquippedActorBase* UDkEquipmentComponent::FindEquippedActor(const FGameplayTa
 	return FoundActor ? *FoundActor : nullptr;
 }
 
-void UDkEquipmentComponent::RemoveEquippedActor(const FGameplayTag& EquippedActorTag)
+void UDkEquipmentComponent::RemoveEquippedActor(FInventoryItemEquipmentFragment* EquipmentFragment)
 {
-	if (ADkEquippedActorBase* EquippedActor = FindEquippedActor(EquippedActorTag); IsValid(EquippedActor))
+	ADkEquippedActorBase* EquippedActor = FindEquippedActor(EquipmentFragment->GetEquippedActorTag());
+	if (IsValid(EquippedActor))
 	{
 		EquippedActors.Remove(EquippedActor);
 		EquippedActor->Destroy();
+	}
+	
+	ADkEquippedActorBase* ExtraEquippedActor = FindEquippedActor(EquipmentFragment->GetExtraEquippedActorTag());
+	if (IsValid(ExtraEquippedActor))
+	{
+		EquippedActors.Remove(ExtraEquippedActor);
+		ExtraEquippedActor->Destroy();
 	}
 }

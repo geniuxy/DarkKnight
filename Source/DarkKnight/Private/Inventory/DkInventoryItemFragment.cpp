@@ -206,7 +206,7 @@ void FInventoryItemConsumableFragment::UpdateConsumableEntries(
 			EntryInfo.bPercent,
 			EntryFragmentTag
 		);
-		if (EntryStrInfo.MaxValue != INVALID_INDEX)
+		if (EntryStrInfo.MaxValue != INDEX_NONE)
 		{
 			NewItemEntryFragment.SetMaxValue(EntryStrInfo.MaxValue);
 		}
@@ -332,7 +332,7 @@ void FInventoryItemEquipmentFragment::UpdateEquipEntries(
 			EntryInfo.bPercent,
 			EntryFragmentTag
 		);
-		if (EntryStrInfo.MaxValue != INVALID_INDEX)
+		if (EntryStrInfo.MaxValue != INDEX_NONE)
 		{
 			NewItemEntryFragment.SetMaxValue(EntryStrInfo.MaxValue);
 		}
@@ -340,46 +340,71 @@ void FInventoryItemEquipmentFragment::UpdateEquipEntries(
 	}
 }
 
-ADkEquippedActorBase* FInventoryItemEquipmentFragment::SpawnAttachActor(
-	int32 EquipmentID, USkeletalMeshComponent* AttachMesh) const
+ADkEquippedActorBase* FInventoryItemEquipmentFragment::SpawnAttachActor(USkeletalMeshComponent* AttachMesh) const
 {
-	if (!IsValid(EquippedActorClass) || !IsValid(AttachMesh)) return nullptr;
+	if (!IsValid(AttachMesh)) return nullptr;
 
-	ADkEquippedActorBase* SpawnedActor = AttachMesh->GetWorld()->SpawnActor<ADkEquippedActorBase>(EquippedActorClass);
+	checkf(EquippedActorID != INDEX_NONE, TEXT("生成EquipmentItem时，EquippedActorID无效！"))
+	UDkInventorySubsystem* InventorySubsystem = UDkInventorySubsystem::Get(AttachMesh);
+	checkf(InventorySubsystem, TEXT("生成EquipmentItem时，InventorySubsystem为空！"));
+
+	if (!InventorySubsystem->GetCachedItemTable().Contains(EquippedActorID)) return nullptr;
+	const FDkItemInfo* EquipmentInfo = InventorySubsystem->GetCachedItemTable().Find(EquippedActorID);
+	ADkEquippedActorBase* SpawnedActor =
+		AttachMesh->GetWorld()->SpawnActor<ADkEquippedActorBase>(EquipmentInfo->EquippedActorBPClass);
 	if (IsValid(SpawnedActor))
 	{
-		UDkInventorySubsystem* InventorySubsystem = UDkInventorySubsystem::Get(AttachMesh);
-		checkf(InventorySubsystem, TEXT("生成RewardItem时，InventorySubsystem为空！"));
-		if (const FDkItemInfo* ItemInfo = InventorySubsystem->GetCachedItemTable().Find(EquipmentID))
+		if (EquipmentInfo->bStaticMesh)
 		{
-			if (ItemInfo->bStaticMesh)
-			{
-				Debug::Print(TEXT("EquipmentItem暂不支持StaticMesh"));
-			}
-			else
-			{
-				SpawnedActor->SetEquipmentSkeletalMesh(ItemInfo->ItemSkeletalMesh);
-			}
+			SpawnedActor->SetEquipmentStaticMesh(EquipmentInfo->ItemStaticMesh);
 		}
+		else
+		{
+			SpawnedActor->SetEquipmentSkeletalMesh(EquipmentInfo->ItemSkeletalMesh);
+		}
+		SpawnedActor->SetEquipmentTag(EquipmentInfo->ItemTag);
+		
 		SpawnedActor->AttachToComponent(
-			AttachMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, SocketAttachPoint
+			AttachMesh,
+			FAttachmentTransformRules::SnapToTargetNotIncludingScale,
+			EquipmentInfo->EquippedSocketAttachPoint
 		);
 	}
-
 	return SpawnedActor;
 }
 
-void FInventoryItemEquipmentFragment::DestroyAttachActor() const
+ADkEquippedActorBase* FInventoryItemEquipmentFragment::SpawnExtraAttachActor(USkeletalMeshComponent* AttachMesh) const
 {
-	if (EquippedActor.IsValid())
-	{
-		EquippedActor->Destroy();
-	}
-}
+	if (!IsValid(AttachMesh)) return nullptr;
+	if (ExtraEquippedActorID == INDEX_NONE) return nullptr;
 
-void FInventoryItemEquipmentFragment::SetEquippedActor(ADkEquippedActorBase* InEquippedActor)
-{
-	EquippedActor = InEquippedActor;
+	UDkInventorySubsystem* InventorySubsystem = UDkInventorySubsystem::Get(AttachMesh);
+	checkf(InventorySubsystem, TEXT("生成EquipmentItem时，InventorySubsystem为空！"));
+	if (!InventorySubsystem->GetCachedItemTable().Contains(ExtraEquippedActorID)) return nullptr;
+	
+	const FDkItemInfo* ExtraEquipmentInfo = InventorySubsystem->GetCachedItemTable().Find(ExtraEquippedActorID);
+	ADkEquippedActorBase* ExtraSpawnedActor =
+		AttachMesh->GetWorld()->SpawnActor<ADkEquippedActorBase>(ExtraEquipmentInfo->EquippedActorBPClass);
+	if (IsValid(ExtraSpawnedActor))
+	{
+		if (ExtraEquipmentInfo->bStaticMesh)
+		{
+			ExtraSpawnedActor->SetEquipmentStaticMesh(ExtraEquipmentInfo->ItemStaticMesh);
+		}
+		else
+		{
+			ExtraSpawnedActor->SetEquipmentSkeletalMesh(ExtraEquipmentInfo->ItemSkeletalMesh);
+		}
+		ExtraSpawnedActor->SetEquipmentTag(ExtraEquipmentInfo->ItemTag);
+		
+		ExtraSpawnedActor->AttachToComponent(
+			AttachMesh,
+			FAttachmentTransformRules::SnapToTargetNotIncludingScale,
+			ExtraEquipmentInfo->EquippedSocketAttachPoint
+		);
+	}
+	
+	return ExtraSpawnedActor;
 }
 
 void FInventoryItemStrengthFragment::OnEquip(APlayerController* PC)

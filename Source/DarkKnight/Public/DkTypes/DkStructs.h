@@ -176,13 +176,13 @@ struct FDkItemInfo : public FTableRowBase //项目的整体Item表格
 	// TODO：可以添加校验唯一性函数，在开局等时机调用，用来判断变量是否唯一
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	int32 ItemID = INVALID_INDEX;
+	int32 ItemID = INDEX_NONE;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FText ItemName;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	int32 ItemRequiredLevel = INVALID_INDEX;
+	int32 ItemRequiredLevel = INDEX_NONE;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	EItemQuality ItemQuality;
@@ -215,19 +215,19 @@ struct FDkItemInfo : public FTableRowBase //项目的整体Item表格
 	TSubclassOf<ADkEquippedActorBase> EquippedActorBPClass;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	TSubclassOf<ADkCharacterBase> EquipmentPlayerBPClass; // 装备对应的角色类
+	FName EquippedSocketAttachPoint;
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	int32 ExtraEquippedActorID;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	TSubclassOf<ADkCharacterBase> EquipmentEnemyBPClass; // 装备对应的敌人类
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	int32 ItemPrice = INVALID_INDEX;
+	int32 ItemPrice = INDEX_NONE;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	float ItemWeight;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	int32 MaxStack = INVALID_INDEX; // 当MaxStack = INVALID_INDEX时，为不可堆叠
+	int32 MaxStack = INDEX_NONE; // 当MaxStack = INDEX_NONE时，为不可堆叠
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FText MainEntry; // 规范：EntryID/MinValue/MaxValue或者EntryID/Value，比如"1001/5/10或者1002/15",词条之间用逗号隔开
@@ -236,7 +236,7 @@ struct FDkItemInfo : public FTableRowBase //项目的整体Item表格
 	FText SubEntry; // 规范：EntryID/MinValue/MaxValue或者EntryID/Value，比如"1001/5/10或者1002/15",词条之间用逗号隔开
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	int UniqueEntryID = INVALID_INDEX; // 独特词条ID（独特词条可以给角色独特的Ability）
+	int UniqueEntryID = INDEX_NONE; // 独特词条ID（独特词条可以给角色独特的Ability）
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FText UniqueEntry; // 规范：EntryID/MinValue/MaxValue或者EntryID/Value，比如"1001/5/10或者1002/15",词条之间用逗号隔开

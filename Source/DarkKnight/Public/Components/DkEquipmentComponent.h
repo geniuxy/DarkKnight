@@ -53,15 +53,19 @@ private:
 	void OnItemUnEquipped(UDkInventoryItem* UnEquippedItem);
 
 	ADkEquippedActorBase* SpawnEquippedActor(
-		int32 EquipmentID, FInventoryItemEquipmentFragment* EquipmentFragment, USkeletalMeshComponent* AttachMesh
+		FInventoryItemEquipmentFragment* EquipmentFragment, USkeletalMeshComponent* AttachMesh
 	);
+
+	ADkEquippedActorBase* SpawnExtraEquippedActor(
+		FInventoryItemEquipmentFragment* EquipmentFragment, USkeletalMeshComponent* AttachMesh
+	);
+
+	ADkEquippedActorBase* FindEquippedActor(const FGameplayTag& EquippedActorTag);
 
 	UPROPERTY()
 	TArray<TObjectPtr<ADkEquippedActorBase>> EquippedActors;
 
-	ADkEquippedActorBase* FindEquippedActor(const FGameplayTag& EquippedActorTag);
-
-	void RemoveEquippedActor(const FGameplayTag& EquippedActorTag);
+	void RemoveEquippedActor(FInventoryItemEquipmentFragment* EquipmentFragment);
 	/********/
 
 	/* 预览装备 */

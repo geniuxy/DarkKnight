@@ -34,7 +34,7 @@ void FInventoryItemManifest::InitializeFragments(
 	}
 
 	// ItemRequiredLevel
-	if (ItemInfo->ItemRequiredLevel != INVALID_INDEX)
+	if (ItemInfo->ItemRequiredLevel != INDEX_NONE)
 	{
 		FInventoryItemLabeledValueFragment NewItemRequiredLevelFragment = FInventoryItemLabeledValueFragment(
 			FText::FromString(TEXT("等级要求")),
@@ -63,7 +63,7 @@ void FInventoryItemManifest::InitializeFragments(
 	}
 
 	// ItemPrice
-	if (ItemInfo->ItemPrice != INVALID_INDEX)
+	if (ItemInfo->ItemPrice != INDEX_NONE)
 	{
 		FInventoryItemLabeledValueFragment NewItemSellPriceFragment = FInventoryItemLabeledValueFragment(
 			FText::FromString(TEXT("售价")),
@@ -76,7 +76,7 @@ void FInventoryItemManifest::InitializeFragments(
 	// TODO: ItemWeight
 
 	// Stack
-	if (ItemInfo->MaxStack != INVALID_INDEX && InItemStack > 0)
+	if (ItemInfo->MaxStack != INDEX_NONE && InItemStack > 0)
 	{
 		FInventoryItemStackableFragment NewItemStackableFragment = FInventoryItemStackableFragment(
 			InItemStack, ItemInfo->MaxStack
@@ -108,8 +108,8 @@ void FInventoryItemManifest::InitializeFragments(
 	if (IsValid(ItemInfo->EquippedActorBPClass) && GetItemCategory() == EInventoryItemCategory::Equipment)
 	{
 		FInventoryItemEquipmentFragment NewItemEquipmentFragment = FInventoryItemEquipmentFragment(
-			ItemInfo->EquippedActorBPClass,
-			GetItemTag()
+			ItemInfo->ItemID,
+			ItemInfo->ExtraEquippedActorID
 		);
 		if (!MainEntries.IsEmpty())
 		{

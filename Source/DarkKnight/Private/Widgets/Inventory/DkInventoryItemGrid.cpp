@@ -150,7 +150,7 @@ void UDkInventoryItemGrid::NativeTick(const FGeometry& MyGeometry, float InDelta
 
 void UDkInventoryItemGrid::AddItem(UDkInventoryItem* Item)
 {
-	if (!MatchesCategory(Item)) return;
+	if (!IsValid(Item) || !MatchesCategory(Item)) return;
 
 	FDkInventorySlotAvailabilityResult AvailabilityResult = HasRoomForItem(Item);
 	AddItemToIndices(AvailabilityResult, Item);
@@ -158,13 +158,13 @@ void UDkInventoryItemGrid::AddItem(UDkInventoryItem* Item)
 
 void UDkInventoryItemGrid::HandleStackChanged(const FDkInventorySlotAvailabilityResult& Result)
 {
+	if (!Result.Item.IsValid() || !MatchesCategory(Result.Item.Get())) return;
+	
 	AddStacks(Result);
 }
 
 void UDkInventoryItemGrid::AddStacks(const FDkInventorySlotAvailabilityResult& Result)
 {
-	if (!Result.Item.IsValid() || !MatchesCategory(Result.Item.Get())) return;
-
 	for (const auto& Availability : Result.SlotAvailabilities)
 	{
 		if (Availability.bItemAtIndex)

@@ -29,5 +29,5 @@ void ADkRewardBox::HandleBoxOverlapped(
 	const FHitResult& SweepResult)
 {
 	if (OtherActor == this) return;
-	SpawnRewardItemActor();
+	ServerSpawnRewardItemActor();
 }

@@ -518,14 +518,13 @@ struct FInventoryItemEquipmentFragment : public FInventoryItemFragment
 	}
 
 	FInventoryItemEquipmentFragment(
-		const TSubclassOf<ADkEquippedActorBase>& InEquippedActorClass,
-		FGameplayTag InEquipmentTag = FGameplayTag::EmptyTag,
-		FName InSocketAttachPoint = NAME_None)
+		int32 InEquippedActorID,
+		int32 InExtraEquippedActorID = INDEX_NONE,
+		FGameplayTag InFragmentTag = DkGameplayTags::Dk_Inventory_Fragment_Equipment)
 	{
-		FragmentTag = DkGameplayTags::Dk_Inventory_Fragment_Equipment;
-		EquippedActorClass = InEquippedActorClass;
-		EquipmentTag = InEquipmentTag;
-		SocketAttachPoint = InSocketAttachPoint;
+		FragmentTag = InFragmentTag;
+		EquippedActorID = InEquippedActorID;
+		ExtraEquippedActorID = InExtraEquippedActorID;
 	}
 
 	bool bEquipped{false};
@@ -537,28 +536,25 @@ struct FInventoryItemEquipmentFragment : public FInventoryItemFragment
 
 	void UpdateEquipEntries(const UObject* WorldContextObject, TArray<FItemEntryInfo> InEntries, bool bMainEntry);
 
-	ADkEquippedActorBase* SpawnAttachActor(int32 EquipmentID, USkeletalMeshComponent* AttachMesh) const;
-	void DestroyAttachActor() const;
-
-	void SetEquippedActor(ADkEquippedActorBase* InEquippedActor);
+	ADkEquippedActorBase* SpawnAttachActor(USkeletalMeshComponent* AttachMesh) const;
+	ADkEquippedActorBase* SpawnExtraAttachActor(USkeletalMeshComponent* AttachMesh) const;
 
 private:
 	UPROPERTY(EditAnywhere, Category="Equipment", meta=(ExcludeBaseStruct))
 	TArray<TInstancedStruct<FEquipmentEntryFragment>> EquipEntries;
 
 	UPROPERTY(EditAnywhere, Category="Equipment")
-	TSubclassOf<ADkEquippedActorBase> EquippedActorClass;
+	int32 EquippedActorID = INDEX_NONE;
 
 	UPROPERTY(EditAnywhere, Category="Equipment")
-	FName SocketAttachPoint = NAME_None;
+	int32 ExtraEquippedActorID = INDEX_NONE;
 
-	UPROPERTY(EditAnywhere, meta = (Categories = "Dk.Item.Equipment"), Category="Equipment")
-	FGameplayTag EquipmentTag = FGameplayTag::EmptyTag;
-
-	TWeakObjectPtr<ADkEquippedActorBase> EquippedActor;
+	FGameplayTag EquippedActorTag = FGameplayTag::EmptyTag;
+	FGameplayTag ExtraEquippedActorTag = FGameplayTag::EmptyTag;
 
 public:
-	LIST_DATA_ACCESSOR(FGameplayTag, EquipmentTag)
+	LIST_DATA_ACCESSOR(FGameplayTag, EquippedActorTag)
+	LIST_DATA_ACCESSOR(FGameplayTag, ExtraEquippedActorTag)
 };
 
 USTRUCT(BlueprintType)

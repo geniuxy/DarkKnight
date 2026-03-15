@@ -86,7 +86,7 @@ void ADkCharacterBase::InitAbilityActorInfo()
 {
 }
 
-void ADkCharacterBase::SpawnRewardItemActor()
+void ADkCharacterBase::ServerSpawnRewardItemActor_Implementation()
 {
 	if (RewardItemIDList.IsEmpty()) return;
 
@@ -123,10 +123,6 @@ void ADkCharacterBase::SpawnRewardItemActor()
 			}
 		}
 	}
-}
-
-void ADkCharacterBase::SpawnRewardItemActor(int ItemID)
-{
 }
 
 void ADkCharacterBase::GetNetworkDebugInfo() const

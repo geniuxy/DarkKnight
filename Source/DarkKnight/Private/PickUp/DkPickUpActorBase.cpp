@@ -11,7 +11,7 @@
 ADkPickUpActorBase::ADkPickUpActorBase()
 {
 	PrimaryActorTick.bCanEverTick = false;
-	SetReplicates(true);
+	bReplicates = true;
 
 	ItemComponent = CreateDefaultSubobject<UDkItemComponent>(TEXT("DkItemComponent"));
 }

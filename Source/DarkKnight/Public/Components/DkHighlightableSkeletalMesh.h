@@ -20,9 +20,8 @@ public:
 	virtual void Highlight_Implementation() override;
 	virtual void UnHighlight_Implementation() override;
 	//~End IHighlightInterface Interface
-	
-private:
 
+private:
 	UPROPERTY(EditAnywhere, Category = "Highlight")
 	TObjectPtr<UMaterialInterface> HighlightMaterial;
 };

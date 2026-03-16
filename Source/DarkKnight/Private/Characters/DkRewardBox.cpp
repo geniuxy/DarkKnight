@@ -3,6 +3,7 @@
 
 #include "Characters/DkRewardBox.h"
 
+#include "Characters/DkCharacterHero.h"
 #include "Components/BoxComponent.h"
 
 
@@ -29,5 +30,7 @@ void ADkRewardBox::HandleBoxOverlapped(
 	const FHitResult& SweepResult)
 {
 	if (OtherActor == this) return;
+	ADkCharacterHero* OverlappedCharacter = Cast<ADkCharacterHero>(OtherActor);
+	if (!OverlappedCharacter) return;
 	ServerSpawnRewardItemActor();
 }

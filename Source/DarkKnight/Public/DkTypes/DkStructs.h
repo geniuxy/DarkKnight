@@ -215,10 +215,10 @@ struct FDkItemInfo : public FTableRowBase //项目的整体Item表格
 	TSubclassOf<ADkEquippedActorBase> EquippedActorBPClass;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	FName EquippedSocketAttachPoint;
-	
+	FName EquippedAttachMeshTag; // 装备所Attach的Mesh的Tag,为空时默认装在MainMesh上
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	int32 ExtraEquippedActorID;
+	FName EquippedSocketAttachPoint;  // 装备所Attach的SocketName
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	int32 ItemPrice = INDEX_NONE;

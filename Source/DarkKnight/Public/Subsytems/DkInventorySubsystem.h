@@ -10,7 +10,8 @@
 
 class UDkInventoryComponent;
 /**
- * 
+ * UGameInstanceSubsystem 本质上不适用于网络同步场景
+ * 需要网络同步时：AGameState全局游戏状态 / APlayerState玩家相关状态
  */
 UCLASS()
 class DARKKNIGHT_API UDkInventorySubsystem : public UGameInstanceSubsystem
@@ -32,7 +33,7 @@ public:
 	void InitializeEntryData();
 
 private:
-	UPROPERTY(Transient)
+	UPROPERTY(Transient) // 不保存到磁盘，不参与网络复制
 	UDkInventoryComponent* CachedInventoryComponent;
 
 	UPROPERTY(Transient)

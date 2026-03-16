@@ -3,6 +3,7 @@
 
 #include "PickUp/DkPickUpActorSkeletalMesh.h"
 
+#include "DarkKnightDebugHelper.h"
 #include "Components/DkHighlightableSkeletalMesh.h"
 #include "DkTypes/DkStructs.h"
 
@@ -25,7 +26,13 @@ void ADkPickUpActorSkeletalMesh::SetItemSkeletalMesh(const FDkItemInfo* PickUpIt
 {
 	if (!PickUpItemInfo->bStaticMesh)
 	{
-		checkf(IsValid(PickUpItemInfo->ItemSkeletalMesh), TEXT("生成PickUpItem时，表格配置不是StaticMesh，却没有配置SkeletalMesh"));
-		PickUpItemSkeletalMesh->SetSkeletalMeshAsset(PickUpItemInfo->ItemSkeletalMesh);
+		if (IsValid(PickUpItemInfo->ItemSkeletalMesh))
+		{
+			PickUpItemSkeletalMesh->SetSkeletalMeshAsset(PickUpItemInfo->ItemSkeletalMesh);
+		}
+		else
+		{
+			Debug::Print(TEXT("生成PickUpItem时，表格配置不是StaticMesh，却没有配置SkeletalMesh"));
+		}
 	}
 }

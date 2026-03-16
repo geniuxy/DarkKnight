@@ -3,6 +3,8 @@
 #include "DarkKnightDebugHelper.h"
 #include "DkTypes/DkStructs.h"
 #include "Equipment/DkEquippedActorBase.h"
+#include "Equipment/DkEquippedActorSkeletal.h"
+#include "Equipment/DkEquippedActorStatic.h"
 #include "FunctionLibrarys/DkInventoryFunctionLibrary.h"
 #include "Subsytems/DkInventorySubsystem.h"
 #include "Widgets/Inventory/Composites/DkInventoryLeaf.h"
@@ -356,55 +358,46 @@ ADkEquippedActorBase* FInventoryItemEquipmentFragment::SpawnAttachActor(USkeleta
 	{
 		if (EquipmentInfo->bStaticMesh)
 		{
-			SpawnedActor->SetEquipmentStaticMesh(EquipmentInfo->ItemStaticMesh);
+			CastChecked<ADkEquippedActorStatic>(SpawnedActor)->SetEquipmentStaticMesh(
+				EquipmentInfo->ItemStaticMesh
+			);
 		}
 		else
 		{
-			SpawnedActor->SetEquipmentSkeletalMesh(EquipmentInfo->ItemSkeletalMesh);
+			CastChecked<ADkEquippedActorSkeletal>(SpawnedActor)->SetEquipmentSkeletalMesh(
+				EquipmentInfo->ItemSkeletalMesh
+			);
 		}
 		SpawnedActor->SetEquipmentTag(EquipmentInfo->ItemTag);
-		
-		SpawnedActor->AttachToComponent(
-			AttachMesh,
-			FAttachmentTransformRules::SnapToTargetNotIncludingScale,
-			EquipmentInfo->EquippedSocketAttachPoint
-		);
-	}
-	return SpawnedActor;
-}
 
-ADkEquippedActorBase* FInventoryItemEquipmentFragment::SpawnExtraAttachActor(USkeletalMeshComponent* AttachMesh) const
-{
-	if (!IsValid(AttachMesh)) return nullptr;
-	if (ExtraEquippedActorID == INDEX_NONE) return nullptr;
-
-	UDkInventorySubsystem* InventorySubsystem = UDkInventorySubsystem::Get(AttachMesh);
-	checkf(InventorySubsystem, TEXT("生成EquipmentItem时，InventorySubsystem为空！"));
-	if (!InventorySubsystem->GetCachedItemTable().Contains(ExtraEquippedActorID)) return nullptr;
-	
-	const FDkItemInfo* ExtraEquipmentInfo = InventorySubsystem->GetCachedItemTable().Find(ExtraEquippedActorID);
-	ADkEquippedActorBase* ExtraSpawnedActor =
-		AttachMesh->GetWorld()->SpawnActor<ADkEquippedActorBase>(ExtraEquipmentInfo->EquippedActorBPClass);
-	if (IsValid(ExtraSpawnedActor))
-	{
-		if (ExtraEquipmentInfo->bStaticMesh)
+		if (!EquipmentInfo->EquippedAttachMeshTag.IsNone() && EquipmentInfo->bStaticMesh)
 		{
-			ExtraSpawnedActor->SetEquipmentStaticMesh(ExtraEquipmentInfo->ItemStaticMesh);
+			AActor* OwnerCharacter = AttachMesh->GetOwner();
+			SpawnedActor->AttachToComponent(
+				OwnerCharacter->FindComponentByTag<UStaticMeshComponent>(EquipmentInfo->EquippedAttachMeshTag),
+				FAttachmentTransformRules::SnapToTargetNotIncludingScale,
+				EquipmentInfo->EquippedSocketAttachPoint
+			);
+		}
+		else if (!EquipmentInfo->EquippedAttachMeshTag.IsNone() && !EquipmentInfo->bStaticMesh)
+		{
+			AActor* OwnerCharacter = AttachMesh->GetOwner();
+			SpawnedActor->AttachToComponent(
+				OwnerCharacter->FindComponentByTag<USkeletalMeshComponent>(EquipmentInfo->EquippedAttachMeshTag),
+				FAttachmentTransformRules::SnapToTargetNotIncludingScale,
+				EquipmentInfo->EquippedSocketAttachPoint
+			);
 		}
 		else
 		{
-			ExtraSpawnedActor->SetEquipmentSkeletalMesh(ExtraEquipmentInfo->ItemSkeletalMesh);
+			SpawnedActor->AttachToComponent(
+				AttachMesh,
+				FAttachmentTransformRules::SnapToTargetNotIncludingScale,
+				EquipmentInfo->EquippedSocketAttachPoint
+			);
 		}
-		ExtraSpawnedActor->SetEquipmentTag(ExtraEquipmentInfo->ItemTag);
-		
-		ExtraSpawnedActor->AttachToComponent(
-			AttachMesh,
-			FAttachmentTransformRules::SnapToTargetNotIncludingScale,
-			ExtraEquipmentInfo->EquippedSocketAttachPoint
-		);
 	}
-	
-	return ExtraSpawnedActor;
+	return SpawnedActor;
 }
 
 void FInventoryItemStrengthFragment::OnEquip(APlayerController* PC)

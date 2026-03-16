@@ -108,8 +108,7 @@ void FInventoryItemManifest::InitializeFragments(
 	if (IsValid(ItemInfo->EquippedActorBPClass) && GetItemCategory() == EInventoryItemCategory::Equipment)
 	{
 		FInventoryItemEquipmentFragment NewItemEquipmentFragment = FInventoryItemEquipmentFragment(
-			ItemInfo->ItemID,
-			ItemInfo->ExtraEquippedActorID
+			ItemInfo->ItemID
 		);
 		if (!MainEntries.IsEmpty())
 		{

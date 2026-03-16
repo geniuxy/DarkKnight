@@ -3,6 +3,7 @@
 
 #include "PickUp/DkPickUpActorStaticMesh.h"
 
+#include "DarkKnightDebugHelper.h"
 #include "Components/DkHighlightableStaticMesh.h"
 #include "DkTypes/DkStructs.h"
 
@@ -25,7 +26,13 @@ void ADkPickUpActorStaticMesh::SetItemStaticMesh(const FDkItemInfo* PickUpItemIn
 {
 	if (PickUpItemInfo->bStaticMesh)
 	{
-		checkf(IsValid(PickUpItemInfo->ItemStaticMesh), TEXT("生成PickUpItem时，表格配置是StaticMesh，却没有配置StaticMesh"));
-		PickUpItemStaticMesh->SetStaticMesh(PickUpItemInfo->ItemStaticMesh);
+		if (IsValid(PickUpItemInfo->ItemStaticMesh))
+		{
+			PickUpItemStaticMesh->SetStaticMesh(PickUpItemInfo->ItemStaticMesh);
+		}
+		else
+		{
+			Debug::Print(TEXT("生成PickUpItem时，表格配置是StaticMesh，却没有配置StaticMesh"));
+		}
 	}
 }

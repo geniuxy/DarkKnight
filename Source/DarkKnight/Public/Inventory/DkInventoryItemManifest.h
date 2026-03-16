@@ -54,12 +54,13 @@ struct DARKKNIGHT_API FInventoryItemManifest
 	template <typename T> requires std::derived_from<T, FItemFragment>
 	void AddFragment(T Fragment)
 	{
-		Fragments.Add(TInstancedStruct<FItemFragment>::Make<T>(MoveTemp(Fragment))); // 
+		Fragments.Add(TInstancedStruct<FItemFragment>::Make<T>(MoveTemp(Fragment))); // 右移来优化性能
 	}
 
 private:
 	void ClearFragments();
 
+	// TInstancedStruct 是针对给定 BaseStruct 类型的 类型安全 的 FInstancedStruct 包装器。 
 	UPROPERTY(EditAnywhere, Category="Inventory", meta=(ExcludeBaseStruct))
 	TArray<TInstancedStruct<FItemFragment>> Fragments;
 

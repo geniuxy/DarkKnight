@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "DkPreviewActorBase.generated.h"
 
+class UPhysicsConstraintComponent;
 class UDkEquipmentComponent;
 
 UCLASS()
@@ -32,9 +33,48 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USkeletalMeshComponent> Mesh;
 
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<USkeletalMeshComponent> BodyArmorMesh;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<USkeletalMeshComponent> ArmArmorMesh;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<USkeletalMeshComponent> BottomArmorMesh;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<USkeletalMeshComponent> HelmetMesh;
+
+	UPROPERTY(VisibleAnywhere)
+	USceneComponent* PrimaryWeaponStorePoint;
+
+	UPROPERTY(VisibleAnywhere)
+	UStaticMeshComponent* PrimaryWeaponSheathRoot;
+
+	UPROPERTY(VisibleAnywhere)
+	UPhysicsConstraintComponent* PrimaryPhysicsConstraint; // 为了制作武器摇曳的效果
+
+	UPROPERTY(VisibleAnywhere)
+	UStaticMeshComponent* PrimaryWeaponSheathTarget;
+
+	UPROPERTY(VisibleAnywhere)
+	USceneComponent* SecondaryWeaponStorePoint;
+
+	UPROPERTY(VisibleAnywhere)
+	UStaticMeshComponent* SecondaryWeaponSheathRoot;
+
+	UPROPERTY(VisibleAnywhere)
+	UPhysicsConstraintComponent* SecondaryPhysicsConstraint; // 为了制作武器摇曳的效果
+
+	UPROPERTY(VisibleAnywhere)
+	UStaticMeshComponent* SecondaryWeaponSheathTarget;
+
 	/* Init */
 	FTimerHandle TimerForNextTick;
 	void DelayedInitializeOwner();
 	void DelayedInitialization();
+
+	void InitPrimaryWeaponComponent();
+	void InitSecondaryWeaponComponent();
 	/********/
 };

@@ -6,6 +6,7 @@
 #include "DkCharacterBase.h"
 #include "DkCharacterHero.generated.h"
 
+class UPhysicsConstraintComponent;
 class ADkPlayerStateBase;
 class USpringArmComponent;
 class UCameraComponent;
@@ -19,6 +20,8 @@ class DARKKNIGHT_API ADkCharacterHero : public ADkCharacterBase
 
 public:
 	ADkCharacterHero();
+	void InitPrimaryWeaponComponent();
+	void InitSecondaryWeaponComponent();
 	
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override;
@@ -37,10 +40,34 @@ protected:
 	TObjectPtr<USpringArmComponent> CameraBoom;
 	
 	/* Actor Components */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Inventory")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	USceneComponent* PrimaryWeaponStorePoint;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UStaticMeshComponent* PrimaryWeaponSheathRoot;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPhysicsConstraintComponent* PrimaryPhysicsConstraint; // 为了制作武器摇曳的效果
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UStaticMeshComponent* PrimaryWeaponSheathTarget;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	USceneComponent* SecondaryWeaponStorePoint;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UStaticMeshComponent* SecondaryWeaponSheathRoot;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPhysicsConstraintComponent* SecondaryPhysicsConstraint; // 为了制作武器摇曳的效果
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UStaticMeshComponent* SecondaryWeaponSheathTarget;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UDkInventoryComponent* InventoryComponent;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "Inventory")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UDkEquipmentComponent* EquipmentComponent;
 	/*********/
 

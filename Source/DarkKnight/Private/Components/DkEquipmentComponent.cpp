@@ -94,6 +94,7 @@ void UDkEquipmentComponent::OnItemEquipped(UDkInventoryItem* EquippedItem)
 	FInventoryItemEquipmentFragment* EquipmentFragment =
 		ItemManifest.GetFragmentOfTypeMutable<FInventoryItemEquipmentFragment>();
 	if (!EquipmentFragment) return;
+	// Tips: 这里PreviewActor和主角是共用一个UDkInventoryItem的，需要修改对另一者没有影响
 
 	if (!bIsPreview) // 预览时不需要调整属性等操作
 	{
@@ -111,17 +112,6 @@ void UDkEquipmentComponent::OnItemEquipped(UDkInventoryItem* EquippedItem)
 				SpawnedEquippedActor->SetReplicates(false);
 			}
 			EquippedActors.Add(SpawnedEquippedActor);
-		}
-
-		ADkEquippedActorBase* SpawnedExtraEquippedActor =
-			SpawnExtraEquippedActor(EquipmentFragment, OwningSkeletalMesh.Get());
-		if (SpawnedExtraEquippedActor)
-		{
-			if (bIsPreview)
-			{
-				SpawnedExtraEquippedActor->SetReplicates(false);
-			}
-			EquippedActors.Add(SpawnedExtraEquippedActor);
 		}
 	}
 }
@@ -164,19 +154,6 @@ ADkEquippedActorBase* UDkEquipmentComponent::SpawnEquippedActor(
 	return SpawnedEquippedActor;
 }
 
-ADkEquippedActorBase* UDkEquipmentComponent::SpawnExtraEquippedActor(
-	FInventoryItemEquipmentFragment* EquipmentFragment, USkeletalMeshComponent* AttachMesh)
-{
-	ADkEquippedActorBase* SpawnedExtraEquippedActor = EquipmentFragment->SpawnExtraAttachActor(AttachMesh);
-	if (IsValid(SpawnedExtraEquippedActor))
-	{
-		SpawnedExtraEquippedActor->SetOwner(GetOwner());
-		EquipmentFragment->SetExtraEquippedActorTag(SpawnedExtraEquippedActor->GetEquipmentTag());
-	}
-
-	return SpawnedExtraEquippedActor;
-}
-
 ADkEquippedActorBase* UDkEquipmentComponent::FindEquippedActor(const FGameplayTag& EquippedActorTag)
 {
 	auto FoundActor = EquippedActors.FindByPredicate(
@@ -195,12 +172,5 @@ void UDkEquipmentComponent::RemoveEquippedActor(FInventoryItemEquipmentFragment*
 	{
 		EquippedActors.Remove(EquippedActor);
 		EquippedActor->Destroy();
-	}
-	
-	ADkEquippedActorBase* ExtraEquippedActor = FindEquippedActor(EquipmentFragment->GetExtraEquippedActorTag());
-	if (IsValid(ExtraEquippedActor))
-	{
-		EquippedActors.Remove(ExtraEquippedActor);
-		ExtraEquippedActor->Destroy();
 	}
 }

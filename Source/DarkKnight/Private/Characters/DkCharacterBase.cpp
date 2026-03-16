@@ -27,6 +27,7 @@ ADkCharacterBase::ADkCharacterBase()
 	bUseControllerRotationRoll = false;
 
 	GetMesh()->SetCollisionProfileName(FName("DkMesh"));
+	GetMesh()->ComponentTags.Add(FName("MainMesh"));
 
 	GetCapsuleComponent()->SetCollisionProfileName(FName("DkMesh"));
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Weapon, ECR_Ignore);
@@ -34,15 +35,19 @@ ADkCharacterBase::ADkCharacterBase()
 	BodyArmorMesh = CreateDefaultSubobject<USkeletalMeshComponent>("BodyArmorMesh");
 	BodyArmorMesh->SetupAttachment(GetMesh());
 	BodyArmorMesh->SetCollisionProfileName(FName("DkMesh"));
+	BodyArmorMesh->ComponentTags.Add(FName("BodyArmorMesh"));
 	ArmArmorMesh = CreateDefaultSubobject<USkeletalMeshComponent>("ArmArmorMesh");
 	ArmArmorMesh->SetupAttachment(GetMesh());
 	ArmArmorMesh->SetCollisionProfileName(FName("DkMesh"));
+	ArmArmorMesh->ComponentTags.Add(FName("ArmArmorMesh"));
 	BottomArmorMesh = CreateDefaultSubobject<USkeletalMeshComponent>("BottomArmorMesh");
 	BottomArmorMesh->SetupAttachment(GetMesh());
 	BottomArmorMesh->SetCollisionProfileName(FName("DkMesh"));
+	BottomArmorMesh->ComponentTags.Add(FName("BottomArmorMesh"));
 	HelmetMesh = CreateDefaultSubobject<USkeletalMeshComponent>("HelmetMesh");
 	HelmetMesh->SetupAttachment(GetMesh());
 	HelmetMesh->SetCollisionProfileName(FName("DkMesh"));
+	HelmetMesh->ComponentTags.Add(FName("HelmetMesh"));
 
 	GetCharacterMovement()->GravityScale = 2.5f;
 	GetCharacterMovement()->MaxAcceleration = 800.f;

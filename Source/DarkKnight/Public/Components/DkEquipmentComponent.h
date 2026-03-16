@@ -56,10 +56,6 @@ private:
 		FInventoryItemEquipmentFragment* EquipmentFragment, USkeletalMeshComponent* AttachMesh
 	);
 
-	ADkEquippedActorBase* SpawnExtraEquippedActor(
-		FInventoryItemEquipmentFragment* EquipmentFragment, USkeletalMeshComponent* AttachMesh
-	);
-
 	ADkEquippedActorBase* FindEquippedActor(const FGameplayTag& EquippedActorTag);
 
 	UPROPERTY()

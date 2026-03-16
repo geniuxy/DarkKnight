@@ -519,12 +519,10 @@ struct FInventoryItemEquipmentFragment : public FInventoryItemFragment
 
 	FInventoryItemEquipmentFragment(
 		int32 InEquippedActorID,
-		int32 InExtraEquippedActorID = INDEX_NONE,
 		FGameplayTag InFragmentTag = DkGameplayTags::Dk_Inventory_Fragment_Equipment)
 	{
 		FragmentTag = InFragmentTag;
 		EquippedActorID = InEquippedActorID;
-		ExtraEquippedActorID = InExtraEquippedActorID;
 	}
 
 	bool bEquipped{false};
@@ -537,7 +535,6 @@ struct FInventoryItemEquipmentFragment : public FInventoryItemFragment
 	void UpdateEquipEntries(const UObject* WorldContextObject, TArray<FItemEntryInfo> InEntries, bool bMainEntry);
 
 	ADkEquippedActorBase* SpawnAttachActor(USkeletalMeshComponent* AttachMesh) const;
-	ADkEquippedActorBase* SpawnExtraAttachActor(USkeletalMeshComponent* AttachMesh) const;
 
 private:
 	UPROPERTY(EditAnywhere, Category="Equipment", meta=(ExcludeBaseStruct))
@@ -546,15 +543,10 @@ private:
 	UPROPERTY(EditAnywhere, Category="Equipment")
 	int32 EquippedActorID = INDEX_NONE;
 
-	UPROPERTY(EditAnywhere, Category="Equipment")
-	int32 ExtraEquippedActorID = INDEX_NONE;
-
 	FGameplayTag EquippedActorTag = FGameplayTag::EmptyTag;
-	FGameplayTag ExtraEquippedActorTag = FGameplayTag::EmptyTag;
 
 public:
 	LIST_DATA_ACCESSOR(FGameplayTag, EquippedActorTag)
-	LIST_DATA_ACCESSOR(FGameplayTag, ExtraEquippedActorTag)
 };
 
 USTRUCT(BlueprintType)

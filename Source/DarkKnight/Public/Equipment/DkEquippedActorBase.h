@@ -19,20 +19,9 @@ class DARKKNIGHT_API ADkEquippedActorBase : public AActor
 public:
 	ADkEquippedActorBase();
 
-	void SetEquipmentSkeletalMesh(USkeletalMesh* InEquipmentItemMesh) const;
-	void SetEquipmentStaticMesh(UStaticMesh* InEquipmentItemMesh) const;
-
-private:
+protected:
 	UPROPERTY(EditAnywhere, Category="Equipment")
 	FGameplayTag EquipmentTag;
-
-	/* Actor Components */
-	UPROPERTY(VisibleAnywhere)
-	USkeletalMeshComponent* EquipmentItemSkeletalMesh;
-
-	UPROPERTY(VisibleAnywhere)
-	UStaticMeshComponent* EquipmentItemStaticMesh;
-	/*********/
 
 public:
 	LIST_DATA_ACCESSOR(FGameplayTag, EquipmentTag)

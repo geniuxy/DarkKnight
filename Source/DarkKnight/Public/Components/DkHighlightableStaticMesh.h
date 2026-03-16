@@ -22,7 +22,6 @@ public:
 	//~End IHighlightInterface Interface
 	
 private:
-
 	UPROPERTY(EditAnywhere, Category = "Highlight")
 	TObjectPtr<UMaterialInterface> HighlightMaterial;
 };

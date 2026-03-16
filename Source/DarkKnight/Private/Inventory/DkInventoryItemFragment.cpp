@@ -356,13 +356,13 @@ ADkEquippedActorBase* FInventoryItemEquipmentFragment::SpawnAttachActor(USkeleta
 		AttachMesh->GetWorld()->SpawnActor<ADkEquippedActorBase>(EquipmentInfo->EquippedActorBPClass);
 	if (IsValid(SpawnedActor))
 	{
-		if (EquipmentInfo->bStaticMesh)
+		if (EquipmentInfo->bStaticMesh && IsValid(EquipmentInfo->ItemStaticMesh))
 		{
 			CastChecked<ADkEquippedActorStatic>(SpawnedActor)->SetEquipmentStaticMesh(
 				EquipmentInfo->ItemStaticMesh
 			);
 		}
-		else
+		else if (!EquipmentInfo->bStaticMesh && IsValid(EquipmentInfo->ItemSkeletalMesh))
 		{
 			CastChecked<ADkEquippedActorSkeletal>(SpawnedActor)->SetEquipmentSkeletalMesh(
 				EquipmentInfo->ItemSkeletalMesh

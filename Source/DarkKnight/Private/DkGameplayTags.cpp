@@ -43,10 +43,10 @@ namespace DkGameplayTags
 
 	// Items
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(
-		Dk_Item_Equipment_Weapons_Axe, "Dk.Item.Equipment.Weapons.Axe", "斧类武器"
+		Dk_Item_Equipment_Weapons_Primary_Sword, "Dk.Item.Equipment.Weapons.Primary.Sword", "主武器钢剑"
 	);
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(
-		Dk_Item_Equipment_Weapons_Sword, "Dk.Item.Equipment.Weapons.Sword", "单手或双手剑"
+		Dk_Item_Equipment_Weapons_Secondary_Sword, "Dk.Item.Equipment.Weapons.Secondary.Sword", "副武器银剑"
 	);
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(
 		Dk_Item_Equipment_Cloaks_RedCloak, "Dk.Item.Equipment.Cloaks.RedCloak", "鲜红色斗篷"

@@ -293,6 +293,17 @@ void FInventoryItemManifest::AssimilateInventoryFragments(UDkInventoryCompositeB
 				}
 			}
 		}
+		else if (Fragment->GetFragmentTag() == DkGameplayTags::Dk_Inventory_Fragment_Equipment)
+		{
+			if (static_cast<const FInventoryItemEquipmentFragment*>(Fragment)->HasOptionalStats())
+			{
+				if (UDkInventoryItemDescriptionMenu* ItemDescriptionMenu =
+					Cast<UDkInventoryItemDescriptionMenu>(Composite))
+				{
+					ItemDescriptionMenu->ShowOptionalStatTitle();
+				}
+			}
+		}
 	}
 }
 

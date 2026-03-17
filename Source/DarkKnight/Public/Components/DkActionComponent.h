@@ -27,13 +27,12 @@ public:
 	void SetCurrentActionState(EActionState InActionState);
 
 protected:
-	/* Actor Components */
+	virtual void BeginPlay() override;
+	
 	UPROPERTY()
-	TObjectPtr<ADkCharacterBase> OwningCharacter;
-	/*********/
+	TObjectPtr<ADkCharacterBase> OwnerCharacter;
 
 private:
-	
 	bool bIsInCombat = false;
 
 	EActionState CurrentActionState;

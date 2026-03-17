@@ -5,6 +5,7 @@
 
 #include "Characters/DkCharacterHero.h"
 #include "DataAssets/CharacterInfo.h"
+#include "Kismet/GameplayStatics.h"
 #include "PlayerStates/DkPlayerStateBase.h"
 
 UDkActionComponent::UDkActionComponent()
@@ -14,12 +15,12 @@ UDkActionComponent::UDkActionComponent()
 
 void UDkActionComponent::InitializeActorComponent(UCharacterInfo* InCharacterInfo)
 {
-	OwningCharacter = Cast<ADkCharacterBase>(GetOwner());
-	if (OwningCharacter->ActorHasTag(TEXT("Player")))
+	OwnerCharacter = Cast<ADkCharacterBase>(GetOwner());
+	if (OwnerCharacter->ActorHasTag(TEXT("Player")))
 	{
 		SetOwnerType(EOwnerType::Player);
 	}
-	else if (OwningCharacter->ActorHasTag(TEXT("Monster")))
+	else if (OwnerCharacter->ActorHasTag(TEXT("Monster")))
 	{
 		if (InCharacterInfo->MonsterType == EMonsterType::Dragon)
 		{
@@ -61,4 +62,14 @@ void UDkActionComponent::SetCurrentActionState(EActionState InActionState)
 	default:
 		break;
 	}
+}
+
+void UDkActionComponent::BeginPlay()
+{
+	Super::BeginPlay();
+
+	ADkCharacterHero* Hero = CastChecked<ADkCharacterHero>(UGameplayStatics::GetPlayerPawn(this, 0));
+	if (!IsValid(Hero)) return;
+
+	
 }

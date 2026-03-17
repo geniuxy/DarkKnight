@@ -33,68 +33,10 @@ ADkCharacterHero::ADkCharacterHero()
 	Camera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	Camera->bUsePawnControlRotation = false;
 
-	InitPrimaryWeaponComponent();
-
-	InitSecondaryWeaponComponent();
-
 	InventoryComponent = CreateDefaultSubobject<UDkInventoryComponent>(TEXT("DkInventoryComponent"));
 	EquipmentComponent = CreateDefaultSubobject<UDkEquipmentComponent>(TEXT("DkEquipmentComponent"));
 
 	LandedDelegate.AddDynamic(this, &ThisClass::HandleOnLanded);
-}
-
-void ADkCharacterHero::InitPrimaryWeaponComponent()
-{
-	PrimaryWeaponStorePoint = CreateDefaultSubobject<USceneComponent>(TEXT("PrimaryWeaponStorePoint"));
-	PrimaryWeaponStorePoint->SetupAttachment(GetMesh(), FName(TEXT("spine_03")));
-	
-	PrimaryWeaponSheathRoot = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PrimaryWeaponSheathRoot"));
-	PrimaryWeaponSheathRoot->SetupAttachment(PrimaryWeaponStorePoint);
-	
-	PrimaryWeaponSheathTarget = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PrimaryWeaponSheathTarget"));
-	PrimaryWeaponSheathTarget->SetupAttachment(PrimaryWeaponStorePoint);
-	PrimaryWeaponSheathTarget->ComponentTags.Add(FName("PrimaryWeaponSheathTarget"));
-	
-	PrimaryPhysicsConstraint = CreateDefaultSubobject<UPhysicsConstraintComponent>(TEXT("PrimaryPhysicsConstraint"));
-	PrimaryPhysicsConstraint->SetupAttachment(PrimaryWeaponSheathRoot);
-	PrimaryPhysicsConstraint->SetConstrainedComponents(
-		PrimaryWeaponSheathRoot, FName(), PrimaryWeaponSheathTarget, FName()
-	);
-	PrimaryPhysicsConstraint->ConstraintInstance.SetLinearLimits(LCM_Limited, LCM_Limited, LCM_Limited, 1.25);
-	PrimaryPhysicsConstraint->SetAngularSwing1Limit(ACM_Limited, 7.f);
-	PrimaryPhysicsConstraint->SetAngularSwing2Limit(ACM_Limited, 10.f);
-	PrimaryPhysicsConstraint->SetAngularTwistLimit(ACM_Limited, 10.f);
-	PrimaryPhysicsConstraint->SetAngularDriveMode(EAngularDriveMode::TwistAndSwing);
-	PrimaryPhysicsConstraint->SetAngularOrientationDrive(true, true);
-	PrimaryPhysicsConstraint->SetAngularVelocityDriveTwistAndSwing(true, true);
-}
-
-void ADkCharacterHero::InitSecondaryWeaponComponent()
-{
-	SecondaryWeaponStorePoint = CreateDefaultSubobject<USceneComponent>(TEXT("SecondaryWeaponStorePoint"));
-	SecondaryWeaponStorePoint->SetupAttachment(GetMesh(), FName(TEXT("spine_03")));
-	
-	SecondaryWeaponSheathRoot = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SecondaryWeaponSheathRoot"));
-	SecondaryWeaponSheathRoot->SetupAttachment(SecondaryWeaponStorePoint);
-	
-	SecondaryWeaponSheathTarget = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SecondaryWeaponSheathTarget"));
-	SecondaryWeaponSheathTarget->SetupAttachment(SecondaryWeaponStorePoint);
-	SecondaryWeaponSheathTarget->ComponentTags.Add(FName("SecondaryWeaponSheathTarget"));
-	
-	SecondaryPhysicsConstraint = CreateDefaultSubobject<UPhysicsConstraintComponent>(
-		TEXT("SecondaryPhysicsConstraint")
-	);
-	SecondaryPhysicsConstraint->SetupAttachment(SecondaryWeaponSheathRoot);
-	SecondaryPhysicsConstraint->SetConstrainedComponents(
-		SecondaryWeaponSheathRoot, FName(), SecondaryWeaponSheathTarget, FName()
-	);
-	SecondaryPhysicsConstraint->ConstraintInstance.SetLinearLimits(LCM_Limited, LCM_Limited, LCM_Limited, 1.25);
-	SecondaryPhysicsConstraint->SetAngularSwing1Limit(ACM_Limited, 7.f);
-	SecondaryPhysicsConstraint->SetAngularSwing2Limit(ACM_Limited, 10.f);
-	SecondaryPhysicsConstraint->SetAngularTwistLimit(ACM_Limited, 10.f);
-	SecondaryPhysicsConstraint->SetAngularDriveMode(EAngularDriveMode::TwistAndSwing);
-	SecondaryPhysicsConstraint->SetAngularOrientationDrive(true, true);
-	SecondaryPhysicsConstraint->SetAngularVelocityDriveTwistAndSwing(true, true);
 }
 
 void ADkCharacterHero::PossessedBy(AController* NewController)

@@ -12,7 +12,6 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GAS/DkAbilitySystemComponent.h"
-#include "PhysicsEngine/PhysicsConstraintComponent.h"
 #include "PlayerStates/DkPlayerStateBase.h"
 
 

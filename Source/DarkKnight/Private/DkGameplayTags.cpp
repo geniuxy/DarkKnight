@@ -122,4 +122,8 @@ namespace DkGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Item_Entry_SpellPower, "Dk.Item.Entry.SpellPower");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Item_Entry_MaxToxin, "Dk.Item.Entry.MaxToxin");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Item_Entry_MaxAdrenaline, "Dk.Item.Entry.MaxAdrenaline");
+
+	// Action Input Buffer
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Action_CanCombo, "Dk.Action.CanCombo");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Action_NoAction, "Dk.Action.NoAction");
 }

@@ -3,14 +3,16 @@
 
 #include "Components/DkActionComponent.h"
 
+#include "DkGameplayTags.h"
 #include "Characters/DkCharacterHero.h"
 #include "DataAssets/CharacterInfo.h"
-#include "Kismet/GameplayStatics.h"
 #include "PlayerStates/DkPlayerStateBase.h"
 
 UDkActionComponent::UDkActionComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
+
+	OnTriggerActionDelegate.AddUObject(this, &ThisClass::TriggerAction);
 }
 
 void UDkActionComponent::InitializeActorComponent(UCharacterInfo* InCharacterInfo)
@@ -68,8 +70,29 @@ void UDkActionComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	ADkCharacterHero* Hero = CastChecked<ADkCharacterHero>(UGameplayStatics::GetPlayerPawn(this, 0));
+	ADkCharacterHero* Hero = CastChecked<ADkCharacterHero>(GetOwner());
 	if (!IsValid(Hero)) return;
 
 	
+}
+
+void UDkActionComponent::TriggerAction(FGameplayTag CurrentActionTag, EActionPriority CurrentActionPriority, bool bUseInputBuffer)
+{
+	if (PreviousActionPriority > CurrentActionPriority)
+	{
+		return;
+	}
+	FGameplayTagContainer NoTriggerTags;
+	NoTriggerTags.AddTag(DkGameplayTags::Dk_Action_CanCombo);
+	NoTriggerTags.AddTag(DkGameplayTags::Dk_Action_NoAction);
+	if (CurrentActionTag.MatchesAnyExact(NoTriggerTags))
+	{
+		return;
+	}
+	
+	// TODO: 预输入缓存
+	if (bUseInputBuffer)
+	{
+		
+	}
 }

@@ -55,6 +55,19 @@ enum class EOwnerType :uint8 // ActionComponent的Owner类型
 	Unknown UMETA(Hidden)
 };
 
+UENUM(BlueprintType)
+enum class EActionPriority :uint8
+{
+	NotApplicable,
+	VeryLow,
+	Low,
+	Medium,
+	High,
+	VeryHigh,
+	Supreme,
+	Unknown UMETA(Hidden)
+};
+
 /********/
 
 /* UI Types */

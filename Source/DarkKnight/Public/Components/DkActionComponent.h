@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "Components/ActorComponent.h"
 #include "DarkKnight/DarkKnight.h"
 #include "DkTypes/DkEnums.h"
@@ -14,6 +15,9 @@ class ADkCharacterBase;
 enum class EOwnerType : uint8;
 enum class EActionState : uint8;
 
+DECLARE_MULTICAST_DELEGATE_ThreeParams(
+	FOnTriggerAction, FGameplayTag /* NewActionTag */, EActionPriority /* Priority */, bool /* bUseInputBuffer */)
+
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class DARKKNIGHT_API UDkActionComponent : public UActorComponent
 {
@@ -23,12 +27,12 @@ public:
 	UDkActionComponent();
 
 	void InitializeActorComponent(UCharacterInfo* InCharacterInfo);
-	
+
 	void SetCurrentActionState(EActionState InActionState);
 
 protected:
 	virtual void BeginPlay() override;
-	
+
 	UPROPERTY()
 	TObjectPtr<ADkCharacterBase> OwnerCharacter;
 
@@ -49,4 +53,15 @@ public:
 
 	LIST_DATA_ACCESSOR(EActionState, LastActionStateWhenOnGround)
 	LIST_DATA_ACCESSOR(EOwnerType, OwnerType)
+
+	/**********************************************************************/
+	/*                        Action Input Buffer                         */
+	/**********************************************************************/
+public:
+	FOnTriggerAction OnTriggerActionDelegate;
+
+private:
+	EActionPriority PreviousActionPriority;
+
+	void TriggerAction(FGameplayTag CurrentActionTag, EActionPriority CurrentActionPriority, bool bUseInputBuffer);
 };

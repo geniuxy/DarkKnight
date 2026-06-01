@@ -208,7 +208,7 @@ void FInventoryItemConsumableFragment::UpdateConsumableEntries(
 			EntryInfo.bPercent,
 			EntryFragmentTag
 		);
-		if (EntryStrInfo.MaxValue != INDEX_NONE)
+		if (EntryStrInfo.MaxValue >= EntryStrInfo.MinValue)
 		{
 			NewItemEntryFragment.SetMaxValue(EntryStrInfo.MaxValue);
 		}
@@ -334,7 +334,7 @@ void FInventoryItemEquipmentFragment::UpdateEquipEntries(
 			EntryInfo.bPercent,
 			EntryFragmentTag
 		);
-		if (EntryStrInfo.MaxValue != INDEX_NONE)
+		if (EntryStrInfo.MaxValue >= EntryStrInfo.MinValue)
 		{
 			NewItemEntryFragment.SetMaxValue(EntryStrInfo.MaxValue);
 		}

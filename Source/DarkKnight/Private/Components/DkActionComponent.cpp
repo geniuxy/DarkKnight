@@ -6,6 +6,7 @@
 #include "DkGameplayTags.h"
 #include "Characters/DkCharacterHero.h"
 #include "DataAssets/CharacterInfo.h"
+#include "Kismet/GameplayStatics.h"
 #include "PlayerStates/DkPlayerStateBase.h"
 
 UDkActionComponent::UDkActionComponent()
@@ -70,7 +71,7 @@ void UDkActionComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	ADkCharacterHero* Hero = CastChecked<ADkCharacterHero>(GetOwner());
+	ADkCharacterHero* Hero = CastChecked<ADkCharacterHero>(UGameplayStatics::GetPlayerPawn(this, 0));
 	if (!IsValid(Hero)) return;
 
 	

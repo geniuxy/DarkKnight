@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "DkGameplayTags.h"
 #include "GameplayTagContainer.h"
 #include "Components/ActorComponent.h"
 #include "DarkKnight/DarkKnight.h"
@@ -62,6 +63,9 @@ public:
 
 private:
 	EActionPriority PreviousActionPriority;
+	EActionPriority CurActionPriority;
+	
+	FGameplayTag CurActionTag = DkGameplayTags::Dk_Action_NoAction;
 
-	void TriggerAction(FGameplayTag CurrentActionTag, EActionPriority CurrentActionPriority, bool bUseInputBuffer);
+	void TriggerAction(FGameplayTag InCurrentActionTag, EActionPriority InCurrentActionPriority, bool bUseInputBuffer);
 };

@@ -77,17 +77,23 @@ void UDkActionComponent::BeginPlay()
 	
 }
 
-void UDkActionComponent::TriggerAction(FGameplayTag CurrentActionTag, EActionPriority CurrentActionPriority, bool bUseInputBuffer)
+void UDkActionComponent::TriggerAction(FGameplayTag InCurrentActionTag, EActionPriority InCurrentActionPriority, bool bUseInputBuffer)
 {
-	if (PreviousActionPriority > CurrentActionPriority)
+	if (PreviousActionPriority > InCurrentActionPriority)
 	{
+		CurActionPriority = InCurrentActionPriority;
+		PreviousActionPriority = InCurrentActionPriority;
+		CurActionTag = InCurrentActionTag;
 		return;
 	}
 	FGameplayTagContainer NoTriggerTags;
 	NoTriggerTags.AddTag(DkGameplayTags::Dk_Action_CanCombo);
 	NoTriggerTags.AddTag(DkGameplayTags::Dk_Action_NoAction);
-	if (CurrentActionTag.MatchesAnyExact(NoTriggerTags))
+	if (InCurrentActionTag.MatchesAnyExact(NoTriggerTags))
 	{
+		CurActionPriority = InCurrentActionPriority;
+		PreviousActionPriority = InCurrentActionPriority;
+		CurActionTag = InCurrentActionTag;
 		return;
 	}
 	

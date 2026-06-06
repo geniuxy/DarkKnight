@@ -28,6 +28,8 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override;
 
+	virtual void PawnClientRestart() override;
+
 	void SwitchLocomotionStyle(ELocomotionStyle InStyle);
 
 	virtual void OnMovementModeChanged(EMovementMode PrevMovementMode, uint8 PreviousCustomMode = 0) override;
@@ -83,11 +85,5 @@ public:
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	
 private:
-	UPROPERTY(EditDefaultsOnly, Category="Input")
-	TMap<EAbilityInputID, UInputAction*> GameplayAbilityInputActions;
-
-	UPROPERTY(EditDefaultsOnly, Category="Input")
-	UInputMappingContext* GameplayInputMappingContext;
-
 	void HandleAbilityInput(const FInputActionValue& InputActionValue, EAbilityInputID InputID);
 };

@@ -6,6 +6,9 @@
 #include "Engine/DataAsset.h"
 #include "PA_AbilitySystemGenerics.generated.h"
 
+class UInputAction;
+enum class EAbilityInputID : uint8;
+class UInputMappingContext;
 class UGameplayAbility;
 class UGameplayEffect;
 /**
@@ -35,6 +38,12 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category="Base Stats")
 	UDataTable* BaseStatDataTable;
 
+	UPROPERTY(EditDefaultsOnly, Category="Input")
+	TMap<EAbilityInputID, UInputAction*> GameplayAbilityInputActions;
+
+	UPROPERTY(EditDefaultsOnly, Category="Input")
+	UInputMappingContext* GameplayInputMappingContext;
+
 public:
 	FORCEINLINE TSubclassOf<UGameplayEffect> GetFullStatsEffect() const { return FullStatsEffect; }
 	FORCEINLINE TSubclassOf<UGameplayEffect> GetDeathEffect() const { return DeathEffect; }
@@ -44,5 +53,11 @@ public:
 	FORCEINLINE TArray<TSubclassOf<UGameplayEffect>> GetInitialGameplayEffects() const
 	{
 		return InitialGameplayEffects;
+	}
+
+	FORCEINLINE UInputMappingContext* GetGameplayInputMappingContext() const { return GameplayInputMappingContext; }
+	FORCEINLINE TMap<EAbilityInputID, UInputAction*> GetGameplayAbilityInputActions() const
+	{
+		return GameplayAbilityInputActions;
 	}
 };

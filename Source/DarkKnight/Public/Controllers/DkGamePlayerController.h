@@ -85,9 +85,6 @@ private:
 	TWeakObjectPtr<UDkInventoryComponent> InventoryComponent;
 	/********/
 
-	UPROPERTY(EditDefaultsOnly, Category= "Primary")
-	TObjectPtr<UInputMappingContext> IMCGamePlay;
-
 	UPROPERTY(EditDefaultsOnly, Category = "Primary")
 	TSubclassOf<UDkWidgetPrimaryLayout> PrimaryLayoutClass;
 

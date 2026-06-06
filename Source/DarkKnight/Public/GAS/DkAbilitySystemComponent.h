@@ -6,6 +6,8 @@
 #include "AbilitySystemComponent.h"
 #include "DkAbilitySystemComponent.generated.h"
 
+class UInputAction;
+class UInputMappingContext;
 class UPA_AbilitySystemGenerics;
 enum class EAbilityInputID : uint8;
 /**
@@ -20,6 +22,9 @@ public:
 	UDkAbilitySystemComponent();
 
 	void ServerSideInit();
+
+	UInputMappingContext* GetInputMappingContext() const;
+	TMap<EAbilityInputID, UInputAction*> GetGameplayAbilityInputActions() const;
 
 protected:
 	virtual void BeginPlay() override;

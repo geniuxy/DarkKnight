@@ -32,6 +32,16 @@ void UDkAbilitySystemComponent::ServerSideInit()
 	GiveInitialAbilities();
 }
 
+UInputMappingContext* UDkAbilitySystemComponent::GetInputMappingContext() const
+{
+	return AbilitySystemGenerics->GetGameplayInputMappingContext();
+}
+
+TMap<EAbilityInputID, UInputAction*> UDkAbilitySystemComponent::GetGameplayAbilityInputActions() const
+{
+	return AbilitySystemGenerics->GetGameplayAbilityInputActions();
+}
+
 void UDkAbilitySystemComponent::BeginPlay()
 {
 	Super::BeginPlay();

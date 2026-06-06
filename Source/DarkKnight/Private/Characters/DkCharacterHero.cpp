@@ -5,6 +5,7 @@
 
 #include "DarkKnightDebugHelper.h"
 #include "EnhancedInputComponent.h"
+#include "EnhancedInputSubsystems.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/DkEquipmentComponent.h"
@@ -17,6 +18,7 @@
 #include "PlayerStates/DkPlayerStateBase.h"
 
 
+class UEnhancedInputLocalPlayerSubsystem;
 class ADkPlayerStateBase;
 
 ADkCharacterHero::ADkCharacterHero()
@@ -56,6 +58,23 @@ void ADkCharacterHero::OnRep_PlayerState()
 
 	// Init ability actor info for the Client
 	InitAbilityActorInfo();
+}
+
+void ADkCharacterHero::PawnClientRestart()
+{
+	Super::PawnClientRestart();
+
+	APlayerController* OwningPlayerController = GetController<APlayerController>();
+	if (OwningPlayerController)
+	{
+		UEnhancedInputLocalPlayerSubsystem* InputSubsystem =
+			OwningPlayerController->GetLocalPlayer()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
+		if (InputSubsystem)
+		{
+			InputSubsystem->RemoveMappingContext(AbilitySystemComponent->GetInputMappingContext());
+			InputSubsystem->AddMappingContext(AbilitySystemComponent->GetInputMappingContext(), 0);
+		}
+	}
 }
 
 void ADkCharacterHero::SwitchLocomotionStyle(ELocomotionStyle InStyle)
@@ -210,7 +229,8 @@ void ADkCharacterHero::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent);
 	if (EnhancedInputComponent)
 	{
-		for (const TPair<EAbilityInputID, UInputAction*>& InputActionPair : GameplayAbilityInputActions)
+		for (const TPair<EAbilityInputID, UInputAction*>& InputActionPair :
+		     AbilitySystemComponent->GetGameplayAbilityInputActions())
 		{
 			EnhancedInputComponent->BindAction(
 				InputActionPair.Value, ETriggerEvent::Triggered, this,

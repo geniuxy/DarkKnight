@@ -81,13 +81,6 @@ void ADkGamePlayerController::OnLoadingScreenDeactivated_Implementation()
 void ADkGamePlayerController::BeginPlay()
 {
 	Super::BeginPlay();
-
-	UEnhancedInputLocalPlayerSubsystem* InputSubsystem =
-		ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
-	if (IsValid(InputSubsystem))
-	{
-		InputSubsystem->AddMappingContext(IMCGamePlay, 0);
-	}
 }
 
 void ADkGamePlayerController::OnPossess(APawn* NewPawn)

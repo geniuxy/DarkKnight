@@ -9,18 +9,10 @@
 
 ADkPlayerStateBase::ADkPlayerStateBase()
 {
-	AbilitySystemComponent = CreateDefaultSubobject<UDkAbilitySystemComponent>("AbilitySystemComponent");
-	AbilitySystemComponent->SetIsReplicated(true);
-	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
-
-	AttributeSet = CreateDefaultSubobject<UDkAttributeSet>("AttributeSet");
-
 	SetNetUpdateFrequency(100.f);
 }
 
 void ADkPlayerStateBase::BeginPlay()
 {
 	Super::BeginPlay();
-
-	AbilitySystemComponent->InitStats(UDkAttributeSet::StaticClass(), AttributeSetInitialTable);
 }

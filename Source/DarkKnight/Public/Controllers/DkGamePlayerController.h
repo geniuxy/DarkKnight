@@ -3,10 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GenericTeamAgentInterface.h"
 #include "GameFramework/PlayerController.h"
 #include "Interfaces/LoadingScreenInterface.h"
 #include "DkGamePlayerController.generated.h"
 
+class ADkCharacterBase;
 class UInputConfig;
 struct FInputActionValue;
 class UDkInventoryComponent;
@@ -18,7 +20,8 @@ class UInputMappingContext;
  * 
  */
 UCLASS()
-class DARKKNIGHT_API ADkGamePlayerController : public APlayerController, public ILoadingScreenInterface
+class DARKKNIGHT_API ADkGamePlayerController : public APlayerController, public ILoadingScreenInterface,
+                                               public IGenericTeamAgentInterface
 {
 	GENERATED_BODY()
 
@@ -33,11 +36,20 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	virtual void OnPossess(APawn* InPawn) override;
+	// 只在Server上执行
+	virtual void OnPossess(APawn* NewPawn) override;
+	// 只在Client上执行,也会在Listen Server(P2P 没有玩家当主机)上执行(其中一个玩家同时充当"服务器"角色)
+	virtual void AcknowledgePossession(APawn* NewPawn) override;
 
-	virtual void OnRep_Pawn() override;
+	// virtual void OnRep_Pawn() override;
 
 	virtual void SetupInputComponent() override;
+
+protected:
+	UPROPERTY()
+	TObjectPtr<ADkCharacterBase> OwningPlayerCharacter;
+
+	FGenericTeamId TeamID;
 
 private:
 	/* Input Actions */

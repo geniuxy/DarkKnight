@@ -3,9 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AbilitySystemInterface.h"
+#include "GenericTeamAgentInterface.h"
 #include "DarkKnight/DarkKnight.h"
-#include "GameFramework/Character.h"
 #include "DkTypes/DkEnums.h"
+#include "GameFramework/Character.h"
 #include "DkCharacterBase.generated.h"
 
 struct FRewardItemEntry;
@@ -16,23 +18,21 @@ class UDkAbilitySystemComponent;
 class UMotionWarpingComponent;
 
 UCLASS()
-class DARKKNIGHT_API ADkCharacterBase : public ACharacter
+class DARKKNIGHT_API ADkCharacterBase : public ACharacter, public IAbilitySystemInterface,
+                                        public IGenericTeamAgentInterface
 {
 	GENERATED_BODY()
 
 public:
 	ADkCharacterBase();
 
+	void ServerSideInit();
+	void ClientSideInit();
+
 protected:
 	virtual void BeginPlay() override;
 
-	/* GAS */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "GAS")
-	TObjectPtr<UDkAbilitySystemComponent> AbilitySystemComponent;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category= "GAS")
-	TObjectPtr<UDkAttributeSet> AttributeSet;
-	/*********/
+	virtual void PossessedBy(AController* NewController) override;
 
 	virtual void InitializeCharacterInfo();
 
@@ -88,9 +88,34 @@ protected:
 	/* 网络 */
 	UPROPERTY(EditDefaultsOnly, Category="Net")
 	bool bDebugNetworkInfo = false;
-	
+
 	void GetNetworkDebugInfo() const;
 	/*********/
+
 public:
 	LIST_DATA_ACCESSOR(ELocomotionStyle, CurrentLocomotionStyle)
+
+	/**********************************************************************/
+	/*                         Gameplay Ability                           */
+	/**********************************************************************/
+public:
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+
+protected:
+	UPROPERTY(VisibleAnywhere, Category= "GAS")
+	TObjectPtr<UDkAbilitySystemComponent> AbilitySystemComponent;
+
+	UPROPERTY(VisibleAnywhere, Category= "GAS")
+	TObjectPtr<UDkAttributeSet> AttributeSet;
+
+	/**********************************************************************/
+	/*                                Team                                */
+	/**********************************************************************/
+public:
+	//~ Begin IGenericTeamAgentInterface Interface
+	virtual void SetGenericTeamId(const FGenericTeamId& NewTeamID) override;
+	virtual FGenericTeamId GetGenericTeamId() const override;
+	//~ End IGenericTeamAgentInterface Interface
+protected:
+	FGenericTeamId TeamID;
 };

@@ -6,6 +6,7 @@
 #include "DkCharacterBase.h"
 #include "DkCharacterHero.generated.h"
 
+class UDkHeroAttributeSet;
 class UPhysicsConstraintComponent;
 class ADkPlayerStateBase;
 class USpringArmComponent;
@@ -20,7 +21,7 @@ class DARKKNIGHT_API ADkCharacterHero : public ADkCharacterBase
 
 public:
 	ADkCharacterHero();
-	
+
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override;
 
@@ -30,13 +31,13 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-	
+
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UCameraComponent> Camera;
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USpringArmComponent> CameraBoom;
-	
+
 	/* Actor Components */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UDkInventoryComponent* InventoryComponent;
@@ -55,7 +56,7 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	float DeadlyFallHeight = 800.f;
-	
+
 	UFUNCTION()
 	void HandleOnLanded(const FHitResult& Hit);
 
@@ -63,5 +64,12 @@ protected:
 	/*********/
 
 public:
-	FORCEINLINE UDkInventoryComponent* GetInventoryComponent() const {return InventoryComponent;}
+	FORCEINLINE UDkInventoryComponent* GetInventoryComponent() const { return InventoryComponent; }
+
+	/**********************************************************************/
+	/*                         Gameplay Ability                           */
+	/**********************************************************************/
+private:
+	UPROPERTY()
+	UDkHeroAttributeSet* HeroAttributeSet;
 };

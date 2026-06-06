@@ -90,20 +90,40 @@ void ADkGamePlayerController::BeginPlay()
 	}
 }
 
-void ADkGamePlayerController::OnPossess(APawn* InPawn)
+void ADkGamePlayerController::OnPossess(APawn* NewPawn)
 {
-	Super::OnPossess(InPawn);
+	Super::OnPossess(NewPawn);
+
+	OwningPlayerCharacter = Cast<ADkCharacterBase>(NewPawn);
+	if (OwningPlayerCharacter)
+	{
+		OwningPlayerCharacter->ServerSideInit();
+		OwningPlayerCharacter->SetGenericTeamId(TeamID);
+	}
 
 	RefreshInventoryComponent();
 }
 
-void ADkGamePlayerController::OnRep_Pawn()
+void ADkGamePlayerController::AcknowledgePossession(APawn* NewPawn)
 {
-	Super::OnRep_Pawn();
-	if (!GetPawn()) return;
+	Super::AcknowledgePossession(NewPawn);
 
+	OwningPlayerCharacter = Cast<ADkCharacterBase>(NewPawn);
+	if (OwningPlayerCharacter)
+	{
+		OwningPlayerCharacter->ClientSideInit();
+	}
+	
 	RefreshInventoryComponent();
 }
+
+// void ADkGamePlayerController::OnRep_Pawn()
+// {
+// 	Super::OnRep_Pawn();
+// 	if (!GetPawn()) return;
+//
+// 	RefreshInventoryComponent();
+// }
 
 void ADkGamePlayerController::SetupInputComponent()
 {
@@ -167,14 +187,14 @@ void ADkGamePlayerController::HandleGroundMovementInput(const FInputActionValue&
 void ADkGamePlayerController::ToggleMovementStyle()
 {
 	ADkCharacterHero* OwningCharacter = Cast<ADkCharacterHero>(GetCharacter());
-	if (OwningCharacter->GetCurrentLocomotionStyle() == ELocomotionStyle::Walk)
-	{
-		OwningCharacter->SwitchLocomotionStyle(ELocomotionStyle::Run);
-	}
-	else if (OwningCharacter->GetCurrentLocomotionStyle() == ELocomotionStyle::Run)
-	{
-		OwningCharacter->SwitchLocomotionStyle(ELocomotionStyle::Walk);
-	}
+	// if (OwningCharacter->GetCurrentLocomotionStyle() == ELocomotionStyle::Walk)
+	// {
+	// 	OwningCharacter->SwitchLocomotionStyle(ELocomotionStyle::Run);
+	// }
+	// else if (OwningCharacter->GetCurrentLocomotionStyle() == ELocomotionStyle::Run)
+	// {
+	// 	OwningCharacter->SwitchLocomotionStyle(ELocomotionStyle::Walk);
+	// }
 }
 
 void ADkGamePlayerController::OnLookTriggered(const FInputActionValue& InputActionValue)

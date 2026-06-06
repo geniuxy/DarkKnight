@@ -20,20 +20,9 @@ class DARKKNIGHT_API ADkPlayerStateBase : public APlayerState
 
 public:
 	ADkPlayerStateBase();
-	UDkAbilitySystemComponent* GetAbilitySystemComponent() const { return AbilitySystemComponent; }
-	UDkAttributeSet* GetAttributeSet() const { return AttributeSet; }
 
 protected:
 	virtual void BeginPlay() override;
-
-	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<UDataTable> AttributeSetInitialTable;
-	
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UDkAbilitySystemComponent> AbilitySystemComponent;
-
-	UPROPERTY()
-	TObjectPtr<UDkAttributeSet> AttributeSet;
 
 	EActionState CurrentActionState; // 记录目前玩家的动作状态
 

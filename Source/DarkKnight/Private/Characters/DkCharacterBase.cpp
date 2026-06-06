@@ -67,6 +67,20 @@ ADkCharacterBase::ADkCharacterBase()
 	MotionWarping = CreateDefaultSubobject<UMotionWarpingComponent>(TEXT("MotionWarping"));
 
 	ActionComponent = CreateDefaultSubobject<UDkActionComponent>(TEXT("DkActionComponent"));
+
+	AbilitySystemComponent = CreateDefaultSubobject<UDkAbilitySystemComponent>(TEXT("Ability System Component"));
+	AttributeSet = CreateDefaultSubobject<UDkAttributeSet>(TEXT("AttributeSet"));
+}
+
+void ADkCharacterBase::ServerSideInit()
+{
+	AbilitySystemComponent->InitAbilityActorInfo(this, this);
+	AbilitySystemComponent->ServerSideInit();
+}
+
+void ADkCharacterBase::ClientSideInit()
+{
+	AbilitySystemComponent->InitAbilityActorInfo(this, this);
 }
 
 void ADkCharacterBase::BeginPlay()
@@ -81,6 +95,15 @@ void ADkCharacterBase::BeginPlay()
 	}
 
 	GetNetworkDebugInfo();
+}
+
+void ADkCharacterBase::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+	if (NewController && !NewController->IsPlayerController()) //专用于AICharacter在Server上的初始化
+	{
+		ServerSideInit();
+	}
 }
 
 void ADkCharacterBase::InitializeCharacterInfo()
@@ -198,4 +221,19 @@ void ADkCharacterBase::GetNetworkDebugInfo() const
 	);
 	
 	Debug::Print(Info, -1, 30.f);
+}
+
+UAbilitySystemComponent* ADkCharacterBase::GetAbilitySystemComponent() const
+{
+	return AbilitySystemComponent;
+}
+
+void ADkCharacterBase::SetGenericTeamId(const FGenericTeamId& NewTeamID)
+{
+	TeamID = NewTeamID;
+}
+
+FGenericTeamId ADkCharacterBase::GetGenericTeamId() const
+{
+	return TeamID;
 }

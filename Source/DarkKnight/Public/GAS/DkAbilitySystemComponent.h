@@ -6,6 +6,8 @@
 #include "AbilitySystemComponent.h"
 #include "DkAbilitySystemComponent.generated.h"
 
+class UPA_AbilitySystemGenerics;
+enum class EAbilityInputID : uint8;
 /**
  * 
  */
@@ -15,22 +17,32 @@ class DARKKNIGHT_API UDkAbilitySystemComponent : public UAbilitySystemComponent
 	GENERATED_BODY()
 
 public:
-	void AbilityActorInfoSet();
+	UDkAbilitySystemComponent();
+
+	void ServerSideInit();
 
 protected:
 	virtual void BeginPlay() override;
 
-	UFUNCTION(Client, Reliable)
-	void ClientEffectApplied(
-		UAbilitySystemComponent* AbilitySystemComponent,
-		const FGameplayEffectSpec& GameplayEffectSpec,
-		FActiveGameplayEffectHandle ActiveGameplayEffectHandle
-	);
-
 private:
-	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<UAttributeSet> OwningAttributeSet;
+	void InitializeBaseAttributes();
+	void InitializeBaseGameplayEffects();
+	void GiveInitialAbilities();
 	
-	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<UDataTable> AttributeSetInitialTable;
+	void AuthApplyGameplayEffect(TSubclassOf<UGameplayEffect> GameplayEffect, int Level = 1);
+	
+	void HealthUpdated(const FOnAttributeChangeData& ChangeData);
+	void EnergyUpdated(const FOnAttributeChangeData& ChangeData);
+
+	UPROPERTY(EditDefaultsOnly, Category="Gameplay Ability")
+	TMap<EAbilityInputID, TSubclassOf<UGameplayAbility>> Abilities; // 指代AvatarActor独有的Abilities
+
+	UPROPERTY(EditDefaultsOnly, Category="Gameplay Ability")
+	TMap<EAbilityInputID, TSubclassOf<UGameplayAbility>> BasicAbilities; // 通用的Abilities
+
+	UPROPERTY(EditDefaultsOnly, Category="Gameplay Ability")
+	UPA_AbilitySystemGenerics* AbilitySystemGenerics;
+
+public:
+	FORCEINLINE const TMap<EAbilityInputID, TSubclassOf<UGameplayAbility>>& GetAbilities() const { return Abilities; }
 };

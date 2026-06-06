@@ -12,6 +12,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GAS/DkAbilitySystemComponent.h"
+#include "GAS/DkHeroAttributeSet.h"
 #include "PlayerStates/DkPlayerStateBase.h"
 
 
@@ -36,6 +37,8 @@ ADkCharacterHero::ADkCharacterHero()
 	EquipmentComponent = CreateDefaultSubobject<UDkEquipmentComponent>(TEXT("DkEquipmentComponent"));
 
 	LandedDelegate.AddDynamic(this, &ThisClass::HandleOnLanded);
+
+	HeroAttributeSet = CreateDefaultSubobject<UDkHeroAttributeSet>("HeroAttributeSet");
 }
 
 void ADkCharacterHero::PossessedBy(AController* NewController)
@@ -52,8 +55,6 @@ void ADkCharacterHero::OnRep_PlayerState()
 
 	// Init ability actor info for the Client
 	InitAbilityActorInfo();
-
-	SwitchLocomotionStyle(ELocomotionStyle::Walk);
 }
 
 void ADkCharacterHero::SwitchLocomotionStyle(ELocomotionStyle InStyle)
@@ -120,10 +121,10 @@ void ADkCharacterHero::BeginPlay()
 
 	// 对于服务端的对象在BeginPlay后，设为行走状态
 	// 对于Client的对象在OnRep_PlayerState中，设为行走状态
-	if (HasAuthority() && IsLocallyControlled())
-	{
-		SwitchLocomotionStyle(ELocomotionStyle::Walk);
-	}
+	// if (HasAuthority() && IsLocallyControlled())
+	// {
+	// 	SwitchLocomotionStyle(ELocomotionStyle::Walk);
+	// }
 
 	// FString NetModeStr;
 	// switch (GetNetMode())
@@ -152,10 +153,6 @@ void ADkCharacterHero::InitAbilityActorInfo()
 {
 	OwningPlayerState = GetPlayerState<ADkPlayerStateBase>();
 	check(OwningPlayerState);
-	OwningPlayerState->GetAbilitySystemComponent()->InitAbilityActorInfo(OwningPlayerState, this);
-	OwningPlayerState->GetAbilitySystemComponent()->AbilityActorInfoSet();
-	AbilitySystemComponent = OwningPlayerState->GetAbilitySystemComponent();
-	AttributeSet = OwningPlayerState->GetAttributeSet();
 }
 
 void ADkCharacterHero::HandleOnLanded(const FHitResult& Hit)

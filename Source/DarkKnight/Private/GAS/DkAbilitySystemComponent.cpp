@@ -3,12 +3,33 @@
 
 #include "GAS/DkAbilitySystemComponent.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
+#include "DkTypes/DkEnums.h"
+#include "DkGameplayTags.h"
+#include "DataAssets/PA_AbilitySystemGenerics.h"
+#include "GameplayEffectExtension.h"
+#include "DkTypes/DkStructs.h"
 #include "GAS/DkAttributeSet.h"
+#include "GAS/DkHeroAttributeSet.h"
 
-void UDkAbilitySystemComponent::AbilityActorInfoSet()
+UDkAbilitySystemComponent::UDkAbilitySystemComponent()
 {
-	// 用于ApplyGameplayEffectToSelf后，在客户端还会执行一些操作
-	OnGameplayEffectAppliedDelegateToSelf.AddUObject(this, &UDkAbilitySystemComponent::ClientEffectApplied);
+	GetGameplayAttributeValueChangeDelegate(UDkAttributeSet::GetHealthAttribute()).AddUObject(
+		this, &ThisClass::HealthUpdated
+	);
+	GetGameplayAttributeValueChangeDelegate(UDkAttributeSet::GetEnergyAttribute()).AddUObject(
+		this, &ThisClass::EnergyUpdated
+	);
+
+	GenericConfirmInputID = (int32)EAbilityInputID::Confirm;
+	GenericCancelInputID = (int32)EAbilityInputID::Cancel;
+}
+
+void UDkAbilitySystemComponent::ServerSideInit()
+{
+	InitializeBaseAttributes();
+	InitializeBaseGameplayEffects();
+	GiveInitialAbilities();
 }
 
 void UDkAbilitySystemComponent::BeginPlay()
@@ -16,13 +37,157 @@ void UDkAbilitySystemComponent::BeginPlay()
 	Super::BeginPlay();
 }
 
-void UDkAbilitySystemComponent::ClientEffectApplied_Implementation(
-	UAbilitySystemComponent* AbilitySystemComponent,
-	const FGameplayEffectSpec& GameplayEffectSpec,
-	FActiveGameplayEffectHandle ActiveGameplayEffectHandle)
+void UDkAbilitySystemComponent::InitializeBaseAttributes()
 {
-	FGameplayTagContainer AssetTagContainer;
-	GameplayEffectSpec.GetAllAssetTags(AssetTagContainer);
+	if (!AbilitySystemGenerics || !AbilitySystemGenerics->GetBaseStatDataTable() ||
+		!GetOwner() || !GetOwner()->HasAuthority())
+	{
+		return;
+	}
 
-	// EffectAssetsTagDelegate.Broadcast(AssetTagContainer);
+	UDataTable* BaseStatDataTable = AbilitySystemGenerics->GetBaseStatDataTable();
+	const FHeroBaseStats* BaseStats = nullptr;
+	for (const TPair<FName, uint8*>& DataPair : BaseStatDataTable->GetRowMap())
+	{
+		BaseStats = BaseStatDataTable->FindRow<FHeroBaseStats>(DataPair.Key, "");
+		if (BaseStats && BaseStats->HeroClass == GetOwner()->GetClass())
+		{
+			break;
+		}
+	}
+
+	if (BaseStats)
+	{
+		SetNumericAttributeBase(UDkAttributeSet::GetMaxHealthAttribute(), BaseStats->BaseMaxHealth);
+		SetNumericAttributeBase(UDkAttributeSet::GetMaxEnergyAttribute(), BaseStats->BaseMaxMana);
+		SetNumericAttributeBase(UDkAttributeSet::GetAttackAttribute(), BaseStats->BaseAttackDamage);
+		SetNumericAttributeBase(UDkAttributeSet::GetArmorAttribute(), BaseStats->BaseArmor);
+		SetNumericAttributeBase(UDkAttributeSet::GetMoveSpeedAttribute(), BaseStats->BaseMoveSpeed);
+		SetNumericAttributeBase(UDkAttributeSet::GetMoveAccelerationAttribute(), BaseStats->BaseMoveAcceleration);
+
+		SetNumericAttributeBase(UDkHeroAttributeSet::GetStrengthAttribute(), BaseStats->Strength);
+		SetNumericAttributeBase(UDkHeroAttributeSet::GetStrengthGrowthRateAttribute(), BaseStats->StrengthGrowthRate);
+		SetNumericAttributeBase(UDkHeroAttributeSet::GetIntelligenceAttribute(), BaseStats->Intelligence);
+		SetNumericAttributeBase(
+			UDkHeroAttributeSet::GetIntelligenceGrowthRateAttribute(), BaseStats->IntelligenceGrowthRate
+		);
+	}
+}
+
+void UDkAbilitySystemComponent::InitializeBaseGameplayEffects()
+{
+	if (!AbilitySystemGenerics || !GetOwner() || !GetOwner()->HasAuthority()) return;
+
+	for (const TSubclassOf<UGameplayEffect>& EffectClass : AbilitySystemGenerics->GetInitialGameplayEffects())
+	{
+		AuthApplyGameplayEffect(EffectClass);
+	}
+}
+
+void UDkAbilitySystemComponent::GiveInitialAbilities()
+{
+	if (!AbilitySystemGenerics || !GetOwner() || !GetOwner()->HasAuthority()) return;
+
+	for (const TPair<EAbilityInputID, TSubclassOf<UGameplayAbility>>& AbilityPair : Abilities)
+	{
+		GiveAbility(FGameplayAbilitySpec(AbilityPair.Value, 0, (int32)AbilityPair.Key, nullptr));
+	}
+
+	for (const TPair<EAbilityInputID, TSubclassOf<UGameplayAbility>>& AbilityPair : BasicAbilities)
+	{
+		GiveAbility(FGameplayAbilitySpec(AbilityPair.Value, 1, (int32)AbilityPair.Key, nullptr));
+	}
+
+	for (const TSubclassOf<UGameplayAbility>& PassiveAbility : AbilitySystemGenerics->GetPassiveAbilities())
+	{
+		GiveAbility(FGameplayAbilitySpec(PassiveAbility, 1, -1, nullptr));
+	}
+}
+
+void UDkAbilitySystemComponent::AuthApplyGameplayEffect(TSubclassOf<UGameplayEffect> GameplayEffect, int Level)
+{
+	if (GetOwner() && GetOwner()->HasAuthority())
+	{
+		FGameplayEffectSpecHandle SpecHandle = MakeOutgoingSpec(GameplayEffect, Level, MakeEffectContext());
+		ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+	}
+}
+
+void UDkAbilitySystemComponent::HealthUpdated(const FOnAttributeChangeData& ChangeData)
+{
+	if (!AbilitySystemGenerics || !GetOwner() || !GetOwner()->HasAuthority()) return;
+
+	bool bFound = false;
+	float MaxHealth = GetGameplayAttributeValue(UDkAttributeSet::GetMaxHealthAttribute(), bFound);
+	if (bFound && ChangeData.NewValue >= MaxHealth)
+	{
+		if (!HasMatchingGameplayTag(DkGameplayTags::Dk_Stats_Health_Full))
+		{
+			// 只在本地执行Tag添加
+			AddLooseGameplayTag(DkGameplayTags::Dk_Stats_Health_Full);
+		}
+	}
+	else
+	{
+		RemoveLooseGameplayTag(DkGameplayTags::Dk_Stats_Health_Full);
+	}
+
+	if (ChangeData.NewValue <= 0.f)
+	{
+		if (!HasMatchingGameplayTag(DkGameplayTags::Dk_Stats_Health_Empty))
+		{
+			AddLooseGameplayTag(DkGameplayTags::Dk_Stats_Health_Empty);
+
+			if (AbilitySystemGenerics->GetDeathEffect())
+			{
+				AuthApplyGameplayEffect(AbilitySystemGenerics->GetDeathEffect());
+			}
+
+			FGameplayEventData DeadAbilityEventData;
+			if (ChangeData.GEModData)
+			{
+				DeadAbilityEventData.ContextHandle = ChangeData.GEModData->EffectSpec.GetContext();
+			}
+
+			UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
+				GetOwner(), DkGameplayTags::Dk_Stats_Dead, DeadAbilityEventData
+			);
+		}
+	}
+	else
+	{
+		RemoveLooseGameplayTag(DkGameplayTags::Dk_Stats_Health_Empty);
+	}
+}
+
+void UDkAbilitySystemComponent::EnergyUpdated(const FOnAttributeChangeData& ChangeData)
+{
+	if (!AbilitySystemGenerics || !GetOwner() || !GetOwner()->HasAuthority()) return;
+
+	bool bFound = false;
+	float MaxMana = GetGameplayAttributeValue(UDkAttributeSet::GetMaxEnergyAttribute(), bFound);
+	if (bFound && ChangeData.NewValue >= MaxMana)
+	{
+		if (!HasMatchingGameplayTag(DkGameplayTags::Dk_Stats_Energy_Full))
+		{
+			// 只在本地执行Tag添加
+			AddLooseGameplayTag(DkGameplayTags::Dk_Stats_Energy_Full);
+		}
+	}
+	else
+	{
+		RemoveLooseGameplayTag(DkGameplayTags::Dk_Stats_Energy_Full);
+	}
+
+	if (ChangeData.NewValue <= 0.f)
+	{
+		if (!HasMatchingGameplayTag(DkGameplayTags::Dk_Stats_Energy_Empty))
+		{
+			AddLooseGameplayTag(DkGameplayTags::Dk_Stats_Energy_Empty);
+		}
+	}
+	else
+	{
+		RemoveLooseGameplayTag(DkGameplayTags::Dk_Stats_Energy_Empty);
+	}
 }

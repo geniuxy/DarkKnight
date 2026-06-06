@@ -5,6 +5,13 @@
 
 namespace DkGameplayTags
 {
+	// States
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Stats_Health_Full, "Dk.Stats.Health.Full");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Stats_Health_Empty, "Dk.Stats.Health.Empty");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Stats_Dead, "Dk.Stats.Dead");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Stats_Energy_Full, "Dk.Stats.Energy.Full");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Stats_Energy_Empty, "Dk.Stats.Energy.Empty");
+	
 	// Input Actions
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Input_Action_Move, "Dk.Input.Action.Move");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Input_Action_ToggleMoveStyle, "Dk.Input.Action.ToggleMoveStyle");

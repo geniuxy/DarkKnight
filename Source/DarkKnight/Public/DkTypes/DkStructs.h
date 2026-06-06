@@ -302,3 +302,46 @@ struct FDkInputActionConfig
 };
 
 /********/
+
+/* GAS */
+
+USTRUCT(BlueprintType)
+struct FHeroBaseStats : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AActor> HeroClass;
+
+	UPROPERTY(EditAnywhere)
+	float Strength = 0.f;
+
+	UPROPERTY(EditAnywhere)
+	float Intelligence = 0.f;
+
+	UPROPERTY(EditAnywhere)
+	float StrengthGrowthRate = 0.f;
+
+	UPROPERTY(EditAnywhere)
+	float IntelligenceGrowthRate = 0.f;
+
+	UPROPERTY(EditAnywhere)
+	float BaseMaxHealth = 0.f;
+
+	UPROPERTY(EditAnywhere)
+	float BaseMaxEnergy = 0.f;
+
+	UPROPERTY(EditAnywhere)
+	float BaseAttackDamage = 0.f;
+
+	UPROPERTY(EditAnywhere)
+	float BaseArmor = 0.f;
+
+	UPROPERTY(EditAnywhere)
+	float BaseMoveSpeed = 0.f;
+
+	UPROPERTY(EditAnywhere)
+	float BaseMoveAcceleration = 2048.f;
+};
+
+/********/

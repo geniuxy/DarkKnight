@@ -6,6 +6,9 @@
 #include "DkCharacterBase.h"
 #include "DkCharacterHero.generated.h"
 
+struct FInputActionValue;
+class UInputMappingContext;
+class UInputAction;
 class UDkHeroAttributeSet;
 class UPhysicsConstraintComponent;
 class ADkPlayerStateBase;
@@ -72,4 +75,19 @@ public:
 private:
 	UPROPERTY()
 	UDkHeroAttributeSet* HeroAttributeSet;
+
+	/**********************************************************************/
+	/*                              Input                                 */
+	/**********************************************************************/
+public:
+	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
+	
+private:
+	UPROPERTY(EditDefaultsOnly, Category="Input")
+	TMap<EAbilityInputID, UInputAction*> GameplayAbilityInputActions;
+
+	UPROPERTY(EditDefaultsOnly, Category="Input")
+	UInputMappingContext* GameplayInputMappingContext;
+
+	void HandleAbilityInput(const FInputActionValue& InputActionValue, EAbilityInputID InputID);
 };

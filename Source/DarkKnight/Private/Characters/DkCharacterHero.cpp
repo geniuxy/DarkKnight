@@ -4,6 +4,7 @@
 #include "Characters/DkCharacterHero.h"
 
 #include "DarkKnightDebugHelper.h"
+#include "EnhancedInputComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/DkEquipmentComponent.h"
@@ -199,5 +200,42 @@ void ADkCharacterHero::HandleFallDeath()
 		// GetMesh()->AddImpulse(FVector(FMath::RandRange(-100, 100), FMath::RandRange(-100, 100), 0));
 
 		// TODO: 这里死了，会到处飘，还是播放死亡动画吧，受不了了，不会改
+	}
+}
+
+void ADkCharacterHero::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent);
+	if (EnhancedInputComponent)
+	{
+		for (const TPair<EAbilityInputID, UInputAction*>& InputActionPair : GameplayAbilityInputActions)
+		{
+			EnhancedInputComponent->BindAction(
+				InputActionPair.Value, ETriggerEvent::Triggered, this,
+				&ADkCharacterHero::HandleAbilityInput, InputActionPair.Key
+			);
+		}
+	}
+}
+
+void ADkCharacterHero::HandleAbilityInput(const FInputActionValue& InputActionValue, EAbilityInputID InputID)
+{
+	bool bPressed = InputActionValue.Get<bool>();
+
+	// if (bPressed && bIsLearnAbilityLeaderPressedDown)
+	// {
+	// 	UpgradeAbilityWithInputID(InputID);
+	// 	return;
+	// }
+
+	if (bPressed)
+	{
+		GetAbilitySystemComponent()->AbilityLocalInputPressed((int32)InputID);
+	}
+	else
+	{
+		GetAbilitySystemComponent()->AbilityLocalInputReleased((int32)InputID);
 	}
 }

@@ -1,0 +1,48 @@
+﻿// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "Abilities/GameplayAbility.h"
+#include "GenericTeamAgentInterface.h"
+#include "DkGameplayAbilityBase.generated.h"
+
+/**
+ * 
+ */
+UCLASS()
+class DARKKNIGHT_API UDkGameplayAbilityBase : public UGameplayAbility
+{
+	GENERATED_BODY()
+
+public:
+	UDkGameplayAbilityBase();
+
+	virtual bool CanActivateAbility(
+		const FGameplayAbilitySpecHandle Handle,
+		const FGameplayAbilityActorInfo* ActorInfo,
+		const FGameplayTagContainer* SourceTags = nullptr,
+		const FGameplayTagContainer* TargetTags = nullptr,
+		FGameplayTagContainer* OptionalRelevantTags = nullptr
+	) const override;
+
+protected:
+	UAnimInstance* GetOwnerAnimInstance() const;
+
+	UPROPERTY(EditDefaultsOnly, Category="debug")
+	bool bShouldDrawDebug = false;
+
+	FGenericTeamId GetOwnerTeamID() const;
+
+	bool IsOtherActorTeamAttitudeIs(const AActor* OtherActor, ETeamAttitude::Type TargetTeamAttitude) const;
+
+	ACharacter* GetOwnerAvatarCharacter();
+
+	UPROPERTY()
+	ACharacter* OwnerAvatarCharacter;
+
+	void SendLocalGameplayEvent(const FGameplayTag& EventTag, const FGameplayEventData& EventData);
+
+public:
+	FORCEINLINE bool ShouldDrawDebug() const { return bShouldDrawDebug; }
+};

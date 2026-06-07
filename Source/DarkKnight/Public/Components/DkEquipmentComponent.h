@@ -57,6 +57,8 @@ private:
 	);
 
 	ADkEquippedActorBase* FindEquippedActor(const FGameplayTag& EquippedActorTag);
+	
+	ADkEquippedActorBase* FindTargetTypeEquippedActor(const FGameplayTag& TargetTypeTag);
 
 	UPROPERTY()
 	TArray<TObjectPtr<ADkEquippedActorBase>> EquippedActors;
@@ -67,4 +69,10 @@ private:
 	/* 预览装备 */
 	bool bIsPreview = false;
 	/********/
+
+	/**********************************************************************/
+	/*                            Draw Weapon                             */
+	/**********************************************************************/
+public:
+	void DrawWeapon(FGameplayTag InWeaponTypeTag, FName InSocketName);
 };

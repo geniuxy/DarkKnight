@@ -6,6 +6,8 @@
 #include "Characters/DkCharacterBase.h"
 #include "Components/DkInventoryComponent.h"
 #include "Equipment/DkEquippedActorBase.h"
+#include "Equipment/DkEquippedActorStatic.h"
+#include "Equipment/DkEquippedActorStaticWithAdditional.h"
 #include "FunctionLibrarys/DkInventoryFunctionLibrary.h"
 #include "Inventory/DkInventoryItem.h"
 #include "Inventory/DkInventoryItemFragment.h"
@@ -165,6 +167,17 @@ ADkEquippedActorBase* UDkEquipmentComponent::FindEquippedActor(const FGameplayTa
 	return FoundActor ? *FoundActor : nullptr;
 }
 
+ADkEquippedActorBase* UDkEquipmentComponent::FindTargetTypeEquippedActor(const FGameplayTag& TargetTypeTag)
+{
+	auto FoundActor = EquippedActors.FindByPredicate(
+		[TargetTypeTag](const ADkEquippedActorBase* EquippedActor)
+		{
+			return EquippedActor->GetEquipmentTag().MatchesTag(TargetTypeTag);
+		}
+	);
+	return FoundActor ? *FoundActor : nullptr;
+}
+
 void UDkEquipmentComponent::RemoveEquippedActor(FInventoryItemEquipmentFragment* EquipmentFragment)
 {
 	ADkEquippedActorBase* EquippedActor = FindEquippedActor(EquipmentFragment->GetEquippedActorTag());
@@ -172,5 +185,28 @@ void UDkEquipmentComponent::RemoveEquippedActor(FInventoryItemEquipmentFragment*
 	{
 		EquippedActors.Remove(EquippedActor);
 		EquippedActor->Destroy();
+	}
+}
+
+void UDkEquipmentComponent::DrawWeapon(FGameplayTag InWeaponTypeTag, FName InSocketName)
+{
+	ADkEquippedActorBase* TargetTypeEquippedActor = FindTargetTypeEquippedActor(InWeaponTypeTag);
+	if (IsValid(TargetTypeEquippedActor))
+	{
+		ADkEquippedActorStatic* TargetStaticActor = Cast<ADkEquippedActorStatic>(TargetTypeEquippedActor);
+		if (TargetStaticActor)
+		{
+			TargetStaticActor->AttachToComponent(
+				OwningSkeletalMesh.Get(),
+				FAttachmentTransformRules::SnapToTargetNotIncludingScale,
+				InSocketName
+			);
+			if (ADkEquippedActorStaticWithAdditional* AdditionalActor =
+				Cast<ADkEquippedActorStaticWithAdditional>(TargetTypeEquippedActor))
+			{
+				AdditionalActor->GetAdditionalMesh()->SetVisibility(true);
+				AdditionalActor->GetEquipmentItemStaticMesh()->SetVisibility(false);
+			}
+		}
 	}
 }

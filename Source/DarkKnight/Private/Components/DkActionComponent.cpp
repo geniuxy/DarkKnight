@@ -41,12 +41,12 @@ void UDkActionComponent::SetCurrentActionState(EActionState InActionState)
 	LastActionState = CurrentActionState;
 	CurrentActionState = InActionState;
 
-	if (OwnerType == EOwnerType::Player)
-	{
-		ADkCharacterHero* OwningPlayer = Cast<ADkCharacterHero>(GetOwner());
-		ADkPlayerStateBase* OwnerPlayerState = Cast<ADkPlayerStateBase>(OwningPlayer->GetPlayerState());
-		OwnerPlayerState->SetCurrentActionState(CurrentActionState);
-	}
+	// if (OwnerType == EOwnerType::Player)
+	// {
+	// 	ADkCharacterHero* OwningPlayer = Cast<ADkCharacterHero>(GetOwner());
+	// 	ADkPlayerStateBase* OwnerPlayerState = Cast<ADkPlayerStateBase>(OwningPlayer->GetPlayerState());
+	// 	OwnerPlayerState->SetCurrentActionState(CurrentActionState);
+	// }
 
 	switch (CurrentActionState)
 	{

@@ -21,4 +21,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	UStaticMeshComponent* EquipmentItemStaticMesh;
 	/*********/
+
+public:
+	FORCEINLINE UStaticMeshComponent* GetEquipmentItemStaticMesh() const { return EquipmentItemStaticMesh; }
 };

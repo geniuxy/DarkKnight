@@ -22,7 +22,7 @@
 	MakeShared<FDkUIOptionsDataInteractionHelper>(GET_FUNCTION_NAME_STRING_CHECKED(UDkGameUserSettings, SetterOrGetterFuncName))
 
 #define GET_DESCRIPTION(InKey) \
-	LOCTABLE("/Game/_Blueprints/UI/StringTable/ST_OptionScreenDescription.ST_OptionScreenDescription", InKey)
+	LOCTABLE("/Game/_DkContent/UI/StringTable/ST_OptionScreenDescription.ST_OptionScreenDescription", InKey)
 
 void UDkUIOptionsDataRegistry::InitOptionsDataRegister(ULocalPlayer* InOwningLocalPlayer)
 {
@@ -119,6 +119,22 @@ void UDkUIOptionsDataRegistry::InitGameplayCollectionTab()
 		GameDifficulty->SetShouldApplyChangeImmediately(true);
 
 		GameplayTabCollection->AddChildListData(GameDifficulty);
+	}
+
+	// Sprint Mode
+	{
+		UDkUIListDataObjectStringBool* SprintMode = NewObject<UDkUIListDataObjectStringBool>();
+		SprintMode->SetDataID(FName("SprintMode"));
+		SprintMode->SetDataDisplayName(FText::FromString(TEXT("冲刺按键模式")));
+		SprintMode->SetDescriptionRichText(GET_DESCRIPTION("SprintModeDescKey"));
+		SprintMode->OverrideTrueDisplayText(FText::FromString(TEXT("切换")));
+		SprintMode->OverrideFalseDisplayText(FText::FromString(TEXT("按住")));
+		SprintMode->SetTrueAsDefaultValue();
+		SprintMode->SetDataDynamicGetter(MAKE_OPTIONS_DATA_CONTROL(IsToggleSprintMode));
+		SprintMode->SetDataDynamicSetter(MAKE_OPTIONS_DATA_CONTROL(SetIsToggleSprintMode));
+		SprintMode->SetShouldApplyChangeImmediately(true);
+
+		GameplayTabCollection->AddChildListData(SprintMode);
 	}
 
 	// Test

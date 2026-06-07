@@ -15,6 +15,10 @@ class DARKKNIGHT_API UDkWidgetActivatableBase : public UCommonActivatableWidget
 {
 	GENERATED_BODY()
 
+public:
+	UFUNCTION(BlueprintCallable)
+	void LoadLevel(TSoftObjectPtr<UWorld> Level);
+
 protected:
 	UFUNCTION(BlueprintPure)
 	APlayerController* GetOwningPlayerController();

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystemInterface.h"
+#include "GameplayEffectTypes.h"
 #include "GenericTeamAgentInterface.h"
 #include "DarkKnight/DarkKnight.h"
 #include "DkTypes/DkEnums.h"
@@ -107,6 +108,11 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category= "GAS")
 	TObjectPtr<UDkAttributeSet> AttributeSet;
+
+private:
+	void BindGASChangeDelegates();
+
+	void MoveSpeedUpdated(const FOnAttributeChangeData& Data);
 
 	/**********************************************************************/
 	/*                                Team                                */

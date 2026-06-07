@@ -70,6 +70,8 @@ ADkCharacterBase::ADkCharacterBase()
 
 	AbilitySystemComponent = CreateDefaultSubobject<UDkAbilitySystemComponent>(TEXT("Ability System Component"));
 	AttributeSet = CreateDefaultSubobject<UDkAttributeSet>(TEXT("AttributeSet"));
+
+	BindGASChangeDelegates();
 }
 
 void ADkCharacterBase::ServerSideInit()
@@ -226,6 +228,23 @@ void ADkCharacterBase::GetNetworkDebugInfo() const
 UAbilitySystemComponent* ADkCharacterBase::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;
+}
+
+void ADkCharacterBase::BindGASChangeDelegates()
+{
+	if (AbilitySystemComponent)
+	{
+		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
+			UDkAttributeSet::GetMoveSpeedAttribute()
+		).AddUObject(
+			this, &ThisClass::MoveSpeedUpdated
+		);
+	}
+}
+
+void ADkCharacterBase::MoveSpeedUpdated(const FOnAttributeChangeData& Data)
+{
+	GetCharacterMovement()->MaxWalkSpeed = Data.NewValue;
 }
 
 void ADkCharacterBase::SetGenericTeamId(const FGenericTeamId& NewTeamID)

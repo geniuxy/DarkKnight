@@ -112,6 +112,11 @@ void UDkAbilitySystemComponent::GiveInitialAbilities()
 	{
 		GiveAbility(FGameplayAbilitySpec(PassiveAbility, 1, -1, nullptr));
 	}
+
+	for (const TPair<EAbilityInputID, TSubclassOf<UGameplayAbility>>& AbilityPair : AbilitySystemGenerics->GetCommonAbilities())
+	{
+		GiveAbility(FGameplayAbilitySpec(AbilityPair.Value, 1, (int32)AbilityPair.Key, nullptr));
+	}
 }
 
 void UDkAbilitySystemComponent::AuthApplyGameplayEffect(TSubclassOf<UGameplayEffect> GameplayEffect, int Level)

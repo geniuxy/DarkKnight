@@ -26,6 +26,12 @@ public:
 	UFUNCTION()
 	void SetCurrentGameDifficulty(const FString& InNewDifficulty) { CurrentGameDifficulty = InNewDifficulty; }
 
+	UFUNCTION()
+	bool IsToggleSprintMode() const { return bIsToggle; }
+
+	UFUNCTION()
+	void SetIsToggleSprintMode(bool bInIsToggle) { bIsToggle = bInIsToggle; }
+
 	//***** Gameplay Collection Tab ***** //
 
 	//***** Audio Collection Tab ***** //
@@ -72,6 +78,9 @@ private:
 	//***** Gameplay Collection Tab ***** //
 	UPROPERTY(Config)
 	FString CurrentGameDifficulty;
+
+	UPROPERTY(Config)
+	bool bIsToggle;
 	//***** Gameplay Collection Tab ***** //
 
 	//***** Audio Collection Tab ***** //

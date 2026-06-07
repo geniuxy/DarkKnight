@@ -35,6 +35,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category="Gameplay Ability")
 	TArray<TSubclassOf<UGameplayAbility>> PassiveAbilities; // 被动的Abilities
 
+	UPROPERTY(EditDefaultsOnly, Category="Gameplay Ability")
+	TMap<EAbilityInputID, TSubclassOf<UGameplayAbility>> CommonAbilities; // 通用的主动Abilities
+
 	UPROPERTY(EditDefaultsOnly, Category="Base Stats")
 	UDataTable* BaseStatDataTable;
 
@@ -49,6 +52,11 @@ public:
 	FORCEINLINE TSubclassOf<UGameplayEffect> GetDeathEffect() const { return DeathEffect; }
 	FORCEINLINE TSubclassOf<UGameplayEffect> GetDisableAimEffect() const { return DisableAimEffect; }
 	FORCEINLINE TArray<TSubclassOf<UGameplayAbility>> GetPassiveAbilities() const { return PassiveAbilities; }
+	FORCEINLINE TMap<EAbilityInputID, TSubclassOf<UGameplayAbility>> GetCommonAbilities() const
+	{
+		return CommonAbilities;
+	}
+
 	FORCEINLINE UDataTable* GetBaseStatDataTable() const { return BaseStatDataTable; }
 	FORCEINLINE TArray<TSubclassOf<UGameplayEffect>> GetInitialGameplayEffects() const
 	{

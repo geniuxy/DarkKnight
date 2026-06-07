@@ -3,6 +3,7 @@
 
 #include "Animations/AnimInstances/DkAnimInstanceBase.h"
 
+#include "AbilitySystemComponent.h"
 #include "KismetAnimationLibrary.h"
 #include "Characters/DkCharacterBase.h"
 #include "Components/DkActionComponent.h"
@@ -28,7 +29,14 @@ void UDkAnimInstanceBase::NativeUpdateAnimation(float DeltaSeconds)
 
 	if (!IsValid(OwningCharacter)) return;
 
-	LocomotionStyle = OwningCharacter->GetCurrentLocomotionStyle();
+	if (OwningCharacter->GetAbilitySystemComponent()->HasMatchingGameplayTag(DkGameplayTags::Dk_Stats_Sprint))
+	{
+		LocomotionStyle = ELocomotionStyle::Run;
+	}
+	else
+	{
+		LocomotionStyle = ELocomotionStyle::Walk;
+	}
 	Velocity = OwningCharacter->GetVelocity();
 	Speed = Velocity.Length();
 	MaxSpeed = OwningCharacter->GetCharacterMovement()->MaxWalkSpeed;

@@ -196,16 +196,22 @@ void UDkEquipmentComponent::DrawWeapon(FGameplayTag InWeaponTypeTag, FName InSoc
 		ADkEquippedActorStatic* TargetStaticActor = Cast<ADkEquippedActorStatic>(TargetTypeEquippedActor);
 		if (TargetStaticActor)
 		{
-			TargetStaticActor->AttachToComponent(
-				OwningSkeletalMesh.Get(),
-				FAttachmentTransformRules::SnapToTargetNotIncludingScale,
-				InSocketName
-			);
 			if (ADkEquippedActorStaticWithAdditional* AdditionalActor =
 				Cast<ADkEquippedActorStaticWithAdditional>(TargetTypeEquippedActor))
 			{
-				AdditionalActor->GetAdditionalMesh()->SetVisibility(true);
-				AdditionalActor->GetEquipmentItemStaticMesh()->SetVisibility(false);
+				AdditionalActor->GetAdditionalMesh()->AttachToComponent(
+					OwningSkeletalMesh.Get(),
+					FAttachmentTransformRules::SnapToTargetNotIncludingScale,
+					InSocketName
+				);
+			}
+			else
+			{
+				TargetStaticActor->AttachToComponent(
+					OwningSkeletalMesh.Get(),
+					FAttachmentTransformRules::SnapToTargetNotIncludingScale,
+					InSocketName
+				);
 			}
 		}
 	}

@@ -32,6 +32,15 @@ void UDkAbilitySystemComponent::ServerSideInit()
 	GiveInitialAbilities();
 }
 
+void UDkAbilitySystemComponent::AuthApplyGameplayEffect(TSubclassOf<UGameplayEffect> GameplayEffect, int Level)
+{
+	if (GetOwner() && GetOwner()->HasAuthority())
+	{
+		FGameplayEffectSpecHandle SpecHandle = MakeOutgoingSpec(GameplayEffect, Level, MakeEffectContext());
+		ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+	}
+}
+
 UInputMappingContext* UDkAbilitySystemComponent::GetInputMappingContext() const
 {
 	return AbilitySystemGenerics->GetGameplayInputMappingContext();
@@ -116,15 +125,6 @@ void UDkAbilitySystemComponent::GiveInitialAbilities()
 	for (const TPair<EAbilityInputID, TSubclassOf<UGameplayAbility>>& AbilityPair : AbilitySystemGenerics->GetCommonAbilities())
 	{
 		GiveAbility(FGameplayAbilitySpec(AbilityPair.Value, 1, (int32)AbilityPair.Key, nullptr));
-	}
-}
-
-void UDkAbilitySystemComponent::AuthApplyGameplayEffect(TSubclassOf<UGameplayEffect> GameplayEffect, int Level)
-{
-	if (GetOwner() && GetOwner()->HasAuthority())
-	{
-		FGameplayEffectSpecHandle SpecHandle = MakeOutgoingSpec(GameplayEffect, Level, MakeEffectContext());
-		ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 	}
 }
 

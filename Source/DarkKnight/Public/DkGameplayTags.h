@@ -4,6 +4,10 @@
 
 #include "NativeGameplayTags.h"
 
+/*
+ * Tips:
+ * 1. 控制台输入 AbilitySystem.DebugAbilityTags 可以看到视野中的单位所携带的tag
+ */
 namespace DkGameplayTags
 {
 	// States
@@ -13,8 +17,9 @@ namespace DkGameplayTags
 	DARKKNIGHT_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dk_Stats_Energy_Full);
 	DARKKNIGHT_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dk_Stats_Energy_Empty);
 	DARKKNIGHT_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dk_Stats_Stun);
-	DARKKNIGHT_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dk_Stats_HoldingSword);
+	DARKKNIGHT_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dk_Stats_DrawingSword);
 	DARKKNIGHT_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dk_Stats_Sprint);
+	DARKKNIGHT_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dk_Stats_CanAttack);
 
 	// Ability
 	DARKKNIGHT_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dk_Ability_Passive_HoldSword_Event_Activate);

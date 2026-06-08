@@ -12,8 +12,9 @@ namespace DkGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Stats_Energy_Full, "Dk.Stats.Energy.Full");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Stats_Energy_Empty, "Dk.Stats.Energy.Empty");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Stats_Stun, "Dk.Stats.Stun");
-	UE_DEFINE_GAMEPLAY_TAG(Dk_Stats_HoldingSword, "Dk.Stats.HoldingSword");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Stats_DrawingSword, "Dk.Stats.DrawingSword");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Stats_Sprint, "Dk.Stats.Sprint");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Stats_CanAttack, "Dk.Stats.CanAttack");
 
 	// Ability
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Ability_Passive_HoldSword_Event_Activate, "Dk.Ability.Passive.HoldSword.Event.Activate");

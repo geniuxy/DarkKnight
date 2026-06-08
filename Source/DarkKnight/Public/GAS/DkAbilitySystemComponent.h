@@ -23,6 +23,8 @@ public:
 
 	void ServerSideInit();
 
+	void AuthApplyGameplayEffect(TSubclassOf<UGameplayEffect> GameplayEffect, int Level = 1);
+
 	UInputMappingContext* GetInputMappingContext() const;
 	TMap<EAbilityInputID, UInputAction*> GetGameplayAbilityInputActions() const;
 
@@ -33,8 +35,6 @@ private:
 	void InitializeBaseAttributes();
 	void InitializeBaseGameplayEffects();
 	void GiveInitialAbilities();
-	
-	void AuthApplyGameplayEffect(TSubclassOf<UGameplayEffect> GameplayEffect, int Level = 1);
 	
 	void HealthUpdated(const FOnAttributeChangeData& ChangeData);
 	void EnergyUpdated(const FOnAttributeChangeData& ChangeData);

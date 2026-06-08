@@ -15,7 +15,7 @@ UGA_Passive_HoldSword::UGA_Passive_HoldSword()
 	// TriggerData.TriggerTag = DkGameplayTags::Dk_Ability_Passive_HoldSword_Event_Activate;
 	// AbilityTriggers.Add(TriggerData);
 
-	ActivationOwnedTags.AddTag(DkGameplayTags::Dk_Stats_HoldingSword);
+	ActivationOwnedTags.AddTag(DkGameplayTags::Dk_Stats_DrawingSword);
 }
 
 void UGA_Passive_HoldSword::ActivateAbility(

@@ -15,6 +15,7 @@ namespace DkGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Stats_DrawingSword, "Dk.Stats.DrawingSword");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Stats_Sprint, "Dk.Stats.Sprint");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Stats_CanAttack, "Dk.Stats.CanAttack");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Stats_InCombat, "Dk.Stats.InCombat");
 
 	// Ability
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Ability_Passive_HoldSword_Event_Activate, "Dk.Ability.Passive.HoldSword.Event.Activate");
@@ -137,7 +138,7 @@ namespace DkGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Item_Entry_MaxToxin, "Dk.Item.Entry.MaxToxin");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Item_Entry_MaxAdrenaline, "Dk.Item.Entry.MaxAdrenaline");
 
-	// Action Input Buffer
+	// Action Input Buffer（弃用）
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Action_CanCombo, "Dk.Action.CanCombo");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Action_NoAction, "Dk.Action.NoAction");
 }

@@ -40,6 +40,11 @@ protected:
 
 	UPROPERTY()
 	ACharacter* OwnerAvatarCharacter;
+	
+	UAbilitySystemComponent* GetOwnerASC();
+	
+	UPROPERTY()
+	UAbilitySystemComponent* OwnerASC;
 
 	void SendLocalGameplayEvent(const FGameplayTag& EventTag, const FGameplayEventData& EventData);
 

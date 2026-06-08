@@ -75,10 +75,19 @@ ACharacter* UDkGameplayAbilityBase::GetOwnerAvatarCharacter()
 	return OwnerAvatarCharacter;
 }
 
+UAbilitySystemComponent* UDkGameplayAbilityBase::GetOwnerASC()
+{
+	if (!OwnerASC)
+	{
+		OwnerASC = Cast<UAbilitySystemComponent>(GetAbilitySystemComponentFromActorInfo());
+	}
+
+	return OwnerASC;
+}
+
 void UDkGameplayAbilityBase::SendLocalGameplayEvent(const FGameplayTag& EventTag, const FGameplayEventData& EventData)
 {
-	UAbilitySystemComponent* OwnerASC = GetAbilitySystemComponentFromActorInfo();
-	if (OwnerASC)
+	if (GetOwnerASC())
 	{
 		OwnerASC->HandleGameplayEvent(EventTag, &EventData);
 	}

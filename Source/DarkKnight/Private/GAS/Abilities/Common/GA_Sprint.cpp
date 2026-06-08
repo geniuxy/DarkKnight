@@ -63,10 +63,9 @@ void UGA_Sprint::EndAbility(
 	bool bReplicateEndAbility,
 	bool bWasCancelled)
 {
-	UAbilitySystemComponent* OwnerAbilitySystemComponent = GetAbilitySystemComponentFromActorInfo();
-	if (OwnerAbilitySystemComponent && IncreaseMoveSpeedEffectHandle.IsValid())
+	if (GetOwnerASC() && IncreaseMoveSpeedEffectHandle.IsValid())
 	{
-		OwnerAbilitySystemComponent->RemoveActiveGameplayEffect(IncreaseMoveSpeedEffectHandle);
+		GetOwnerASC()->RemoveActiveGameplayEffect(IncreaseMoveSpeedEffectHandle);
 	}
 	
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);

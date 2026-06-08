@@ -3,12 +3,14 @@
 
 #include "Components/DkEquipmentComponent.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "Characters/DkCharacterBase.h"
 #include "Components/DkInventoryComponent.h"
 #include "Equipment/DkEquippedActorBase.h"
 #include "Equipment/DkEquippedActorStatic.h"
 #include "Equipment/DkEquippedActorStaticWithAdditional.h"
 #include "FunctionLibrarys/DkInventoryFunctionLibrary.h"
+#include "GAS/DkAbilitySystemComponent.h"
 #include "Inventory/DkInventoryItem.h"
 #include "Inventory/DkInventoryItemFragment.h"
 
@@ -53,6 +55,8 @@ void UDkEquipmentComponent::InitPlayerCharacter()
 		{
 			OwningCharacter->ReceiveControllerChangedDelegate.AddDynamic(this, &ThisClass::OnControllerChanged);
 		}
+
+		InitOwnerASC();
 	}
 }
 
@@ -77,6 +81,16 @@ void UDkEquipmentComponent::InitInventoryComponent()
 	if (!InventoryComponent->OnItemUnEquipped.IsAlreadyBound(this, &ThisClass::OnItemUnEquipped))
 	{
 		InventoryComponent->OnItemUnEquipped.AddDynamic(this, &ThisClass::OnItemUnEquipped);
+	}
+}
+
+void UDkEquipmentComponent::InitOwnerASC()
+{
+	if (OwningCharacter.Get() && OwningCharacter->GetAbilitySystemComponent())
+	{
+		OwnerASC = Cast<UDkAbilitySystemComponent>(
+			UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetOwner())
+		);
 	}
 }
 
@@ -151,6 +165,11 @@ ADkEquippedActorBase* UDkEquipmentComponent::SpawnEquippedActor(
 	{
 		SpawnedEquippedActor->SetOwner(GetOwner());
 		EquipmentFragment->SetEquippedActorTag(SpawnedEquippedActor->GetEquipmentTag());
+		if (!bIsPreview &&
+			SpawnedEquippedActor->GetEquipmentTag().MatchesTag(DkGameplayTags::Dk_Item_Equipment_Weapons_Primary))
+		{
+			OwnerASC->AuthApplyGameplayEffect(EquippedEffect);
+		}
 	}
 
 	return SpawnedEquippedActor;
@@ -183,6 +202,13 @@ void UDkEquipmentComponent::RemoveEquippedActor(FInventoryItemEquipmentFragment*
 	ADkEquippedActorBase* EquippedActor = FindEquippedActor(EquipmentFragment->GetEquippedActorTag());
 	if (IsValid(EquippedActor))
 	{
+		if (!bIsPreview &&
+			EquippedActor->GetEquipmentTag().MatchesTag(DkGameplayTags::Dk_Item_Equipment_Weapons_Primary))
+		{
+			OwnerASC->RemoveActiveEffectsWithGrantedTags(
+				FGameplayTagContainer(DkGameplayTags::Dk_Stats_Equipped_PrimaryWeapon)
+			);
+		}
 		EquippedActors.Remove(EquippedActor);
 		EquippedActor->Destroy();
 	}
@@ -203,6 +229,34 @@ void UDkEquipmentComponent::DrawWeapon(FGameplayTag InWeaponTypeTag, FName InSoc
 					OwningSkeletalMesh.Get(),
 					FAttachmentTransformRules::SnapToTargetNotIncludingScale,
 					InSocketName
+				);
+			}
+			else
+			{
+				TargetStaticActor->AttachToComponent(
+					OwningSkeletalMesh.Get(),
+					FAttachmentTransformRules::SnapToTargetNotIncludingScale,
+					InSocketName
+				);
+			}
+		}
+	}
+}
+
+void UDkEquipmentComponent::SheatheWeapon(FGameplayTag InWeaponTypeTag, FName InSocketName)
+{
+	ADkEquippedActorBase* TargetTypeEquippedActor = FindTargetTypeEquippedActor(InWeaponTypeTag);
+	if (IsValid(TargetTypeEquippedActor))
+	{
+		ADkEquippedActorStatic* TargetStaticActor = Cast<ADkEquippedActorStatic>(TargetTypeEquippedActor);
+		if (TargetStaticActor)
+		{
+			if (ADkEquippedActorStaticWithAdditional* AdditionalActor =
+				Cast<ADkEquippedActorStaticWithAdditional>(TargetTypeEquippedActor))
+			{
+				AdditionalActor->GetAdditionalMesh()->AttachToComponent(
+					AdditionalActor->GetEquipmentItemStaticMesh(),
+					FAttachmentTransformRules::SnapToTargetNotIncludingScale
 				);
 			}
 			else

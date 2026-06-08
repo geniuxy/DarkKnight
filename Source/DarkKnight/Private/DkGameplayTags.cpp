@@ -16,6 +16,7 @@ namespace DkGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Stats_Sprint, "Dk.Stats.Sprint");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Stats_CanAttack, "Dk.Stats.CanAttack");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Stats_InCombat, "Dk.Stats.InCombat");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Stats_Equipped_PrimaryWeapon, "Dk.Stats.Equipped.PrimaryWeapon");
 
 	// Ability
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Ability_Passive_HoldSword_Event_Activate, "Dk.Ability.Passive.HoldSword.Event.Activate");
@@ -57,6 +58,9 @@ namespace DkGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Image_TestImage, "Dk.Image.TestImage");
 
 	// Items
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(
+		Dk_Item_Equipment_Weapons_Primary, "Dk.Item.Equipment.Weapons.Primary", "主武器类别"
+	);
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(
 		Dk_Item_Equipment_Weapons_Primary_Sword, "Dk.Item.Equipment.Weapons.Primary.Sword", "主武器钢剑"
 	);

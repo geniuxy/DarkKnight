@@ -27,7 +27,13 @@ void UGA_DrawWeapon_Primary::ActivateAbility(
 	const FGameplayAbilityActivationInfo ActivationInfo,
 	const FGameplayEventData* TriggerEventData)
 {
-	if (!K2_CommitAbility())
+	if (!K2_CommitAbility() || !GetOwnerASC())
+	{
+		K2_EndAbility();
+		return;
+	}
+
+	if (!OwnerASC->HasMatchingGameplayTag(DkGameplayTags::Dk_Stats_Equipped_PrimaryWeapon))
 	{
 		K2_EndAbility();
 		return;
@@ -51,7 +57,7 @@ void UGA_DrawWeapon_Primary::ActivateAbility(
 
 void UGA_DrawWeapon_Primary::HandleInputPress(float TimeWaited)
 {
-	if (!GetOwnerASC()|| !OwnerASC->HasMatchingGameplayTag(DkGameplayTags::Dk_Stats_InCombat))
+	if (!OwnerASC->HasMatchingGameplayTag(DkGameplayTags::Dk_Stats_InCombat))
 	{
 		WaitInputPress->EndTask();
 		WaitInputPress = UAbilityTask_WaitInputPress::WaitInputPress(this);

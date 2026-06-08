@@ -6,6 +6,7 @@
 #include "Animation/AnimInstance.h"
 #include "DkAnimInstanceBase.generated.h"
 
+class UDkAbilitySystemComponent;
 enum class ELocomotionStyle : uint8;
 class ADkCharacterBase;
 /**
@@ -28,6 +29,11 @@ public:
 protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Character")
 	TObjectPtr<ADkCharacterBase> OwningCharacter;
+
+	UDkAbilitySystemComponent* GetOwnerASC();
+	
+	UPROPERTY(BlueprintReadOnly, Category = "Character")
+	UDkAbilitySystemComponent* OwnerASC;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Animation States|Locomotion")
 	ELocomotionStyle LocomotionStyle;

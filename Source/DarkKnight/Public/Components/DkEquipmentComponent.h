@@ -8,6 +8,8 @@
 #include "DkEquipmentComponent.generated.h"
 
 
+class UGameplayEffect;
+class UDkAbilitySystemComponent;
 struct FInventoryItemManifest;
 struct FInventoryItemEquipmentFragment;
 class ADkEquippedActorBase;
@@ -35,6 +37,7 @@ private:
 	TWeakObjectPtr<ADkCharacterBase> OwningCharacter;
 	TWeakObjectPtr<APlayerController> OwningController;
 	TWeakObjectPtr<USkeletalMeshComponent> OwningSkeletalMesh;
+	TWeakObjectPtr<UDkAbilitySystemComponent> OwnerASC;
 
 	/* Init */
 	void InitPlayerCharacter();
@@ -43,6 +46,7 @@ private:
 	void OnControllerChanged(APawn* Pawn, AController* OldController, AController* NewController);
 
 	void InitInventoryComponent();
+	void InitOwnerASC();
 	/********/
 
 	/* 装备Item */
@@ -63,6 +67,9 @@ private:
 	UPROPERTY()
 	TArray<TObjectPtr<ADkEquippedActorBase>> EquippedActors;
 
+	UPROPERTY(EditDefaultsOnly, Category="Effects")
+	TSubclassOf<UGameplayEffect> EquippedEffect;
+
 	void RemoveEquippedActor(FInventoryItemEquipmentFragment* EquipmentFragment);
 	/********/
 
@@ -74,5 +81,6 @@ private:
 	/*                            Draw Weapon                             */
 	/**********************************************************************/
 public:
-	void DrawWeapon(FGameplayTag InWeaponTypeTag, FName InSocketName);
+	void DrawWeapon(FGameplayTag InWeaponTypeTag, FName InSocketName = NAME_None);
+	void SheatheWeapon(FGameplayTag InWeaponTypeTag, FName InSocketName = NAME_None);
 };

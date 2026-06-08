@@ -28,4 +28,7 @@ private:
 
 	UPROPERTY(EditAnywhere, Category="AnimNotify Details")
 	FName SocketName;
+
+	UPROPERTY(EditAnywhere, Category="AnimNotify Details")
+	bool bDrawWeapon = true;
 };

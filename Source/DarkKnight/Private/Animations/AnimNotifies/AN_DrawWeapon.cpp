@@ -14,6 +14,13 @@ void UAN_DrawWeapon::Notify(
 		Cast<UDkEquipmentComponent>(MeshComp->GetOwner()->GetComponentByClass(UDkEquipmentComponent::StaticClass()));
 	if (EquipmentComponent)
 	{
-		EquipmentComponent->DrawWeapon(WeaponTypeTag, SocketName);
+		if (bDrawWeapon)
+		{
+			EquipmentComponent->DrawWeapon(WeaponTypeTag, SocketName);
+		}
+		else
+		{
+			EquipmentComponent->SheatheWeapon(WeaponTypeTag, SocketName);
+		}
 	}
 }

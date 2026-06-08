@@ -8,6 +8,7 @@
 #include "Characters/DkCharacterBase.h"
 #include "Components/DkActionComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GAS/DkAbilitySystemComponent.h"
 
 void UDkAnimInstanceBase::NativeInitializeAnimation()
 {
@@ -107,8 +108,10 @@ void UDkAnimInstanceBase::NativeUpdateAnimation(float DeltaSeconds)
 		bDoOnceAtSetMoveStartAngle = true;
 	}
 
-	UDkActionComponent* ActionComponent = OwningCharacter->FindComponentByClass<UDkActionComponent>();
-	bInCombatState = ActionComponent->IsInCombatState();
+	if (GetOwnerASC())
+	{
+		bInCombatState = OwnerASC->HasMatchingGameplayTag(DkGameplayTags::Dk_Stats_InCombat);
+	}
 }
 
 void UDkAnimInstanceBase::NativePostEvaluateAnimation()
@@ -116,4 +119,14 @@ void UDkAnimInstanceBase::NativePostEvaluateAnimation()
 	Super::NativePostEvaluateAnimation();
 
 	bCanTurnBack = false;
+}
+
+UDkAbilitySystemComponent* UDkAnimInstanceBase::GetOwnerASC()
+{
+	if (OwningCharacter && !OwnerASC)
+	{
+		OwnerASC = OwningCharacter->FindComponentByClass<UDkAbilitySystemComponent>();
+	}
+
+	return OwnerASC;
 }

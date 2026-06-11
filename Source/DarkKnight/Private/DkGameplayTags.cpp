@@ -18,6 +18,9 @@ namespace DkGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Stats_InCombat, "Dk.Stats.InCombat");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Stats_Equipped_PrimaryWeapon, "Dk.Stats.Equipped.PrimaryWeapon");
 
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Stats_LockingTarget, "Dk.Stats.LockingTarget");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Stats_Crosshair_LockTarget, "Dk.Stats.Crosshair.LockTarget");
+
 	// Ability
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Ability_Passive_HoldSword_Event_Activate, "Dk.Ability.Passive.HoldSword.Event.Activate");
 	

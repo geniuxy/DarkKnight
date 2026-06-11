@@ -4,8 +4,11 @@
 #include "GAS/Abilities/DkGameplayAbilityBase.h"
 
 #include "AbilitySystemComponent.h"
+#include "DarkKnightDebugHelper.h"
 #include "DkGameplayTags.h"
+#include "FunctionLibrarys/DkAbilitySystemFunctionLibrary.h"
 #include "GameFramework/Character.h"
+#include "GAS/DkAbilitySystemComponent.h"
 
 UDkGameplayAbilityBase::UDkGameplayAbilityBase()
 {
@@ -91,4 +94,155 @@ void UDkGameplayAbilityBase::SendLocalGameplayEvent(const FGameplayTag& EventTag
 	{
 		OwnerASC->HandleGameplayEvent(EventTag, &EventData);
 	}
+}
+
+AActor* UDkGameplayAbilityBase::GetClosetTarget(float AimDistance, ETeamAttitude::Type TeamAttitude) const
+{
+	if (AActor* OwnerAvatarActor = GetAvatarActorFromActorInfo())
+	{
+		FVector Location;
+		FRotator Rotation;
+		OwnerAvatarActor->GetActorEyesViewPoint(Location, Rotation);
+
+		FVector AimEnd = Location + Rotation.Vector() * AimDistance;
+
+		FCollisionQueryParams CollisionQueryParams;
+		CollisionQueryParams.AddIgnoredActor(OwnerAvatarActor);
+
+		FCollisionObjectQueryParams CollisionObjectQueryParams;
+		CollisionObjectQueryParams.AddObjectTypesToQuery(ECC_Pawn);
+
+		if (ShouldDrawDebug())
+		{
+			DrawDebugLine(GetWorld(), Location, AimEnd, FColor::Red, false, 2.f, 0, 3.f);
+		}
+
+		TArray<FHitResult> HitResults;
+		if (GetWorld()->LineTraceMultiByObjectType(
+			HitResults, Location, AimEnd, CollisionObjectQueryParams, CollisionQueryParams))
+		{
+			for (const FHitResult& HitResult : HitResults)
+			{
+				if (IsOtherActorTeamAttitudeIs(HitResult.GetActor(), TeamAttitude))
+				{
+					return HitResult.GetActor();
+				}
+			}
+		}
+	}
+	return nullptr;
+}
+
+AActor* UDkGameplayAbilityBase::GetClosetTargetInView(
+	float InDistance, float InRadius, ETeamAttitude::Type TeamAttitude) const
+{
+	AActor* OwnerAvatarActor = GetAvatarActorFromActorInfo();
+	if (!OwnerAvatarActor)
+	{
+		return nullptr;
+	}
+
+	FVector Location;
+	FRotator Rotation;
+	OwnerAvatarActor->GetActorEyesViewPoint(Location, Rotation);
+
+	const FVector ForwardVector = Rotation.Vector();
+	const FVector TargetingEnd = Location + ForwardVector * InDistance;
+
+	FCollisionQueryParams CollisionQueryParams(SCENE_QUERY_STAT(GetClosetTargetInView), false);
+	CollisionQueryParams.AddIgnoredActor(OwnerAvatarActor);
+
+	FCollisionObjectQueryParams CollisionObjectQueryParams;
+	CollisionObjectQueryParams.AddObjectTypesToQuery(ECC_Pawn);
+
+	if (ShouldDrawDebug())
+	{
+		DrawDebugCylinder(GetWorld(), Location, TargetingEnd, InRadius, 12, FColor::Red, false, 2.f, 0, 3.f);
+	}
+
+	TArray<FHitResult> HitResults;
+	const bool bHit = GetWorld()->SweepMultiByObjectType(
+		HitResults,
+		Location,
+		TargetingEnd,
+		FQuat::Identity, // 圆柱体不需要旋转（沿Z轴方向），这里用Identity，因为方向由起点和终点决定
+		CollisionObjectQueryParams,
+		FCollisionShape::MakeCapsule(InRadius, InDistance * 0.5f), // 用胶囊体模拟圆柱体
+		CollisionQueryParams
+	);
+
+	AActor* ClosestTarget = nullptr;
+	float ClosestDistanceSq = MAX_flt;
+
+	if (bHit)
+	{
+		for (const FHitResult& HitResult : HitResults)
+		{
+			AActor* HitActor = HitResult.GetActor();
+			if (!HitActor || HitActor == OwnerAvatarActor)
+			{
+				continue;
+			}
+
+			if (!IsOtherActorTeamAttitudeIs(HitActor, TeamAttitude))
+			{
+				continue;
+			}
+
+			const FVector ToTarget = HitActor->GetActorLocation() - OwnerAvatarActor->GetActorLocation();
+			const float DistToStartSq = ToTarget.SizeSquared();
+			if (DistToStartSq < ClosestDistanceSq)
+			{
+				ClosestDistanceSq = DistToStartSq;
+				ClosestTarget = HitActor;
+			}
+		}
+	}
+
+	return ClosestTarget;
+}
+
+AActor* UDkGameplayAbilityBase::GetCurrentLockTarget() const
+{
+	UDkAbilitySystemComponent* OwnerDkASC = Cast<UDkAbilitySystemComponent>(
+		IsValid(OwnerASC) ? OwnerASC : GetAbilitySystemComponentFromActorInfo()
+	);
+	if (OwnerDkASC)
+	{
+		return OwnerDkASC->GetLockTarget();
+	}
+
+	return nullptr;
+}
+
+void UDkGameplayAbilityBase::SetCurrentLockTarget(AActor* NewLockTarget)
+{
+	UDkAbilitySystemComponent* OwnerDkASC = Cast<UDkAbilitySystemComponent>(
+		IsValid(OwnerASC) ? OwnerASC : GetAbilitySystemComponentFromActorInfo()
+	);
+	if (OwnerDkASC)
+	{
+		OwnerDkASC->SetLockTarget(NewLockTarget);
+		if (NewLockTarget)
+		{
+			Debug::Print("123");
+		}
+	}
+}
+
+UAbilitySystemComponent* UDkGameplayAbilityBase::GetCurrentLockTargetASC()
+{
+	if (AActor* CurrentLockTarget = GetCurrentLockTarget())
+	{
+		return UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(CurrentLockTarget);
+	}
+	return nullptr;
+}
+
+bool UDkGameplayAbilityBase::HasValidLockTarget() const
+{
+	if (!GetCurrentLockTarget()) return false;
+	if (UDkAbilitySystemFunctionLibrary::IsActorDead(GetCurrentLockTarget())) return false;
+
+	return true;
 }

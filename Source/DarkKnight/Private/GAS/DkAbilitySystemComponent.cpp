@@ -11,6 +11,7 @@
 #include "DkTypes/DkStructs.h"
 #include "GAS/DkAttributeSet.h"
 #include "GAS/DkHeroAttributeSet.h"
+#include "Net/UnrealNetwork.h"
 
 UDkAbilitySystemComponent::UDkAbilitySystemComponent()
 {
@@ -54,6 +55,12 @@ TMap<EAbilityInputID, UInputAction*> UDkAbilitySystemComponent::GetGameplayAbili
 void UDkAbilitySystemComponent::BeginPlay()
 {
 	Super::BeginPlay();
+}
+
+void UDkAbilitySystemComponent::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UDkAbilitySystemComponent, LockTarget);
 }
 
 void UDkAbilitySystemComponent::InitializeBaseAttributes()
@@ -205,4 +212,29 @@ void UDkAbilitySystemComponent::EnergyUpdated(const FOnAttributeChangeData& Chan
 	{
 		RemoveLooseGameplayTag(DkGameplayTags::Dk_Stats_Energy_Empty);
 	}
+}
+
+void UDkAbilitySystemComponent::Server_SetLockTarget_Implementation(AActor* NewTarget)
+{
+	LockTarget = NewTarget;
+}
+
+void UDkAbilitySystemComponent::ClearLockTarget()
+{
+	if (GetOwnerRole() == ROLE_Authority)
+	{
+		LockTarget = nullptr;
+	}
+	else if (GetOwnerRole() == ROLE_AutonomousProxy)
+	{
+		// 客户端直接预测清空（可选），同时通知服务器
+		LockTarget = nullptr;
+		Server_SetLockTarget(nullptr);
+	}
+}
+
+void UDkAbilitySystemComponent::SetLockTarget(AActor* NewLockTarget)
+{
+	LockTarget = NewLockTarget;
+	Server_SetLockTarget(NewLockTarget);
 }

@@ -13,4 +13,9 @@ UCLASS()
 class DARKKNIGHT_API UDkAbilitySystemFunctionLibrary : public UAbilitySystemBlueprintLibrary
 {
 	GENERATED_BODY()
+
+public:
+	static bool IsActorDead(const AActor* ActorToCheck);
+
+	static bool ActorHasTag(const AActor* ActorToCheck, const FGameplayTag& Tag);
 };

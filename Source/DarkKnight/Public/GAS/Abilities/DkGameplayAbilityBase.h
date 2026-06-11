@@ -40,9 +40,9 @@ protected:
 
 	UPROPERTY()
 	ACharacter* OwnerAvatarCharacter;
-	
+
 	UAbilitySystemComponent* GetOwnerASC();
-	
+
 	UPROPERTY()
 	UAbilitySystemComponent* OwnerASC;
 
@@ -50,4 +50,19 @@ protected:
 
 public:
 	FORCEINLINE bool ShouldDrawDebug() const { return bShouldDrawDebug; }
+
+	/**********************************************************************/
+	/*                             Targeting                              */
+	/**********************************************************************/
+protected:
+	AActor* GetClosetTarget(float AimDistance, ETeamAttitude::Type TeamAttitude = ETeamAttitude::Hostile) const;
+
+	AActor* GetClosetTargetInView(
+		float InDistance, float InRadius, ETeamAttitude::Type TeamAttitude = ETeamAttitude::Hostile
+	) const;
+	
+	AActor* GetCurrentLockTarget() const;
+	void SetCurrentLockTarget(AActor* NewLockTarget);
+	UAbilitySystemComponent* GetCurrentLockTargetASC();
+	bool HasValidLockTarget() const;
 };

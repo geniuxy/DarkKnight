@@ -31,6 +31,8 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+
 private:
 	void InitializeBaseAttributes();
 	void InitializeBaseGameplayEffects();
@@ -50,4 +52,21 @@ private:
 
 public:
 	FORCEINLINE const TMap<EAbilityInputID, TSubclassOf<UGameplayAbility>>& GetAbilities() const { return Abilities; }
+
+	/**********************************************************************/
+	/*                             Targeting                              */
+	/**********************************************************************/
+
+private:
+	UPROPERTY(Replicated)
+	TObjectPtr<AActor> LockTarget;
+
+	UFUNCTION(Server, Reliable)
+	void Server_SetLockTarget(AActor* NewTarget);
+
+public:
+	void ClearLockTarget();
+	
+	FORCEINLINE AActor* GetLockTarget() const { return LockTarget; }
+	void SetLockTarget(AActor* NewLockTarget);
 };

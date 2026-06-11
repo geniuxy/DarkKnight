@@ -122,6 +122,8 @@ public:
 	virtual void SetGenericTeamId(const FGenericTeamId& NewTeamID) override;
 	virtual FGenericTeamId GetGenericTeamId() const override;
 	//~ End IGenericTeamAgentInterface Interface
+
 protected:
+	UPROPERTY(EditInstanceOnly)
 	FGenericTeamId TeamID;
 };

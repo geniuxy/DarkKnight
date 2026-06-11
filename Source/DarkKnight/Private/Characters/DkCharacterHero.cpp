@@ -172,7 +172,6 @@ void ADkCharacterHero::BeginPlay()
 void ADkCharacterHero::InitAbilityActorInfo()
 {
 	OwningPlayerState = GetPlayerState<ADkPlayerStateBase>();
-	check(OwningPlayerState);
 }
 
 void ADkCharacterHero::HandleOnLanded(const FHitResult& Hit)

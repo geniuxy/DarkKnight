@@ -82,7 +82,8 @@ enum class EAbilityInputID : uint8
 	AbilitySix UMETA(DisplayName="Ability Six"),
 	Confirm UMETA(DisplayName="Confirm"),
 	Cancel UMETA(DisplayName="Cancel"),
-	Sprint UMETA(DisplayName="Sprint")
+	Sprint UMETA(DisplayName="Sprint"),
+	LockTarget UMETA(DisplayName="LockTarget")
 };
 
 /********/

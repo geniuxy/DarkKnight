@@ -96,6 +96,26 @@ void UDkGameplayAbilityBase::SendLocalGameplayEvent(const FGameplayTag& EventTag
 	}
 }
 
+void UDkGameplayAbilityBase::EndActivatingAbility(FGameplayTag InAbilityTag)
+{
+	FGameplayTagContainer CancelTags;
+	CancelTags.AddTag(InAbilityTag);
+	if (GetOwnerASC())
+	{
+		OwnerASC->CancelAbilities(&CancelTags, nullptr, nullptr);
+	}
+}
+
+void UDkGameplayAbilityBase::TryToActivateAbility(FGameplayTag InAbilityTag)
+{
+	FGameplayTagContainer TagContainer;
+	TagContainer.AddTag(InAbilityTag);
+	if (GetOwnerASC())
+	{
+		OwnerASC->TryActivateAbilitiesByTag(TagContainer);
+	}
+}
+
 AActor* UDkGameplayAbilityBase::GetClosetTarget(float AimDistance, ETeamAttitude::Type TeamAttitude) const
 {
 	if (AActor* OwnerAvatarActor = GetAvatarActorFromActorInfo())
@@ -223,10 +243,6 @@ void UDkGameplayAbilityBase::SetCurrentLockTarget(AActor* NewLockTarget)
 	if (OwnerDkASC)
 	{
 		OwnerDkASC->SetLockTarget(NewLockTarget);
-		if (NewLockTarget)
-		{
-			Debug::Print("123");
-		}
 	}
 }
 

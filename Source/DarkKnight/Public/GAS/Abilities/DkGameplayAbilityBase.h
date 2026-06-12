@@ -48,6 +48,9 @@ protected:
 
 	void SendLocalGameplayEvent(const FGameplayTag& EventTag, const FGameplayEventData& EventData);
 
+	void EndActivatingAbility(FGameplayTag InAbilityTag);
+	void TryToActivateAbility(FGameplayTag InAbilityTag);
+
 public:
 	FORCEINLINE bool ShouldDrawDebug() const { return bShouldDrawDebug; }
 

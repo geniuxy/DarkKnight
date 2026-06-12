@@ -70,8 +70,6 @@ ADkCharacterBase::ADkCharacterBase()
 
 	AbilitySystemComponent = CreateDefaultSubobject<UDkAbilitySystemComponent>(TEXT("Ability System Component"));
 	AttributeSet = CreateDefaultSubobject<UDkAttributeSet>(TEXT("AttributeSet"));
-
-	BindGASChangeDelegates();
 }
 
 void ADkCharacterBase::ServerSideInit()
@@ -97,6 +95,8 @@ void ADkCharacterBase::BeginPlay()
 	}
 
 	GetNetworkDebugInfo();
+
+	BindGASChangeDelegates(); // 构造函数中调用虚函数不好，此时虚函数表还没构建完成，子类的重写不会被调用。
 }
 
 void ADkCharacterBase::PossessedBy(AController* NewController)

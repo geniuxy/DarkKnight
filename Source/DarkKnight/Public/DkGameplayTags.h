@@ -26,7 +26,11 @@ namespace DkGameplayTags
 	DARKKNIGHT_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dk_Stats_LockingTarget);
 	DARKKNIGHT_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dk_Stats_Crosshair_LockTarget);
 
-	// Ability
+	// Ability Tags
+	DARKKNIGHT_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dk_Ability_Sprint_Tag);
+	DARKKNIGHT_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dk_Ability_LockTarget_Tag);
+	
+	// Ability Events
 	DARKKNIGHT_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dk_Ability_Passive_HoldSword_Event_Activate);
 	
 	// Input Actions

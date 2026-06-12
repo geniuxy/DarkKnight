@@ -23,7 +23,7 @@ class ADkPlayerStateBase;
 
 ADkCharacterHero::ADkCharacterHero()
 {
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>("CameraBoom");
 	CameraBoom->SetupAttachment(GetRootComponent());
@@ -169,6 +169,15 @@ void ADkCharacterHero::BeginPlay()
 	// );
 }
 
+void ADkCharacterHero::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	if (!bIsLockingTarget || !IsValid(AbilitySystemComponent->GetLockTarget())) return;
+
+	FaceLockTarget(DeltaSeconds);
+}
+
 void ADkCharacterHero::InitAbilityActorInfo()
 {
 	OwningPlayerState = GetPlayerState<ADkPlayerStateBase>();
@@ -219,6 +228,53 @@ void ADkCharacterHero::HandleFallDeath()
 
 		// TODO: 这里死了，会到处飘，还是播放死亡动画吧，受不了了，不会改
 	}
+}
+
+void ADkCharacterHero::BindGASChangeDelegates()
+{
+	Super::BindGASChangeDelegates();
+
+	if (AbilitySystemComponent)
+	{
+		AbilitySystemComponent->RegisterGameplayTagEvent(DkGameplayTags::Dk_Stats_LockingTarget).AddUObject(
+			this, &ThisClass::LockingTargetTagUpdated
+		);
+	}
+}
+
+void ADkCharacterHero::LockingTargetTagUpdated(FGameplayTag Tag, int NewCount)
+{
+	bIsLockingTarget = NewCount > 0;
+}
+
+void ADkCharacterHero::FaceLockTarget(float DeltaSeconds)
+{
+	AActor* LockTarget = AbilitySystemComponent->GetLockTarget();
+	if (!IsValid(LockTarget)) return;
+
+	// 计算目标方向（水平面，忽略 Z 轴高度差）
+	FVector TargetLocation = LockTarget->GetActorLocation();
+	FVector MyLocation = GetActorLocation();
+    
+	FVector Direction = TargetLocation - MyLocation;
+	Direction.Z = 0.0f; // 保持水平旋转
+	Direction.Normalize();
+
+	if (Direction.IsNearlyZero()) return;
+
+	// 计算目标旋转
+	FRotator TargetRotation = Direction.Rotation();
+	FRotator CurrentRotation = GetActorRotation();
+
+	// 只取 Yaw，保持 Pitch 和 Roll 不变
+	TargetRotation.Pitch = CurrentRotation.Pitch;
+	TargetRotation.Roll = CurrentRotation.Roll;
+
+	// 平滑插值
+	const float RotationSpeed = 10.0f; // 可调
+	FRotator NewRotation = FMath::RInterpTo(CurrentRotation, TargetRotation, DeltaSeconds, RotationSpeed);
+    
+	SetActorRotation(NewRotation);
 }
 
 void ADkCharacterHero::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

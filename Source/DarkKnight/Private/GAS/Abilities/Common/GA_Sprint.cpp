@@ -11,6 +11,7 @@
 
 UGA_Sprint::UGA_Sprint()
 {
+	AbilityTags.AddTag(DkGameplayTags::Dk_Ability_Sprint_Tag);
 	ActivationOwnedTags.AddTag(DkGameplayTags::Dk_Stats_Sprint);
 }
 

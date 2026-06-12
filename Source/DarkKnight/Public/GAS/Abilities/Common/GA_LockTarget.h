@@ -43,6 +43,8 @@ private:
 	float LockTargetCheckTimeInterval = 0.1f;
 
 	FTimerHandle LockTargetCheckTimerHandle;
+	
+	bool bWasSprinting = false; // 瞄准前正在疾跑
 
 	void FindLockTarget();
 	void StartLockTargetCheckTimer();

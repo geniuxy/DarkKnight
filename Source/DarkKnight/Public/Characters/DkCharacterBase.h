@@ -109,9 +109,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category= "GAS")
 	TObjectPtr<UDkAttributeSet> AttributeSet;
 
-private:
-	void BindGASChangeDelegates();
+	virtual void BindGASChangeDelegates();
 
+private:
 	void MoveSpeedUpdated(const FOnAttributeChangeData& Data);
 
 	/**********************************************************************/

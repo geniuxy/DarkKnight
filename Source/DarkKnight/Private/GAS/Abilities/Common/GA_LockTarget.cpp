@@ -7,9 +7,13 @@
 #include "DarkKnightDebugHelper.h"
 #include "DkGameplayTags.h"
 #include "Abilities/Tasks/AbilityTask_WaitInputPress.h"
+#include "FunctionLibrarys/DkAbilitySystemFunctionLibrary.h"
+#include "GameFramework/Character.h"
+#include "Settings/DkGameUserSettings.h"
 
 UGA_LockTarget::UGA_LockTarget()
 {
+	AbilityTags.AddTag(DkGameplayTags::Dk_Ability_LockTarget_Tag);
 	ActivationOwnedTags.AddTag(DkGameplayTags::Dk_Stats_LockingTarget);
 	ActivationOwnedTags.AddTag(DkGameplayTags::Dk_Stats_Crosshair_LockTarget);
 	// TODO: 加个DisableLockTarget的tag
@@ -33,12 +37,24 @@ void UGA_LockTarget::ActivateAbility(
 	if (HasAuthorityOrPredictionKey(ActorInfo, &ActivationInfo))
 	{
 		FindLockTarget();
-		StartLockTargetCheckTimer();
 	}
 
-	UAbilityTask_WaitInputPress* WaitInputPress = UAbilityTask_WaitInputPress::WaitInputPress(this);
-	WaitInputPress->OnPress.AddDynamic(this, &ThisClass::HandleInputPress);
-	WaitInputPress->ReadyForActivation();
+	if (HasValidLockTarget())
+	{
+		if (UDkAbilitySystemFunctionLibrary::ActorHasTag(GetOwnerAvatarCharacter(), DkGameplayTags::Dk_Stats_Sprint))
+		{
+			bWasSprinting = true;
+			EndActivatingAbility(DkGameplayTags::Dk_Ability_Sprint_Tag);
+		}
+		StartLockTargetCheckTimer();
+		UAbilityTask_WaitInputPress* WaitInputPress = UAbilityTask_WaitInputPress::WaitInputPress(this);
+		WaitInputPress->OnPress.AddDynamic(this, &ThisClass::HandleInputPress);
+		WaitInputPress->ReadyForActivation();
+	}
+	else
+	{
+		K2_EndAbility();
+	}
 }
 
 void UGA_LockTarget::EndAbility(
@@ -54,6 +70,11 @@ void UGA_LockTarget::EndAbility(
 		PrevLockTargetASC->RegisterGameplayTagEvent(DkGameplayTags::Dk_Stats_Dead).RemoveAll(this);
 	}
 	SetCurrentLockTarget(nullptr);
+
+	if (bWasSprinting && UDkGameUserSettings::Get()->IsToggleSprintMode())
+	{
+		TryToActivateAbility(DkGameplayTags::Dk_Ability_Sprint_Tag);
+	}
 
 	StopLockTargetCheckTimer();
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);

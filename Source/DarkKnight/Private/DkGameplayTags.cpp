@@ -21,7 +21,11 @@ namespace DkGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Stats_LockingTarget, "Dk.Stats.LockingTarget");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Stats_Crosshair_LockTarget, "Dk.Stats.Crosshair.LockTarget");
 
-	// Ability
+	// Ability Tags
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Ability_Sprint_Tag, "Dk.Ability.Sprint.Tag");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Ability_LockTarget_Tag, "Dk.Ability.LockTarget.Tag");
+	
+	// Ability Events
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Ability_Passive_HoldSword_Event_Activate, "Dk.Ability.Passive.HoldSword.Event.Activate");
 	
 	// Input Actions

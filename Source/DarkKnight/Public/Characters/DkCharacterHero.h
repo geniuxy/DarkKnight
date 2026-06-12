@@ -36,6 +36,7 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaSeconds) override;
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UCameraComponent> Camera;
@@ -74,9 +75,16 @@ public:
 	/**********************************************************************/
 	/*                         Gameplay Ability                           */
 	/**********************************************************************/
-private:
+protected:
 	UPROPERTY()
 	UDkHeroAttributeSet* HeroAttributeSet;
+
+	virtual void BindGASChangeDelegates() override;
+
+private:
+	void LockingTargetTagUpdated(FGameplayTag Tag, int NewCount);
+	bool bIsLockingTarget = false;
+	void FaceLockTarget(float DeltaSeconds);
 
 	/**********************************************************************/
 	/*                              Input                                 */

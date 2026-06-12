@@ -32,6 +32,7 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaSeconds) override;
 
 	virtual void PossessedBy(AController* NewController) override;
 
@@ -97,6 +98,13 @@ public:
 	LIST_DATA_ACCESSOR(ELocomotionStyle, CurrentLocomotionStyle)
 
 	/**********************************************************************/
+	/*                            Collision                               */
+	/**********************************************************************/
+
+public:
+	void DisableCollisionToPawn();
+
+	/**********************************************************************/
 	/*                         Gameplay Ability                           */
 	/**********************************************************************/
 public:
@@ -110,10 +118,12 @@ protected:
 	TObjectPtr<UDkAttributeSet> AttributeSet;
 
 	virtual void BindGASChangeDelegates();
+	
+	bool bIsLockingTarget = false;
 
 private:
 	void LockingTargetTagUpdated(FGameplayTag Tag, int NewCount);
-	bool bIsLockingTarget = false;
+	virtual void OnLockingTargetStateChanged(bool InbIsLockingTarget);
 	void FaceLockTarget(float DeltaSeconds);
 
 	void MoveSpeedUpdated(const FOnAttributeChangeData& Data);

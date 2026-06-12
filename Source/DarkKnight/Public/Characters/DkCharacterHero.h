@@ -38,12 +38,6 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
 
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UCameraComponent> Camera;
-
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<USpringArmComponent> CameraBoom;
-
 	/* Actor Components */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UDkInventoryComponent* InventoryComponent;
@@ -80,6 +74,56 @@ protected:
 	UDkHeroAttributeSet* HeroAttributeSet;
 
 	virtual void BindGASChangeDelegates() override;
+
+private:
+	virtual void OnLockingTargetStateChanged(bool InbIsLockingTarget) override;
+
+	/**********************************************************************/
+	/*                           Camera View                              */
+	/**********************************************************************/
+private:
+	UPROPERTY(VisibleDefaultsOnly, Category="View")
+	TObjectPtr<UCameraComponent> Camera;
+
+	UPROPERTY(VisibleDefaultsOnly, Category="View")
+	TObjectPtr<USpringArmComponent> CameraBoom;
+
+	UPROPERTY(EditDefaultsOnly, Category="View")
+	FVector CameraLockTargetLocalOffset = FVector(0.f, 80.f, 20.f);
+
+	UPROPERTY(EditDefaultsOnly, Category="View")
+	float CameraBoomLockingArmLength = 500.f;
+	
+	UPROPERTY(EditDefaultsOnly, Category="View")
+	float CameraBoomDefaultArmLength = 200.f;
+	
+	UPROPERTY(EditDefaultsOnly, Category="View")
+	float CameraLerpSpeed = 20.f;
+
+	UPROPERTY(EditDefaultsOnly, Category="View")
+	float CameraBoomLerpSpeed = 20.f;
+
+	FTimerHandle CameraLerpTimerHandle;
+	FTimerHandle CameraBoomLerpTimerHandle;
+
+	UPROPERTY()
+	bool bIsCameraLerping = false;
+
+	UPROPERTY()
+	bool bIsCameraBoomLerping = false;
+
+	UPROPERTY()
+	FVector PendingCameraGoal;
+
+	UPROPERTY()
+	float PendingCameraBoomLength;
+	
+	void LerpCameraToLocalOffsetLocation(const FVector& Goal);
+	void LerpCameraBoomToTargetLength(float InLength);
+	void TickCameraLocalOffsetLerp();
+	void TickCameraBoomLengthLerp();
+
+	void CameraFaceLockingTarget(float DeltaSeconds);
 
 	/**********************************************************************/
 	/*                              Input                                 */

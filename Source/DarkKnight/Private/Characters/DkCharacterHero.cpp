@@ -15,6 +15,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GAS/DkAbilitySystemComponent.h"
 #include "GAS/DkHeroAttributeSet.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "PlayerStates/DkPlayerStateBase.h"
 
 
@@ -23,13 +24,11 @@ class ADkPlayerStateBase;
 
 ADkCharacterHero::ADkCharacterHero()
 {
-	PrimaryActorTick.bCanEverTick = true;
-
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>("CameraBoom");
 	CameraBoom->SetupAttachment(GetRootComponent());
 	CameraBoom->bUsePawnControlRotation = true;
 	CameraBoom->bDoCollisionTest = false;
-	CameraBoom->TargetArmLength = 200.f;
+	CameraBoom->TargetArmLength = CameraBoomDefaultArmLength;
 	CameraBoom->SocketOffset = FVector(0.f, 80.f, 50.f);
 
 	Camera = CreateDefaultSubobject<UCameraComponent>("Camera");
@@ -175,7 +174,7 @@ void ADkCharacterHero::Tick(float DeltaSeconds)
 
 	if (!bIsLockingTarget || !IsValid(AbilitySystemComponent->GetLockTarget())) return;
 
-	FaceLockTarget(DeltaSeconds);
+	CameraFaceLockingTarget(DeltaSeconds);
 }
 
 void ADkCharacterHero::InitAbilityActorInfo()
@@ -187,7 +186,8 @@ void ADkCharacterHero::HandleOnLanded(const FHitResult& Hit)
 {
 	HandleFallDeath();
 
-	checkf(OwningPlayerState, TEXT("在着陆时，PlayerState得到为空"));
+	// checkf(OwningPlayerState, TEXT("在着陆时，PlayerState得到为空"));
+	if (!OwningPlayerState) return;
 	EActionState CurrentActionState = OwningPlayerState->GetCurrentActionState();
 	if (CurrentActionState == EActionState::InAir)
 	{
@@ -233,6 +233,102 @@ void ADkCharacterHero::HandleFallDeath()
 void ADkCharacterHero::BindGASChangeDelegates()
 {
 	Super::BindGASChangeDelegates();
+}
+
+void ADkCharacterHero::OnLockingTargetStateChanged(bool InbIsLockingTarget)
+{
+	LerpCameraToLocalOffsetLocation(InbIsLockingTarget ? CameraLockTargetLocalOffset : FVector(0.f));
+	LerpCameraBoomToTargetLength(InbIsLockingTarget ? CameraBoomLockingArmLength : CameraBoomDefaultArmLength);
+
+	if (!InbIsLockingTarget)
+	{
+		Camera->SetRelativeRotation(FRotator(0.f));
+	}
+}
+
+void ADkCharacterHero::LerpCameraToLocalOffsetLocation(const FVector& Goal)
+{
+	PendingCameraGoal = Goal;
+
+	// 后续可以加个Tag，在1秒时间内不让玩家连续多次瞄准(已完成)
+	// 这是为了防止连续取消，Set多个Timer导致镜头抖动
+	// 如果已在插值中，只更新目标，不重启 Timer
+	if (bIsCameraLerping)
+	{
+		return;
+	}
+
+	bIsCameraLerping = true;
+	GetWorldTimerManager().ClearTimer(CameraLerpTimerHandle);
+	CameraLerpTimerHandle = GetWorldTimerManager().SetTimerForNextTick(
+		FTimerDelegate::CreateUObject(this, &ThisClass::TickCameraLocalOffsetLerp)
+	);
+}
+
+void ADkCharacterHero::LerpCameraBoomToTargetLength(float InLength)
+{
+	PendingCameraBoomLength = InLength;
+
+	if (bIsCameraBoomLerping)
+	{
+		return;
+	}
+
+	bIsCameraBoomLerping = true;
+	GetWorldTimerManager().ClearTimer(CameraBoomLerpTimerHandle);
+	CameraBoomLerpTimerHandle = GetWorldTimerManager().SetTimerForNextTick(
+		FTimerDelegate::CreateUObject(this, &ThisClass::TickCameraBoomLengthLerp)
+	);
+}
+
+void ADkCharacterHero::TickCameraLocalOffsetLerp()
+{
+	FVector CurrentLocalOffset = Camera->GetRelativeLocation();
+	if (FVector::Dist(CurrentLocalOffset, PendingCameraGoal) < 1.f)
+	{
+		Camera->SetRelativeLocation(PendingCameraGoal);
+		bIsCameraLerping = false; // 清除状态
+		return;
+	}
+
+	float LerpAlpha = FMath::Clamp(GetWorld()->GetDeltaSeconds() * CameraLerpSpeed, 0.f, 1.f);
+	FVector NewLocalOffset = FMath::Lerp(CurrentLocalOffset, PendingCameraGoal, LerpAlpha);
+	Camera->SetRelativeLocation(NewLocalOffset);
+
+	CameraLerpTimerHandle = GetWorldTimerManager().SetTimerForNextTick(
+		FTimerDelegate::CreateUObject(this, &ThisClass::TickCameraLocalOffsetLerp)
+	);
+}
+
+void ADkCharacterHero::TickCameraBoomLengthLerp()
+{
+	float CurrentArmLength = CameraBoom->TargetArmLength;
+	if (FMath::IsNearlyEqual(CurrentArmLength, PendingCameraBoomLength))
+	{
+		CameraBoom->TargetArmLength = PendingCameraBoomLength;
+		bIsCameraBoomLerping = false; // 清除状态
+		return;
+	}
+
+	float LerpAlpha = FMath::Clamp(GetWorld()->GetDeltaSeconds() * CameraBoomLerpSpeed, 0.f, 1.f);
+	float NewArmLength = FMath::Lerp(CurrentArmLength, PendingCameraBoomLength, LerpAlpha);
+	CameraBoom->TargetArmLength = NewArmLength;
+	CameraBoomLerpTimerHandle = GetWorldTimerManager().SetTimerForNextTick(
+		FTimerDelegate::CreateUObject(this, &ThisClass::TickCameraBoomLengthLerp)
+	);
+}
+
+void ADkCharacterHero::CameraFaceLockingTarget(float DeltaSeconds)
+{
+	AActor* LockTarget = AbilitySystemComponent->GetLockTarget();
+	if (!IsValid(LockTarget)) return;
+
+	float RotationSpeed = 10.0f;
+	FVector LookEndPoint = LockTarget->GetActorLocation();
+	FRotator CameraLookRotation = UKismetMathLibrary::FindLookAtRotation(Camera->GetComponentLocation(), LookEndPoint);
+	FRotator CurCameraRotation = Camera->GetComponentRotation();
+	FRotator NewRotation = FMath::RInterpTo(CurCameraRotation, CameraLookRotation, DeltaSeconds, RotationSpeed);
+	Camera->SetWorldRotation(FRotator(FMath::Clamp(NewRotation.Pitch, -20.f, 20.f), NewRotation.Yaw, 0.f));
 }
 
 void ADkCharacterHero::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

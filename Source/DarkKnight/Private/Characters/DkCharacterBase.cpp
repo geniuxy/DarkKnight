@@ -13,6 +13,7 @@
 #include "GameFramework/PlayerState.h"
 #include "GAS/DkAbilitySystemComponent.h"
 #include "GAS/DkAttributeSet.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "PickUp/DkPickUpActorBase.h"
 #include "PickUp/DkPickUpActorSkeletalMesh.h"
 #include "PickUp/DkPickUpActorStaticMesh.h"
@@ -20,7 +21,7 @@
 
 ADkCharacterBase::ADkCharacterBase()
 {
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false; // 操作角色的面朝方向不会跟着控制器“走”
@@ -99,6 +100,15 @@ void ADkCharacterBase::BeginPlay()
 	BindGASChangeDelegates(); // 构造函数中调用虚函数不好，此时虚函数表还没构建完成，子类的重写不会被调用。
 }
 
+void ADkCharacterBase::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	if (!bIsLockingTarget || !IsValid(AbilitySystemComponent->GetLockTarget())) return;
+
+	FaceLockTarget(DeltaSeconds);
+}
+
 void ADkCharacterBase::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
@@ -124,10 +134,10 @@ void ADkCharacterBase::ServerSpawnRewardItemActor_Implementation()
 	int32 RewardItemID = RewardItemIDList[RandIndex].ItemID;
 	int32 RewardItemStack = RewardItemIDList[RandIndex].Stack;
 	checkf(RewardItemStack > 0, TEXT("生成RewardItem时，Stack数量为0！"))
-	
+
 	UDkInventorySubsystem* InventorySubsystem = UDkInventorySubsystem::Get(this);
 	checkf(InventorySubsystem, TEXT("生成RewardItem时，InventorySubsystem为空！"));
-	
+
 	if (const FDkItemInfo* RewardItemInfo = InventorySubsystem->GetCachedItemTable().Find(RewardItemID))
 	{
 		FVector RotatedForward = GetActorForwardVector();
@@ -157,48 +167,63 @@ void ADkCharacterBase::ServerSpawnRewardItemActor_Implementation()
 
 void ADkCharacterBase::GetNetworkDebugInfo() const
 {
-	if (!bDebugNetworkInfo) return; 
-	
+	if (!bDebugNetworkInfo) return;
+
 	// 1. NetMode (当前运行模式)
 	FString NetModeStr;
 	switch (GetNetMode())
 	{
-		case NM_Standalone:    NetModeStr = TEXT("Standalone"); break;
-		case NM_DedicatedServer: NetModeStr = TEXT("DedicatedServer"); break;
-		case NM_ListenServer:  NetModeStr = TEXT("ListenServer"); break;
-		case NM_Client:        NetModeStr = TEXT("Client"); break;
-		default:               NetModeStr = TEXT("Unknown"); break;
+	case NM_Standalone: NetModeStr = TEXT("Standalone");
+		break;
+	case NM_DedicatedServer: NetModeStr = TEXT("DedicatedServer");
+		break;
+	case NM_ListenServer: NetModeStr = TEXT("ListenServer");
+		break;
+	case NM_Client: NetModeStr = TEXT("Client");
+		break;
+	default: NetModeStr = TEXT("Unknown");
+		break;
 	}
-	
+
 	// 2. NetRole (本端的角色)
 	FString RoleStr;
 	switch (GetLocalRole())
 	{
-		case ROLE_None:            RoleStr = TEXT("None"); break;
-		case ROLE_SimulatedProxy:  RoleStr = TEXT("SimulatedProxy"); break;
-		case ROLE_AutonomousProxy: RoleStr = TEXT("AutonomousProxy"); break;
-		case ROLE_Authority:       RoleStr = TEXT("Authority"); break;
-		default:                   RoleStr = TEXT("Unknown"); break;
+	case ROLE_None: RoleStr = TEXT("None");
+		break;
+	case ROLE_SimulatedProxy: RoleStr = TEXT("SimulatedProxy");
+		break;
+	case ROLE_AutonomousProxy: RoleStr = TEXT("AutonomousProxy");
+		break;
+	case ROLE_Authority: RoleStr = TEXT("Authority");
+		break;
+	default: RoleStr = TEXT("Unknown");
+		break;
 	}
-	
+
 	// 3. RemoteRole (对端的角色)
 	FString RemoteRoleStr;
 	switch (GetRemoteRole())
 	{
-		case ROLE_None:            RemoteRoleStr = TEXT("None"); break;
-		case ROLE_SimulatedProxy:  RemoteRoleStr = TEXT("SimulatedProxy"); break;
-		case ROLE_AutonomousProxy: RemoteRoleStr = TEXT("AutonomousProxy"); break;
-		case ROLE_Authority:       RemoteRoleStr = TEXT("Authority"); break;
-		default:                   RemoteRoleStr = TEXT("Unknown"); break;
+	case ROLE_None: RemoteRoleStr = TEXT("None");
+		break;
+	case ROLE_SimulatedProxy: RemoteRoleStr = TEXT("SimulatedProxy");
+		break;
+	case ROLE_AutonomousProxy: RemoteRoleStr = TEXT("AutonomousProxy");
+		break;
+	case ROLE_Authority: RemoteRoleStr = TEXT("Authority");
+		break;
+	default: RemoteRoleStr = TEXT("Unknown");
+		break;
 	}
-	
+
 	// 4. 关键判断
 	bool bHasAuthority = HasAuthority();
 	bool bIsLocallyControlled = IsLocallyControlled();
 	bool bIsServer = (GetNetMode() == NM_DedicatedServer || GetNetMode() == NM_ListenServer);
 	bool bIsClientOnly = (GetNetMode() == NM_Client);
 	bool bIsStandalone = (GetNetMode() == NM_Standalone);
-	
+
 	// 组装信息
 	const FString Info = FString::Printf(
 		TEXT("=== %s ===\n")
@@ -221,8 +246,13 @@ void ADkCharacterBase::GetNetworkDebugInfo() const
 		GetController() ? *GetController()->GetName() : TEXT("NULL"),
 		GetPlayerState() ? *GetPlayerState()->GetPlayerName() : TEXT("NULL")
 	);
-	
+
 	Debug::Print(Info, -1, 30.f);
+}
+
+void ADkCharacterBase::DisableCollisionToPawn()
+{
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
 }
 
 UAbilitySystemComponent* ADkCharacterBase::GetAbilitySystemComponent() const
@@ -237,7 +267,7 @@ void ADkCharacterBase::BindGASChangeDelegates()
 		AbilitySystemComponent->RegisterGameplayTagEvent(DkGameplayTags::Dk_Stats_LockingTarget).AddUObject(
 			this, &ThisClass::LockingTargetTagUpdated
 		);
-		
+
 		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
 			UDkAttributeSet::GetMoveSpeedAttribute()
 		).AddUObject(
@@ -249,6 +279,12 @@ void ADkCharacterBase::BindGASChangeDelegates()
 void ADkCharacterBase::LockingTargetTagUpdated(FGameplayTag Tag, int NewCount)
 {
 	bIsLockingTarget = NewCount > 0;
+	OnLockingTargetStateChanged(bIsLockingTarget);
+}
+
+void ADkCharacterBase::OnLockingTargetStateChanged(bool InbIsLockingTarget)
+{
+	// 在子类中重写
 }
 
 void ADkCharacterBase::FaceLockTarget(float DeltaSeconds)
@@ -256,29 +292,21 @@ void ADkCharacterBase::FaceLockTarget(float DeltaSeconds)
 	AActor* LockTarget = AbilitySystemComponent->GetLockTarget();
 	if (!IsValid(LockTarget)) return;
 
-	// 计算目标方向（水平面，忽略 Z 轴高度差）
-	FVector TargetLocation = LockTarget->GetActorLocation();
-	FVector MyLocation = GetActorLocation();
-    
-	FVector Direction = TargetLocation - MyLocation;
-	Direction.Z = 0.0f; // 保持水平旋转
-	Direction.Normalize();
+	float RotationSpeed = 10.0f;
+	FVector LookEndPoint = LockTarget->GetActorLocation();
+	FRotator ActorLookRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), LookEndPoint);
+	FRotator CurActorRotation = GetActorRotation();
+	FRotator NewRotation = FMath::RInterpTo(CurActorRotation, ActorLookRotation, DeltaSeconds, RotationSpeed);
+	SetActorRotation(FRotator(0.f, NewRotation.Yaw, 0.f));
 
-	if (Direction.IsNearlyZero()) return;
-
-	// 计算目标旋转
-	FRotator TargetRotation = Direction.Rotation();
-	FRotator CurrentRotation = GetActorRotation();
-
-	// 只取 Yaw，保持 Pitch 和 Roll 不变
-	TargetRotation.Pitch = CurrentRotation.Pitch;
-	TargetRotation.Roll = CurrentRotation.Roll;
-
-	// 平滑插值
-	const float RotationSpeed = 10.0f; // 可调
-	FRotator NewRotation = FMath::RInterpTo(CurrentRotation, TargetRotation, DeltaSeconds, RotationSpeed);
-    
-	SetActorRotation(NewRotation);
+	AController* MyController = GetController();
+	if (MyController)
+	{
+		FRotator CurControllerRotation = MyController->GetControlRotation();
+		FRotator NewControllerRotation =
+			FMath::RInterpTo(CurControllerRotation, ActorLookRotation, DeltaSeconds, RotationSpeed);
+		MyController->SetControlRotation(FRotator(0.f, NewControllerRotation.Yaw, 0.f));
+	}
 }
 
 void ADkCharacterBase::MoveSpeedUpdated(const FOnAttributeChangeData& Data)

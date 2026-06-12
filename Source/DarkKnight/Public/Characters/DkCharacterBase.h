@@ -112,6 +112,10 @@ protected:
 	virtual void BindGASChangeDelegates();
 
 private:
+	void LockingTargetTagUpdated(FGameplayTag Tag, int NewCount);
+	bool bIsLockingTarget = false;
+	void FaceLockTarget(float DeltaSeconds);
+
 	void MoveSpeedUpdated(const FOnAttributeChangeData& Data);
 
 	/**********************************************************************/

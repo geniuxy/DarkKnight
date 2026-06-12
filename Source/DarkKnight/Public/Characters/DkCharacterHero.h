@@ -81,11 +81,6 @@ protected:
 
 	virtual void BindGASChangeDelegates() override;
 
-private:
-	void LockingTargetTagUpdated(FGameplayTag Tag, int NewCount);
-	bool bIsLockingTarget = false;
-	void FaceLockTarget(float DeltaSeconds);
-
 	/**********************************************************************/
 	/*                              Input                                 */
 	/**********************************************************************/

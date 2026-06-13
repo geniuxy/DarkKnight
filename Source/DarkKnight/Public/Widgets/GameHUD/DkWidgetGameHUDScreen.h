@@ -6,6 +6,7 @@
 #include "Widgets/DkWidgetActivatableBase.h"
 #include "DkWidgetGameHUDScreen.generated.h"
 
+class UCrosshairLockTargetWidget;
 class UCommonTextBlock;
 /**
  * 
@@ -23,4 +24,8 @@ protected:
 	//~ Begin UCommonActivatableWidget Function
 	virtual void NativeOnActivated() override;
 	//~ End UCommonActivatableWidget Function
+
+private:
+	UPROPERTY(meta=(BindWidget))
+	UCrosshairLockTargetWidget* CrosshairLockTargetWidget;
 };

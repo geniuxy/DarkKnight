@@ -6,6 +6,7 @@
 #include "CommonUserWidget.h"
 #include "CrosshairLockTargetWidget.generated.h"
 
+class UCanvasPanelSlot;
 struct FGameplayTag;
 class UCommonLazyImage;
 /**
@@ -18,10 +19,19 @@ class DARKKNIGHT_API UCrosshairLockTargetWidget : public UCommonUserWidget
 
 public:
 	virtual void NativeConstruct() override;
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 private:
 	UPROPERTY(meta=(BindWidget))
 	UCommonLazyImage* CrosshairImage;
 
 	void CrosshairTagUpdated(const FGameplayTag Tag, int32 NewCount);
+
+	UPROPERTY()
+	UCanvasPanelSlot* CrosshairCanvasPanelSlot;
+
+	UPROPERTY()
+	APlayerController* CachedPlayerController;
+
+	void UpdateCrosshairPosition();
 };

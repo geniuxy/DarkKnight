@@ -61,12 +61,7 @@ private:
 	UPROPERTY(Replicated)
 	TObjectPtr<AActor> LockTarget;
 
-	UFUNCTION(Server, Reliable)
-	void Server_SetLockTarget(AActor* NewTarget);
-
 public:
-	void ClearLockTarget();
-	
 	FORCEINLINE AActor* GetLockTarget() const { return LockTarget; }
-	void SetLockTarget(AActor* NewLockTarget);
+	void SetLockTarget(AActor* NewLockTarget) { LockTarget = NewLockTarget; }
 };

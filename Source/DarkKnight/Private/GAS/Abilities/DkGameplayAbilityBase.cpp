@@ -116,6 +116,26 @@ void UDkGameplayAbilityBase::TryToActivateAbility(FGameplayTag InAbilityTag)
 	}
 }
 
+void UDkGameplayAbilityBase::ApplyGameplayEffectToHitResultActor(
+	const FHitResult& HitResult, const TSubclassOf<UGameplayEffect>& InGameplayEffect, int Level)
+{
+	FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(InGameplayEffect, Level);
+
+	FGameplayEffectContextHandle EffectContext =
+		MakeEffectContext(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo());
+	EffectContext.AddHitResult(HitResult);
+
+	EffectSpecHandle.Data->SetContext(EffectContext);
+
+	ApplyGameplayEffectSpecToTarget(
+		GetCurrentAbilitySpecHandle(),
+		GetCurrentActorInfo(),
+		GetCurrentActivationInfo(),
+		EffectSpecHandle,
+		UAbilitySystemBlueprintLibrary::AbilityTargetDataFromHitResult(HitResult)
+	);
+}
+
 AActor* UDkGameplayAbilityBase::GetClosetTarget(float AimDistance, ETeamAttitude::Type TeamAttitude) const
 {
 	if (AActor* OwnerAvatarActor = GetAvatarActorFromActorInfo())

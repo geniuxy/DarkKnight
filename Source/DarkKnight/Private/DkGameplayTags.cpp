@@ -12,11 +12,11 @@ namespace DkGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Stats_Energy_Full, "Dk.Stats.Energy.Full");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Stats_Energy_Empty, "Dk.Stats.Energy.Empty");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Stats_Stun, "Dk.Stats.Stun");
-	UE_DEFINE_GAMEPLAY_TAG(Dk_Stats_DrawingSword, "Dk.Stats.DrawingSword");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Stats_EquippingSword, "Dk.Stats.EquippingSword");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Stats_Equipped_PrimaryWeapon, "Dk.Stats.Equipped.PrimaryWeapon");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Stats_Sprint, "Dk.Stats.Sprint");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Stats_CanAttack, "Dk.Stats.CanAttack");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Stats_InCombat, "Dk.Stats.InCombat");
-	UE_DEFINE_GAMEPLAY_TAG(Dk_Stats_Equipped_PrimaryWeapon, "Dk.Stats.Equipped.PrimaryWeapon");
 
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Stats_LockingTarget, "Dk.Stats.LockingTarget");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Stats_Crosshair_LockTarget, "Dk.Stats.Crosshair.LockTarget");
@@ -24,10 +24,20 @@ namespace DkGameplayTags
 	// Ability Tags
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Ability_Sprint_Tag, "Dk.Ability.Sprint.Tag");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Ability_LockTarget_Tag, "Dk.Ability.LockTarget.Tag");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Ability_BasicAttack_Tag, "Dk.Ability.BasicAttack.Tag");
 	
 	// Ability Events
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Ability_Passive_HoldSword_Event_Activate, "Dk.Ability.Passive.HoldSword.Event.Activate");
-	
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Ability_BasicAttack_Event_Damage, "Dk.Ability.BasicAttack.Event.Damage");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Ability_BasicAttack_Event_Change, "Dk.Ability.BasicAttack.Event.Change");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Ability_BasicAttack_Event_Change_End, "Dk.Ability.BasicAttack.Event.Change.End");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Ability_BasicAttack_Event_Change_Combo00, "Dk.Ability.BasicAttack.Event.Change.Combo00");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Ability_BasicAttack_Event_Change_Combo01, "Dk.Ability.BasicAttack.Event.Change.Combo01");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Ability_BasicAttack_Event_Change_Combo02, "Dk.Ability.BasicAttack.Event.Change.Combo02");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Ability_BasicAttack_Event_Change_Combo03, "Dk.Ability.BasicAttack.Event.Change.Combo03");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Ability_BasicAttack_Event_Change_Combo04, "Dk.Ability.BasicAttack.Event.Change.Combo04");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Ability_BasicAttack_Event_Change_Combo05, "Dk.Ability.BasicAttack.Event.Change.Combo05");
+
 	// Input Actions
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Input_Action_Move, "Dk.Input.Action.Move");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Input_Action_ToggleMoveStyle, "Dk.Input.Action.ToggleMoveStyle");

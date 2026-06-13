@@ -51,6 +51,10 @@ protected:
 	void EndActivatingAbility(FGameplayTag InAbilityTag);
 	void TryToActivateAbility(FGameplayTag InAbilityTag);
 
+	void ApplyGameplayEffectToHitResultActor(
+		const FHitResult& HitResult, const TSubclassOf<UGameplayEffect>& InGameplayEffect, int Level = 1
+	);
+
 public:
 	FORCEINLINE bool ShouldDrawDebug() const { return bShouldDrawDebug; }
 

@@ -121,6 +121,11 @@ void UDkAnimInstanceBase::NativePostEvaluateAnimation()
 	bCanTurnBack = false;
 }
 
+bool UDkAnimInstanceBase::ShouldDoUpperBodyBlend() const
+{
+	return Speed > 0;
+}
+
 UDkAbilitySystemComponent* UDkAnimInstanceBase::GetOwnerASC()
 {
 	if (OwningCharacter && !OwnerASC)

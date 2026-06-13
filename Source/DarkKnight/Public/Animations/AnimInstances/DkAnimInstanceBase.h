@@ -26,6 +26,9 @@ public:
 	virtual void NativePostEvaluateAnimation() override;
 	//~End UAnimInstance Function
 
+	UFUNCTION(BlueprintCallable, meta=(BlueprintThreadSafe))
+	bool ShouldDoUpperBodyBlend() const;
+
 protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Character")
 	TObjectPtr<ADkCharacterBase> OwningCharacter;

@@ -17,8 +17,8 @@ UGA_DrawWeapon_Primary::UGA_DrawWeapon_Primary()
 	// TriggerData.TriggerTag = DkGameplayTags::Dk_Ability_Passive_HoldSword_Event_Activate;
 	// AbilityTriggers.Add(TriggerData);
 
-	ActivationOwnedTags.AddTag(DkGameplayTags::Dk_Stats_DrawingSword);
-	BlockAbilitiesWithTag.AddTag(DkGameplayTags::Dk_Stats_DrawingSword);
+	ActivationOwnedTags.AddTag(DkGameplayTags::Dk_Stats_EquippingSword);
+	ActivationRequiredTags.AddTag(DkGameplayTags::Dk_Stats_Equipped_PrimaryWeapon);
 }
 
 void UGA_DrawWeapon_Primary::ActivateAbility(
@@ -28,12 +28,6 @@ void UGA_DrawWeapon_Primary::ActivateAbility(
 	const FGameplayEventData* TriggerEventData)
 {
 	if (!K2_CommitAbility() || !GetOwnerASC())
-	{
-		K2_EndAbility();
-		return;
-	}
-
-	if (!OwnerASC->HasMatchingGameplayTag(DkGameplayTags::Dk_Stats_Equipped_PrimaryWeapon))
 	{
 		K2_EndAbility();
 		return;

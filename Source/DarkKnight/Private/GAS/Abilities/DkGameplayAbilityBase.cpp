@@ -119,6 +119,7 @@ void UDkGameplayAbilityBase::TryToActivateAbility(FGameplayTag InAbilityTag)
 void UDkGameplayAbilityBase::ApplyGameplayEffectToHitResultActor(
 	const FHitResult& HitResult, const TSubclassOf<UGameplayEffect>& InGameplayEffect, int Level)
 {
+	if (!IsValid(InGameplayEffect)) return;
 	FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(InGameplayEffect, Level);
 
 	FGameplayEffectContextHandle EffectContext =

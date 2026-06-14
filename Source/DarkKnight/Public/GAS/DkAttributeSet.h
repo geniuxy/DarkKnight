@@ -13,7 +13,8 @@ GAMEPLAYATTRIBUTE_VALUE_GETTER(PropertyName) \
 GAMEPLAYATTRIBUTE_VALUE_SETTER(PropertyName) \
 GAMEPLAYATTRIBUTE_VALUE_INITTER(PropertyName)
 /**
- * 
+ * Tips:
+ * 1. 控制台输入 AbilitySystem.DebugAttribute Health MaxHealth (可以实时debug)
  */
 UCLASS()
 class DARKKNIGHT_API UDkAttributeSet : public UAttributeSet
@@ -26,7 +27,7 @@ public:
 	ATTRIBUTE_ACCESSORS(UDkAttributeSet, MaxHealth);
 	ATTRIBUTE_ACCESSORS(UDkAttributeSet, CachedHealthPercent)
 	ATTRIBUTE_ACCESSORS(UDkAttributeSet, HealthRecovery);
-	ATTRIBUTE_ACCESSORS(UDkAttributeSet, Attack);
+	ATTRIBUTE_ACCESSORS(UDkAttributeSet, AttackDamage);
 	ATTRIBUTE_ACCESSORS(UDkAttributeSet, Armor);
 	ATTRIBUTE_ACCESSORS(UDkAttributeSet, SpellPower);
 	ATTRIBUTE_ACCESSORS(UDkAttributeSet, PhysicsDamage);
@@ -56,7 +57,6 @@ public:
 	ATTRIBUTE_ACCESSORS(UDkAttributeSet, ExecutionChance);
 	ATTRIBUTE_ACCESSORS(UDkAttributeSet, MonsterExperienceAcquisition);
 	ATTRIBUTE_ACCESSORS(UDkAttributeSet, ShopSellingPrice);
-	ATTRIBUTE_ACCESSORS(UDkAttributeSet, Damage);
 	
 	// 用于GameplayEffect的Modifiers相关计算Clamp
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
@@ -81,7 +81,7 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Primary Attribute")
 	FGameplayAttributeData HealthRecovery;
 	UPROPERTY(BlueprintReadOnly, Category = "Primary Attribute")
-	FGameplayAttributeData Attack;
+	FGameplayAttributeData AttackDamage;
 	UPROPERTY(BlueprintReadOnly, Category = "Primary Attribute")
 	FGameplayAttributeData Armor;
 	UPROPERTY(BlueprintReadOnly, Category = "Primary Attribute")
@@ -138,6 +138,4 @@ protected:
 	FGameplayAttributeData MonsterExperienceAcquisition;
 	UPROPERTY(BlueprintReadOnly, Category = "Primary Attribute")
 	FGameplayAttributeData ShopSellingPrice;
-	UPROPERTY(BlueprintReadOnly, Category = "Primary Attribute")
-	FGameplayAttributeData Damage;
 };

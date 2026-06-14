@@ -86,7 +86,7 @@ void UDkAbilitySystemComponent::InitializeBaseAttributes()
 	{
 		SetNumericAttributeBase(UDkAttributeSet::GetMaxHealthAttribute(), BaseStats->BaseMaxHealth);
 		SetNumericAttributeBase(UDkAttributeSet::GetMaxEnergyAttribute(), BaseStats->BaseMaxEnergy);
-		SetNumericAttributeBase(UDkAttributeSet::GetAttackAttribute(), BaseStats->BaseAttackDamage);
+		SetNumericAttributeBase(UDkAttributeSet::GetAttackDamageAttribute(), BaseStats->BaseAttackDamage);
 		SetNumericAttributeBase(UDkAttributeSet::GetArmorAttribute(), BaseStats->BaseArmor);
 		SetNumericAttributeBase(UDkAttributeSet::GetMoveSpeedAttribute(), BaseStats->BaseMoveSpeed);
 		SetNumericAttributeBase(UDkAttributeSet::GetMoveAccelerationAttribute(), BaseStats->BaseMoveAcceleration);

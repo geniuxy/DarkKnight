@@ -19,8 +19,8 @@ void UDkInventoryEquipmentSlot::SetEquipmentIcon()
 {
 	if (!GetInventoryItem()) return;
 
-	const FInventoryItemImageFragment* ImageFragment =
-		GetInventoryItem()->GetItemManifest().GetFragmentOfType<FInventoryItemImageFragment>();
+	const FInventoryItemFragment_Image* ImageFragment =
+		GetInventoryItem()->GetItemManifest().GetFragmentOfType<FInventoryItemFragment_Image>();
 
 	Image_ItemIcon->SetBrushFromLazyTexture(ImageFragment->GetIcon());
 }

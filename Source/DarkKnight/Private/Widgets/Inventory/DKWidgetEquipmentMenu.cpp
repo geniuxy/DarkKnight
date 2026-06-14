@@ -226,10 +226,10 @@ void UDKWidgetEquipmentMenu::AssignDraggedItem(UDkInventoryItem* InventoryItem)
 		DraggedItem = CreateWidget<UDkInventoryDraggedItem>(GetOwningPlayer(), DraggedItemClass);
 	}
 
-	const FInventoryItemGridFragment* GridFragment =
-		GetFragment<FInventoryItemGridFragment>(InventoryItem, DkGameplayTags::Dk_Inventory_Fragment_Grid);
-	const FInventoryItemImageFragment* ImageFragment =
-		GetFragment<FInventoryItemImageFragment>(InventoryItem, DkGameplayTags::Dk_Inventory_Fragment_Icon);
+	const FItemFragment_Grid* GridFragment =
+		GetFragment<FItemFragment_Grid>(InventoryItem, DkGameplayTags::Dk_Inventory_Fragment_Grid);
+	const FInventoryItemFragment_Image* ImageFragment =
+		GetFragment<FInventoryItemFragment_Image>(InventoryItem, DkGameplayTags::Dk_Inventory_Fragment_Icon);
 	if (!GridFragment || !ImageFragment) return;
 
 	FSlateBrush Brush;

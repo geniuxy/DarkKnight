@@ -104,7 +104,7 @@ struct FInventorySpaceQueryResult
 };
 
 USTRUCT(BlueprintType)
-struct FDkGameplayEffectInfo : public FTableRowBase // TODO:看一下这个Struct还是否有必要(估计是没有用了)
+struct FDkGameplayEffectInfo : public FTableRowBase // TODO:词条生效的时候，Fragment通过对应的属性Tag获取对应的Effect，然后施加给角色
 {
 	GENERATED_BODY()
 

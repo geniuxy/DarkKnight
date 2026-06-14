@@ -13,7 +13,7 @@
  * ItemManifest 包含创建新 InventoryItem 所需的所有数据。
  */
 
-struct FInventoryItemEntryFragment;
+struct FInventoryItemFragment_Entry;
 class UDkItemComponent;
 class UDkInventoryCompositeBase;
 struct FItemFragment;

@@ -29,9 +29,9 @@ protected:
 	virtual void AddStacks(const FDkInventorySlotAvailabilityResult& Result) override;
 
 	virtual void AddItemToIndex(UDkInventoryItem* NewItem, int32 Index, int32 StackAmount, bool bStackable) override;
-	FVector2D GetDrawSize(const FInventoryItemGridFragment* GridFragment) const;
+	FVector2D GetDrawSize(const FItemFragment_Grid* GridFragment) const;
 	void AddSlottedItemToCanvas(
-		const int32 Index, const FInventoryItemGridFragment* GridFragment, UDkInventorySlottedItem* SlottedItem
+		const int32 Index, const FItemFragment_Grid* GridFragment, UDkInventorySlottedItem* SlottedItem
 	) const;
 
 	bool IsInGridBounds(const int32 StartIndex, const FIntPoint& ItemDimension) const;

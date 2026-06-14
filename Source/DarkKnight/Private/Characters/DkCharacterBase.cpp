@@ -128,11 +128,11 @@ void ADkCharacterBase::InitAbilityActorInfo()
 
 void ADkCharacterBase::ServerSpawnRewardItemActor_Implementation()
 {
-	if (RewardItemIDList.IsEmpty()) return;
+	if (RewardItemIdList.IsEmpty()) return;
 
-	int32 RandIndex = FMath::RandRange(0, RewardItemIDList.Num() - 1);
-	int32 RewardItemID = RewardItemIDList[RandIndex].ItemID;
-	int32 RewardItemStack = RewardItemIDList[RandIndex].Stack;
+	int32 RandIndex = FMath::RandRange(0, RewardItemIdList.Num() - 1);
+	int32 RewardItemID = RewardItemIdList[RandIndex].ItemID;
+	int32 RewardItemStack = RewardItemIdList[RandIndex].Stack;
 	checkf(RewardItemStack > 0, TEXT("生成RewardItem时，Stack数量为0！"))
 
 	UDkInventorySubsystem* InventorySubsystem = UDkInventorySubsystem::Get(this);

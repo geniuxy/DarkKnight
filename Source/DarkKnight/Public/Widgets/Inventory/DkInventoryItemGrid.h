@@ -14,7 +14,7 @@
 class UDkInventoryItemDescriptionMenu;
 class UDkInventoryPopUpMenu;
 struct FInventoryTileParameters;
-struct FInventoryItemGridFragment;
+struct FItemFragment_Grid;
 struct FDkInventorySlotAvailabilityResult;
 class UDkInventoryDraggedItem;
 class UDkInventorySlottedItem;

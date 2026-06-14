@@ -83,8 +83,8 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Inventory")
 	float RelativeSpawnElevation = 70.f; // Spawn降低高度
 
-	UPROPERTY(EditDefaultsOnly, Category="Reward")
-	TArray<FRewardItemEntry> RewardItemIDList;
+	UPROPERTY(EditAnywhere, Category="Reward")
+	TArray<FRewardItemEntry> RewardItemIdList;
 	/*********/
 
 	/* 网络 */

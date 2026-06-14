@@ -24,8 +24,8 @@ void UDkInventoryDraggedItem::UpdateStackCount(const int32 Count)
 	StackCount = Count;
 	if (InventoryItem.IsValid())
 	{
-		FInventoryItemStackableFragment* StackableFragment =
-			InventoryItem->GetItemManifestMutable().GetFragmentOfTypeMutable<FInventoryItemStackableFragment>();
+		FItemFragment_Stackable* StackableFragment =
+			InventoryItem->GetItemManifestMutable().GetFragmentOfTypeMutable<FItemFragment_Stackable>();
 		if (StackableFragment)
 		{
 			StackableFragment->SetStackCount(Count);

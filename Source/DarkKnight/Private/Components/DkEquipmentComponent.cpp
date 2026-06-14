@@ -107,14 +107,14 @@ void UDkEquipmentComponent::OnItemEquipped(UDkInventoryItem* EquippedItem)
 	}
 
 	FInventoryItemManifest& ItemManifest = EquippedItem->GetItemManifestMutable();
-	FInventoryItemEquipmentFragment* EquipmentFragment =
-		ItemManifest.GetFragmentOfTypeMutable<FInventoryItemEquipmentFragment>();
+	FInventoryItemFragment_Equipment* EquipmentFragment =
+		ItemManifest.GetFragmentOfTypeMutable<FInventoryItemFragment_Equipment>();
 	if (!EquipmentFragment) return;
 	// Tips: 这里PreviewActor和主角是共用一个UDkInventoryItem的，需要修改对另一者没有影响
 
-	if (!bIsPreview) // 预览时不需要调整属性等操作
+	if (!bIsPreview && OwnerASC.IsValid()) // 预览时不需要调整属性等操作
 	{
-		EquipmentFragment->OnEquip(OwningController.Get());
+		EquipmentFragment->OnEquip(OwnerASC.Get());
 	}
 
 	if (OwningSkeletalMesh.IsValid())
@@ -145,20 +145,20 @@ void UDkEquipmentComponent::OnItemUnEquipped(UDkInventoryItem* UnEquippedItem)
 	}
 
 	FInventoryItemManifest& ItemManifest = UnEquippedItem->GetItemManifestMutable();
-	FInventoryItemEquipmentFragment* EquipmentFragment =
-		ItemManifest.GetFragmentOfTypeMutable<FInventoryItemEquipmentFragment>();
+	FInventoryItemFragment_Equipment* EquipmentFragment =
+		ItemManifest.GetFragmentOfTypeMutable<FInventoryItemFragment_Equipment>();
 	if (!EquipmentFragment) return;
 
-	if (!bIsPreview) // 预览时不需要调整属性等操作
+	if (!bIsPreview && OwnerASC.IsValid()) // 预览时不需要调整属性等操作
 	{
-		EquipmentFragment->OnUnEquip(OwningController.Get());
+		EquipmentFragment->OnUnEquip(OwnerASC.Get());
 	}
 
 	RemoveEquippedActor(EquipmentFragment);
 }
 
 ADkEquippedActorBase* UDkEquipmentComponent::SpawnEquippedActor(
-	FInventoryItemEquipmentFragment* EquipmentFragment, USkeletalMeshComponent* AttachMesh)
+	FInventoryItemFragment_Equipment* EquipmentFragment, USkeletalMeshComponent* AttachMesh)
 {
 	ADkEquippedActorBase* SpawnedEquippedActor = EquipmentFragment->SpawnAttachActor(AttachMesh);
 	if (IsValid(SpawnedEquippedActor))
@@ -197,7 +197,7 @@ ADkEquippedActorBase* UDkEquipmentComponent::FindTargetTypeEquippedActor(const F
 	return FoundActor ? *FoundActor : nullptr;
 }
 
-void UDkEquipmentComponent::RemoveEquippedActor(FInventoryItemEquipmentFragment* EquipmentFragment)
+void UDkEquipmentComponent::RemoveEquippedActor(FInventoryItemFragment_Equipment* EquipmentFragment)
 {
 	ADkEquippedActorBase* EquippedActor = FindEquippedActor(EquipmentFragment->GetEquippedActorTag());
 	if (IsValid(EquippedActor))

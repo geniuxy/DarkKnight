@@ -58,10 +58,10 @@ void UDKInventoryItemSpatialGrid::AddStacks(const FDkInventorySlotAvailabilityRe
 void UDKInventoryItemSpatialGrid::AddItemToIndex(
 	UDkInventoryItem* NewItem, int32 Index, int32 StackAmount, bool bStackable)
 {
-	const FInventoryItemGridFragment* GridFragment =
-		GetFragment<FInventoryItemGridFragment>(NewItem, DkGameplayTags::Dk_Inventory_Fragment_Grid);
-	const FInventoryItemImageFragment* ImageFragment =
-		GetFragment<FInventoryItemImageFragment>(NewItem, DkGameplayTags::Dk_Inventory_Fragment_Icon);
+	const FItemFragment_Grid* GridFragment =
+		GetFragment<FItemFragment_Grid>(NewItem, DkGameplayTags::Dk_Inventory_Fragment_Grid);
+	const FInventoryItemFragment_Image* ImageFragment =
+		GetFragment<FInventoryItemFragment_Image>(NewItem, DkGameplayTags::Dk_Inventory_Fragment_Icon);
 	if (!GridFragment || !ImageFragment) return;
 
 	// 创建slotted item
@@ -85,13 +85,13 @@ void UDKInventoryItemSpatialGrid::AddItemToIndex(
 	SlottedItemMap.Add(Index, SlottedItem);
 }
 
-FVector2D UDKInventoryItemSpatialGrid::GetDrawSize(const FInventoryItemGridFragment* GridFragment) const
+FVector2D UDKInventoryItemSpatialGrid::GetDrawSize(const FItemFragment_Grid* GridFragment) const
 {
 	return GridFragment->GetGridSize() * TileSize - GridFragment->GetGridPadding() * 2;
 }
 
 void UDKInventoryItemSpatialGrid::AddSlottedItemToCanvas(
-	const int32 Index, const FInventoryItemGridFragment* GridFragment, UDkInventorySlottedItem* SlottedItem) const
+	const int32 Index, const FItemFragment_Grid* GridFragment, UDkInventorySlottedItem* SlottedItem) const
 {
 	GridCanvasPanel->AddChild(SlottedItem);
 	UCanvasPanelSlot* CanvasSlot = UWidgetLayoutLibrary::SlotAsCanvasSlot(SlottedItem);
@@ -174,8 +174,8 @@ FDkInventorySlotAvailabilityResult UDKInventoryItemSpatialGrid::HasRoomForItem(c
 {
 	FDkInventorySlotAvailabilityResult Result;
 	// 判断物品是否可堆叠
-	const FInventoryItemStackableFragment* StackableFragment =
-		Manifest.GetFragmentOfType<FInventoryItemStackableFragment>();
+	const FItemFragment_Stackable* StackableFragment =
+		Manifest.GetFragmentOfType<FItemFragment_Stackable>();
 	Result.bStackable = StackableFragment != nullptr;
 	// 确定需要添加多少StackCount。AmountToFill
 	const int32 MaxStackCount = StackableFragment ? StackableFragment->GetMaxStackSize() : 1;
@@ -190,7 +190,7 @@ FDkInventorySlotAvailabilityResult UDKInventoryItemSpatialGrid::HasRoomForItem(c
 		//   该索引是否已被占用(claimed)？
 		if (CheckedIndices.Contains(GridSlot->GetTileIndex())) continue;
 
-		const FInventoryItemGridFragment* GridFragment = Manifest.GetFragmentOfType<FInventoryItemGridFragment>();
+		const FItemFragment_Grid* GridFragment = Manifest.GetFragmentOfType<FItemFragment_Grid>();
 		const FIntPoint& Dimension = GridFragment ? GridFragment->GetGridSize() : FIntPoint(1, 1);
 		//   是否超出网格边界？
 		if (!IsInGridBounds(GridSlot->GetTileIndex(), Dimension)) continue;
@@ -238,8 +238,8 @@ void UDKInventoryItemSpatialGrid::UpdateGridSlots(
 		GridSlots[Index]->SetStackCount(StackAmount);
 	}
 
-	const FInventoryItemGridFragment* GridFragment =
-		GetFragment<FInventoryItemGridFragment>(NewItem, DkGameplayTags::Dk_Inventory_Fragment_Grid);
+	const FItemFragment_Grid* GridFragment =
+		GetFragment<FItemFragment_Grid>(NewItem, DkGameplayTags::Dk_Inventory_Fragment_Grid);
 	if (!GridFragment) return;
 
 	const FIntPoint Dimensions = GridFragment ? GridFragment->GetGridSize() : FIntPoint(1, 1);
@@ -285,8 +285,8 @@ void UDKInventoryItemSpatialGrid::ConstructGrid()
 
 void UDKInventoryItemSpatialGrid::RemoveItemFromGrid(UDkInventoryItem* InventoryItem, const int32 GridIndex)
 {
-	const FInventoryItemGridFragment* GridFragment =
-		GetFragment<FInventoryItemGridFragment>(InventoryItem, DkGameplayTags::Dk_Inventory_Fragment_Grid);
+	const FItemFragment_Grid* GridFragment =
+		GetFragment<FItemFragment_Grid>(InventoryItem, DkGameplayTags::Dk_Inventory_Fragment_Grid);
 	if (!GridFragment) return;
 
 	UDkInventoryFunctionLibrary::ForEach2D(
@@ -338,8 +338,8 @@ void UDKInventoryItemSpatialGrid::OnSlottedItemClicked(int32 GridIndex, const FP
 	if (IsSameStackableWithDraggedItem(ClickedInventoryItem))
 	{
 		const int32 ClickedStackCount = GridSlots[GridIndex]->GetStackCount();
-		const FInventoryItemStackableFragment* StackableFragment =
-			ClickedInventoryItem->GetItemManifest().GetFragmentOfType<FInventoryItemStackableFragment>();
+		const FItemFragment_Stackable* StackableFragment =
+			ClickedInventoryItem->GetItemManifest().GetFragmentOfType<FItemFragment_Stackable>();
 		const int32 MaxStackSize = StackableFragment->GetMaxStackSize();
 		const int32 SpaceInClickedSlot = MaxStackSize - ClickedStackCount;
 		const int32 DraggedStackCount = DraggedItem->GetStackCount();
@@ -400,8 +400,8 @@ void UDKInventoryItemSpatialGrid::ConsumeDraggedItemStack(
 	SlottedItemMap.FindChecked(GridIndex)->UpdateStackCount(NewClickedStackCount);
 	ClearDraggedItem();
 
-	const FInventoryItemGridFragment* GridFragment =
-		GridSlots[GridIndex]->GetInventoryItem()->GetItemManifest().GetFragmentOfType<FInventoryItemGridFragment>();
+	const FItemFragment_Grid* GridFragment =
+		GridSlots[GridIndex]->GetInventoryItem()->GetItemManifest().GetFragmentOfType<FItemFragment_Grid>();
 	const FIntPoint Dimension = GridFragment ? GridFragment->GetGridSize() : FIntPoint(1, 1);
 
 	HighlightSlots(GridIndex, Dimension);
@@ -414,10 +414,10 @@ void UDKInventoryItemSpatialGrid::AssignDraggedItem(UDkInventoryItem* InventoryI
 		DraggedItem = CreateWidget<UDkInventoryDraggedItem>(GetOwningPlayer(), DraggedItemClass);
 	}
 
-	const FInventoryItemGridFragment* GridFragment =
-		GetFragment<FInventoryItemGridFragment>(InventoryItem, DkGameplayTags::Dk_Inventory_Fragment_Grid);
-	const FInventoryItemImageFragment* ImageFragment =
-		GetFragment<FInventoryItemImageFragment>(InventoryItem, DkGameplayTags::Dk_Inventory_Fragment_Icon);
+	const FItemFragment_Grid* GridFragment =
+		GetFragment<FItemFragment_Grid>(InventoryItem, DkGameplayTags::Dk_Inventory_Fragment_Grid);
+	const FInventoryItemFragment_Image* ImageFragment =
+		GetFragment<FInventoryItemFragment_Image>(InventoryItem, DkGameplayTags::Dk_Inventory_Fragment_Icon);
 	if (!GridFragment || !ImageFragment) return;
 
 	FSlateBrush Brush;
@@ -535,7 +535,7 @@ void UDKInventoryItemSpatialGrid::OnTileParametersUpdated(const FInventoryTilePa
 
 	if (CurrentSpaceQueryResult.ValidItem.IsValid() && GridSlots.IsValidIndex(CurrentSpaceQueryResult.UpperLeftIndex))
 	{
-		const FInventoryItemGridFragment* GridFragment = GetFragment<FInventoryItemGridFragment>(
+		const FItemFragment_Grid* GridFragment = GetFragment<FItemFragment_Grid>(
 			CurrentSpaceQueryResult.ValidItem.Get(), DkGameplayTags::Dk_Inventory_Fragment_Grid
 		);
 		if (!GridFragment) return;

@@ -32,8 +32,8 @@ FDkInventorySlotAvailabilityResult UDkInventoryItemGrid::HasRoomForItem(const FI
 {
 	FDkInventorySlotAvailabilityResult Result;
 	// 判断物品是否可堆叠
-	const FInventoryItemStackableFragment* StackableFragment =
-		Manifest.GetFragmentOfType<FInventoryItemStackableFragment>();
+	const FItemFragment_Stackable* StackableFragment =
+		Manifest.GetFragmentOfType<FItemFragment_Stackable>();
 	Result.bStackable = StackableFragment != nullptr;
 	// 确定需要添加多少StackCount。AmountToFill
 	const int32 MaxStackCount = StackableFragment ? StackableFragment->GetMaxStackSize() : 1;
@@ -192,8 +192,8 @@ void UDkInventoryItemGrid::AddItemToIndices(const FDkInventorySlotAvailabilityRe
 
 void UDkInventoryItemGrid::AddItemToIndex(UDkInventoryItem* NewItem, int32 Index, int32 StackAmount, bool bStackable)
 {
-	const FInventoryItemImageFragment* ImageFragment =
-		GetFragment<FInventoryItemImageFragment>(NewItem, DkGameplayTags::Dk_Inventory_Fragment_Icon);
+	const FInventoryItemFragment_Image* ImageFragment =
+		GetFragment<FInventoryItemFragment_Image>(NewItem, DkGameplayTags::Dk_Inventory_Fragment_Icon);
 	if (!ImageFragment) return;
 
 	FSlateBrush Brush;
@@ -300,10 +300,10 @@ void UDkInventoryItemGrid::AssignDraggedItem(UDkInventoryItem* InventoryItem)
 		DraggedItem = CreateWidget<UDkInventoryDraggedItem>(GetOwningPlayer(), DraggedItemClass);
 	}
 
-	const FInventoryItemGridFragment* GridFragment =
-		GetFragment<FInventoryItemGridFragment>(InventoryItem, DkGameplayTags::Dk_Inventory_Fragment_Grid);
-	const FInventoryItemImageFragment* ImageFragment =
-		GetFragment<FInventoryItemImageFragment>(InventoryItem, DkGameplayTags::Dk_Inventory_Fragment_Icon);
+	const FItemFragment_Grid* GridFragment =
+		GetFragment<FItemFragment_Grid>(InventoryItem, DkGameplayTags::Dk_Inventory_Fragment_Grid);
+	const FInventoryItemFragment_Image* ImageFragment =
+		GetFragment<FInventoryItemFragment_Image>(InventoryItem, DkGameplayTags::Dk_Inventory_Fragment_Icon);
 	if (!GridFragment || !ImageFragment) return;
 
 	FSlateBrush Brush;
@@ -580,8 +580,8 @@ void UDkInventoryItemGrid::OnGridSlotClicked(int GridIndex, const FPointerEvent&
 	if (IsSameStackableWithDraggedItem(ClickedInventoryItem))
 	{
 		const int32 ClickedStackCount = GridSlots[GridIndex]->GetStackCount();
-		const FInventoryItemStackableFragment* StackableFragment =
-			ClickedInventoryItem->GetItemManifest().GetFragmentOfType<FInventoryItemStackableFragment>();
+		const FItemFragment_Stackable* StackableFragment =
+			ClickedInventoryItem->GetItemManifest().GetFragmentOfType<FItemFragment_Stackable>();
 		const int32 MaxStackSize = StackableFragment->GetMaxStackSize();
 		const int32 SpaceInClickedSlot = MaxStackSize - ClickedStackCount;
 		const int32 DraggedStackCount = DraggedItem->GetStackCount();

@@ -179,8 +179,8 @@ void UDkInventoryComponent::Server_AddNewItem_Implementation(
 		ItemComponent->OnPickedUp();
 	}
 	// 否则，更新想要捡起的Item的StackCount
-	else if (FInventoryItemStackableFragment* StackableFragment =
-		ItemComponent->GetItemManifestMutable().GetFragmentOfTypeMutable<FInventoryItemStackableFragment>())
+	else if (FItemFragment_Stackable* StackableFragment =
+		ItemComponent->GetItemManifestMutable().GetFragmentOfTypeMutable<FItemFragment_Stackable>())
 	{
 		StackableFragment->SetStackCount(Remainder);
 	}
@@ -224,8 +224,8 @@ void UDkInventoryComponent::Server_AddStacksToItem_Implementation(
 		ItemComponent->OnPickedUp();
 	}
 	// 否则，更新想要捡起的Item的StackCount
-	else if (FInventoryItemStackableFragment* StackableFragment =
-		ItemComponent->GetItemManifestMutable().GetFragmentOfTypeMutable<FInventoryItemStackableFragment>())
+	else if (FItemFragment_Stackable* StackableFragment =
+		ItemComponent->GetItemManifestMutable().GetFragmentOfTypeMutable<FItemFragment_Stackable>())
 	{
 		StackableFragment->SetStackCount(Remainder);
 	}
@@ -282,8 +282,8 @@ void UDkInventoryComponent::SpawnDroppedItem(UDkInventoryItem* Item, int32 Dropp
 
 	// 通过Item Manifest去生成PickUp的ItemActor
 	FInventoryItemManifest& ItemManifest = Item->GetItemManifestMutable();
-	if (FInventoryItemStackableFragment* StackableFragment =
-		ItemManifest.GetFragmentOfTypeMutable<FInventoryItemStackableFragment>())
+	if (FItemFragment_Stackable* StackableFragment =
+		ItemManifest.GetFragmentOfTypeMutable<FItemFragment_Stackable>())
 	{
 		StackableFragment->SetStackCount(DroppedCount);
 	}
@@ -292,6 +292,8 @@ void UDkInventoryComponent::SpawnDroppedItem(UDkInventoryItem* Item, int32 Dropp
 
 void UDkInventoryComponent::ServerConsumeItem_Implementation(UDkInventoryItem* Item)
 {
+	if (!OwnerASC.IsValid()) return;
+
 	const int32 NewStackCount = Item->GetTotalStackCount() - 1;
 	if (NewStackCount <= 0)
 	{
@@ -302,12 +304,12 @@ void UDkInventoryComponent::ServerConsumeItem_Implementation(UDkInventoryItem* I
 		Item->SetTotalStackCount(NewStackCount);
 	}
 
-	if (FInventoryItemConsumableFragment* ConsumableFragment =
-		Item->GetItemManifestMutable().GetFragmentOfTypeMutable<FInventoryItemConsumableFragment>())
+	if (FInventoryItemFragment_Consumable* ConsumableFragment =
+		Item->GetItemManifestMutable().GetFragmentOfTypeMutable<FInventoryItemFragment_Consumable>())
 	{
 		ACharacter* OwnerCharacter = CastChecked<ACharacter>(GetOwner());
 		APlayerController* PlayerController = CastChecked<APlayerController>(OwnerCharacter->GetController());
-		ConsumableFragment->OnConsume(PlayerController);
+		ConsumableFragment->OnConsume(OwnerASC.Get());
 	}
 }
 

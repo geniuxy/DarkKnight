@@ -11,7 +11,7 @@
 class UGameplayEffect;
 class UDkAbilitySystemComponent;
 struct FInventoryItemManifest;
-struct FInventoryItemEquipmentFragment;
+struct FInventoryItemFragment_Equipment;
 class ADkEquippedActorBase;
 class UDkInventoryItem;
 class ADkCharacterBase;
@@ -57,7 +57,7 @@ private:
 	void OnItemUnEquipped(UDkInventoryItem* UnEquippedItem);
 
 	ADkEquippedActorBase* SpawnEquippedActor(
-		FInventoryItemEquipmentFragment* EquipmentFragment, USkeletalMeshComponent* AttachMesh
+		FInventoryItemFragment_Equipment* EquipmentFragment, USkeletalMeshComponent* AttachMesh
 	);
 
 	ADkEquippedActorBase* FindEquippedActor(const FGameplayTag& EquippedActorTag);
@@ -70,7 +70,7 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category="Effects")
 	TSubclassOf<UGameplayEffect> EquippedEffect;
 
-	void RemoveEquippedActor(FInventoryItemEquipmentFragment* EquipmentFragment);
+	void RemoveEquippedActor(FInventoryItemFragment_Equipment* EquipmentFragment);
 	/********/
 
 	/* 预览装备 */

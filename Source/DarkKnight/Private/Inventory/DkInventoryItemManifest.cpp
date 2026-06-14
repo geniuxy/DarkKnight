@@ -14,10 +14,14 @@
 void FInventoryItemManifest::InitializeFragments(
 	const UObject* WorldContextObject, const FDkItemInfo* ItemInfo, int32 InItemStack)
 {
+	// ItemGrid (目前项目只考虑1*1格子大小的物品)
+	FItemFragment_Grid GridFragment = FItemFragment_Grid();
+	AddFragment(GridFragment);
+	
 	// ItemName
 	if (!ItemInfo->ItemName.IsEmpty())
 	{
-		FInventoryItemTextFragment NewItemTextFragment = FInventoryItemTextFragment(
+		FInventoryItemFragment_Text NewItemTextFragment = FInventoryItemFragment_Text(
 			ItemInfo->ItemName
 		);
 		AddFragment(NewItemTextFragment);
@@ -26,7 +30,7 @@ void FInventoryItemManifest::InitializeFragments(
 	// ItemCategory
 	if (GetItemCategory() != EInventoryItemCategory::None)
 	{
-		FInventoryItemEnumTextFragment NewItemEnumTextFragment = FInventoryItemEnumTextFragment(
+		FInventoryItemFragment_EnumText NewItemEnumTextFragment = FInventoryItemFragment_EnumText(
 			static_cast<int>(GetItemCategory()),
 			StaticEnum<EInventoryItemCategory>()->GetPathName()
 		);
@@ -36,7 +40,7 @@ void FInventoryItemManifest::InitializeFragments(
 	// ItemRequiredLevel
 	if (ItemInfo->ItemRequiredLevel != INDEX_NONE)
 	{
-		FInventoryItemLabeledValueFragment NewItemRequiredLevelFragment = FInventoryItemLabeledValueFragment(
+		FInventoryItemFragment_LabeledValue NewItemRequiredLevelFragment = FInventoryItemFragment_LabeledValue(
 			FText::FromString(TEXT("等级要求")),
 			ItemInfo->ItemRequiredLevel,
 			DkGameplayTags::Dk_Inventory_Fragment_RequiredLevel
@@ -47,7 +51,7 @@ void FInventoryItemManifest::InitializeFragments(
 	// ItemDescription
 	if (!ItemInfo->ItemDescription.IsEmpty())
 	{
-		FInventoryItemTextFragment NewItemDescriptionFragment = FInventoryItemTextFragment(
+		FInventoryItemFragment_Text NewItemDescriptionFragment = FInventoryItemFragment_Text(
 			ItemInfo->ItemDescription, DkGameplayTags::Dk_Inventory_Fragment_ItemDescription
 		);
 		AddFragment(NewItemDescriptionFragment);
@@ -56,7 +60,7 @@ void FInventoryItemManifest::InitializeFragments(
 	// ItemIcon
 	if (IsValid(ItemInfo->ItemIcon))
 	{
-		FInventoryItemImageFragment NewItemImageFragment = FInventoryItemImageFragment(
+		FInventoryItemFragment_Image NewItemImageFragment = FInventoryItemFragment_Image(
 			ItemInfo->ItemIcon
 		);
 		AddFragment(NewItemImageFragment);
@@ -65,7 +69,7 @@ void FInventoryItemManifest::InitializeFragments(
 	// ItemPrice
 	if (ItemInfo->ItemPrice != INDEX_NONE)
 	{
-		FInventoryItemLabeledValueFragment NewItemSellPriceFragment = FInventoryItemLabeledValueFragment(
+		FInventoryItemFragment_LabeledValue NewItemSellPriceFragment = FInventoryItemFragment_LabeledValue(
 			FText::FromString(TEXT("售价")),
 			ItemInfo->ItemPrice,
 			DkGameplayTags::Dk_Inventory_Fragment_SellValue
@@ -78,7 +82,7 @@ void FInventoryItemManifest::InitializeFragments(
 	// Stack
 	if (ItemInfo->MaxStack != INDEX_NONE && InItemStack > 0)
 	{
-		FInventoryItemStackableFragment NewItemStackableFragment = FInventoryItemStackableFragment(
+		FItemFragment_Stackable NewItemStackableFragment = FItemFragment_Stackable(
 			InItemStack, ItemInfo->MaxStack
 		);
 		AddFragment(NewItemStackableFragment);
@@ -107,7 +111,7 @@ void FInventoryItemManifest::InitializeFragments(
 	// EquippedActorBPClass
 	if (IsValid(ItemInfo->EquippedActorBPClass) && GetItemCategory() == EInventoryItemCategory::Equipment)
 	{
-		FInventoryItemEquipmentFragment NewItemEquipmentFragment = FInventoryItemEquipmentFragment(
+		FInventoryItemFragment_Equipment NewItemEquipmentFragment = FInventoryItemFragment_Equipment(
 			ItemInfo->ItemID
 		);
 		if (!MainEntries.IsEmpty())
@@ -124,7 +128,7 @@ void FInventoryItemManifest::InitializeFragments(
 	// 消耗品Consumable
 	if (GetItemCategory() == EInventoryItemCategory::Consumable)
 	{
-		FInventoryItemConsumableFragment NewItemConsumableFragment = FInventoryItemConsumableFragment();
+		FInventoryItemFragment_Consumable NewItemConsumableFragment = FInventoryItemFragment_Consumable();
 		if (!MainEntries.IsEmpty())
 		{
 			NewItemConsumableFragment.UpdateConsumableEntries(WorldContextObject, MainEntries, true);
@@ -284,7 +288,7 @@ void FInventoryItemManifest::AssimilateInventoryFragments(UDkInventoryCompositeB
 
 		if (Fragment->GetFragmentTag() == DkGameplayTags::Dk_Inventory_Fragment_Consumable)
 		{
-			if (static_cast<const FInventoryItemConsumableFragment*>(Fragment)->HasOptionalStats())
+			if (static_cast<const FInventoryItemFragment_Consumable*>(Fragment)->HasOptionalStats())
 			{
 				if (UDkInventoryItemDescriptionMenu* ItemDescriptionMenu =
 					Cast<UDkInventoryItemDescriptionMenu>(Composite))
@@ -295,7 +299,7 @@ void FInventoryItemManifest::AssimilateInventoryFragments(UDkInventoryCompositeB
 		}
 		else if (Fragment->GetFragmentTag() == DkGameplayTags::Dk_Inventory_Fragment_Equipment)
 		{
-			if (static_cast<const FInventoryItemEquipmentFragment*>(Fragment)->HasOptionalStats())
+			if (static_cast<const FInventoryItemFragment_Equipment*>(Fragment)->HasOptionalStats())
 			{
 				if (UDkInventoryItemDescriptionMenu* ItemDescriptionMenu =
 					Cast<UDkInventoryItemDescriptionMenu>(Composite))

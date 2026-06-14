@@ -16,8 +16,8 @@ void UDkInventoryItem::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty
 
 bool UDkInventoryItem::IsItemStackable() const
 {
-	const FInventoryItemStackableFragment* StackableFragment =
-		GetItemManifest().GetFragmentOfType<FInventoryItemStackableFragment>();
+	const FItemFragment_Stackable* StackableFragment =
+		GetItemManifest().GetFragmentOfType<FItemFragment_Stackable>();
 	return StackableFragment != nullptr;
 }
 

@@ -77,6 +77,9 @@ void UDkUIFunctionLibrary::ToggleInputMode(const UObject* WorldContextObject, ED
 		}
 
 		break;
+	case EDkInputMode::GameAndUI:
+		// TODO: Crunch里有GameAndUI相关的代码，需要时可以参考，主要用于游戏视角和界面UI并存时的情况
+		break;
 	}
 }
 

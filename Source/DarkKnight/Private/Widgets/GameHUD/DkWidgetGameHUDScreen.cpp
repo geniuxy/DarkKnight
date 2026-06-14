@@ -3,7 +3,10 @@
 
 #include "Widgets/GameHUD/DkWidgetGameHUDScreen.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "FunctionLibrarys/DkUIFunctionLibrary.h"
+#include "GAS/DkAttributeSet.h"
+#include "Widgets/GameHUD/Stats/ValueGauge.h"
 
 void UDkWidgetGameHUDScreen::NativeOnInitialized()
 {
@@ -17,4 +20,20 @@ void UDkWidgetGameHUDScreen::NativeOnActivated()
 	Super::NativeOnActivated();
 
 	UDkUIFunctionLibrary::ToggleInputMode(this, EDkInputMode::GameOnly);
+
+	OwnerAbilitySystemComponent = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetOwningPlayerPawn());
+	if (OwnerAbilitySystemComponent)
+	{
+		HealthBar->SetAndBoundToGameplayAttribute(
+			OwnerAbilitySystemComponent,
+			UDkAttributeSet::GetHealthAttribute(),
+			UDkAttributeSet::GetMaxHealthAttribute()
+		);
+
+		EnergyBar->SetAndBoundToGameplayAttribute(
+			OwnerAbilitySystemComponent,
+			UDkAttributeSet::GetEnergyAttribute(),
+			UDkAttributeSet::GetMaxEnergyAttribute()
+		);
+	}
 }

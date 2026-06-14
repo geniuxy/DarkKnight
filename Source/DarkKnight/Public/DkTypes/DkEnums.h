@@ -13,7 +13,8 @@ UENUM(BlueprintType)
 enum class EDkInputMode : uint8
 {
 	GameOnly,
-	UIOnly
+	UIOnly,
+	GameAndUI
 };
 
 /********/

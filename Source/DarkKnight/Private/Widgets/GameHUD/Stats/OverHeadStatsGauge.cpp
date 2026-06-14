@@ -10,13 +10,13 @@ void UOverHeadStatsGauge::ConfigureWithASC(UAbilitySystemComponent* AbilitySyste
 {
 	if (AbilitySystemComponent)
 	{
-		HealthBar->SendAndBoundToGameplayAttribute(
+		HealthBar->SetAndBoundToGameplayAttribute(
 			AbilitySystemComponent,
 			UDkAttributeSet::GetHealthAttribute(),
 			UDkAttributeSet::GetMaxHealthAttribute()
 		);
 
-		EnergyBar->SendAndBoundToGameplayAttribute(
+		EnergyBar->SetAndBoundToGameplayAttribute(
 			AbilitySystemComponent,
 			UDkAttributeSet::GetEnergyAttribute(),
 			UDkAttributeSet::GetMaxEnergyAttribute()

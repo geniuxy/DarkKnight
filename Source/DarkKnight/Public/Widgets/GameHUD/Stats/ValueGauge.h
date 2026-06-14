@@ -22,7 +22,7 @@ class DARKKNIGHT_API UValueGauge : public UCommonUserWidget
 public:
 	virtual void NativePreConstruct() override;
 
-	void SendAndBoundToGameplayAttribute(
+	void SetAndBoundToGameplayAttribute(
 		UAbilitySystemComponent* AbilitySystemComponent,
 		const FGameplayAttribute& Attribute,
 		const FGameplayAttribute& MaxAttribute

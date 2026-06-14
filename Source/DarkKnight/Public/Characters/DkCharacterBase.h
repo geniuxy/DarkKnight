@@ -11,6 +11,7 @@
 #include "GameFramework/Character.h"
 #include "DkCharacterBase.generated.h"
 
+class UWidgetComponent;
 struct FRewardItemEntry;
 class UDkActionComponent;
 class UCharacterInfo;
@@ -29,6 +30,8 @@ public:
 
 	void ServerSideInit();
 	void ClientSideInit();
+
+	bool IsLocallyControlledByPlayer();
 
 protected:
 	virtual void BeginPlay() override;
@@ -140,4 +143,26 @@ public:
 protected:
 	UPROPERTY(EditInstanceOnly)
 	FGenericTeamId TeamID;
+
+	/**********************************************************************/
+	/*                         UI - OverHeadStats                         */
+	/**********************************************************************/
+public:
+	void ConfigureOverHeadStatsWidget();
+
+private:
+	UPROPERTY(VisibleDefaultsOnly, Category="UI")
+	UWidgetComponent* OverHeadWidgetComponent;
+
+	UPROPERTY(EditDefaultsOnly, Category="UI")
+	float HeadStatsGaugeVisibilityCheckUpdateGap = 1.f;
+
+	UPROPERTY(EditDefaultsOnly, Category="UI")
+	float HeadStatsGaugeVisibilityRangeSquared = 1000000.f; // 头顶血条可视距离的平方
+
+	FTimerHandle HeadStatsGaugeVisibilityUpdateTimerHandle;
+
+	void UpdateHeadGaugeVisibility();
+
+	void SetStatusGaugeEnabled(bool bIsEnabled);
 };

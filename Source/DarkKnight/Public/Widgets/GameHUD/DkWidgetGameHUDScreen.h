@@ -6,6 +6,8 @@
 #include "Widgets/DkWidgetActivatableBase.h"
 #include "DkWidgetGameHUDScreen.generated.h"
 
+class UAbilitySystemComponent;
+class UValueGauge;
 class UCrosshairLockTargetWidget;
 class UCommonTextBlock;
 /**
@@ -28,4 +30,13 @@ protected:
 private:
 	UPROPERTY(meta=(BindWidget))
 	UCrosshairLockTargetWidget* CrosshairLockTargetWidget;
+	
+	UPROPERTY(meta=(BindWidget))
+	UValueGauge* HealthBar;
+
+	UPROPERTY(meta=(BindWidget))
+	UValueGauge* EnergyBar;
+
+	UPROPERTY()
+	TObjectPtr<UAbilitySystemComponent> OwnerAbilitySystemComponent;
 };

@@ -7,17 +7,20 @@
 #include "MotionWarpingComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/DkActionComponent.h"
+#include "Components/WidgetComponent.h"
 #include "DarkKnight/DarkKnight.h"
 #include "DataAssets/CharacterInfo.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PlayerState.h"
 #include "GAS/DkAbilitySystemComponent.h"
 #include "GAS/DkAttributeSet.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "PickUp/DkPickUpActorBase.h"
 #include "PickUp/DkPickUpActorSkeletalMesh.h"
 #include "PickUp/DkPickUpActorStaticMesh.h"
 #include "Subsytems/DkInventorySubsystem.h"
+#include "Widgets/GameHUD/Stats/OverHeadStatsGauge.h"
 
 ADkCharacterBase::ADkCharacterBase()
 {
@@ -71,6 +74,9 @@ ADkCharacterBase::ADkCharacterBase()
 
 	AbilitySystemComponent = CreateDefaultSubobject<UDkAbilitySystemComponent>(TEXT("Ability System Component"));
 	AttributeSet = CreateDefaultSubobject<UDkAttributeSet>(TEXT("AttributeSet"));
+
+	OverHeadWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("Over Head Widget Component"));
+	OverHeadWidgetComponent->SetupAttachment(GetRootComponent());
 }
 
 void ADkCharacterBase::ServerSideInit()
@@ -82,6 +88,11 @@ void ADkCharacterBase::ServerSideInit()
 void ADkCharacterBase::ClientSideInit()
 {
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);
+}
+
+bool ADkCharacterBase::IsLocallyControlledByPlayer()
+{
+	return GetController() && GetController()->IsLocalPlayerController();
 }
 
 void ADkCharacterBase::BeginPlay()
@@ -98,6 +109,8 @@ void ADkCharacterBase::BeginPlay()
 	GetNetworkDebugInfo();
 
 	BindGASChangeDelegates(); // 构造函数中调用虚函数不好，此时虚函数表还没构建完成，子类的重写不会被调用。
+	
+	ConfigureOverHeadStatsWidget(); // 头顶血条的显示
 }
 
 void ADkCharacterBase::Tick(float DeltaSeconds)
@@ -322,4 +335,54 @@ void ADkCharacterBase::SetGenericTeamId(const FGenericTeamId& NewTeamID)
 FGenericTeamId ADkCharacterBase::GetGenericTeamId() const
 {
 	return TeamID;
+}
+
+void ADkCharacterBase::ConfigureOverHeadStatsWidget()
+{
+	if (!OverHeadWidgetComponent)
+	{
+		return;
+	}
+
+	if (IsLocallyControlledByPlayer())
+	{
+		OverHeadWidgetComponent->SetHiddenInGame(true);
+		return;
+	}
+
+	UOverHeadStatsGauge* OverHeadStatsGauge = Cast<UOverHeadStatsGauge>(OverHeadWidgetComponent->GetUserWidgetObject());
+	if (OverHeadStatsGauge)
+	{
+		OverHeadStatsGauge->ConfigureWithASC(GetAbilitySystemComponent());
+		OverHeadWidgetComponent->SetHiddenInGame(true);
+		GetWorldTimerManager().ClearTimer(HeadStatsGaugeVisibilityUpdateTimerHandle);
+		GetWorldTimerManager().SetTimer(
+			HeadStatsGaugeVisibilityUpdateTimerHandle, this, &ThisClass::UpdateHeadGaugeVisibility,
+			HeadStatsGaugeVisibilityCheckUpdateGap, true, 0.f
+		);
+	}
+}
+
+void ADkCharacterBase::UpdateHeadGaugeVisibility()
+{
+	APawn* LocalPlayerPawn = UGameplayStatics::GetPlayerPawn(this, 0);
+	if (LocalPlayerPawn)
+	{
+		float DistSquared = FVector::DistSquared(GetActorLocation(), LocalPlayerPawn->GetActorLocation());
+		OverHeadWidgetComponent->SetHiddenInGame(DistSquared > HeadStatsGaugeVisibilityRangeSquared);
+	}
+}
+
+void ADkCharacterBase::SetStatusGaugeEnabled(bool bIsEnabled)
+{
+	GetWorldTimerManager().ClearTimer(HeadStatsGaugeVisibilityUpdateTimerHandle);
+
+	if (bIsEnabled)
+	{
+		ConfigureOverHeadStatsWidget();
+	}
+	else
+	{
+		OverHeadWidgetComponent->SetHiddenInGame(true);
+	}
 }

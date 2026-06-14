@@ -18,7 +18,7 @@ void UValueGauge::NativePreConstruct()
 	ProgressBar->SetVisibility(bProgressBarVisible ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
 }
 
-void UValueGauge::SendAndBoundToGameplayAttribute(
+void UValueGauge::SetAndBoundToGameplayAttribute(
 	UAbilitySystemComponent* AbilitySystemComponent,
 	const FGameplayAttribute& Attribute,
 	const FGameplayAttribute& MaxAttribute)

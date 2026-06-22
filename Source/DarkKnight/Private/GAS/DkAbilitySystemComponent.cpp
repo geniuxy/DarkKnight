@@ -33,6 +33,14 @@ void UDkAbilitySystemComponent::ServerSideInit()
 	GiveInitialAbilities();
 }
 
+void UDkAbilitySystemComponent::ApplyFullStatsEffect()
+{
+	if (AbilitySystemGenerics && AbilitySystemGenerics->GetFullStatsEffect())
+	{
+		AuthApplyGameplayEffect(AbilitySystemGenerics->GetFullStatsEffect());
+	}
+}
+
 void UDkAbilitySystemComponent::AuthApplyGameplayEffect(TSubclassOf<UGameplayEffect> GameplayEffect, int Level)
 {
 	if (GetOwner() && GetOwner()->HasAuthority())
@@ -160,6 +168,7 @@ void UDkAbilitySystemComponent::HealthUpdated(const FOnAttributeChangeData& Chan
 		{
 			AddLooseGameplayTag(DkGameplayTags::Dk_Stats_Health_Empty);
 
+			// 这一步给角色施加了Dk_Stats_Dead的Tag
 			if (AbilitySystemGenerics->GetDeathEffect())
 			{
 				AuthApplyGameplayEffect(AbilitySystemGenerics->GetDeathEffect());
@@ -172,7 +181,7 @@ void UDkAbilitySystemComponent::HealthUpdated(const FOnAttributeChangeData& Chan
 			}
 
 			UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
-				GetOwner(), DkGameplayTags::Dk_Stats_Dead, DeadAbilityEventData
+				GetOwner(), DkGameplayTags::Dk_Ability_Passive_Dead_Event_Activate, DeadAbilityEventData
 			);
 		}
 	}

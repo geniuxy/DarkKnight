@@ -6,6 +6,7 @@
 #include "AbilitySystemComponent.h"
 #include "DarkKnightDebugHelper.h"
 #include "DkGameplayTags.h"
+#include "Characters/DkCharacterBase.h"
 #include "FunctionLibrarys/DkAbilitySystemFunctionLibrary.h"
 #include "GameFramework/Character.h"
 #include "GAS/DkAbilitySystemComponent.h"
@@ -226,6 +227,11 @@ AActor* UDkGameplayAbilityBase::GetClosetTargetInView(
 			}
 
 			if (!IsOtherActorTeamAttitudeIs(HitActor, TeamAttitude))
+			{
+				continue;
+			}
+
+			if (UDkAbilitySystemFunctionLibrary::IsActorDead(Cast<ADkCharacterBase>(HitActor)))
 			{
 				continue;
 			}

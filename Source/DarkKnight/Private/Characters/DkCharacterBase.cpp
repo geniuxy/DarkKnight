@@ -106,6 +106,8 @@ void ADkCharacterBase::BeginPlay()
 		ActionComponent->InitializeActorComponent(CharacterInfo);
 	}
 
+	MeshRelativeTransform = GetMesh()->GetRelativeTransform();
+
 	GetNetworkDebugInfo();
 
 	BindGASChangeDelegates(); // 构造函数中调用虚函数不好，此时虚函数表还没构建完成，子类的重写不会被调用。
@@ -277,6 +279,10 @@ void ADkCharacterBase::BindGASChangeDelegates()
 {
 	if (AbilitySystemComponent)
 	{
+		AbilitySystemComponent->RegisterGameplayTagEvent(DkGameplayTags::Dk_Stats_Dead).AddUObject(
+			this, &ThisClass::DeadTagUpdated
+		);
+		
 		AbilitySystemComponent->RegisterGameplayTagEvent(DkGameplayTags::Dk_Stats_LockingTarget).AddUObject(
 			this, &ThisClass::LockingTargetTagUpdated
 		);
@@ -286,6 +292,18 @@ void ADkCharacterBase::BindGASChangeDelegates()
 		).AddUObject(
 			this, &ThisClass::MoveSpeedUpdated
 		);
+	}
+}
+
+void ADkCharacterBase::DeadTagUpdated(FGameplayTag Tag, int NewCount)
+{
+	if (NewCount != 0)
+	{
+		StartDeathSequence();
+	}
+	else
+	{
+		Respawn();
 	}
 }
 
@@ -325,6 +343,109 @@ void ADkCharacterBase::FaceLockTarget(float DeltaSeconds)
 void ADkCharacterBase::MoveSpeedUpdated(const FOnAttributeChangeData& Data)
 {
 	GetCharacterMovement()->MaxWalkSpeed = Data.NewValue;
+}
+
+bool ADkCharacterBase::IsDead() const
+{
+	return GetAbilitySystemComponent()->HasMatchingGameplayTag(DkGameplayTags::Dk_Stats_Dead);
+}
+
+void ADkCharacterBase::RespawnImmediately()
+{
+	if (HasAuthority())
+	{
+		GetAbilitySystemComponent()->RemoveActiveEffectsWithGrantedTags(
+			FGameplayTagContainer(DkGameplayTags::Dk_Stats_Dead)
+		);
+	}
+}
+
+void ADkCharacterBase::DeathMontageFinished()
+{
+	if (IsDead()) // 防止小兵在DeathMontageFinished触发前复活而导致的bug
+	{
+		SetRagDollEnabled(true);
+	}
+}
+
+void ADkCharacterBase::SetRagDollEnabled(bool bIsEnabled)
+{
+	if (bIsEnabled)
+	{
+		GetMesh()->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+		GetMesh()->SetSimulatePhysics(true);
+		GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+	}
+	else
+	{
+		GetMesh()->SetSimulatePhysics(false);
+		GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		GetMesh()->AttachToComponent(GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
+		GetMesh()->SetRelativeTransform(MeshRelativeTransform);
+	}
+}
+
+void ADkCharacterBase::PlayDeathAnimation()
+{
+	if (DeathMontage)
+	{
+		float MontageDuration = PlayAnimMontage(DeathMontage);
+		GetWorldTimerManager().SetTimer(
+			DeathMontageTimerHandle,
+			this,
+			&ThisClass::DeathMontageFinished,
+			MontageDuration + DeathMontageFinishTimeShift
+		);
+	}
+}
+
+void ADkCharacterBase::StartDeathSequence()
+{
+	OnDeath();
+
+	if (AbilitySystemComponent)
+	{
+		AbilitySystemComponent->CancelAllAbilities(); // 取消所有目前还激活着的Abilities
+	}
+
+	PlayDeathAnimation();
+	SetStatusGaugeEnabled(false);
+	// GetCharacterMovement()->SetMovementMode(MOVE_None); // 设置为MOVE_None便不会移动了，不适合被击飞的情况
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	// SetAIPerceptionStimuliSourceEnabled(false); // 死了以后就不会被AI感知到
+}
+
+void ADkCharacterBase::Respawn()
+{
+	OnRespawn();
+	// SetAIPerceptionStimuliSourceEnabled(true);
+	SetRagDollEnabled(false);
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	// GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+	GetMesh()->GetAnimInstance()->StopAllMontages(0.f);
+	SetStatusGaugeEnabled(true);
+
+	if (HasAuthority() && GetController())
+	{
+		TWeakObjectPtr<AActor> StartSpot = GetController()->StartSpot;
+		if (StartSpot.IsValid())
+		{
+			SetActorTransform(StartSpot->GetActorTransform());
+		}
+	}
+
+	if (AbilitySystemComponent)
+	{
+		AbilitySystemComponent->ApplyFullStatsEffect();
+	}
+}
+
+void ADkCharacterBase::OnDeath()
+{
+}
+
+void ADkCharacterBase::OnRespawn()
+{
 }
 
 void ADkCharacterBase::SetGenericTeamId(const FGenericTeamId& NewTeamID)

@@ -121,7 +121,7 @@ void UGA_LockTarget::StopLockTargetCheckTimer()
 
 bool UGA_LockTarget::IsTargetInRange() const
 {
-	if (!GetCurrentLockTarget()) return false;
+	if (!HasValidLockTarget()) return false;
 
 	float Distance = FVector::Distance(
 		GetCurrentLockTarget()->GetActorLocation(), GetAvatarActorFromActorInfo()->GetActorLocation()
@@ -134,6 +134,10 @@ void UGA_LockTarget::TargetDeadTagUpdated(const FGameplayTag Tag, int32 NewCount
 	if (NewCount > 0)
 	{
 		FindLockTarget();
+		if (!HasValidLockTarget())
+		{
+			K2_EndAbility();
+		}
 	}
 }
 

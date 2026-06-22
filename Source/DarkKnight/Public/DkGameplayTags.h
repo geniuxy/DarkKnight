@@ -34,6 +34,7 @@ namespace DkGameplayTags
 	
 	// Ability Events
 	DARKKNIGHT_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dk_Ability_Passive_HoldSword_Event_Activate);
+	DARKKNIGHT_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dk_Ability_Passive_Dead_Event_Activate);
 	DARKKNIGHT_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dk_Ability_BasicAttack_Event_Damage);
 	DARKKNIGHT_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dk_Ability_BasicAttack_Event_Change);
 	DARKKNIGHT_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dk_Ability_BasicAttack_Event_Change_End);

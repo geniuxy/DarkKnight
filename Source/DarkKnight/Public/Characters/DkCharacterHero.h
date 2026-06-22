@@ -79,6 +79,13 @@ private:
 	virtual void OnLockingTargetStateChanged(bool InbIsLockingTarget) override;
 
 	/**********************************************************************/
+	/*                         Death And Respawn                          */
+	/**********************************************************************/
+protected:
+	virtual void OnDeath() override;
+	virtual void OnRespawn() override;
+
+	/**********************************************************************/
 	/*                           Camera View                              */
 	/**********************************************************************/
 private:
@@ -133,4 +140,6 @@ public:
 	
 private:
 	void HandleAbilityInput(const FInputActionValue& InputActionValue, EAbilityInputID InputID);
+
+	void SetInputEnabledFromPlayerController(bool bEnabled);
 };

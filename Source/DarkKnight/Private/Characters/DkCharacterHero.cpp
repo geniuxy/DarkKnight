@@ -246,6 +246,16 @@ void ADkCharacterHero::OnLockingTargetStateChanged(bool InbIsLockingTarget)
 	}
 }
 
+void ADkCharacterHero::OnDeath()
+{
+	SetInputEnabledFromPlayerController(false);
+}
+
+void ADkCharacterHero::OnRespawn()
+{
+	SetInputEnabledFromPlayerController(true);
+}
+
 void ADkCharacterHero::LerpCameraToLocalOffsetLocation(const FVector& Goal)
 {
 	PendingCameraGoal = Goal;
@@ -366,5 +376,20 @@ void ADkCharacterHero::HandleAbilityInput(const FInputActionValue& InputActionVa
 	else
 	{
 		GetAbilitySystemComponent()->AbilityLocalInputReleased((int32)InputID);
+	}
+}
+
+void ADkCharacterHero::SetInputEnabledFromPlayerController(bool bEnabled)
+{
+	APlayerController* PlayerController = GetController<APlayerController>();
+	if (!PlayerController) return;
+
+	if (bEnabled)
+	{
+		EnableInput(PlayerController);
+	}
+	else
+	{
+		DisableInput(PlayerController);
 	}
 }

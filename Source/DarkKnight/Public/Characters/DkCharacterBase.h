@@ -125,11 +125,44 @@ protected:
 	bool bIsLockingTarget = false;
 
 private:
+	void DeadTagUpdated(FGameplayTag Tag, int NewCount);
 	void LockingTargetTagUpdated(FGameplayTag Tag, int NewCount);
 	virtual void OnLockingTargetStateChanged(bool InbIsLockingTarget);
 	void FaceLockTarget(float DeltaSeconds);
 
 	void MoveSpeedUpdated(const FOnAttributeChangeData& Data);
+
+	/**********************************************************************/
+	/*                        Death And Respawn                           */
+	/**********************************************************************/
+public:
+	bool IsDead() const;
+
+protected:
+	void RespawnImmediately();
+
+private:
+	FTransform MeshRelativeTransform; // 记录Mesh初始RelativeTransform，用于Ragdoll后恢复位置
+
+	UPROPERTY(EditDefaultsOnly, Category="Death")
+	float DeathMontageFinishTimeShift = -0.8f;
+
+	UPROPERTY(EditDefaultsOnly, Category="Death")
+	UAnimMontage* DeathMontage;
+
+	FTimerHandle DeathMontageTimerHandle;
+
+	void DeathMontageFinished();
+	void SetRagDollEnabled(bool bIsEnabled);
+
+	void PlayDeathAnimation();
+
+	void StartDeathSequence();
+	void Respawn();
+
+protected:
+	virtual void OnDeath();
+	virtual void OnRespawn();
 
 	/**********************************************************************/
 	/*                                Team                                */

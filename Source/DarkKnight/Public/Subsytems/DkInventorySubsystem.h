@@ -10,7 +10,7 @@
 
 class UDkInventoryComponent;
 /**
- * UGameInstanceSubsystem 本质上不适用于网络同步场景
+ * UGameInstanceSubsystem 本质上不适用于网络同步场景，但是Client和Server上都存在，适合存放静态的数据
  * 需要网络同步时：AGameState全局游戏状态 / APlayerState玩家相关状态
  */
 UCLASS()

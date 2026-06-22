@@ -23,6 +23,8 @@ public:
 
 	void ServerSideInit();
 
+	void ApplyFullStatsEffect();
+
 	void AuthApplyGameplayEffect(TSubclassOf<UGameplayEffect> GameplayEffect, int Level = 1);
 
 	UInputMappingContext* GetInputMappingContext() const;

@@ -28,6 +28,7 @@ namespace DkGameplayTags
 	
 	// Ability Events
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Ability_Passive_HoldSword_Event_Activate, "Dk.Ability.Passive.HoldSword.Event.Activate");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Ability_Passive_Dead_Event_Activate, "Dk.Ability.Passive.Dead.Event.Activate");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Ability_BasicAttack_Event_Damage, "Dk.Ability.BasicAttack.Event.Damage");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Ability_BasicAttack_Event_Change, "Dk.Ability.BasicAttack.Event.Change");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Ability_BasicAttack_Event_Change_End, "Dk.Ability.BasicAttack.Event.Change.End");

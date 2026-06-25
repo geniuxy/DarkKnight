@@ -170,3 +170,39 @@ enum class EMonsterType: uint8
 	Unknown UMETA(Hidden)
 };
 /********/
+
+/**********************************************************************/
+/*                               Dialog                               */
+/**********************************************************************/
+
+UENUM(BlueprintType)
+enum class ENpcMoveType: uint8
+{
+	RelativeLocation UMETA(DisplayName = "移动到相对位置"),
+	Teleport UMETA(DisplayName = "瞬间传送"),
+	None
+};
+
+UENUM(BlueprintType)
+enum class EDialogContentType: uint8
+{
+	Base UMETA(DisplayName = "基本对话"),
+	Branch UMETA(DisplayName = "分支对话"),
+	None
+};
+
+UENUM(BlueprintType)
+enum class EDialogCameraType: uint8
+{
+	CloseUpLeft UMETA(DisplayName = "特写左"),
+	CloseShotLeft UMETA(DisplayName = "近景左"),
+	MediumShotLeft UMETA(DisplayName = "中景左"),
+	DistantViewLeft UMETA(DisplayName = "远景左"),
+	CloseUpRight UMETA(DisplayName = "特写右"),
+	CloseShotRight UMETA(DisplayName = "近景右"),
+	MediumShotRight UMETA(DisplayName = "中景右"),
+	DistantViewRight UMETA(DisplayName = "远景右"),
+	CustomRelativePosition UMETA(DisplayName = "自定义相对位置"),
+	CustomWorldPosition UMETA(DisplayName = "自定义世界位置"),
+	None
+};

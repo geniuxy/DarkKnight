@@ -345,3 +345,84 @@ struct FHeroBaseStats : public FTableRowBase
 };
 
 /********/
+
+/**********************************************************************/
+/*                               Dialog                               */
+/**********************************************************************/
+
+USTRUCT(BlueprintType)
+struct FDialogNPCDetail : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere)
+	FTransform Transform;
+
+	UPROPERTY(EditAnywhere)
+	UAnimMontage* TalkMontage;
+	
+	UPROPERTY(EditAnywhere)
+	ENpcMoveType MoveType;
+};
+
+USTRUCT(BlueprintType)
+struct FDialogBranchInfo : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere)
+	FText BranchText;
+
+	UPROPERTY(EditAnywhere)
+	FGameplayTag BranchTag; // 用Tag标识这个Branch
+	
+	UPROPERTY(EditAnywhere)
+	FGameplayTag Precondition; // 前置分支Tag标识
+
+	UPROPERTY(EditAnywhere)
+	FString TriggerEvent; // 触发事件
+
+	UPROPERTY(EditAnywhere)
+	int JumpToContentId; // 下一步跳转对话Id
+};
+
+USTRUCT(BlueprintType)
+struct FDialogContent : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere)
+	int Id;
+
+	UPROPERTY(EditAnywhere)
+	TMap<int, FDialogNPCDetail> NPCInfos;
+
+	UPROPERTY(EditAnywhere)
+	EDialogContentType ContentType;
+
+	UPROPERTY(EditAnywhere)
+	TMap<int, FDialogNPCDetail> BranchContents;
+
+	UPROPERTY(EditAnywhere)
+	FText ContentText;
+	
+	UPROPERTY(EditAnywhere)
+	int CameraID; // 使用对话中哪个NPC的Camera
+
+	UPROPERTY(EditAnywhere)
+	EDialogCameraType CameraType;
+
+	UPROPERTY(EditAnywhere)
+	FTransform CustomCameraTransform;
+	
+	UPROPERTY(EditAnywhere)
+	USoundWave* SoundEffect; // 音效
+
+	UPROPERTY(EditAnywhere)
+	USoundWave* Dubbing; // 配音
+	
+	UPROPERTY(EditAnywhere)
+	int NextContentId;
+};
+
+

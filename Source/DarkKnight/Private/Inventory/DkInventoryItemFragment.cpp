@@ -228,6 +228,10 @@ void FInventoryItemFragment_Equipment::OnEquip(UAbilitySystemComponent* InASC)
 	{
 		auto& EntryRef = Entry.GetMutable();
 		EntryRef.OnEquip(InASC);
+
+		// TODO: 可以把OnEquip的返回变成FActiveGameplayEffectHandle(词条效果)/FGameplayAbilitySpecHandle(能力效果)
+		// 然后FInventoryItemFragment_Equipment增加变量TArray<FActiveGameplayEffectHandle/FGameplayAbilitySpecHandle>
+		// 就可以在OnUnEquip的时候从ASC中接触这些效果、能力
 	}
 }
 

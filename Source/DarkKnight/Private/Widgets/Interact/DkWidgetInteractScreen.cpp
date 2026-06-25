@@ -20,6 +20,18 @@ void UDkWidgetInteractScreen::HidePickUpMessage()
 	WBP_PickUpBox->SetVisibility(ESlateVisibility::Collapsed);
 }
 
+void UDkWidgetInteractScreen::ShowInteractMessage(const FString& Message)
+{
+	WBP_InteractBox->SetMessage(Message);
+
+	WBP_InteractBox->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+}
+
+void UDkWidgetInteractScreen::HideInteractMessage()
+{
+	WBP_InteractBox->SetVisibility(ESlateVisibility::Collapsed);
+}
+
 void UDkWidgetInteractScreen::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();

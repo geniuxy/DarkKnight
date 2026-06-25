@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Widgets/DkWidgetActivatableBase.h"
+#include "DkWidgetInteractBox.h"
 #include "DkWidgetPickUpBox.generated.h"
 
 class UCommonTextBlock;
@@ -11,21 +11,7 @@ class UCommonTextBlock;
  * 
  */
 UCLASS()
-class DARKKNIGHT_API UDkWidgetPickUpBox : public UCommonUserWidget
+class DARKKNIGHT_API UDkWidgetPickUpBox : public UDkWidgetInteractBox
 {
 	GENERATED_BODY()
-
-public:
-	void SetMessage(const FString& Message);
-
-protected:
-	//~Begin UUserWidget
-	virtual void NativeOnInitialized() override;
-	//~End UUserWidget
-
-private:
-	//***** Bound Widgets *****//
-	UPROPERTY(BlueprintReadOnly, meta=(BindWidget, AllowPrivateAccess="true"))
-	UCommonTextBlock* CommonText_PickUpMessage;
-	//***** Bound Widgets *****//
 };

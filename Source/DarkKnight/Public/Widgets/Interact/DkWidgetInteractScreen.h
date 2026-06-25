@@ -6,6 +6,7 @@
 #include "Widgets/DkWidgetActivatableBase.h"
 #include "DkWidgetInteractScreen.generated.h"
 
+class UDkWidgetInteractBox;
 class UDkWidgetInfoMessage;
 class UDkWidgetPickUpBox;
 /**
@@ -19,6 +20,9 @@ class DARKKNIGHT_API UDkWidgetInteractScreen : public UDkWidgetActivatableBase
 public:
 	void ShowPickUpMessage(const FString& Message);
 	void HidePickUpMessage();
+
+	void ShowInteractMessage(const FString& Message);
+	void HideInteractMessage();
 
 protected:
 	//~Begin UUserWidget
@@ -35,5 +39,8 @@ private:
 
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget, AllowPrivateAccess="true"))
 	UDkWidgetInfoMessage* WBP_InfoMessage;
+
+	UPROPERTY(BlueprintReadOnly, meta=(BindWidget, AllowPrivateAccess="true"))
+	UDkWidgetInteractBox* WBP_InteractBox;
 	//***** Bound Widgets *****//
 };

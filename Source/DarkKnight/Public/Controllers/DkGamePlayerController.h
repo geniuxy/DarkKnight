@@ -68,6 +68,7 @@ private:
 	/********/
 
 	/* 捡拾物品 */
+private:
 	void TraceForItem();
 	FHitResult CursorHit;
 	TWeakObjectPtr<AActor> ThisActor;
@@ -78,9 +79,13 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<UDkWidgetInteractScreen> CachedInteractScreen;
+
+public:
+	FORCEINLINE UDkWidgetInteractScreen* GetInteractScreen() const { return CachedInteractScreen; }
 	/********/
 
 	/* 仓库 */
+private:
 	void RefreshInventoryComponent();
 	TWeakObjectPtr<UDkInventoryComponent> InventoryComponent;
 	/********/

@@ -8,6 +8,8 @@
 #include "Interfaces/LoadingScreenInterface.h"
 #include "DkGamePlayerController.generated.h"
 
+struct FGameplayTag;
+class ADkCharacterNPC;
 class ADkCharacterBase;
 class UInputConfig;
 struct FInputActionValue;
@@ -52,12 +54,17 @@ protected:
 	FGenericTeamId TeamID;
 
 private:
+	UPROPERTY(EditDefaultsOnly, Category = "Primary")
+	TSubclassOf<UDkWidgetPrimaryLayout> PrimaryLayoutClass;
+
+	UPROPERTY()
+	TObjectPtr<UDkWidgetPrimaryLayout> PrimaryLayoutWidget;
+
 	/* Input Actions */
+private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input Config", meta=(AllowPrivateAccess="true"))
 	UInputConfig* InputConfigDataAsset;
-	/********/
-
-	/* Input Action CallBack */
+	
 	void HandleGroundMovementInput(const FInputActionValue& InputActionValue);
 	void ToggleMovementStyle();
 	void OnLookTriggered(const FInputActionValue& InputActionValue);
@@ -90,9 +97,16 @@ private:
 	TWeakObjectPtr<UDkInventoryComponent> InventoryComponent;
 	/********/
 
-	UPROPERTY(EditDefaultsOnly, Category = "Primary")
-	TSubclassOf<UDkWidgetPrimaryLayout> PrimaryLayoutClass;
-
+	/**********************************************************************/
+	/*                         Interact With NPC                          */
+	/**********************************************************************/
+private:
 	UPROPERTY()
-	TObjectPtr<UDkWidgetPrimaryLayout> PrimaryLayoutWidget;
+	ADkCharacterNPC* InteractiveNPC;
+
+	void HideLowerWidgetStack(FGameplayTag InWidgetStackTag);
+
+public:
+	FORCEINLINE ADkCharacterNPC* GetInteractiveNPC() const { return InteractiveNPC; }
+	void SetInteractiveNPC(ADkCharacterNPC* InNPC) { InteractiveNPC = InNPC; }
 };

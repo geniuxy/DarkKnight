@@ -9,7 +9,9 @@
 #include "EnhancedInputSubsystems.h"
 #include "Blueprint/UserWidget.h"
 #include "Characters/DkCharacterHero.h"
+#include "Characters/NPC/DkCharacterNPC.h"
 #include "Components/DkActionComponent.h"
+#include "Components/DkDialogComponent.h"
 #include "Components/DkEnhancedInputComponent.h"
 #include "Components/DkInventoryComponent.h"
 #include "Components/DkItemComponent.h"
@@ -19,6 +21,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Subsytems/DkInventorySubsystem.h"
 #include "Subsytems/DkUISubsystem.h"
+#include "Widgets/CommonActivatableWidgetContainer.h"
 #include "Widgets/DkWidgetPrimaryLayout.h"
 #include "Widgets/Interact/DkWidgetInteractScreen.h"
 #include "Widgets/Interact/DkWidgetPickUpBox.h"
@@ -106,7 +109,7 @@ void ADkGamePlayerController::AcknowledgePossession(APawn* NewPawn)
 	{
 		OwningPlayerCharacter->ClientSideInit();
 	}
-	
+
 	RefreshInventoryComponent();
 }
 
@@ -218,12 +221,37 @@ void ADkGamePlayerController::OnJumpPressed()
 
 void ADkGamePlayerController::OnInteract()
 {
-	if (!ThisActor.IsValid()) return;
+	if (ThisActor.IsValid())
+	{
+		UDkItemComponent* ItemComponent = ThisActor->FindComponentByClass<UDkItemComponent>();
+		if (IsValid(ItemComponent) && InventoryComponent.IsValid())
+		{
+			InventoryComponent->TryAddItem(ItemComponent);
+			return;
+		}
+	}
+	if (IsValid(GetInteractiveNPC()) && IsValid(GetInteractiveNPC()->GetDialogComponent()))
+	{
+		UDkDialogComponent* DialogComponent = GetInteractiveNPC()->GetDialogComponent();
+		if (DialogComponent->CanStartDialog())
+		{
+			ClientSetCameraFade(true, FColor(ForceInit), FVector2D(0.f, 1.f), 0.5f, false, true);
 
-	UDkItemComponent* ItemComponent = ThisActor->FindComponentByClass<UDkItemComponent>();
-	if (!IsValid(ItemComponent) || !InventoryComponent.IsValid()) return;
+			HideLowerWidgetStack(DkGameplayTags::Dk_WidgetStack_Interact);
+			
+			FTimerHandle CameraFadeHandle;
+			GetWorldTimerManager().SetTimer(CameraFadeHandle, FTimerDelegate::CreateLambda([this]()
+			{
+				ClientSetCameraFade(true, FColor(ForceInit), FVector2D(1.f, 0.f), 0.5f);
+			}), 0.5f, false);
 
-	InventoryComponent->TryAddItem(ItemComponent);
+			FTimerHandle StartDialogHandle;
+			GetWorldTimerManager().SetTimer(StartDialogHandle, FTimerDelegate::CreateLambda([=, this]()
+			{
+				DialogComponent->TryStartDialog(this);
+			}), 1.f, false);
+		}
+	}
 }
 
 void ADkGamePlayerController::OnOpenSystemMenu()
@@ -325,4 +353,15 @@ void ADkGamePlayerController::RefreshInventoryComponent()
 	UDkInventorySubsystem* InventorySubsystem = UDkInventorySubsystem::Get(this);
 	checkf(InventorySubsystem, TEXT("InventorySubsystem为空！"));
 	InventorySubsystem->RegisterCachedInventoryComponent(InventoryComponent.Get());
+}
+
+void ADkGamePlayerController::HideLowerWidgetStack(FGameplayTag InWidgetStackTag)
+{
+	EWidgetStackType WidgetStackType = UDkUIFunctionLibrary::GetWidgetStackTypeByTag(InWidgetStackTag);
+	for (int i = (int)EWidgetStackType::Num - 1; i > (int)WidgetStackType; --i)
+	{
+		FGameplayTag LowerWidgetStackTag = UDkUIFunctionLibrary::GetWidgetStackTagByType((EWidgetStackType)i);
+		UCommonActivatableWidgetContainerBase* LowerWidgetStack = PrimaryLayoutWidget->FindWidgetStackByTag(LowerWidgetStackTag);
+		LowerWidgetStack->SetVisibility(ESlateVisibility::Collapsed);
+	}
 }

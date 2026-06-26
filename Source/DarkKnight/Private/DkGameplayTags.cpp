@@ -66,6 +66,7 @@ namespace DkGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Widget_GameHUD, "Dk.Widget.GameHUD");
 
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Widget_InteractScreen, "Dk.Widget.InteractScreen");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Widget_DialogScreen, "Dk.Widget.DialogScreen");
 
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Widget_SystemMenu, "Dk.Widget.SystemMenu");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Widget_GameMenu, "Dk.Widget.GameMenu");

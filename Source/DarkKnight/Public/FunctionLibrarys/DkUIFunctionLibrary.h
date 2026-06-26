@@ -30,6 +30,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category="UI Function Library", meta=(WorldContext = "WorldContextObject"))
 	static void ToggleInputMode(const UObject* WorldContextObject, EDkInputMode InInputMode);
 
+	UFUNCTION(BlueprintCallable, Category="UI Function Library")
+	static EWidgetStackType GetWidgetStackTypeByTag(UPARAM(meta=(Categories="Dk.WidgetStack")) FGameplayTag InWidgetStackTag);
+
+	UFUNCTION(BlueprintCallable, Category="UI Function Library")
+	static FGameplayTag GetWidgetStackTagByType(EWidgetStackType InWidgetStackType);
+
 	/**
 	 * 直接定位任意 UserWidget 到鼠标附近（一站式方案）
 	 * 自动获取 Widget 尺寸并应用 DPI 转换

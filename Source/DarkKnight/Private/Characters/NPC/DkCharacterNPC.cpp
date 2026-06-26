@@ -46,6 +46,7 @@ void ADkCharacterNPC::HandleBoxOverlapped(
 	if (IsValid(PC->GetInteractScreen()))
 	{
 		PC->GetInteractScreen()->ShowInteractMessage(DialogComponent->GetInteractMessage());
+		PC->SetInteractiveNPC(this);
 	}
 }
 
@@ -66,5 +67,6 @@ void ADkCharacterNPC::HandleBoxEndOverlap(
 	if (IsValid(PC->GetInteractScreen()))
 	{
 		PC->GetInteractScreen()->HideInteractMessage();
+		PC->SetInteractiveNPC(nullptr);
 	}
 }

@@ -5,6 +5,7 @@
 
 #include "Blueprint/SlateBlueprintLibrary.h"
 #include "Blueprint/UserWidget.h"
+#include "FunctionLibrarys/DkCommonFunctionLibrary.h"
 #include "Settings/DkUIDeveloperSettings.h"
 #include "Slate/SceneViewport.h"
 
@@ -81,6 +82,42 @@ void UDkUIFunctionLibrary::ToggleInputMode(const UObject* WorldContextObject, ED
 		// TODO: Crunch里有GameAndUI相关的代码，需要时可以参考，主要用于游戏视角和界面UI并存时的情况
 		break;
 	}
+}
+
+EWidgetStackType UDkUIFunctionLibrary::GetWidgetStackTypeByTag(FGameplayTag InWidgetStackTag)
+{
+	const UDkUIDeveloperSettings* UIDeveloperSettings = GetDefault<UDkUIDeveloperSettings>();
+
+	EWidgetStackType OutWidgetStackType = EWidgetStackType::Num;
+	for (auto StackTagPair : UIDeveloperSettings->WidgetStackTagMap)
+	{
+		if (StackTagPair.Value == InWidgetStackTag)
+		{
+			OutWidgetStackType = StackTagPair.Key;
+			break;
+		}
+	}
+
+	checkf(
+		OutWidgetStackType != EWidgetStackType::Num,
+		TEXT("找不到对应的WidgetStackTag(Tag为%s)"),
+		*InWidgetStackTag.ToString()
+	);
+
+	return OutWidgetStackType;
+}
+
+FGameplayTag UDkUIFunctionLibrary::GetWidgetStackTagByType(EWidgetStackType InWidgetStackType)
+{
+	const UDkUIDeveloperSettings* UIDeveloperSettings = GetDefault<UDkUIDeveloperSettings>();
+
+	checkf(
+		UIDeveloperSettings->WidgetStackTagMap.Contains(InWidgetStackType),
+		TEXT("找不到EWidgetStackType对应的WidgetStackTag(Type为%s)"),
+		*UDkCommonFunctionLibrary::GetStringValueOfEnum(InWidgetStackType)
+	);
+
+	return UIDeveloperSettings->WidgetStackTagMap.FindRef(InWidgetStackType);
 }
 
 bool UDkUIFunctionLibrary::PositionWidgetAtMouse(UUserWidget* Widget, FVector2D Offset, bool bAutoFlipX,

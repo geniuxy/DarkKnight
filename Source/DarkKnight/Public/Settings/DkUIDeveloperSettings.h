@@ -7,6 +7,7 @@
 #include "Engine/DeveloperSettings.h"
 #include "DkUIDeveloperSettings.generated.h"
 
+enum class EWidgetStackType : uint8;
 class UDkWidgetActivatableBase;
 /**
  * 
@@ -19,6 +20,9 @@ class DARKKNIGHT_API UDkUIDeveloperSettings : public UDeveloperSettings
 public:
 	UPROPERTY(Config, EditAnywhere, Category = "Widget Reference", meta = (ForceInlineRow, Categories = "Dk.Widget"))
 	TMap<FGameplayTag, TSoftClassPtr<UDkWidgetActivatableBase>> UIWidgetMap;
+
+	UPROPERTY(Config, EditAnywhere, Category = "Widget Reference", meta = (ForceInlineRow, Categories = "Dk.WidgetStack"))
+	TMap<EWidgetStackType, FGameplayTag> WidgetStackTagMap;
 
 	UPROPERTY(Config, EditAnywhere, Category = "Image Reference", meta = (ForceInlineRow, Categories = "Dk.Image"))
 	TMap<FGameplayTag, TSoftObjectPtr<UTexture2D>> ImageMap;

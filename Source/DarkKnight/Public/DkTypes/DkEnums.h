@@ -116,6 +116,17 @@ enum class EOptionsListDataModifyReason : uint8
 	ResetToDefault
 };
 
+UENUM(BlueprintType)
+enum class EWidgetStackType : uint8
+{
+	Modal,
+	GameMenu,
+	Interact,
+	GameHud,
+	Frontend,
+	Num UMETA(Hidden)
+};
+
 /********/
 
 /* Inventory Types */

@@ -3,9 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "DkTypes/DkStructs.h"
 #include "Widgets/DkWidgetActivatableBase.h"
 #include "DkWidgetDialogScreen.generated.h"
 
+class UDkUICommonButtonImage;
+class ADkGamePlayerController;
 class UDkUIDialogSelectionButton;
 class ADkCharacterHero;
 class UDkPlayerDialogComponent;
@@ -21,7 +24,7 @@ class DARKKNIGHT_API UDkWidgetDialogScreen : public UDkWidgetActivatableBase
 	GENERATED_BODY()
 
 public:
-	void UpdateDialogContent(FDialogContent CurrentDialogContent);
+	void BeginDialog(int InStartDialogId);
 
 protected:
 	//~Begin UUserWidget Function
@@ -36,20 +39,37 @@ protected:
 private:
 	//~ Begin Bound Widgets
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget, AllowPrivateAccess="true"))
-	UCommonTextBlock* DialogContent;
+	UCommonTextBlock* DialogContentText;
 
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget, AllowPrivateAccess="true"))
-	UVerticalBox* SelectContentList;
+	UVerticalBox* SelectionList;
+
+	UPROPERTY(BlueprintReadOnly, meta=(BindWidget, AllowPrivateAccess="true"))
+	UDkUICommonButtonImage* DialogConfirmButton;
 	//~ End Bound Widgets
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UDkUIDialogSelectionButton> DialogSelectionButtonClass;
-
-	bool bCanClickToNextDialog = false;
-
+	
 	UPROPERTY()
 	TObjectPtr<ADkCharacterHero> OwnerCharacter;
 	
 	UPROPERTY()
 	TObjectPtr<UDkPlayerDialogComponent> OwnerDialogComponent;
+
+	UPROPERTY()
+	TObjectPtr<UAudioComponent> CachedAudioComponent;
+
+	UPROPERTY()
+	TObjectPtr<ADkGamePlayerController> OwnerPC;
+	
+	bool bCanClickToNextDialog = false;
+	int CurDialogId = 0;
+	FDialogContent CurDialogContent;
+	
+	void DialogConfirmButtonClicked();
+	void UpdateDialogContent();
+	FDialogContent GetDialogInfoById(int InDialogId);
+	int GetNextDialogId();
+	void EndDialog();
 };

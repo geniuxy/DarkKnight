@@ -15,11 +15,12 @@ UDkNPCDialogComponent::UDkNPCDialogComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
 
+	InteractMessage = TEXT("F - 对话");
 }
 
 bool UDkNPCDialogComponent::CanStartDialog()
 {
-	if (NPCId == 0 || DialogId == 0) return false;
+	if (NPCId == 0 || StartDialogId == 0) return false;
 	return true;
 }
 
@@ -42,6 +43,7 @@ void UDkNPCDialogComponent::TryStartDialog(ADkGamePlayerController* PC)
 				}
 			case EAsyncPushWidgetState::AfterPush:
 				CachedDialogScreen = CastChecked<UDkWidgetDialogScreen>(PushedWidget);
+				CachedDialogScreen->BeginDialog(StartDialogId);
 				break;
 			}
 		}

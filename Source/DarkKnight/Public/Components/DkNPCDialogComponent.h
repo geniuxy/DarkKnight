@@ -30,7 +30,7 @@ private:
 	FString InteractMessage;
 
 	UPROPERTY(EditAnywhere, Category="Dialog Details")
-	int DialogId = 0;
+	int StartDialogId = 0;
 
 	UPROPERTY(EditAnywhere, Category="Dialog Details")
 	int NPCId = 0;

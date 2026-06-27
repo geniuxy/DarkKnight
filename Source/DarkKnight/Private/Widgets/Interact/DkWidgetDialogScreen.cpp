@@ -4,47 +4,24 @@
 #include "Widgets/Interact/DkWidgetDialogScreen.h"
 
 #include "CommonTextBlock.h"
+#include "DarkKnightDebugHelper.h"
 #include "Characters/DkCharacterHero.h"
+#include "Components/AudioComponent.h"
 #include "Components/DkPlayerDialogComponent.h"
 #include "Components/VerticalBox.h"
+#include "Controllers/DkGamePlayerController.h"
 #include "DkTypes/DkStructs.h"
 #include "FunctionLibrarys/DkUIFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
-#include "Widgets/Components/Buttons/DkUICommonButtonBase.h"
+#include "Subsytems/EngineSubsystems/DkDataSubsystem.h"
+#include "Widgets/Components/Buttons/DkUICommonButtonImage.h"
 #include "Widgets/Components/Buttons/Dialog/DkUIDialogSelectionButton.h"
 
-void UDkWidgetDialogScreen::UpdateDialogContent(FDialogContent CurrentDialogContent)
+void UDkWidgetDialogScreen::BeginDialog(int InStartDialogId)
 {
-	// 更改NPC位置和镜头等
-
-	DialogContent->SetText(CurrentDialogContent.ContentText);
-
-	SelectContentList->ClearChildren();
-
-	// 播放配音
-	if (CurrentDialogContent.Dubbing)
-	{
-		UGameplayStatics::PlaySound2D(this, CurrentDialogContent.Dubbing);
-	}
-
-	bCanClickToNextDialog = CurrentDialogContent.ContentType == EDialogContentType::Base;
-	if (CurrentDialogContent.ContentType == EDialogContentType::Branch)
-	{
-		for (TTuple<int, FDialogBranchInfo> BranchContentPair : CurrentDialogContent.BranchContents)
-		{
-			if (BranchContentPair.Value.Precondition.IsValid() && IsValid(OwnerDialogComponent))
-			{
-				bool bFinishPrecondition =
-					OwnerDialogComponent->FindDialogGameplayTag(BranchContentPair.Value.Precondition);
-				if (!bFinishPrecondition) continue;
-			}
-
-			UDkUIDialogSelectionButton* DialogSelectionButton = CreateWidget<UDkUIDialogSelectionButton>(
-				this, DialogSelectionButtonClass
-			);
-			SelectContentList->AddChild(DialogSelectionButton);
-		}
-	}
+	CurDialogId = InStartDialogId;
+	CurDialogContent = GetDialogInfoById(InStartDialogId);
+	UpdateDialogContent();
 }
 
 void UDkWidgetDialogScreen::NativeOnInitialized()
@@ -56,6 +33,9 @@ void UDkWidgetDialogScreen::NativeOnInitialized()
 	{
 		OwnerDialogComponent = OwnerCharacter->GetPlayerDialogComponent();
 	}
+	OwnerPC = Cast<ADkGamePlayerController>(GetOwningPlayer());
+
+	DialogConfirmButton->OnClicked().AddUObject(this, &ThisClass::DialogConfirmButtonClicked);
 }
 
 void UDkWidgetDialogScreen::NativeOnActivated()
@@ -70,4 +50,87 @@ void UDkWidgetDialogScreen::NativeOnDeactivated()
 	Super::NativeOnDeactivated();
 
 	UDkUIFunctionLibrary::ToggleInputMode(this, EDkInputMode::GameOnly);
+}
+
+void UDkWidgetDialogScreen::DialogConfirmButtonClicked()
+{
+	if (!bCanClickToNextDialog) return;
+	CurDialogId = GetNextDialogId();
+	if (CurDialogId == 0)
+	{
+		EndDialog();
+		return;
+	}
+
+	CurDialogContent = GetDialogInfoById(CurDialogId);
+	UpdateDialogContent();
+}
+
+void UDkWidgetDialogScreen::UpdateDialogContent()
+{
+	if (CurDialogContent.Id == 0) return;
+
+	// 更改NPC位置和镜头等
+
+	DialogContentText->SetText(CurDialogContent.ContentText);
+
+	// 播放配音
+	if (CurDialogContent.Dubbing)
+	{
+		if (!IsValid(CachedAudioComponent))
+		{
+			CachedAudioComponent = UGameplayStatics::CreateSound2D(this, CurDialogContent.Dubbing);
+		}
+		CachedAudioComponent->SetSound(CurDialogContent.Dubbing);
+		CachedAudioComponent->Play();
+	}
+
+	SelectionList->ClearChildren();
+	bCanClickToNextDialog = CurDialogContent.ContentType == EDialogContentType::Base;
+	if (CurDialogContent.ContentType == EDialogContentType::Branch)
+	{
+		for (TTuple<int, FDialogBranchInfo> BranchContentPair : CurDialogContent.BranchContents)
+		{
+			if (BranchContentPair.Value.Precondition.IsValid() && IsValid(OwnerDialogComponent))
+			{
+				bool bFinishPrecondition =
+					OwnerDialogComponent->FindDialogGameplayTag(BranchContentPair.Value.Precondition);
+				if (!bFinishPrecondition) continue;
+			}
+
+			UDkUIDialogSelectionButton* DialogSelectionButton = CreateWidget<UDkUIDialogSelectionButton>(
+				this, DialogSelectionButtonClass
+			);
+			SelectionList->AddChild(DialogSelectionButton);
+		}
+	}
+}
+
+FDialogContent UDkWidgetDialogScreen::GetDialogInfoById(int InDialogId)
+{
+	TMap<int, FDialogContent> DialogContentInfoMap = UDkDataSubsystem::Get()->GetDialogContentInfo();
+	if (DialogContentInfoMap.Contains(InDialogId))
+	{
+		return DialogContentInfoMap.FindRef(InDialogId);
+	}
+
+	Debug::Print("DialogContentDataTable中找不到Id对应的内容");
+	EndDialog();
+	return FDialogContent();
+}
+
+int UDkWidgetDialogScreen::GetNextDialogId()
+{
+	return CurDialogContent.NextContentId;
+}
+
+void UDkWidgetDialogScreen::EndDialog()
+{
+	bCanClickToNextDialog = false;
+	if (OwnerPC)
+	{
+		OwnerPC->EndDialog();
+	}
+	CachedAudioComponent->StopDelayed(0.5f);
+	DeactivateWidget();
 }

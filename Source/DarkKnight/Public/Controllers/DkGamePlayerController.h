@@ -104,11 +104,14 @@ private:
 	/**********************************************************************/
 	/*                         Interact With NPC                          */
 	/**********************************************************************/
+public:
+	void EndDialog();
+
 private:
 	UPROPERTY()
 	ADkCharacterNPC* InteractiveNPC;
-
-	void HideLowerWidgetStack(FGameplayTag InWidgetStackTag);
+	
+	void SetLowerWidgetStackVisibility(FGameplayTag InWidgetStackTag, bool bVisible);
 
 public:
 	FORCEINLINE ADkCharacterNPC* GetInteractiveNPC() const { return InteractiveNPC; }

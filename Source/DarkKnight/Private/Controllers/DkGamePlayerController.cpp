@@ -240,7 +240,7 @@ void ADkGamePlayerController::OnInteract()
 		{
 			ClientSetCameraFade(true, FColor(ForceInit), FVector2D(0.f, 1.f), 0.5f, false, true);
 
-			HideLowerWidgetStack(DkGameplayTags::Dk_WidgetStack_Interact);
+			SetLowerWidgetStackVisibility(DkGameplayTags::Dk_WidgetStack_Interact, false);
 
 			OwningASC->ApplyDialogStatsEffect();
 			
@@ -360,13 +360,30 @@ void ADkGamePlayerController::RefreshInventoryComponent()
 	InventorySubsystem->RegisterCachedInventoryComponent(InventoryComponent.Get());
 }
 
-void ADkGamePlayerController::HideLowerWidgetStack(FGameplayTag InWidgetStackTag)
+void ADkGamePlayerController::EndDialog()
+{
+	ClientSetCameraFade(true, FColor(ForceInit), FVector2D(0.f, 1.f), 0.5f, false, true);
+
+	SetLowerWidgetStackVisibility(DkGameplayTags::Dk_WidgetStack_Interact, true);
+
+	OwningASC->RemoveActiveEffectsWithGrantedTags(
+		FGameplayTagContainer(DkGameplayTags::Dk_Stats_InDialog)
+	);
+			
+	FTimerHandle CameraFadeHandle;
+	GetWorldTimerManager().SetTimer(CameraFadeHandle, FTimerDelegate::CreateLambda([this]()
+	{
+		ClientSetCameraFade(true, FColor(ForceInit), FVector2D(1.f, 0.f), 0.5f);
+	}), 0.5f, false);
+}
+
+void ADkGamePlayerController::SetLowerWidgetStackVisibility(FGameplayTag InWidgetStackTag, bool bVisible)
 {
 	EWidgetStackType WidgetStackType = UDkUIFunctionLibrary::GetWidgetStackTypeByTag(InWidgetStackTag);
 	for (int i = (int)EWidgetStackType::Num - 1; i > (int)WidgetStackType; --i)
 	{
 		FGameplayTag LowerWidgetStackTag = UDkUIFunctionLibrary::GetWidgetStackTagByType((EWidgetStackType)i);
 		UCommonActivatableWidgetContainerBase* LowerWidgetStack = PrimaryLayoutWidget->FindWidgetStackByTag(LowerWidgetStackTag);
-		LowerWidgetStack->SetVisibility(ESlateVisibility::Collapsed);
+		LowerWidgetStack->SetVisibility(bVisible ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
 	}
 }

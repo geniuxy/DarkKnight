@@ -35,7 +35,7 @@ TSoftObjectPtr<UTexture2D> UDkUIFunctionLibrary::GetSoftImageByTag(FGameplayTag 
 	return UIDeveloperSettings->ImageMap.FindRef(InImageTag);
 }
 
-void UDkUIFunctionLibrary::ToggleInputMode(const UObject* WorldContextObject, EDkInputMode InInputMode)
+void UDkUIFunctionLibrary::ToggleInputMode(const UObject* WorldContextObject, EDkInputMode InInputMode, bool bResetMousePos)
 {
 	APlayerController* PlayerController = nullptr;
 	if (GEngine)
@@ -63,7 +63,7 @@ void UDkUIFunctionLibrary::ToggleInputMode(const UObject* WorldContextObject, ED
 		PlayerController->bShowMouseCursor = true;
 
 		// 将鼠标定位到显示屏中心
-		if (GEngine && GEngine->GameViewport)
+		if (GEngine && GEngine->GameViewport && bResetMousePos)
 		{
 			if (FSceneViewport* SceneViewport = GEngine->GameViewport->GetGameViewport())
 			{

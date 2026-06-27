@@ -239,6 +239,7 @@ void ADkGamePlayerController::OnInteract()
 		if (DialogComponent->CanStartDialog())
 		{
 			ClientSetCameraFade(true, FColor(ForceInit), FVector2D(0.f, 1.f), 0.5f, false, true);
+			UDkUIFunctionLibrary::ToggleInputMode(this, EDkInputMode::UIOnly);
 
 			SetLowerWidgetStackVisibility(DkGameplayTags::Dk_WidgetStack_Interact, false);
 
@@ -374,6 +375,7 @@ void ADkGamePlayerController::EndDialog()
 	GetWorldTimerManager().SetTimer(CameraFadeHandle, FTimerDelegate::CreateLambda([this]()
 	{
 		ClientSetCameraFade(true, FColor(ForceInit), FVector2D(1.f, 0.f), 0.5f);
+		UDkUIFunctionLibrary::ToggleInputMode(this, EDkInputMode::GameOnly);
 	}), 0.5f, false);
 }
 

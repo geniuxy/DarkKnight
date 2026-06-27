@@ -28,7 +28,7 @@ public:
 	static TSoftObjectPtr<UTexture2D> GetSoftImageByTag(UPARAM(meta=(Categories="Dk.Image")) FGameplayTag InImageTag);
 
 	UFUNCTION(BlueprintCallable, Category="UI Function Library", meta=(WorldContext = "WorldContextObject"))
-	static void ToggleInputMode(const UObject* WorldContextObject, EDkInputMode InInputMode);
+	static void ToggleInputMode(const UObject* WorldContextObject, EDkInputMode InInputMode, bool bResetMousePos = true);
 
 	UFUNCTION(BlueprintCallable, Category="UI Function Library")
 	static EWidgetStackType GetWidgetStackTypeByTag(UPARAM(meta=(Categories="Dk.WidgetStack")) FGameplayTag InWidgetStackTag);

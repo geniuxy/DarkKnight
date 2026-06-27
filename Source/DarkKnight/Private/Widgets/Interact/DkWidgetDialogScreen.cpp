@@ -42,7 +42,7 @@ void UDkWidgetDialogScreen::NativeOnActivated()
 {
 	Super::NativeOnActivated();
 
-	UDkUIFunctionLibrary::ToggleInputMode(this, EDkInputMode::UIOnly);
+	UDkUIFunctionLibrary::ToggleInputMode(this, EDkInputMode::UIOnly, false);
 }
 
 void UDkWidgetDialogScreen::NativeOnDeactivated()

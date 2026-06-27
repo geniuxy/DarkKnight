@@ -6,7 +6,7 @@
 #include "Characters/DkCharacterBase.h"
 #include "DkCharacterNPC.generated.h"
 
-class UDkDialogComponent;
+class UDkNPCDialogComponent;
 class UBoxComponent;
 
 UCLASS()
@@ -49,8 +49,8 @@ protected:
 	/**********************************************************************/
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	UDkDialogComponent* DialogComponent;
+	UDkNPCDialogComponent* NpcDialogComponent;
 
 public:
-	FORCEINLINE UDkDialogComponent* GetDialogComponent() const { return DialogComponent; }
+	FORCEINLINE UDkNPCDialogComponent* GetNpcDialogComponent() const { return NpcDialogComponent; }
 };

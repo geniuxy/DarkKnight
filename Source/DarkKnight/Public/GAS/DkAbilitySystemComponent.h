@@ -24,6 +24,7 @@ public:
 	void ServerSideInit();
 
 	void ApplyFullStatsEffect();
+	void ApplyDialogStatsEffect();
 
 	void AuthApplyGameplayEffect(TSubclassOf<UGameplayEffect> GameplayEffect, int Level = 1);
 

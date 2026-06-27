@@ -27,6 +27,9 @@ private:
 	TSubclassOf<UGameplayEffect> DeathEffect;
 
 	UPROPERTY(EditDefaultsOnly, Category="Gameplay Effects")
+	TSubclassOf<UGameplayEffect> DialogStatsEffect;
+
+	UPROPERTY(EditDefaultsOnly, Category="Gameplay Effects")
 	TSubclassOf<UGameplayEffect> DisableAimEffect;
 
 	UPROPERTY(EditDefaultsOnly, Category="Gameplay Effects")
@@ -49,6 +52,7 @@ private:
 
 public:
 	FORCEINLINE TSubclassOf<UGameplayEffect> GetFullStatsEffect() const { return FullStatsEffect; }
+	FORCEINLINE TSubclassOf<UGameplayEffect> GetDialogStatsEffect() const { return DialogStatsEffect; }
 	FORCEINLINE TSubclassOf<UGameplayEffect> GetDeathEffect() const { return DeathEffect; }
 	FORCEINLINE TSubclassOf<UGameplayEffect> GetDisableAimEffect() const { return DisableAimEffect; }
 	FORCEINLINE TArray<TSubclassOf<UGameplayAbility>> GetPassiveAbilities() const { return PassiveAbilities; }

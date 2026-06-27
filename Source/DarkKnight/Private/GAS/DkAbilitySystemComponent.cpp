@@ -41,6 +41,14 @@ void UDkAbilitySystemComponent::ApplyFullStatsEffect()
 	}
 }
 
+void UDkAbilitySystemComponent::ApplyDialogStatsEffect()
+{
+	if (AbilitySystemGenerics && AbilitySystemGenerics->GetDialogStatsEffect())
+	{
+		AuthApplyGameplayEffect(AbilitySystemGenerics->GetDialogStatsEffect());
+	}
+}
+
 void UDkAbilitySystemComponent::AuthApplyGameplayEffect(TSubclassOf<UGameplayEffect> GameplayEffect, int Level)
 {
 	if (GetOwner() && GetOwner()->HasAuthority())

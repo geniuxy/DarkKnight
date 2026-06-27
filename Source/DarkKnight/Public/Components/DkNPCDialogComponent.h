@@ -4,19 +4,20 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "DkDialogComponent.generated.h"
+#include "DkNPCDialogComponent.generated.h"
 
 
+class UGameplayEffect;
 class UDkWidgetDialogScreen;
 class ADkGamePlayerController;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class DARKKNIGHT_API UDkDialogComponent : public UActorComponent
+class DARKKNIGHT_API UDkNPCDialogComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:
-	UDkDialogComponent();
+	UDkNPCDialogComponent();
 
 	bool CanStartDialog();
 	void TryStartDialog(ADkGamePlayerController* PC);
@@ -33,6 +34,9 @@ private:
 
 	UPROPERTY(EditAnywhere, Category="Dialog Details")
 	int NPCId = 0;
+	
+	UPROPERTY(EditAnywhere, Category="Dialog Details")
+	UGameplayEffect* DialogStatsEffect;
 
 	UPROPERTY()
 	TObjectPtr<UDkWidgetDialogScreen> CachedDialogScreen;

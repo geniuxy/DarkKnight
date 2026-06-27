@@ -10,6 +10,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/DkEquipmentComponent.h"
 #include "Components/DkInventoryComponent.h"
+#include "Components/DkPlayerDialogComponent.h"
 #include "DataAssets/CharacterInfo.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -37,6 +38,7 @@ ADkCharacterHero::ADkCharacterHero()
 
 	InventoryComponent = CreateDefaultSubobject<UDkInventoryComponent>(TEXT("DkInventoryComponent"));
 	EquipmentComponent = CreateDefaultSubobject<UDkEquipmentComponent>(TEXT("DkEquipmentComponent"));
+	PlayerDialogComponent = CreateDefaultSubobject<UDkPlayerDialogComponent>(TEXT("DkPlayerDialogComponent"));
 
 	LandedDelegate.AddDynamic(this, &ThisClass::HandleOnLanded);
 

@@ -11,12 +11,13 @@
 #include "Characters/DkCharacterHero.h"
 #include "Characters/NPC/DkCharacterNPC.h"
 #include "Components/DkActionComponent.h"
-#include "Components/DkDialogComponent.h"
+#include "Components/DkNPCDialogComponent.h"
 #include "Components/DkEnhancedInputComponent.h"
 #include "Components/DkInventoryComponent.h"
 #include "Components/DkItemComponent.h"
 #include "DarkKnight/DarkKnight.h"
 #include "FunctionLibrarys/DkUIFunctionLibrary.h"
+#include "GAS/DkAbilitySystemComponent.h"
 #include "Interfaces/HighlightInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "Subsytems/DkInventorySubsystem.h"
@@ -95,6 +96,7 @@ void ADkGamePlayerController::OnPossess(APawn* NewPawn)
 	{
 		OwningPlayerCharacter->ServerSideInit();
 		OwningPlayerCharacter->SetGenericTeamId(TeamID);
+		OwningASC = Cast<UDkAbilitySystemComponent>(OwningPlayerCharacter->GetAbilitySystemComponent());
 	}
 
 	RefreshInventoryComponent();
@@ -108,6 +110,7 @@ void ADkGamePlayerController::AcknowledgePossession(APawn* NewPawn)
 	if (OwningPlayerCharacter)
 	{
 		OwningPlayerCharacter->ClientSideInit();
+		OwningASC = Cast<UDkAbilitySystemComponent>(OwningPlayerCharacter->GetAbilitySystemComponent());
 	}
 
 	RefreshInventoryComponent();
@@ -230,14 +233,16 @@ void ADkGamePlayerController::OnInteract()
 			return;
 		}
 	}
-	if (IsValid(GetInteractiveNPC()) && IsValid(GetInteractiveNPC()->GetDialogComponent()))
+	if (IsValid(GetInteractiveNPC()) && IsValid(GetInteractiveNPC()->GetNpcDialogComponent()))
 	{
-		UDkDialogComponent* DialogComponent = GetInteractiveNPC()->GetDialogComponent();
+		UDkNPCDialogComponent* DialogComponent = GetInteractiveNPC()->GetNpcDialogComponent();
 		if (DialogComponent->CanStartDialog())
 		{
 			ClientSetCameraFade(true, FColor(ForceInit), FVector2D(0.f, 1.f), 0.5f, false, true);
 
 			HideLowerWidgetStack(DkGameplayTags::Dk_WidgetStack_Interact);
+
+			OwningASC->ApplyDialogStatsEffect();
 			
 			FTimerHandle CameraFadeHandle;
 			GetWorldTimerManager().SetTimer(CameraFadeHandle, FTimerDelegate::CreateLambda([this]()

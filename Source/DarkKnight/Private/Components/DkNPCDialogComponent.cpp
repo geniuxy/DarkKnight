@@ -1,7 +1,7 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Components/DkDialogComponent.h"
+#include "Components/DkNPCDialogComponent.h"
 
 #include "DkGameplayTags.h"
 #include "Controllers/DkGamePlayerController.h"
@@ -11,19 +11,19 @@
 #include "Widgets/Interact/DkWidgetDialogScreen.h"
 
 
-UDkDialogComponent::UDkDialogComponent()
+UDkNPCDialogComponent::UDkNPCDialogComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
 
 }
 
-bool UDkDialogComponent::CanStartDialog()
+bool UDkNPCDialogComponent::CanStartDialog()
 {
 	if (NPCId == 0 || DialogId == 0) return false;
 	return true;
 }
 
-void UDkDialogComponent::TryStartDialog(ADkGamePlayerController* PC)
+void UDkNPCDialogComponent::TryStartDialog(ADkGamePlayerController* PC)
 {
 	UDkUISubsystem* UISubsystem = UDkUISubsystem::Get(this);
 	checkf(UISubsystem, TEXT("UISubsystem为空！"));
@@ -48,7 +48,7 @@ void UDkDialogComponent::TryStartDialog(ADkGamePlayerController* PC)
 	);
 }
 
-void UDkDialogComponent::BeginPlay()
+void UDkNPCDialogComponent::BeginPlay()
 {
 	Super::BeginPlay();
 }

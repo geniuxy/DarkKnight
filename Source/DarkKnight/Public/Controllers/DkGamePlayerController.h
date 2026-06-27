@@ -8,6 +8,7 @@
 #include "Interfaces/LoadingScreenInterface.h"
 #include "DkGamePlayerController.generated.h"
 
+class UDkAbilitySystemComponent;
 struct FGameplayTag;
 class ADkCharacterNPC;
 class ADkCharacterBase;
@@ -50,6 +51,9 @@ protected:
 protected:
 	UPROPERTY()
 	TObjectPtr<ADkCharacterBase> OwningPlayerCharacter;
+
+	UPROPERTY()
+	TObjectPtr<UDkAbilitySystemComponent> OwningASC;
 
 	FGenericTeamId TeamID;
 

@@ -401,7 +401,7 @@ struct FDialogContent : public FTableRowBase
 	EDialogContentType ContentType;
 
 	UPROPERTY(EditAnywhere)
-	TMap<int, FDialogNPCDetail> BranchContents;
+	TMap<int, FDialogBranchInfo> BranchContents;
 
 	UPROPERTY(EditAnywhere)
 	FText ContentText;

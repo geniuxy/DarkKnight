@@ -17,6 +17,7 @@ namespace DkGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Stats_Sprint, "Dk.Stats.Sprint");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Stats_CanAttack, "Dk.Stats.CanAttack");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Stats_InCombat, "Dk.Stats.InCombat");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Stats_InDialog, "Dk.Stats.InDialog");
 
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Stats_LockingTarget, "Dk.Stats.LockingTarget");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Stats_Crosshair_LockTarget, "Dk.Stats.Crosshair.LockTarget");

@@ -6,6 +6,7 @@
 #include "DkCharacterBase.h"
 #include "DkCharacterHero.generated.h"
 
+class UDkPlayerDialogComponent;
 struct FInputActionValue;
 class UInputMappingContext;
 class UInputAction;
@@ -100,10 +101,10 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category="View")
 	float CameraBoomLockingArmLength = 500.f;
-	
+
 	UPROPERTY(EditDefaultsOnly, Category="View")
 	float CameraBoomDefaultArmLength = 200.f;
-	
+
 	UPROPERTY(EditDefaultsOnly, Category="View")
 	float CameraLerpSpeed = 20.f;
 
@@ -124,7 +125,7 @@ private:
 
 	UPROPERTY()
 	float PendingCameraBoomLength;
-	
+
 	void LerpCameraToLocalOffsetLocation(const FVector& Goal);
 	void LerpCameraBoomToTargetLength(float InLength);
 	void TickCameraLocalOffsetLerp();
@@ -137,9 +138,19 @@ private:
 	/**********************************************************************/
 public:
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
-	
+
 private:
 	void HandleAbilityInput(const FInputActionValue& InputActionValue, EAbilityInputID InputID);
 
 	void SetInputEnabledFromPlayerController(bool bEnabled);
+
+	/**********************************************************************/
+	/*                             Dialog                                 */
+	/**********************************************************************/
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UDkPlayerDialogComponent* PlayerDialogComponent;
+
+public:
+	FORCEINLINE UDkPlayerDialogComponent* GetPlayerDialogComponent() const { return PlayerDialogComponent; }
 };

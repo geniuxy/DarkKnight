@@ -351,7 +351,7 @@ struct FHeroBaseStats : public FTableRowBase
 /**********************************************************************/
 
 USTRUCT(BlueprintType)
-struct FDialogNPCDetail : public FTableRowBase
+struct FDialogNPCDetail
 {
 	GENERATED_BODY()
 
@@ -366,21 +366,21 @@ struct FDialogNPCDetail : public FTableRowBase
 };
 
 USTRUCT(BlueprintType)
-struct FDialogBranchInfo : public FTableRowBase
+struct FDialogBranchInfo
 {
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere)
 	FText BranchText;
 
-	UPROPERTY(EditAnywhere)
-	FGameplayTag BranchTag; // 用Tag标识这个Branch
+	UPROPERTY(EditAnywhere, meta=(Categories = "Dk.Dialog.Branch"))
+	FGameplayTag AddDialogTag; // 用Tag标识这个Branch
 	
 	UPROPERTY(EditAnywhere)
 	FGameplayTag Precondition; // 前置分支Tag标识
 
 	UPROPERTY(EditAnywhere)
-	FString TriggerEvent; // 触发事件
+	FString TriggerEvent; // 触发事件(这个暂时不知道咋用)
 
 	UPROPERTY(EditAnywhere)
 	int JumpToContentId; // 下一步跳转对话Id

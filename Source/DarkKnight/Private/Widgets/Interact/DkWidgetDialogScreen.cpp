@@ -87,6 +87,7 @@ void UDkWidgetDialogScreen::UpdateDialogContent()
 
 	SelectionList->ClearChildren();
 	bCanClickToNextDialog = CurDialogContent.ContentType == EDialogContentType::Base;
+	DialogConfirmButton->SetVisibility(bCanClickToNextDialog ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
 	if (CurDialogContent.ContentType == EDialogContentType::Branch)
 	{
 		for (TTuple<int, FDialogBranchInfo> BranchContentPair : CurDialogContent.BranchContents)
@@ -97,11 +98,17 @@ void UDkWidgetDialogScreen::UpdateDialogContent()
 					OwnerDialogComponent->FindDialogGameplayTag(BranchContentPair.Value.Precondition);
 				if (!bFinishPrecondition) continue;
 			}
+			checkf(IsValid(DialogSelectionButtonClass), TEXT("DialogSelectionButtonClass没有配置"));
 
 			UDkUIDialogSelectionButton* DialogSelectionButton = CreateWidget<UDkUIDialogSelectionButton>(
 				this, DialogSelectionButtonClass
 			);
+			if (IsValid(OwnerDialogComponent))
+			{
+				DialogSelectionButton->ConfigureDialogSelectionButton(BranchContentPair.Value, OwnerDialogComponent);
+			}
 			SelectionList->AddChild(DialogSelectionButton);
+			DialogSelectionButton->OnSelectionButtonClicked.AddUObject(this, &ThisClass::JumpToBranchNextDialog);
 		}
 	}
 }
@@ -133,4 +140,17 @@ void UDkWidgetDialogScreen::EndDialog()
 	}
 	CachedAudioComponent->StopDelayed(0.5f);
 	DeactivateWidget();
+}
+
+void UDkWidgetDialogScreen::JumpToBranchNextDialog(int InDialogId)
+{
+	CurDialogId = InDialogId;
+	if (CurDialogId == 0)
+	{
+		EndDialog();
+		return;
+	}
+
+	CurDialogContent = GetDialogInfoById(CurDialogId);
+	UpdateDialogContent();
 }

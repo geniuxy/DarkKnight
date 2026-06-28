@@ -27,12 +27,12 @@ public:
 	/**********************************************************************/
 	/*                              Dialog                                */
 	/**********************************************************************/
-		
+public:
+	void InitializeDialogContent();
+
 private:
 	UPROPERTY(Transient)
 	TMap<int, FDialogContent> CachedDialogContentMap;
-
-	void InitializeDialogContent();
 
 public:
 	FORCEINLINE TMap<int, FDialogContent> GetDialogContentInfo() const { return CachedDialogContentMap; }

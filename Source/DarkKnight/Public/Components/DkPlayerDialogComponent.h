@@ -17,6 +17,7 @@ public:
 	UDkPlayerDialogComponent();
 
 	bool FindDialogGameplayTag(FGameplayTag InTag);
+	void AddDialogTag(FGameplayTag InTag);
 
 private:
 	FGameplayTagContainer CachedDialogTags;

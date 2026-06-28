@@ -39,7 +39,10 @@ void UDkUICommonButtonBase::NativePreConstruct()
 {
 	Super::NativePreConstruct();
 
-	SetButtonText(ButtonDisplayText, ButtonDisplayTextJustification);
+	if (!ButtonDisplayText.IsEmpty())
+	{
+		SetButtonText(ButtonDisplayText, ButtonDisplayTextJustification);
+	}
 }
 
 void UDkUICommonButtonBase::NativeOnCurrentTextStyleChanged()

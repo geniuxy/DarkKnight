@@ -72,4 +72,5 @@ private:
 	FDialogContent GetDialogInfoById(int InDialogId);
 	int GetNextDialogId();
 	void EndDialog();
+	void JumpToBranchNextDialog(int InDialogId);
 };

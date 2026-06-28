@@ -105,6 +105,7 @@ private:
 	/*                         Interact With NPC                          */
 	/**********************************************************************/
 public:
+	void TryStartDialog();
 	void EndDialog();
 
 private:

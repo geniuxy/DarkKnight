@@ -16,12 +16,11 @@ UDkDataSubsystem* UDkDataSubsystem::Get()
 void UDkDataSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
-
-	InitializeDialogContent();
 }
 
 void UDkDataSubsystem::InitializeDialogContent()
 {
+	CachedDialogContentMap.Empty();
 	const UDkDataDeveloperSetting* DataDeveloperSettings = GetDefault<UDkDataDeveloperSetting>();
 	if (UDataTable* DialogContentDataTable = DataDeveloperSettings->GetDialogContentDataTable())
 	{

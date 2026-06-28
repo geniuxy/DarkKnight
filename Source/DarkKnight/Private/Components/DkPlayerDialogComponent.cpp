@@ -16,3 +16,8 @@ bool UDkPlayerDialogComponent::FindDialogGameplayTag(FGameplayTag InTag)
 	return CachedDialogTags.HasTagExact(InTag);
 }
 
+void UDkPlayerDialogComponent::AddDialogTag(FGameplayTag InTag)
+{
+	CachedDialogTags.AddTag(InTag);
+}
+

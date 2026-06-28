@@ -7,6 +7,7 @@
 #include "Widgets/DkWidgetActivatableBase.h"
 #include "DkWidgetDialogScreen.generated.h"
 
+class UDkNpcDialogComponent;
 class UDkUICommonButtonImage;
 class ADkGamePlayerController;
 class UDkUIDialogSelectionButton;
@@ -24,7 +25,7 @@ class DARKKNIGHT_API UDkWidgetDialogScreen : public UDkWidgetActivatableBase
 	GENERATED_BODY()
 
 public:
-	void BeginDialog(int InStartDialogId);
+	void BeginDialog(int InStartDialogId, UDkNpcDialogComponent* InNpcDialogComponent);
 
 protected:
 	//~Begin UUserWidget Function
@@ -56,6 +57,9 @@ private:
 	
 	UPROPERTY()
 	TObjectPtr<UDkPlayerDialogComponent> OwnerDialogComponent;
+
+	UPROPERTY()
+	TObjectPtr<UDkNpcDialogComponent> NpcDialogComponent; // 当前对话的主Npc的DialogComponent
 
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> CachedAudioComponent;

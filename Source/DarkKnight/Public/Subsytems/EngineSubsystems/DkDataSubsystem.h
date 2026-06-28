@@ -11,6 +11,7 @@
  * UEngineSubsystem相比UGameInstanceSubsystem的好处：
  * 1. UEngineSubsystem 没有 World 依赖，CDO 上也能正常访问。
  * 2. 目前我只存放静态的数据
+ * 缺点是：编辑器里修改了，必须重启一下才能测试到修改内容。(Initialize只在编辑器启动的时候执行一次！)
  */
 UCLASS()
 class DARKKNIGHT_API UDkDataSubsystem : public UEngineSubsystem
@@ -36,4 +37,19 @@ private:
 
 public:
 	FORCEINLINE TMap<int, FDialogContent> GetDialogContentInfo() const { return CachedDialogContentMap; }
+
+	/**********************************************************************/
+	/*                                Npc                                 */
+	/**********************************************************************/
+public:
+	void InitializeNpcInfo();
+
+	void UpdateNpcInfo(int InNpcId, AActor* InNpcActor);
+
+private:
+	UPROPERTY(Transient)
+	TMap<int, FNpcInfo> CachedNpcInfoMap;
+
+public:
+	FORCEINLINE TMap<int, FNpcInfo> GetNpcInfo() const { return CachedNpcInfoMap; }
 };

@@ -61,5 +61,6 @@ void UDkUIDialogSelectionButton::NativeOnUnhovered()
 bool UDkUIDialogSelectionButton::HasFinishedBranch()
 {
 	if (!CurBranchInfo.AddDialogTag.IsValid()) return false;
-	return OwnerDialogComponent && OwnerDialogComponent->FindDialogGameplayTag(CurBranchInfo.AddDialogTag);
+	return OwnerDialogComponent &&
+		OwnerDialogComponent->FindDialogGameplayTag(FGameplayTagContainer(CurBranchInfo.AddDialogTag));
 }

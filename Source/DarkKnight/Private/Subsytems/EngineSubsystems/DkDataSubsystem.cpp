@@ -3,7 +3,7 @@
 
 #include "Subsytems/EngineSubsystems/DkDataSubsystem.h"
 
-#include "Subsytems/DeveloperSettings/DkDataDeveloperSetting.h"
+#include "Settings/DeveloperSettings/DkDataDeveloperSetting.h"
 
 UDkDataSubsystem* UDkDataSubsystem::Get()
 {
@@ -16,6 +16,9 @@ UDkDataSubsystem* UDkDataSubsystem::Get()
 void UDkDataSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
+	
+	InitializeDialogContent();
+	InitializeNpcInfo();
 }
 
 void UDkDataSubsystem::InitializeDialogContent()
@@ -33,6 +36,35 @@ void UDkDataSubsystem::InitializeDialogContent()
 			{
 				CachedDialogContentMap.Add(ContentInfo->Id, *ContentInfo);
 			}
+		}
+	}
+}
+
+void UDkDataSubsystem::InitializeNpcInfo()
+{
+	CachedNpcInfoMap.Empty();
+	const UDkDataDeveloperSetting* DataDeveloperSettings = GetDefault<UDkDataDeveloperSetting>();
+	if (UDataTable* NpcInfoDataTable = DataDeveloperSettings->GetNpcInfoDataTable())
+	{
+		for (FName RowName : NpcInfoDataTable->GetRowNames())
+		{
+			FNpcInfo* NpcInfo = NpcInfoDataTable->FindRow<FNpcInfo>(RowName, TEXT("没找到RowName对应的Row"));
+			if (!CachedNpcInfoMap.Contains(NpcInfo->NpcId))
+			{
+				CachedNpcInfoMap.Add(NpcInfo->NpcId, *NpcInfo);
+			}
+		}
+	}
+}
+
+void UDkDataSubsystem::UpdateNpcInfo(int InNpcId, AActor* InNpcActor)
+{
+	for (TTuple<int, FNpcInfo>& NpcInfoPair : CachedNpcInfoMap)
+	{
+		if (NpcInfoPair.Key == InNpcId)
+		{
+			NpcInfoPair.Value.NpcActor = InNpcActor;
+			break;
 		}
 	}
 }

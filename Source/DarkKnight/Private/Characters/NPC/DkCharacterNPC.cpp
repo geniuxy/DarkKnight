@@ -5,7 +5,7 @@
 
 #include "Characters/DkCharacterHero.h"
 #include "Components/BoxComponent.h"
-#include "Components/DkNPCDialogComponent.h"
+#include "Components/DkNpcDialogComponent.h"
 #include "Controllers/DkGamePlayerController.h"
 #include "FunctionLibrarys/DkAbilitySystemFunctionLibrary.h"
 #include "Widgets/Interact/DkWidgetInteractScreen.h"
@@ -20,7 +20,7 @@ ADkCharacterNPC::ADkCharacterNPC()
 	BoxComponent->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::HandleBoxOverlapped);
 	BoxComponent->OnComponentEndOverlap.AddDynamic(this, &ThisClass::HandleBoxEndOverlap);
 
-	NpcDialogComponent = CreateDefaultSubobject<UDkNPCDialogComponent>(TEXT("NpcDialogComponent"));
+	NpcDialogComponent = CreateDefaultSubobject<UDkNpcDialogComponent>(TEXT("NpcDialogComponent"));
 }
 
 void ADkCharacterNPC::BeginPlay()

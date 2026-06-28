@@ -71,8 +71,8 @@ void UDkActionComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	ADkCharacterHero* Hero = CastChecked<ADkCharacterHero>(UGameplayStatics::GetPlayerPawn(this, 0));
-	if (!IsValid(Hero)) return;
+	// ADkCharacterHero* Hero = CastChecked<ADkCharacterHero>(UGameplayStatics::GetPlayerPawn(this, 0));
+	// if (!IsValid(Hero)) return;
 
 	
 }

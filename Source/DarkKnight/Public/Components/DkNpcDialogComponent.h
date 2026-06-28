@@ -4,23 +4,28 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "DkNPCDialogComponent.generated.h"
+#include "DkNpcDialogComponent.generated.h"
 
 
+struct FDialogNpcDetail;
 class UGameplayEffect;
 class UDkWidgetDialogScreen;
 class ADkGamePlayerController;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class DARKKNIGHT_API UDkNPCDialogComponent : public UActorComponent
+class DARKKNIGHT_API UDkNpcDialogComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:
-	UDkNPCDialogComponent();
+	UDkNpcDialogComponent();
 
 	bool CanStartDialog();
 	void TryStartDialog(ADkGamePlayerController* PC);
+
+	void CacheNpcTransform(TMap<int, FDialogNpcDetail> InNpcInfos);
+	void UpdateNpcTransform(TMap<int, FDialogNpcDetail> InNpcInfos);
+	void ResetNpcTransform();
 
 protected:
 	virtual void BeginPlay() override;
@@ -33,13 +38,19 @@ private:
 	int StartDialogId = 0;
 
 	UPROPERTY(EditAnywhere, Category="Dialog Details")
-	int NPCId = 0;
+	int NpcId = 0;
 	
 	UPROPERTY(EditAnywhere, Category="Dialog Details")
 	UGameplayEffect* DialogStatsEffect;
 
+	UPROPERTY(EditAnywhere, Category="Dialog Details")
+	float RelativeDistance = 250.f;
+
 	UPROPERTY()
 	TObjectPtr<UDkWidgetDialogScreen> CachedDialogScreen;
+
+	UPROPERTY()
+	TMap<int, FTransform> CachedNpcTransforms;
 
 public:
 	FORCEINLINE FString GetInteractMessage() const { return InteractMessage; }

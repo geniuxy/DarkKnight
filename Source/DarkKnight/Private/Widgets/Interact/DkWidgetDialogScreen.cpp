@@ -7,6 +7,7 @@
 #include "DarkKnightDebugHelper.h"
 #include "Characters/DkCharacterHero.h"
 #include "Components/AudioComponent.h"
+#include "Components/DkNpcDialogComponent.h"
 #include "Components/DkPlayerDialogComponent.h"
 #include "Components/VerticalBox.h"
 #include "Controllers/DkGamePlayerController.h"
@@ -17,10 +18,16 @@
 #include "Widgets/Components/Buttons/DkUICommonButtonImage.h"
 #include "Widgets/Components/Buttons/Dialog/DkUIDialogSelectionButton.h"
 
-void UDkWidgetDialogScreen::BeginDialog(int InStartDialogId)
+void UDkWidgetDialogScreen::BeginDialog(int InStartDialogId, UDkNpcDialogComponent* InNpcDialogComponent)
 {
 	CurDialogId = InStartDialogId;
 	CurDialogContent = GetDialogInfoById(InStartDialogId);
+	NpcDialogComponent = InNpcDialogComponent;
+	if (NpcDialogComponent)
+	{
+		NpcDialogComponent->CacheNpcTransform(CurDialogContent.NPCInfos);
+	}
+
 	UpdateDialogContent();
 }
 
@@ -70,8 +77,13 @@ void UDkWidgetDialogScreen::UpdateDialogContent()
 {
 	if (CurDialogContent.Id == 0) return;
 
-	// 更改NPC位置和镜头等
+	// 围绕主Npc, 更改NPC位置和镜头等
+	if (NpcDialogComponent && !CurDialogContent.NPCInfos.IsEmpty())
+	{
+		NpcDialogComponent->UpdateNpcTransform(CurDialogContent.NPCInfos);
+	}
 
+	// 显示对话内容
 	DialogContentText->SetText(CurDialogContent.ContentText);
 
 	// 播放配音
@@ -85,17 +97,20 @@ void UDkWidgetDialogScreen::UpdateDialogContent()
 		CachedAudioComponent->Play();
 	}
 
-	SelectionList->ClearChildren();
+	// 下一个对话点击按钮是否可点击
 	bCanClickToNextDialog = CurDialogContent.ContentType == EDialogContentType::Base;
 	DialogConfirmButton->SetVisibility(bCanClickToNextDialog ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
+	
+	// 显示分支(如果有的话)
+	SelectionList->ClearChildren();
 	if (CurDialogContent.ContentType == EDialogContentType::Branch)
 	{
 		for (TTuple<int, FDialogBranchInfo> BranchContentPair : CurDialogContent.BranchContents)
 		{
-			if (BranchContentPair.Value.Precondition.IsValid() && IsValid(OwnerDialogComponent))
+			if (BranchContentPair.Value.Preconditions.IsValid() && IsValid(OwnerDialogComponent))
 			{
 				bool bFinishPrecondition =
-					OwnerDialogComponent->FindDialogGameplayTag(BranchContentPair.Value.Precondition);
+					OwnerDialogComponent->FindDialogGameplayTag(BranchContentPair.Value.Preconditions);
 				if (!bFinishPrecondition) continue;
 			}
 			checkf(IsValid(DialogSelectionButtonClass), TEXT("DialogSelectionButtonClass没有配置"));
@@ -139,7 +154,16 @@ void UDkWidgetDialogScreen::EndDialog()
 		OwnerPC->EndDialog();
 	}
 	CachedAudioComponent->StopDelayed(0.5f);
-	DeactivateWidget();
+
+	FTimerHandle DeactivateHandle;
+	GetWorld()->GetTimerManager().SetTimer(DeactivateHandle, FTimerDelegate::CreateLambda([this]()
+	{
+		DeactivateWidget();
+		if (NpcDialogComponent)
+		{
+			NpcDialogComponent->ResetNpcTransform();
+		}
+	}), 0.5f, false);
 }
 
 void UDkWidgetDialogScreen::JumpToBranchNextDialog(int InDialogId)

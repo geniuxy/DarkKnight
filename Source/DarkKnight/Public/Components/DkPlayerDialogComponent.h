@@ -8,6 +8,8 @@
 #include "DkPlayerDialogComponent.generated.h"
 
 
+struct FDialogNpcDetail;
+
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class DARKKNIGHT_API UDkPlayerDialogComponent : public UActorComponent
 {
@@ -16,8 +18,11 @@ class DARKKNIGHT_API UDkPlayerDialogComponent : public UActorComponent
 public:
 	UDkPlayerDialogComponent();
 
-	bool FindDialogGameplayTag(FGameplayTag InTag);
+	bool FindDialogGameplayTag(FGameplayTagContainer InTags);
 	void AddDialogTag(FGameplayTag InTag);
+
+protected:
+	virtual void BeginPlay() override;
 
 private:
 	FGameplayTagContainer CachedDialogTags;

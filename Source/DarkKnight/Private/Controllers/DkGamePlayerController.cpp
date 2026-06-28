@@ -11,7 +11,7 @@
 #include "Characters/DkCharacterHero.h"
 #include "Characters/NPC/DkCharacterNPC.h"
 #include "Components/DkActionComponent.h"
-#include "Components/DkNPCDialogComponent.h"
+#include "Components/DkNpcDialogComponent.h"
 #include "Components/DkEnhancedInputComponent.h"
 #include "Components/DkInventoryComponent.h"
 #include "Components/DkItemComponent.h"
@@ -22,11 +22,9 @@
 #include "Kismet/GameplayStatics.h"
 #include "Subsytems/DkInventorySubsystem.h"
 #include "Subsytems/DkUISubsystem.h"
-#include "Subsytems/EngineSubsystems/DkDataSubsystem.h"
 #include "Widgets/CommonActivatableWidgetContainer.h"
 #include "Widgets/DkWidgetPrimaryLayout.h"
 #include "Widgets/Interact/DkWidgetInteractScreen.h"
-#include "Widgets/Interact/DkWidgetPickUpBox.h"
 
 ADkGamePlayerController::ADkGamePlayerController()
 {
@@ -81,8 +79,6 @@ void ADkGamePlayerController::OnLoadingScreenDeactivated_Implementation()
 			}
 		}
 	);
-
-	UDkDataSubsystem::Get()->InitializeDialogContent();
 }
 
 void ADkGamePlayerController::BeginPlay()
@@ -345,33 +341,33 @@ void ADkGamePlayerController::RefreshInventoryComponent()
 void ADkGamePlayerController::TryStartDialog()
 {
 	if (!IsValid(GetInteractiveNPC())) return;
-	UDkNPCDialogComponent* DialogComponent = GetInteractiveNPC()->GetNpcDialogComponent();
+	UDkNpcDialogComponent* DialogComponent = GetInteractiveNPC()->GetNpcDialogComponent();
 	if (!IsValid(DialogComponent)) return;
 	if (!DialogComponent->CanStartDialog()) return;
 	
-	ClientSetCameraFade(true, FColor(ForceInit), FVector2D(0.f, 1.f), 0.5f, false, true);
+	ClientSetCameraFade(true, FColor(ForceInit), FVector2D(0.f, 1.f), 1.f, false, true);
 	UDkUIFunctionLibrary::ToggleInputMode(this, EDkInputMode::UIOnly);
 
 	SetLowerWidgetStackVisibility(DkGameplayTags::Dk_WidgetStack_Interact, false);
 
 	OwningASC->ApplyDialogStatsEffect();
 		
+	FTimerHandle StartDialogHandle;
+	GetWorldTimerManager().SetTimer(StartDialogHandle, FTimerDelegate::CreateLambda([=, this]()
+	{
+		DialogComponent->TryStartDialog(this);
+	}), 0.5f, false);
+	
 	FTimerHandle CameraFadeHandle;
 	GetWorldTimerManager().SetTimer(CameraFadeHandle, FTimerDelegate::CreateLambda([this]()
 	{
 		ClientSetCameraFade(true, FColor(ForceInit), FVector2D(1.f, 0.f), 0.5f);
 	}), 0.5f, false);
-
-	FTimerHandle StartDialogHandle;
-	GetWorldTimerManager().SetTimer(StartDialogHandle, FTimerDelegate::CreateLambda([=, this]()
-	{
-		DialogComponent->TryStartDialog(this);
-	}), 1.f, false);
 }
 
 void ADkGamePlayerController::EndDialog()
 {
-	ClientSetCameraFade(true, FColor(ForceInit), FVector2D(0.f, 1.f), 0.5f, false, true);
+	ClientSetCameraFade(true, FColor(ForceInit), FVector2D(0.f, 1.f), 1.f, false, true);
 
 	SetLowerWidgetStackVisibility(DkGameplayTags::Dk_WidgetStack_Interact, true);
 

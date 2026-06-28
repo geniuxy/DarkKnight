@@ -351,12 +351,27 @@ struct FHeroBaseStats : public FTableRowBase
 /**********************************************************************/
 
 USTRUCT(BlueprintType)
-struct FDialogNPCDetail
+struct FNpcInfo : public FTableRowBase
 {
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere)
-	FTransform Transform;
+	int NpcId;
+
+	UPROPERTY(EditAnywhere)
+	FText NpcName;
+	
+	UPROPERTY(VisibleAnywhere)
+	AActor* NpcActor = nullptr;
+};
+
+USTRUCT(BlueprintType)
+struct FDialogNpcDetail
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere)
+	FTransform Transform; // 如果MoveType=ENpcMoveType::Teleport的话，移动到的位置
 
 	UPROPERTY(EditAnywhere)
 	UAnimMontage* TalkMontage;
@@ -376,8 +391,8 @@ struct FDialogBranchInfo
 	UPROPERTY(EditAnywhere, meta=(Categories = "Dk.Dialog.Branch"))
 	FGameplayTag AddDialogTag; // 用Tag标识这个Branch
 	
-	UPROPERTY(EditAnywhere)
-	FGameplayTag Precondition; // 前置分支Tag标识
+	UPROPERTY(EditAnywhere, meta=(Categories = "Dk.Dialog.Branch"))
+	FGameplayTagContainer Preconditions; // 前置分支Tag标识
 
 	UPROPERTY(EditAnywhere)
 	FString TriggerEvent; // 触发事件(这个暂时不知道咋用)
@@ -395,7 +410,7 @@ struct FDialogContent : public FTableRowBase
 	int Id;
 
 	UPROPERTY(EditAnywhere)
-	TMap<int, FDialogNPCDetail> NPCInfos;
+	TMap<int, FDialogNpcDetail> NPCInfos;
 
 	UPROPERTY(EditAnywhere)
 	EDialogContentType ContentType;

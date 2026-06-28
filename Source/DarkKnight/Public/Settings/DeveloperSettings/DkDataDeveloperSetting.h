@@ -18,7 +18,7 @@ class DARKKNIGHT_API UDkDataDeveloperSetting : public UDeveloperSettings
 	/*                              Dialog                                */
 	/**********************************************************************/
 public:
-	UPROPERTY(Config, EditAnywhere, Category = "GAS")
+	UPROPERTY(Config, EditAnywhere, Category = "Dialog")
 	TSoftObjectPtr<UDataTable> DialogContentDataTable;
 
 	// 获取加载后的 DataTable
@@ -27,4 +27,18 @@ public:
 private:
 	UPROPERTY(Transient)
 	mutable TWeakObjectPtr<UDataTable> CachedDialogContentDataTable;
+
+	/**********************************************************************/
+	/*                               Npc                                  */
+	/**********************************************************************/
+public:
+	UPROPERTY(Config, EditAnywhere, Category = "Npc")
+	TSoftObjectPtr<UDataTable> NpcInfoDataTable;
+
+	// 获取加载后的 DataTable
+	UDataTable* GetNpcInfoDataTable() const;
+
+private:
+	UPROPERTY(Transient)
+	mutable TWeakObjectPtr<UDataTable> CachedNpcInfoDataTable;
 };

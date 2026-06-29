@@ -368,9 +368,7 @@ void ADkGamePlayerController::TryStartDialog()
 void ADkGamePlayerController::EndDialog()
 {
 	ClientSetCameraFade(true, FColor(ForceInit), FVector2D(0.f, 1.f), 1.f, false, true);
-
-	SetLowerWidgetStackVisibility(DkGameplayTags::Dk_WidgetStack_Interact, true);
-
+	
 	OwningASC->RemoveActiveEffectsWithGrantedTags(
 		FGameplayTagContainer(DkGameplayTags::Dk_Stats_InDialog)
 	);
@@ -378,6 +376,7 @@ void ADkGamePlayerController::EndDialog()
 	FTimerHandle CameraFadeHandle;
 	GetWorldTimerManager().SetTimer(CameraFadeHandle, FTimerDelegate::CreateLambda([this]()
 	{
+		SetLowerWidgetStackVisibility(DkGameplayTags::Dk_WidgetStack_Interact, true);
 		ClientSetCameraFade(true, FColor(ForceInit), FVector2D(1.f, 0.f), 0.5f);
 		UDkUIFunctionLibrary::ToggleInputMode(this, EDkInputMode::GameOnly);
 	}), 0.5f, false);

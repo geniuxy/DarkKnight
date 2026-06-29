@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
 #include "Components/ActorComponent.h"
+#include "Widgets/Interact/DkWidgetDialogScreen.h"
 #include "DkPlayerDialogComponent.generated.h"
 
 
@@ -20,10 +21,24 @@ public:
 
 	bool FindDialogGameplayTag(FGameplayTagContainer InTags);
 	void AddDialogTag(FGameplayTag InTag);
+	void UpdateCameraFocus(int CameraFocusNpcId, EDialogCameraType CameraType, const FTransform& CustomCameraTransform);
+	void UseCustomCameraTransform(const FTransform& CustomCameraTransform);
 
 protected:
 	virtual void BeginPlay() override;
 
 private:
 	FGameplayTagContainer CachedDialogTags;
+
+	UPROPERTY()
+	APlayerController* OwnerPC;
+
+	UPROPERTY()
+	ADkCharacterHero* CachedOwner;
+
+	UPROPERTY()
+	ACameraActor* CachedCameraActor;
+
+	UPROPERTY(EditDefaultsOnly, Category="Camera")
+	TMap<EDialogCameraType, FTransform> DialogCameraTransformMap;
 };

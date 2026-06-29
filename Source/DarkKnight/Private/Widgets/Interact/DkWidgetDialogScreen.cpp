@@ -77,10 +77,17 @@ void UDkWidgetDialogScreen::UpdateDialogContent()
 {
 	if (CurDialogContent.Id == 0) return;
 
-	// 围绕主Npc, 更改NPC位置和镜头等
+	// 围绕主Npc, 更改NPC位置
 	if (NpcDialogComponent && !CurDialogContent.NPCInfos.IsEmpty())
 	{
 		NpcDialogComponent->UpdateNpcTransform(CurDialogContent.NPCInfos);
+	}
+	// 更改NPC镜头
+	if (OwnerDialogComponent)
+	{
+		OwnerDialogComponent->UpdateCameraFocus(
+			CurDialogContent.CameraFocusNpcId, CurDialogContent.CameraType, CurDialogContent.CustomCameraTransform
+		);
 	}
 
 	// 显示对话内容
@@ -100,7 +107,7 @@ void UDkWidgetDialogScreen::UpdateDialogContent()
 	// 下一个对话点击按钮是否可点击
 	bCanClickToNextDialog = CurDialogContent.ContentType == EDialogContentType::Base;
 	DialogConfirmButton->SetVisibility(bCanClickToNextDialog ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
-	
+
 	// 显示分支(如果有的话)
 	SelectionList->ClearChildren();
 	if (CurDialogContent.ContentType == EDialogContentType::Branch)
@@ -162,6 +169,11 @@ void UDkWidgetDialogScreen::EndDialog()
 		if (NpcDialogComponent)
 		{
 			NpcDialogComponent->ResetNpcTransform();
+		}
+
+		if (OwnerDialogComponent)
+		{
+			OwnerDialogComponent->UpdateCameraFocus(0, EDialogCameraType::None, FTransform());
 		}
 	}), 0.5f, false);
 }

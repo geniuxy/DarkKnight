@@ -422,7 +422,7 @@ struct FDialogContent : public FTableRowBase
 	FText ContentText;
 	
 	UPROPERTY(EditAnywhere)
-	int CameraID; // 使用对话中哪个NPC的Camera
+	int CameraFocusNpcId; // 表示对话camera是以哪一个npc为聚焦的NpcId
 
 	UPROPERTY(EditAnywhere)
 	EDialogCameraType CameraType;

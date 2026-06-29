@@ -16,9 +16,6 @@ UDkDataSubsystem* UDkDataSubsystem::Get()
 void UDkDataSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
-	
-	InitializeDialogContent();
-	InitializeNpcInfo();
 }
 
 void UDkDataSubsystem::InitializeDialogContent()

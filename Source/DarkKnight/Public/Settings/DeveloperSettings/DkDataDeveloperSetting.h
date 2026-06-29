@@ -7,7 +7,7 @@
 #include "DkDataDeveloperSetting.generated.h"
 
 /**
- * 
+ * DeveloperSetting的配置是支持每次PIE重启都更新内容的
  */
 UCLASS(Config = Game, DefaultConfig, meta = (DisplayName = "Data Settings"))
 class DARKKNIGHT_API UDkDataDeveloperSetting : public UDeveloperSettings

@@ -39,9 +39,6 @@ private:
 
 	UPROPERTY(EditAnywhere, Category="Dialog Details")
 	int NpcId = 0;
-	
-	UPROPERTY(EditAnywhere, Category="Dialog Details")
-	UGameplayEffect* DialogStatsEffect;
 
 	UPROPERTY(EditAnywhere, Category="Dialog Details")
 	float RelativeDistance = 250.f;

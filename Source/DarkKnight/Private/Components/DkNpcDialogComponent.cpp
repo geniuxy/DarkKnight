@@ -148,6 +148,10 @@ void UDkNpcDialogComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	UDkDataSubsystem::Get()->UpdateNpcInfo(NpcId, GetOwner());
+	FTimerHandle InitNpcTimeHandle;
+	GetWorld()->GetTimerManager().SetTimer(InitNpcTimeHandle, FTimerDelegate::CreateLambda([this]()
+	{
+		UDkDataSubsystem::Get()->UpdateNpcInfo(NpcId, GetOwner());
+	}), 0.2f, false);
 }
 

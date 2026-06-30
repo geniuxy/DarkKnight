@@ -33,4 +33,6 @@ private:
 
 	UPROPERTY()
 	ADkCharacterBase* OwnerCharacter;
+
+	void UpdateMiniMap();
 };

@@ -6,6 +6,7 @@
 #include "Widgets/DkWidgetActivatableBase.h"
 #include "DkWidgetGameHUDScreen.generated.h"
 
+class UMiniMapWidget;
 class UAbilitySystemComponent;
 class UValueGauge;
 class UCrosshairLockTargetWidget;
@@ -36,6 +37,9 @@ private:
 
 	UPROPERTY(meta=(BindWidget))
 	UValueGauge* EnergyBar;
+
+	UPROPERTY(meta=(BindWidget))
+	UMiniMapWidget* MiniMap;
 
 	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent> OwnerAbilitySystemComponent;

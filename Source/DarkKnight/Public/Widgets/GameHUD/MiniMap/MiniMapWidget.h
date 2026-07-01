@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "CommonUserWidget.h"
+#include "Kismet/KismetRenderingLibrary.h"
 #include "MiniMapWidget.generated.h"
 
 class ADkCharacterBase;
@@ -34,5 +35,34 @@ private:
 	UPROPERTY()
 	ADkCharacterBase* OwnerCharacter;
 
-	void UpdateMiniMap();
+	void UpdatePlayerPositionInMiniMap();
+
+private:
+
+	UPROPERTY(EditDefaultsOnly, Category="Render Target")
+	TSoftObjectPtr<UTextureRenderTarget2D> ActorsRenderTargetTexture;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Render Target")
+	float IconSize = 10.f;
+
+	UPROPERTY(EditDefaultsOnly, Category="Mini Map Details")
+	FVector2D LeftDownWorldLocation = {-4000.f, -4000.f};
+
+	UPROPERTY(EditDefaultsOnly, Category="Mini Map Details")
+	FVector2D RightUpWorldLocation = {4000.f, 4000.f};
+
+	UPROPERTY()
+	float MiniMapBorderLength;
+	UPROPERTY()
+	float ActorCheckDistance;
+	UPROPERTY()
+	UCanvas* CachedCanvas;
+	UPROPERTY()
+	FVector2D CachedCanvasSize;
+	UPROPERTY()
+	FDrawToRenderTargetContext CachedContext;
+	
+	void UpdateActorIconsInMiniMap();
+	void DrawActorIconsToMiniMap(TArray<ADkCharacterBase*> Actors, UTexture2D* DrawTexture = nullptr);
+	FVector2D ConvertWorldLocationToMiniMap(FVector InWorldLocation);
 };

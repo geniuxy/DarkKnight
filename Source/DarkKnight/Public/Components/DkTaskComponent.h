@@ -17,9 +17,18 @@ public:
 
 	void UpdatePlayerTaskCompletionStatus();
 
+	void AcceptTask(int InTaskId);
+
 protected:
 	virtual void BeginPlay() override;
 
 private:
 	TMap<int, FTaskCompletionStatus> CurrentTaskCompletionStatus;
+	
+	FGameplayTagContainer CachedTaskTags;
+
+	bool HasFinishedAllPreconditionTask(const FGameplayTagContainer& InTagContainer) const;
+	void UpdateTaskState(int InTaskId, ETaskState InTaskState);
+	void UpdateSubTaskState(int InMainTaskId, int InSubTaskId, ETaskState InTaskState);
+	bool IsNextSubTaskIdZero(int InMainTaskId, int InSubTaskId) const;
 };

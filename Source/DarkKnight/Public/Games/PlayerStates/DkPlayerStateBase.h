@@ -6,10 +6,9 @@
 #include "Components/DkActionComponent.h"
 #include "DarkKnight/DarkKnight.h"
 #include "GameFramework/PlayerState.h"
-#include "GAS/DkAbilitySystemComponent.h"
-#include "GAS/DkAttributeSet.h"
 #include "DkPlayerStateBase.generated.h"
 
+class UDkTaskComponent;
 /**
  * 
  */
@@ -28,4 +27,11 @@ protected:
 
 public:
 	LIST_DATA_ACCESSOR(EActionState, CurrentActionState)
+
+	/**********************************************************************/
+	/*                                Task                                */
+	/**********************************************************************/
+protected:
+	UPROPERTY()
+	UDkTaskComponent* PlayerTaskComponent;
 };

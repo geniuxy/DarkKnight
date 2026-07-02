@@ -20,3 +20,12 @@ UDataTable* UDkDataDeveloperSetting::GetNpcInfoDataTable() const
 	}
 	return CachedNpcInfoDataTable.Get();
 }
+
+UDataTable* UDkDataDeveloperSetting::GetTaskInfoDataTable() const
+{
+	if (!CachedTaskInfoDataTable.IsValid() && !TaskInfoDataTable.IsNull())
+	{
+		CachedTaskInfoDataTable = TaskInfoDataTable.LoadSynchronous();
+	}
+	return CachedTaskInfoDataTable.Get();
+}

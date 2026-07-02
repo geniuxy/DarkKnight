@@ -7,7 +7,7 @@
 #include "Characters/DkCharacterHero.h"
 #include "DataAssets/CharacterInfo.h"
 #include "Kismet/GameplayStatics.h"
-#include "PlayerStates/DkPlayerStateBase.h"
+#include "Games/PlayerStates/DkPlayerStateBase.h"
 
 UDkActionComponent::UDkActionComponent()
 {

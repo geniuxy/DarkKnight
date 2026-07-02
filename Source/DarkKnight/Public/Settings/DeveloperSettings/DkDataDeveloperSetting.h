@@ -41,4 +41,18 @@ public:
 private:
 	UPROPERTY(Transient)
 	mutable TWeakObjectPtr<UDataTable> CachedNpcInfoDataTable;
+
+	/**********************************************************************/
+	/*                               Task                                 */
+	/**********************************************************************/
+public:
+	UPROPERTY(Config, EditAnywhere, Category = "Task")
+	TSoftObjectPtr<UDataTable> TaskInfoDataTable;
+
+	// 获取加载后的 DataTable
+	UDataTable* GetTaskInfoDataTable() const;
+
+private:
+	UPROPERTY(Transient)
+	mutable TWeakObjectPtr<UDataTable> CachedTaskInfoDataTable;
 };

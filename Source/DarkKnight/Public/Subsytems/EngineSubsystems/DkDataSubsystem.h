@@ -52,4 +52,17 @@ private:
 
 public:
 	FORCEINLINE TMap<int, FNpcInfo> GetNpcInfo() const { return CachedNpcInfoMap; }
+
+	/**********************************************************************/
+	/*                                Task                                */
+	/**********************************************************************/
+public:
+	void InitializeTaskInfo();
+
+private:
+	UPROPERTY(Transient)
+	TMap<int, FTaskInfo> CachedTaskInfoMap;
+
+public:
+	FORCEINLINE TMap<int, FTaskInfo> GetTaskInfo() const { return CachedTaskInfoMap; }
 };

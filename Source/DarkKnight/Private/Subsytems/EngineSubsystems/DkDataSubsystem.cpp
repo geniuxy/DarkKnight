@@ -65,3 +65,20 @@ void UDkDataSubsystem::UpdateNpcInfo(int InNpcId, AActor* InNpcActor)
 		}
 	}
 }
+
+void UDkDataSubsystem::InitializeTaskInfo()
+{
+	CachedTaskInfoMap.Empty();
+	const UDkDataDeveloperSetting* DataDeveloperSettings = GetDefault<UDkDataDeveloperSetting>();
+	if (UDataTable* TaskInfoDataTable = DataDeveloperSettings->GetTaskInfoDataTable())
+	{
+		for (FName RowName : TaskInfoDataTable->GetRowNames())
+		{
+			FTaskInfo* TaskInfo = TaskInfoDataTable->FindRow<FTaskInfo>(RowName, TEXT("没找到RowName对应的Row"));
+			if (!CachedTaskInfoMap.Contains(TaskInfo->TaskId))
+			{
+				CachedTaskInfoMap.Add(TaskInfo->TaskId, *TaskInfo);
+			}
+		}
+	}
+}

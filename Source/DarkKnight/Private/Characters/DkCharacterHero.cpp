@@ -17,7 +17,8 @@
 #include "GAS/DkAbilitySystemComponent.h"
 #include "GAS/DkHeroAttributeSet.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "PlayerStates/DkPlayerStateBase.h"
+#include "Games/PlayerStates/DkPlayerStateBase.h"
+#include "GAS/DkAttributeSet.h"
 
 
 class UEnhancedInputLocalPlayerSubsystem;

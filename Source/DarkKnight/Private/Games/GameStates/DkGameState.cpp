@@ -11,4 +11,5 @@ void ADkGameState::BeginPlay()
 
 	UDkDataSubsystem::Get()->InitializeDialogContent();
 	UDkDataSubsystem::Get()->InitializeNpcInfo();
+	UDkDataSubsystem::Get()->InitializeTaskInfo();
 }

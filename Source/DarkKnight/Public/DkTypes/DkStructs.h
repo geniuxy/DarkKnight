@@ -173,7 +173,7 @@ struct FDkItemInfo : public FTableRowBase //项目的整体Item表格
 {
 	GENERATED_BODY()
 	
-	// TODO：可以添加校验唯一性函数，在开局等时机调用，用来判断变量是否唯一
+	// TODO：可以添加校验唯一性函数，在开局等时机调用，用来DT中变量ItemId是否唯一
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	int32 ItemID = INDEX_NONE;
@@ -441,3 +441,87 @@ struct FDialogContent : public FTableRowBase
 };
 
 
+/**********************************************************************/
+/*                                Task                                */
+/**********************************************************************/
+
+USTRUCT(BlueprintType)
+struct FSubTaskInfo
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere)
+	int SubTaskId;
+
+	UPROPERTY(EditAnywhere)
+	FText SubTaskDescription;
+
+	UPROPERTY(EditAnywhere)
+	TMap<int, int> TargetProgress;
+
+	UPROPERTY(EditAnywhere)
+	int NextSubTaskId;
+
+	UPROPERTY(EditAnywhere)
+	TMap<int, int> SubTaskRewards;
+};
+
+USTRUCT(BlueprintType)
+struct FTaskInfo : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere)
+	int TaskId;
+
+	UPROPERTY(EditAnywhere)
+	FText TaskName;
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UTexture2D> TaskIcon;
+
+	UPROPERTY(EditAnywhere)
+	FText TaskDescription;
+
+	UPROPERTY(EditAnywhere)
+	ETaskType TaskType;
+
+	UPROPERTY(EditAnywhere)
+	FGameplayTag TaskTag;
+
+	UPROPERTY(EditAnywhere)
+	FGameplayTagContainer PreconditionTags;
+	
+	UPROPERTY(EditAnywhere)
+	TArray<FSubTaskInfo> SubTaskList;
+};
+
+USTRUCT(BlueprintType)
+struct FSubTaskCompletionStatus
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly)
+	int SubTaskId;
+
+	UPROPERTY(BlueprintReadOnly)
+	ETaskState SubTaskState;
+
+	UPROPERTY(BlueprintReadOnly)
+	TMap<int, int> CurrentProgress;
+};
+
+USTRUCT(BlueprintType)
+struct FTaskCompletionStatus
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly)
+	int TaskId;
+
+	UPROPERTY(BlueprintReadOnly)
+	ETaskState TaskState;
+	
+	UPROPERTY(BlueprintReadOnly)
+	TArray<FSubTaskCompletionStatus> SubTaskCompletionList;
+};

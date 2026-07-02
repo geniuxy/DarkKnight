@@ -217,3 +217,24 @@ enum class EDialogCameraType: uint8
 	CustomWorldPosition UMETA(DisplayName = "自定义世界位置"),
 	None
 };
+
+/**********************************************************************/
+/*                                Task                                */
+/**********************************************************************/
+
+UENUM(BlueprintType)
+enum class ETaskType: uint8
+{
+	MainQuest UMETA(DisplayName = "主线任务"),
+	SideQuest UMETA(DisplayName = "支线任务"),
+	None
+};
+
+UENUM(BlueprintType)
+enum class ETaskState: uint8
+{
+	ToBeAccepted UMETA(DisplayName = "待接"),
+	InProgress UMETA(DisplayName = "进行中"),
+	Completed UMETA(DisplayName = "已完成"),
+	None
+};

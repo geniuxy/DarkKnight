@@ -6,6 +6,7 @@
 #include "Widgets/DkWidgetActivatableBase.h"
 #include "DkWidgetGameMenuScreen.generated.h"
 
+class UDkGameMenuCenterAreaTask;
 struct FGameplayTag;
 class UDkWidgetInventoryMenu;
 class UDkGameMenuCenterAreaInventory;
@@ -39,6 +40,9 @@ private:
 
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget, AllowPrivateAccess="true"))
 	TObjectPtr<UDkWidgetActivatableBase> CenterArea_Map;
+
+	UPROPERTY(BlueprintReadOnly, meta=(BindWidget, AllowPrivateAccess="true"))
+	TObjectPtr<UDkGameMenuCenterAreaTask> CenterArea_Task;
 
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget, AllowPrivateAccess="true"))
 	TObjectPtr<UCommonVisibilitySwitcher> CommonVisibilitySwitcher;

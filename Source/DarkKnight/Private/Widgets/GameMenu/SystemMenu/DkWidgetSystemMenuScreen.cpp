@@ -26,13 +26,14 @@ void UDkWidgetSystemMenuScreen::NativeOnInitialized()
 
 	SelectButton_Inventory->OnClicked().AddUObject(this, &ThisClass::HandleSelectButtonInventory);
 	SelectButton_Map->OnClicked().AddUObject(this, &ThisClass::HandleSelectButtonMap);
+	SelectButton_Task->OnClicked().AddUObject(this, &ThisClass::HandleSelectButtonTask);
 }
 
 void UDkWidgetSystemMenuScreen::NativeOnActivated()
 {
 	Super::NativeOnActivated();
 
-	UDkUIFunctionLibrary::ToggleInputMode(this, EDkInputMode::UIOnly);
+	UDkUIFunctionLibrary::ToggleInputMode(this, EDkInputMode::UIOnly, false);
 }
 
 void UDkWidgetSystemMenuScreen::NativeOnDeactivated()
@@ -51,7 +52,7 @@ void UDkWidgetSystemMenuScreen::HandleSelectButtonInventory()
 		{
 			if (InPushState == EAsyncPushWidgetState::OnCreatedBeforePush)
 			{
-				UDkUIFunctionLibrary::ToggleInputMode(this, EDkInputMode::UIOnly);
+				UDkUIFunctionLibrary::ToggleInputMode(this, EDkInputMode::UIOnly, false);
 			}
 			if (InPushState == EAsyncPushWidgetState::AfterPush)
 			{
@@ -71,12 +72,32 @@ void UDkWidgetSystemMenuScreen::HandleSelectButtonMap()
 		{
 			if (InPushState == EAsyncPushWidgetState::OnCreatedBeforePush)
 			{
-				UDkUIFunctionLibrary::ToggleInputMode(this, EDkInputMode::UIOnly);
+				UDkUIFunctionLibrary::ToggleInputMode(this, EDkInputMode::UIOnly, false);
 			}
 			if (InPushState == EAsyncPushWidgetState::AfterPush)
 			{
 				UDkWidgetGameMenuScreen* GameMenuScreen = CastChecked<UDkWidgetGameMenuScreen>(PushedWidget);
 				GameMenuScreen->SetVisibleCenterArea(DkGameplayTags::Dk_Widget_GameMenu_Map);
+			}
+		}
+	);
+}
+
+void UDkWidgetSystemMenuScreen::HandleSelectButtonTask()
+{
+	UDkUISubsystem::Get(this)->PushSoftWidgetToStackAsync(
+		DkGameplayTags::Dk_WidgetStack_GameMenu,
+		UDkUIFunctionLibrary::GetUISoftWidgetClassByTag(DkGameplayTags::Dk_Widget_GameMenu),
+		[this](EAsyncPushWidgetState InPushState, UDkWidgetActivatableBase* PushedWidget)
+		{
+			if (InPushState == EAsyncPushWidgetState::OnCreatedBeforePush)
+			{
+				UDkUIFunctionLibrary::ToggleInputMode(this, EDkInputMode::UIOnly, false);
+			}
+			if (InPushState == EAsyncPushWidgetState::AfterPush)
+			{
+				UDkWidgetGameMenuScreen* GameMenuScreen = CastChecked<UDkWidgetGameMenuScreen>(PushedWidget);
+				GameMenuScreen->SetVisibleCenterArea(DkGameplayTags::Dk_Widget_GameMenu_Task);
 			}
 		}
 	);

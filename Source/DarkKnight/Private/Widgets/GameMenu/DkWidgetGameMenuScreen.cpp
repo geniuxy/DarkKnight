@@ -11,6 +11,7 @@
 #include "Input/CommonUIInputTypes.h"
 #include "Subsytems/DkUISubsystem.h"
 #include "Widgets/GameMenu/CenterAreas/DkGameMenuCenterAreaInventory.h"
+#include "Widgets/GameMenu/CenterAreas/DkGameMenuCenterAreaTask.h"
 #include "Widgets/Inventory/DkInventoryDraggedItem.h"
 
 void UDkWidgetGameMenuScreen::NativeOnInitialized()
@@ -30,7 +31,7 @@ void UDkWidgetGameMenuScreen::NativeOnActivated()
 {
 	Super::NativeOnActivated();
 
-	UDkUIFunctionLibrary::ToggleInputMode(this, EDkInputMode::UIOnly);
+	UDkUIFunctionLibrary::ToggleInputMode(this, EDkInputMode::UIOnly, false);
 }
 
 void UDkWidgetGameMenuScreen::NativeOnDeactivated()
@@ -61,6 +62,10 @@ UDkWidgetActivatableBase* UDkWidgetGameMenuScreen::GetActivatableCenterAreaWidge
 	if (InTag.MatchesTagExact(DkGameplayTags::Dk_Widget_GameMenu_Inventory))
 	{
 		return CenterArea_Inventory;
+	}
+	if (InTag.MatchesTagExact(DkGameplayTags::Dk_Widget_GameMenu_Task))
+	{
+		return CenterArea_Task;
 	}
 	if (InTag.MatchesTagExact(DkGameplayTags::Dk_Widget_GameMenu_Map))
 	{

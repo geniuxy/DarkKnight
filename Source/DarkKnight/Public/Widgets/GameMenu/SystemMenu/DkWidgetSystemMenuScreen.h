@@ -48,6 +48,7 @@ private:
 
 	void HandleSelectButtonInventory();
 	void HandleSelectButtonMap();
+	void HandleSelectButtonTask();
 
 	void OnBackBoundActionTriggered();
 };

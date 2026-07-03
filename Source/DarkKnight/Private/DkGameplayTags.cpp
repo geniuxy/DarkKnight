@@ -72,6 +72,7 @@ namespace DkGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Widget_SystemMenu, "Dk.Widget.SystemMenu");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Widget_GameMenu, "Dk.Widget.GameMenu");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Widget_GameMenu_Inventory, "Dk.Widget.GameMenu.Inventory");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Widget_GameMenu_Task, "Dk.Widget.GameMenu.Task");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Widget_GameMenu_Map, "Dk.Widget.GameMenu.Map");
 
 	// Images

@@ -70,12 +70,11 @@ private:
 	UInputConfig* InputConfigDataAsset;
 	
 	void HandleGroundMovementInput(const FInputActionValue& InputActionValue);
-	void ToggleMovementStyle();
 	void OnLookTriggered(const FInputActionValue& InputActionValue);
 	void OnJumpPressed();
 	void OnInteract();
 	void OnOpenSystemMenu();
-	void OnInventoryActionTriggered();
+	void OnOpenInventory();
 	/********/
 
 	/* 捡拾物品 */

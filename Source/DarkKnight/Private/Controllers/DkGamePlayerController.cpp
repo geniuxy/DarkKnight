@@ -79,11 +79,15 @@ void ADkGamePlayerController::OnLoadingScreenDeactivated_Implementation()
 			}
 		}
 	);
+
+	EnableInput(this);
 }
 
 void ADkGamePlayerController::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	DisableInput(this);
 }
 
 void ADkGamePlayerController::OnPossess(APawn* NewPawn)
@@ -135,10 +139,6 @@ void ADkGamePlayerController::SetupInputComponent()
 		this, &ThisClass::HandleGroundMovementInput
 	);
 	EnhancedInputComponent->BindNativeInputAction(
-		InputConfigDataAsset, DkGameplayTags::Dk_Input_Action_ToggleMoveStyle, ETriggerEvent::Started,
-		this, &ThisClass::ToggleMovementStyle
-	);
-	EnhancedInputComponent->BindNativeInputAction(
 		InputConfigDataAsset, DkGameplayTags::Dk_Input_Action_Look, ETriggerEvent::Triggered,
 		this, &ThisClass::OnLookTriggered
 	);
@@ -156,7 +156,7 @@ void ADkGamePlayerController::SetupInputComponent()
 	);
 	EnhancedInputComponent->BindNativeInputAction(
 		InputConfigDataAsset, DkGameplayTags::Dk_Input_Action_OpenInventory, ETriggerEvent::Completed,
-		this, &ThisClass::OnInventoryActionTriggered
+		this, &ThisClass::OnOpenInventory
 	);
 }
 
@@ -180,19 +180,6 @@ void ADkGamePlayerController::HandleGroundMovementInput(const FInputActionValue&
 		const FVector TargetRightVector = ControllerRotation.RotateVector(FVector::RightVector);
 		GetPawn()->AddMovementInput(TargetRightVector, MoveVector.X);
 	}
-}
-
-void ADkGamePlayerController::ToggleMovementStyle()
-{
-	ADkCharacterHero* OwningCharacter = Cast<ADkCharacterHero>(GetCharacter());
-	// if (OwningCharacter->GetCurrentLocomotionStyle() == ELocomotionStyle::Walk)
-	// {
-	// 	OwningCharacter->SwitchLocomotionStyle(ELocomotionStyle::Run);
-	// }
-	// else if (OwningCharacter->GetCurrentLocomotionStyle() == ELocomotionStyle::Run)
-	// {
-	// 	OwningCharacter->SwitchLocomotionStyle(ELocomotionStyle::Walk);
-	// }
 }
 
 void ADkGamePlayerController::OnLookTriggered(const FInputActionValue& InputActionValue)
@@ -256,7 +243,7 @@ void ADkGamePlayerController::OnOpenSystemMenu()
 	);
 }
 
-void ADkGamePlayerController::OnInventoryActionTriggered()
+void ADkGamePlayerController::OnOpenInventory()
 {
 	checkf(InventoryComponent.IsValid(), TEXT("打开库存失败，InventoryComponent未有效"));
 

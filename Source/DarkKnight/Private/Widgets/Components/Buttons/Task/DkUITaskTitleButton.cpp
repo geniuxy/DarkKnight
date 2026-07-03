@@ -3,6 +3,7 @@
 
 #include "Widgets/Components/Buttons/Task/DkUITaskTitleButton.h"
 
+#include "CommonLazyImage.h"
 #include "CommonTextBlock.h"
 #include "Components/Border.h"
 
@@ -17,5 +18,19 @@ void UDkUITaskTitleButton::NativePreConstruct()
 	if (TitleTextBlock)
 	{
 		TitleTextBlock->SetText(TitleText);
+	}
+	if (TitleOpenStatus)
+	{
+		TitleOpenStatus->SetRenderTransformAngle(bOpen ? 90.f : 180.f);
+	}
+}
+
+void UDkUITaskTitleButton::OnTaskTitleClicked()
+{
+	bOpen = !bOpen;
+
+	if (TitleOpenStatus)
+	{
+		TitleOpenStatus->SetRenderTransformAngle(bOpen ? 90.f : 180.f);
 	}
 }

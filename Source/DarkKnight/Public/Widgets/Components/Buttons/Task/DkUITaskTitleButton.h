@@ -17,6 +17,9 @@ class DARKKNIGHT_API UDkUITaskTitleButton : public UCommonButtonBase
 {
 	GENERATED_BODY()
 
+public:
+	void OnTaskTitleClicked();
+
 protected:
 	//~Begin UUserWidget UFunction
 	virtual void NativePreConstruct() override;
@@ -39,4 +42,9 @@ private:
 
 	UPROPERTY(EditAnywhere, Category="Button Details")
 	FText TitleText;
+
+	bool bOpen;
+
+public:
+	FORCEINLINE bool GetIsOpen() const { return bOpen; }
 };

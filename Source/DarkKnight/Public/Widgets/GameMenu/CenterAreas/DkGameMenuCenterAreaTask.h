@@ -18,6 +18,12 @@ class DARKKNIGHT_API UDkGameMenuCenterAreaTask : public UDkWidgetActivatableBase
 {
 	GENERATED_BODY()
 
+protected:
+	//~Begin UUserWidget Function
+	virtual void NativeOnInitialized() override;
+	virtual void NativePreConstruct() override;
+	//~End UUserWidget Function
+
 private:
 	//***** Bound Widgets *****//
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget, AllowPrivateAccess="true"))
@@ -45,4 +51,8 @@ private:
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget, AllowPrivateAccess="true"))
 	UCommonTextBlock* TaskDescription;
 	//***** Bound Widgets *****//
+	
+	void HandleMainQuestTaskClicked();
+	void HandleSideQuestTaskClicked();
+	void HandleCompletedTaskClicked();
 };

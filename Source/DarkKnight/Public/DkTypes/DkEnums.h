@@ -238,3 +238,16 @@ enum class ETaskState: uint8
 	Completed UMETA(DisplayName = "已完成"),
 	None
 };
+
+/**********************************************************************/
+/*                                Area                                */
+/**********************************************************************/
+
+UENUM(BlueprintType)
+enum class EAreaType: uint8
+{
+	Radiant UMETA(DisplayName = "天辉"),
+	Dire UMETA(DisplayName = "夜魇"),
+	Hogwarts UMETA(DisplayName = "霍格沃兹"),
+	None
+};

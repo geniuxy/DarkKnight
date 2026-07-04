@@ -6,6 +6,8 @@
 #include "Widgets/DkWidgetActivatableBase.h"
 #include "DkGameMenuCenterAreaTask.generated.h"
 
+class ADkGamePlayerController;
+class UDkUITaskReferenceButton;
 class UCommonTextBlock;
 class UCommonLazyImage;
 class UVerticalBox;
@@ -22,6 +24,8 @@ protected:
 	//~Begin UUserWidget Function
 	virtual void NativeOnInitialized() override;
 	virtual void NativePreConstruct() override;
+	virtual void NativeConstruct() override;
+	virtual void NativeDestruct() override;
 	//~End UUserWidget Function
 
 private:
@@ -51,8 +55,16 @@ private:
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget, AllowPrivateAccess="true"))
 	UCommonTextBlock* TaskDescription;
 	//***** Bound Widgets *****//
+
+	UPROPERTY()
+	TObjectPtr<ADkGamePlayerController> OwnerPlayerController;
 	
 	void HandleMainQuestTaskClicked();
 	void HandleSideQuestTaskClicked();
 	void HandleCompletedTaskClicked();
+
+	void InsertTaskReference(int InTaskId);
+
+	UPROPERTY(EditDefaultsOnly, Category="Task Reference")
+	TSubclassOf<UDkUITaskReferenceButton> TaskReferenceButtonClass;
 };

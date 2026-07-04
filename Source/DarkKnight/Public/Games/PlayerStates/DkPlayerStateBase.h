@@ -31,6 +31,9 @@ public:
 	/**********************************************************************/
 	/*                                Task                                */
 	/**********************************************************************/
+public:
+	bool IsTaskFinished(int InTaskId) const;
+	
 protected:
 	UPROPERTY()
 	UDkTaskComponent* PlayerTaskComponent;

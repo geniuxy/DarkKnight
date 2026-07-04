@@ -24,7 +24,7 @@ public:
 	}
 
 	template <typename EnumType>
-	static FString GetDisplayValueOfEnum(EnumType InEnumType)
+	static FText GetDisplayValueOfEnum(EnumType InEnumType)
 	{
 		const UEnum* StaticEnumOption = StaticEnum<EnumType>();
 

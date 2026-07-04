@@ -63,6 +63,13 @@ void UDkTaskComponent::AcceptTask(int InTaskId)
 	UpdateSubTaskState(InTaskId, 1, ETaskState::InProgress);
 }
 
+bool UDkTaskComponent::IsTaskFinished(int InTaskId) const
+{
+	if (!CurrentTaskCompletionStatus.Contains(InTaskId)) return false;
+
+	return CurrentTaskCompletionStatus[InTaskId].TaskState == ETaskState::Completed;
+}
+
 void UDkTaskComponent::BeginPlay()
 {
 	Super::BeginPlay();

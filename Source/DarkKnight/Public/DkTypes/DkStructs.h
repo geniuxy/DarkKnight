@@ -482,6 +482,9 @@ struct FTaskInfo : public FTableRowBase
 
 	UPROPERTY(EditAnywhere)
 	FText TaskDescription;
+	
+	UPROPERTY(EditAnywhere)
+	EAreaType TaskAreaType;
 
 	UPROPERTY(EditAnywhere)
 	ETaskType TaskType;

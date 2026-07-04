@@ -18,3 +18,8 @@ void ADkPlayerStateBase::BeginPlay()
 
 	PlayerTaskComponent->UpdatePlayerTaskCompletionStatus();
 }
+
+bool ADkPlayerStateBase::IsTaskFinished(int InTaskId) const
+{
+	return PlayerTaskComponent && PlayerTaskComponent->IsTaskFinished(InTaskId);
+}

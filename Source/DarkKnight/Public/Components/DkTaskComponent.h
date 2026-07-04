@@ -19,6 +19,8 @@ public:
 
 	void AcceptTask(int InTaskId);
 
+	bool IsTaskFinished(int InTaskId) const;
+
 protected:
 	virtual void BeginPlay() override;
 

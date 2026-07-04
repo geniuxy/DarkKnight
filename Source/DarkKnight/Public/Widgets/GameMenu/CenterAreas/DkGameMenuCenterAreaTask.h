@@ -3,9 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "DkTypes/DkStructs.h"
 #include "Widgets/DkWidgetActivatableBase.h"
 #include "DkGameMenuCenterAreaTask.generated.h"
 
+class UDkWidgetSubTaskTarget;
 class ADkGamePlayerController;
 class UDkUITaskReferenceButton;
 class UCommonTextBlock;
@@ -69,8 +71,13 @@ private:
 	void InsertOrUpdateTaskReference(int InTaskId);
 	void UpdateTaskReference(int InTaskId);
 	void InsertTaskReference(int InTaskId);
+	void ClearTaskDetailInfo();
 	void UpdateTaskDetailInfo(int InTaskId);
+	void UpdateSubTaskList(int InMainTaskId, TArray<FSubTaskInfo> InSubTaskList);
 
 	UPROPERTY(EditDefaultsOnly, Category="Task Reference")
 	TSubclassOf<UDkUITaskReferenceButton> TaskReferenceButtonClass;
+
+	UPROPERTY(EditDefaultsOnly, Category="Sub Task")
+	TSubclassOf<UDkWidgetSubTaskTarget> SubTaskTargetClass;
 };

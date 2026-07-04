@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/DkActionComponent.h"
 #include "DarkKnight/DarkKnight.h"
+#include "DkTypes/DkStructs.h"
 #include "GameFramework/PlayerState.h"
 #include "DkPlayerStateBase.generated.h"
 
@@ -33,7 +34,9 @@ public:
 	/**********************************************************************/
 public:
 	bool IsTaskFinished(int InTaskId) const;
-	
+	ETaskState GetSubTaskState(int InMainTaskId, int InSubTaskId) const;
+	int GetSubTaskProgress(int InMainTaskId, int InSubTaskId) const;
+
 protected:
 	UPROPERTY()
 	UDkTaskComponent* PlayerTaskComponent;

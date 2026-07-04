@@ -21,12 +21,16 @@ public:
 
 	bool IsTaskFinished(int InTaskId) const;
 
+	ETaskState GetSubTaskState(int InMainTaskId, int InSubTaskId) const;
+
+	int GetSubTaskProgress(int InMainTaskId, int InSubTaskId) const;
+
 protected:
 	virtual void BeginPlay() override;
 
 private:
 	TMap<int, FTaskCompletionStatus> CurrentTaskCompletionStatus;
-	
+
 	FGameplayTagContainer CachedTaskTags;
 
 	bool HasFinishedAllPreconditionTask(const FGameplayTagContainer& InTagContainer) const;

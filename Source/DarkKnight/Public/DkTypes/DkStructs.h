@@ -457,7 +457,7 @@ struct FSubTaskInfo
 	FText SubTaskDescription;
 
 	UPROPERTY(EditAnywhere)
-	TMap<int, int> TargetProgress;
+	int TargetProgress;
 
 	UPROPERTY(EditAnywhere)
 	int NextSubTaskId;
@@ -511,7 +511,7 @@ struct FSubTaskCompletionStatus
 	ETaskState SubTaskState;
 
 	UPROPERTY(BlueprintReadOnly)
-	TMap<int, int> CurrentProgress;
+	int CurrentProgress;
 };
 
 USTRUCT(BlueprintType)

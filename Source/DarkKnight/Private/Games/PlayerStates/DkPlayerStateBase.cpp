@@ -23,3 +23,21 @@ bool ADkPlayerStateBase::IsTaskFinished(int InTaskId) const
 {
 	return PlayerTaskComponent && PlayerTaskComponent->IsTaskFinished(InTaskId);
 }
+
+ETaskState ADkPlayerStateBase::GetSubTaskState(int InMainTaskId, int InSubTaskId) const
+{
+	if (PlayerTaskComponent)
+	{
+		return PlayerTaskComponent->GetSubTaskState(InMainTaskId, InSubTaskId);
+	}
+	return ETaskState::None;
+}
+
+int ADkPlayerStateBase::GetSubTaskProgress(int InMainTaskId, int InSubTaskId) const
+{
+	if (PlayerTaskComponent)
+	{
+		return PlayerTaskComponent->GetSubTaskProgress(InMainTaskId, InSubTaskId);
+	}
+	return 0;
+}

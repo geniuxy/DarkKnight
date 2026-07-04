@@ -34,11 +34,8 @@ void UDkTaskComponent::UpdatePlayerTaskCompletionStatus()
 			{
 				FSubTaskCompletionStatus SubTaskCompletionStatus;
 				SubTaskCompletionStatus.SubTaskId = SubTaskInfo.SubTaskId;
-				SubTaskCompletionStatus.SubTaskState = ETaskState::None;
-				for (TTuple<int, int> ProgressPair : SubTaskInfo.TargetProgress)
-				{
-					SubTaskCompletionStatus.CurrentProgress.Add(ProgressPair.Key, 0);
-				}
+				SubTaskCompletionStatus.SubTaskState = ETaskState::ToBeAccepted;
+				SubTaskCompletionStatus.CurrentProgress = 0;
 				Status.SubTaskCompletionList.Add(SubTaskCompletionStatus);
 			}
 			CurrentTaskCompletionStatus.Add(TaskInfoPair.Key, Status);
@@ -68,6 +65,42 @@ bool UDkTaskComponent::IsTaskFinished(int InTaskId) const
 	if (!CurrentTaskCompletionStatus.Contains(InTaskId)) return false;
 
 	return CurrentTaskCompletionStatus[InTaskId].TaskState == ETaskState::Completed;
+}
+
+ETaskState UDkTaskComponent::GetSubTaskState(int InMainTaskId, int InSubTaskId) const
+{
+	if (!CurrentTaskCompletionStatus.Contains(InMainTaskId)) return ETaskState::None;
+
+	ETaskState SubTaskState = ETaskState::None;
+	TArray<FSubTaskCompletionStatus> SubTaskCompletionList =
+		CurrentTaskCompletionStatus[InMainTaskId].SubTaskCompletionList;
+	for (FSubTaskCompletionStatus SubTaskCompletionStatus : SubTaskCompletionList)
+	{
+		if (SubTaskCompletionStatus.SubTaskId == InSubTaskId)
+		{
+			SubTaskState = SubTaskCompletionStatus.SubTaskState;
+			break;
+		}
+	}
+	return SubTaskState;
+}
+
+int UDkTaskComponent::GetSubTaskProgress(int InMainTaskId, int InSubTaskId) const
+{
+	if (!CurrentTaskCompletionStatus.Contains(InMainTaskId)) return 0;
+
+	int CurProgress = 0;
+	TArray<FSubTaskCompletionStatus> SubTaskCompletionList =
+		CurrentTaskCompletionStatus[InMainTaskId].SubTaskCompletionList;
+	for (FSubTaskCompletionStatus SubTaskCompletionStatus : SubTaskCompletionList)
+	{
+		if (SubTaskCompletionStatus.SubTaskId == InSubTaskId)
+		{
+			CurProgress = SubTaskCompletionStatus.CurrentProgress;
+			break;
+		}
+	}
+	return CurProgress;
 }
 
 void UDkTaskComponent::BeginPlay()

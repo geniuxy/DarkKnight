@@ -10,6 +10,8 @@
 class UCommonLazyImage;
 class UCommonTextBlock;
 class UBorder;
+
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnTaskReferenceClicked, int /* InTaskId */)
 /**
  * 
  */
@@ -20,6 +22,13 @@ class DARKKNIGHT_API UDkUITaskReferenceButton : public UCommonButtonBase
 
 public:
 	void ConfigureTaskReference(const FTaskInfo& InTaskInfo, bool IsTaskFinished);
+
+	FOnTaskReferenceClicked OnTaskReferenceClicked;
+
+protected:
+	//~Begin UCommonButtonBase UFunction
+	virtual void NativeOnClicked() override;
+	//~End UCommonButtonBase UFunction
 
 private:
 	//***** Bound Widgets *****//
@@ -35,6 +44,9 @@ private:
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget, AllowPrivateAccess="true"))
 	UCommonTextBlock* TaskAreaText;
 	//***** Bound Widgets *****//
+
+	UPROPERTY()
+	int TaskId;
 
 	void UpdateTaskNameText(const FTaskInfo& InTaskInfo, bool bIsTaskFinished);
 	void UpdateTaskFlagColor(ETaskType InTaskType, bool bIsTaskFinished);

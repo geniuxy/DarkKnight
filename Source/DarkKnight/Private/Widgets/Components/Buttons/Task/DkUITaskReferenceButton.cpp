@@ -10,10 +10,19 @@
 
 void UDkUITaskReferenceButton::ConfigureTaskReference(const FTaskInfo& InTaskInfo, bool IsTaskFinished)
 {
+	TaskId = InTaskInfo.TaskId;
+	
 	UpdateTaskNameText(InTaskInfo, IsTaskFinished);
 	TaskAreaText->SetText(UDkCommonFunctionLibrary::GetDisplayValueOfEnum(InTaskInfo.TaskAreaType));
 	TaskIcon->SetBrushFromTexture(InTaskInfo.TaskIcon);
 	UpdateTaskFlagColor(InTaskInfo.TaskType, IsTaskFinished);
+}
+
+void UDkUITaskReferenceButton::NativeOnClicked()
+{
+	Super::NativeOnClicked();
+
+	OnTaskReferenceClicked.Broadcast(TaskId);
 }
 
 void UDkUITaskReferenceButton::UpdateTaskNameText(const FTaskInfo& InTaskInfo, bool bIsTaskFinished)

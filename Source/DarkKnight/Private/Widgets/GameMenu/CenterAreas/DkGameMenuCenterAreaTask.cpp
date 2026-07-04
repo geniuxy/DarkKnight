@@ -3,7 +3,9 @@
 
 #include "Widgets/GameMenu/CenterAreas/DkGameMenuCenterAreaTask.h"
 
+#include "CommonTextBlock.h"
 #include "Components/VerticalBox.h"
+#include "Components/VerticalBoxSlot.h"
 #include "Controllers/DkGamePlayerController.h"
 #include "FunctionLibrarys/DkTaskFunctionLibrary.h"
 #include "Games/PlayerStates/DkPlayerStateBase.h"
@@ -40,16 +42,12 @@ void UDkGameMenuCenterAreaTask::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	InsertTaskReference(1);
+	InsertOrUpdateTaskReference(1);
 }
 
 void UDkGameMenuCenterAreaTask::NativeDestruct()
 {
 	Super::NativeDestruct();
-
-	MainQuestList->ClearChildren();
-	SideQuestList->ClearChildren();
-	CompletedTaskList->ClearChildren();
 }
 
 void UDkGameMenuCenterAreaTask::HandleMainQuestTaskClicked()
@@ -73,26 +71,69 @@ void UDkGameMenuCenterAreaTask::HandleCompletedTaskClicked()
 	CompletedTaskList->SetVisibility(bIsOpen ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
 }
 
-void UDkGameMenuCenterAreaTask::InsertTaskReference(int InTaskId)
+void UDkGameMenuCenterAreaTask::InsertOrUpdateTaskReference(int InTaskId)
 {
+	if (TaskReferenceButtonMap.Contains(InTaskId))
+	{
+		UpdateTaskReference(InTaskId);
+	}
+	else
+	{
+		InsertTaskReference(InTaskId);
+	}
+}
+
+void UDkGameMenuCenterAreaTask::UpdateTaskReference(int InTaskId)
+{
+	if (!TaskReferenceButtonMap.Contains(InTaskId)) return;
+
 	FTaskInfo CurTaskInfo = UDkTaskFunctionLibrary::GetTaskInfoById(InTaskId);
 	bool IsTaskFinished =
 		OwnerPlayerController && OwnerPlayerController->GetPlayerState<ADkPlayerStateBase>()->IsTaskFinished(InTaskId);
-
-	UDkUITaskReferenceButton* TaskReferenceButton =
-		CreateWidget<UDkUITaskReferenceButton>(this, TaskReferenceButtonClass);
+	UDkUITaskReferenceButton* TaskReferenceButton = TaskReferenceButtonMap.FindRef(InTaskId);
 	TaskReferenceButton->ConfigureTaskReference(CurTaskInfo, IsTaskFinished);
 
 	if (IsTaskFinished)
 	{
+		TaskReferenceButton->RemoveFromParent();
 		CompletedTaskList->AddChildToVerticalBox(TaskReferenceButton);
+	}
+}
+
+void UDkGameMenuCenterAreaTask::InsertTaskReference(int InTaskId)
+{
+	FTaskInfo CurTaskInfo = UDkTaskFunctionLibrary::GetTaskInfoById(InTaskId);
+	bool IsTaskFinished =
+		OwnerPlayerController && OwnerPlayerController->GetPlayerState<ADkPlayerStateBase>()->
+		                                                IsTaskFinished(InTaskId);
+	UDkUITaskReferenceButton* TaskReferenceButton =
+		CreateWidget<UDkUITaskReferenceButton>(this, TaskReferenceButtonClass);
+	TaskReferenceButton->ConfigureTaskReference(CurTaskInfo, IsTaskFinished);
+
+	UVerticalBoxSlot* VerticalBoxSlot = nullptr;
+	if (IsTaskFinished)
+	{
+		VerticalBoxSlot = CompletedTaskList->AddChildToVerticalBox(TaskReferenceButton);
 	}
 	else if (CurTaskInfo.TaskType == ETaskType::MainQuest)
 	{
-		MainQuestList->AddChildToVerticalBox(TaskReferenceButton);
+		VerticalBoxSlot = MainQuestList->AddChildToVerticalBox(TaskReferenceButton);
 	}
 	else if (CurTaskInfo.TaskType == ETaskType::SideQuest)
 	{
-		SideQuestList->AddChildToVerticalBox(TaskReferenceButton);
+		VerticalBoxSlot = SideQuestList->AddChildToVerticalBox(TaskReferenceButton);
 	}
+	VerticalBoxSlot->SetPadding(FMargin(5.f));
+
+	TaskReferenceButton->OnTaskReferenceClicked.AddUObject(this, &ThisClass::UpdateTaskDetailInfo);
+
+	TaskReferenceButtonMap.Add(InTaskId, TaskReferenceButton);
+}
+
+void UDkGameMenuCenterAreaTask::UpdateTaskDetailInfo(int InTaskId)
+{
+	FTaskInfo CurTaskInfo = UDkTaskFunctionLibrary::GetTaskInfoById(InTaskId);
+	if (CurTaskInfo.TaskId == 0 || CurTaskInfo.TaskId != InTaskId) return;
+
+	TaskName->SetText(CurTaskInfo.TaskName);
 }

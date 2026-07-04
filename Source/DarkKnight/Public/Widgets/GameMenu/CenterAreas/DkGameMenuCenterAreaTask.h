@@ -58,12 +58,18 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<ADkGamePlayerController> OwnerPlayerController;
+
+	UPROPERTY()
+	TMap<int, UDkUITaskReferenceButton*> TaskReferenceButtonMap; 
 	
 	void HandleMainQuestTaskClicked();
 	void HandleSideQuestTaskClicked();
 	void HandleCompletedTaskClicked();
 
+	void InsertOrUpdateTaskReference(int InTaskId);
+	void UpdateTaskReference(int InTaskId);
 	void InsertTaskReference(int InTaskId);
+	void UpdateTaskDetailInfo(int InTaskId);
 
 	UPROPERTY(EditDefaultsOnly, Category="Task Reference")
 	TSubclassOf<UDkUITaskReferenceButton> TaskReferenceButtonClass;

@@ -7,7 +7,7 @@
 #include "FunctionLibrarys/DkUIFunctionLibrary.h"
 #include "GAS/DkAttributeSet.h"
 #include "Widgets/GameHUD/Stats/ValueGauge.h"
-#include "Widgets/GameHUD/TaskNotice/TaskNoticeWidget.h"
+#include "Widgets/GameHUD/Task/TaskNoticeWidget.h"
 
 void UDkWidgetGameHUDScreen::NativeOnInitialized()
 {

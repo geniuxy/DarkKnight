@@ -51,3 +51,23 @@ TArray<int> ADkPlayerStateBase::GetAllPlayerTaskId() const
 	}
 	return Results;
 }
+
+FText ADkPlayerStateBase::GetSubTaskDescription(int InMainTaskId, int InSubTaskId) const
+{
+	FText SubTaskDescription;
+	if (PlayerTaskComponent)
+	{
+		SubTaskDescription = PlayerTaskComponent->GetSubTaskDescription(InMainTaskId, InSubTaskId);
+	}
+	return SubTaskDescription;
+}
+
+int ADkPlayerStateBase::GetCurSubTaskId(int InMainTaskId) const
+{
+	if (IsTaskFinished(InMainTaskId)) return 0;
+	if (PlayerTaskComponent)
+	{
+		return PlayerTaskComponent->GetCurSubTaskId(InMainTaskId);
+	}
+	return 0;
+}

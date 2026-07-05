@@ -66,6 +66,9 @@ void UDkTaskComponent::AcceptTask(int InTaskId)
 	{
 		OwnerPlayerState->OnAddTaskNoticeDelegate.Broadcast(ETaskNoticeState::NewTask, CurTaskInfo.TaskName);
 		OwnerPlayerState->OnAddOrUpdateTaskDelegate.Broadcast(InTaskId);
+		OwnerPlayerState->OnUpdateTaskTrackingDelegate.Broadcast(
+			CurTaskInfo.TaskName, GetSubTaskDescription(InTaskId, 1), false
+		);
 	}
 }
 
@@ -89,6 +92,9 @@ void UDkTaskComponent::UpdateTask(int InTaskId, int InSubTaskId)
 	{
 		OwnerPlayerState->OnAddTaskNoticeDelegate.Broadcast(ETaskNoticeState::TaskUpdate, CurTaskInfo.TaskName);
 		OwnerPlayerState->OnAddOrUpdateTaskDelegate.Broadcast(InTaskId);
+		OwnerPlayerState->OnUpdateTaskTrackingDelegate.Broadcast(
+			CurTaskInfo.TaskName, GetSubTaskDescription(InTaskId, InSubTaskId), false
+		);
 	}
 }
 
@@ -114,6 +120,9 @@ void UDkTaskComponent::CompleteTask(int InTaskId)
 	{
 		OwnerPlayerState->OnAddTaskNoticeDelegate.Broadcast(ETaskNoticeState::TaskCompleted, CurTaskInfo.TaskName);
 		OwnerPlayerState->OnAddOrUpdateTaskDelegate.Broadcast(InTaskId);
+		OwnerPlayerState->OnUpdateTaskTrackingDelegate.Broadcast(
+			FText::GetEmpty(), FText::GetEmpty(), false
+		);
 	}
 }
 
@@ -173,6 +182,57 @@ TArray<int> UDkTaskComponent::GetAllPlayerTaskId() const
 	return Results;
 }
 
+FText UDkTaskComponent::GetSubTaskDescription(int InMainTaskId, int InSubTaskId) const
+{
+	if (!CurrentTaskCompletionStatus.Contains(InMainTaskId)) return FText::GetEmpty();
+	const FTaskCompletionStatus* MainTaskCompletionStatus = CurrentTaskCompletionStatus.Find(InMainTaskId);
+
+	const FSubTaskCompletionStatus* SubTaskStatus = MainTaskCompletionStatus->SubTaskCompletionList.FindByPredicate(
+		[InSubTaskId](const FSubTaskCompletionStatus& SubTaskCompletion)-> bool
+		{
+			return SubTaskCompletion.SubTaskId == InSubTaskId;
+		}
+	);
+	if (!SubTaskStatus || SubTaskStatus->SubTaskId == 0) return FText::GetEmpty();
+
+	TMap<int, FTaskInfo> TaskInfoMap = UDkDataSubsystem::Get()->GetTaskInfo();
+	if (!TaskInfoMap.Contains(InMainTaskId)) return FText::GetEmpty();
+
+	FSubTaskInfo CurSubTaskInfo;
+	for (const FSubTaskInfo& SubTaskInfo : TaskInfoMap[InMainTaskId].SubTaskList)
+	{
+		if (SubTaskInfo.SubTaskId == InSubTaskId)
+		{
+			CurSubTaskInfo = SubTaskInfo;
+			break;
+		}
+	}
+	if (CurSubTaskInfo.SubTaskId == 0) return FText::GetEmpty();
+
+	FFormatNamedArguments Args;
+	Args.Add(TEXT("A"), SubTaskStatus->CurrentProgress);
+	Args.Add(TEXT("B"), CurSubTaskInfo.TargetProgress);
+	return FText::Format(CurSubTaskInfo.SubTaskDescription, Args);
+}
+
+int UDkTaskComponent::GetCurSubTaskId(int InMainTaskId) const
+{
+	if (!CurrentTaskCompletionStatus.Contains(InMainTaskId)) return 0;
+
+	int OutSubTaskId = 0;
+	TArray<FSubTaskCompletionStatus> SubTaskCompletionList =
+		CurrentTaskCompletionStatus[InMainTaskId].SubTaskCompletionList;
+	for (FSubTaskCompletionStatus SubTaskCompletionStatus : SubTaskCompletionList)
+	{
+		if (SubTaskCompletionStatus.SubTaskState == ETaskState::InProgress)
+		{
+			OutSubTaskId = SubTaskCompletionStatus.SubTaskId;
+			break;
+		}
+	}
+	return OutSubTaskId;
+}
+
 void UDkTaskComponent::BeginPlay()
 {
 	Super::BeginPlay();
@@ -183,6 +243,7 @@ void UDkTaskComponent::BeginPlay()
 	GetWorld()->GetTimerManager().SetTimer(TempTimeHandle, FTimerDelegate::CreateLambda([=, this]()
 	{
 		AcceptTask(1);
+		AcceptTask(2);
 	}), 5.f, false);
 
 	FTimerHandle TempTimeHandle1;
@@ -191,11 +252,11 @@ void UDkTaskComponent::BeginPlay()
 		UpdateTask(1, 2);
 	}), 10.f, false);
 
-	FTimerHandle TempTimeHandle2;
-	GetWorld()->GetTimerManager().SetTimer(TempTimeHandle2, FTimerDelegate::CreateLambda([this]()
-	{
-		CompleteTask(1);
-	}), 15.f, false);
+	// FTimerHandle TempTimeHandle2;
+	// GetWorld()->GetTimerManager().SetTimer(TempTimeHandle2, FTimerDelegate::CreateLambda([this]()
+	// {
+	// 	CompleteTask(1);
+	// }), 15.f, false);
 }
 
 bool UDkTaskComponent::HasFinishedAllPreconditionTask(const FGameplayTagContainer& InTagContainer) const

@@ -6,6 +6,7 @@
 #include "Widgets/DkWidgetActivatableBase.h"
 #include "DkWidgetGameHUDScreen.generated.h"
 
+class UTaskTrackingWidget;
 class UTaskNoticeWidget;
 class UMiniMapWidget;
 class UAbilitySystemComponent;
@@ -44,6 +45,9 @@ private:
 
 	UPROPERTY(meta=(BindWidget))
 	UTaskNoticeWidget* TaskNoticeWidget;
+
+	UPROPERTY(meta=(BindWidget))
+	UTaskTrackingWidget* TaskTrackingWidget;
 
 	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent> OwnerAbilitySystemComponent;

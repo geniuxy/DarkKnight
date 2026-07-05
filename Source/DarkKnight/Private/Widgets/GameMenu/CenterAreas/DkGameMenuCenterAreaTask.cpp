@@ -116,8 +116,9 @@ void UDkGameMenuCenterAreaTask::InsertTaskReference(int InTaskId)
 {
 	FTaskInfo CurTaskInfo = UDkTaskFunctionLibrary::GetTaskInfoById(InTaskId);
 	bool IsTaskFinished = OwnerPlayerState && OwnerPlayerState->IsTaskFinished(InTaskId);
-	UDkUITaskReferenceButton* TaskReferenceButton =
-		CreateWidget<UDkUITaskReferenceButton>(this, TaskReferenceButtonClass);
+	UDkUITaskReferenceButton* TaskReferenceButton = CreateWidget<UDkUITaskReferenceButton>(
+		this, TaskReferenceButtonClass
+	);
 	TaskReferenceButton->ConfigureTaskReference(CurTaskInfo, IsTaskFinished);
 
 	UVerticalBoxSlot* VerticalBoxSlot = nullptr;
@@ -170,6 +171,14 @@ void UDkGameMenuCenterAreaTask::UpdateTaskDetailInfo(int InTaskId)
 	TaskDescription->SetText(CurTaskInfo.TaskDescription);
 
 	UpdateSubTaskList(InTaskId, CurTaskInfo.SubTaskList);
+
+	if (OwnerPlayerState)
+	{
+		int CurSubTaskId = OwnerPlayerState->GetCurSubTaskId(CurTaskInfo.TaskId);
+		OwnerPlayerState->OnUpdateTaskTrackingDelegate.Broadcast(
+			CurTaskInfo.TaskName, OwnerPlayerState->GetSubTaskDescription(CurTaskInfo.TaskId, CurSubTaskId), true
+		);
+	}
 }
 
 bool UDkGameMenuCenterAreaTask::IsTaskDetailInfoNotEmpty() const

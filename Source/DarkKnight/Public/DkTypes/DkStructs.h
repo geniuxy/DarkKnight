@@ -451,13 +451,13 @@ struct FSubTaskInfo
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere)
-	int SubTaskId;
+	int SubTaskId = 0;
 
 	UPROPERTY(EditAnywhere)
 	FText SubTaskDescription;
 
 	UPROPERTY(EditAnywhere)
-	int TargetProgress;
+	int TargetProgress = 0;
 
 	UPROPERTY(EditAnywhere)
 	int NextSubTaskId;

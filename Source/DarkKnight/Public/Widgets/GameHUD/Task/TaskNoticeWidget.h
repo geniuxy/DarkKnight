@@ -19,9 +19,6 @@ class DARKKNIGHT_API UTaskNoticeWidget : public UCommonUserWidget
 {
 	GENERATED_BODY()
 
-public:
-	void AddTaskNotice(ETaskNoticeState InTaskNoticeState, const FText& InTaskName);
-
 protected:
 	//~Begin UUserWidget UFunction
 	virtual void NativeOnInitialized() override;
@@ -57,12 +54,10 @@ private:
 	TObjectPtr<ADkCharacterHero> OwnerCharacter;
 
 	UPROPERTY()
-	TObjectPtr<ADkGamePlayerController> OwnerPlayerController;
-
-	UPROPERTY()
 	TObjectPtr<ADkPlayerStateBase> OwnerPlayerState;
 
 	FTimerHandle TaskNoticeTimerHandle;
+	void AddTaskNotice(ETaskNoticeState InTaskNoticeState, const FText& InTaskName);
 	void TryPlayTaskNotice();
 
 	bool bIsPlayingNotice;

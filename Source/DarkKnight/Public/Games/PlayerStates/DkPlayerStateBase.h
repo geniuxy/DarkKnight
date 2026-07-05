@@ -14,6 +14,8 @@ class UDkTaskComponent;
 DECLARE_MULTICAST_DELEGATE_TwoParams(
 	FOnAddTaskNotice, ETaskNoticeState /*InTaskNoticeState*/, const FText& /*InTaskName*/)
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnAddOrUpdateTask, int /*InTaskId*/)
+DECLARE_MULTICAST_DELEGATE_ThreeParams(
+	FOnUpdateTaskTracking, const FText& /*InTaskNoticeState*/, const FText& /*InTaskName*/, bool /*bForce*/)
 /**
  * 
  */
@@ -27,6 +29,7 @@ public:
 
 	FOnAddTaskNotice OnAddTaskNoticeDelegate;
 	FOnAddOrUpdateTask OnAddOrUpdateTaskDelegate;
+	FOnUpdateTaskTracking OnUpdateTaskTrackingDelegate;
 
 protected:
 	virtual void BeginPlay() override;
@@ -44,6 +47,8 @@ public:
 	ETaskState GetSubTaskState(int InMainTaskId, int InSubTaskId) const;
 	int GetSubTaskProgress(int InMainTaskId, int InSubTaskId) const;
 	TArray<int> GetAllPlayerTaskId() const;
+	FText GetSubTaskDescription(int InMainTaskId, int InSubTaskId) const;
+	int GetCurSubTaskId(int InMainTaskId) const;
 
 protected:
 	UPROPERTY()

@@ -1,10 +1,9 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Widgets/GameHUD/TaskNotice/TaskNoticeWidget.h"
+#include "Widgets/GameHUD/Task/TaskNoticeWidget.h"
 
 #include "CommonTextBlock.h"
-#include "DkGameplayTags.h"
 #include "Characters/DkCharacterHero.h"
 #include "Controllers/DkGamePlayerController.h"
 #include "FunctionLibrarys/DkAbilitySystemFunctionLibrary.h"
@@ -13,29 +12,16 @@
 #include "Kismet/GameplayStatics.h"
 #include "Subsytems/DkUISubsystem.h"
 
-void UTaskNoticeWidget::AddTaskNotice(ETaskNoticeState InTaskNoticeState, const FText& InTaskName)
-{
-	FTaskNoticeInfo TaskNoticeInfo;
-	TaskNoticeInfo.TaskNoticeState = InTaskNoticeState;
-	TaskNoticeInfo.TaskName = InTaskName;
-
-	CachedTaskNoticeList.Add(TaskNoticeInfo);
-
-	GetWorld()->GetTimerManager().SetTimer(TaskNoticeTimerHandle, this, &ThisClass::TryPlayTaskNotice, 1.f, true);
-}
-
 void UTaskNoticeWidget::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
 
 	OwnerCharacter = Cast<ADkCharacterHero>(GetOwningPlayerPawn());
-	OwnerPlayerController = Cast<ADkGamePlayerController>(GetOwningPlayer());
-	if (OwnerPlayerController)
+	if (ADkGamePlayerController* OwnerPlayerController = Cast<ADkGamePlayerController>(GetOwningPlayer()))
 	{
 		OwnerPlayerState = OwnerPlayerController->GetPlayerState<ADkPlayerStateBase>();
+		OwnerPlayerState->OnAddTaskNoticeDelegate.AddUObject(this, &ThisClass::AddTaskNotice);
 	}
-
-	OwnerPlayerState->OnAddTaskNoticeDelegate.AddUObject(this, &ThisClass::AddTaskNotice);
 }
 
 void UTaskNoticeWidget::OnAnimationStarted_Implementation(const UWidgetAnimation* Animation)
@@ -52,6 +38,17 @@ void UTaskNoticeWidget::OnAnimationFinished_Implementation(const UWidgetAnimatio
 	{
 		bIsPlayingNotice = false;
 	}
+}
+
+void UTaskNoticeWidget::AddTaskNotice(ETaskNoticeState InTaskNoticeState, const FText& InTaskName)
+{
+	FTaskNoticeInfo TaskNoticeInfo;
+	TaskNoticeInfo.TaskNoticeState = InTaskNoticeState;
+	TaskNoticeInfo.TaskName = InTaskName;
+
+	CachedTaskNoticeList.Add(TaskNoticeInfo);
+
+	GetWorld()->GetTimerManager().SetTimer(TaskNoticeTimerHandle, this, &ThisClass::TryPlayTaskNotice, 0.5f, true, 0.f);
 }
 
 void UTaskNoticeWidget::TryPlayTaskNotice()

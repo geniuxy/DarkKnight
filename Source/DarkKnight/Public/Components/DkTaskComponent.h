@@ -30,6 +30,10 @@ public:
 	int GetSubTaskProgress(int InMainTaskId, int InSubTaskId) const;
 
 	TArray<int> GetAllPlayerTaskId() const;
+	
+	FText GetSubTaskDescription(int InMainTaskId, int InSubTaskId) const;
+
+	int GetCurSubTaskId(int InMainTaskId) const;
 
 protected:
 	virtual void BeginPlay() override;

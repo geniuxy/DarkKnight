@@ -18,4 +18,7 @@ class DARKKNIGHT_API UDkTaskFunctionLibrary : public UBlueprintFunctionLibrary
 public:
 	UFUNCTION(BlueprintCallable, Category="Task Function Library")
 	static FTaskInfo GetTaskInfoById(int InTaskId);
+
+	UFUNCTION(BlueprintCallable, Category="Task Function Library")
+	static TArray<int> GetAllSubTaskId(int InMainTaskId);
 };

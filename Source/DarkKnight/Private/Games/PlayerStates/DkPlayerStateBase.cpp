@@ -41,3 +41,13 @@ int ADkPlayerStateBase::GetSubTaskProgress(int InMainTaskId, int InSubTaskId) co
 	}
 	return 0;
 }
+
+TArray<int> ADkPlayerStateBase::GetAllPlayerTaskId() const
+{
+	TArray<int> Results;
+	if (PlayerTaskComponent)
+	{
+		Results = PlayerTaskComponent->GetAllPlayerTaskId();
+	}
+	return Results;
+}

@@ -24,6 +24,11 @@ void UDkGameMenuCenterAreaTask::NativeOnInitialized()
 	CompletedTaskTitle->OnClicked().AddUObject(this, &ThisClass::HandleCompletedTaskClicked);
 
 	OwnerPlayerController = Cast<ADkGamePlayerController>(GetOwningPlayer());
+	if (OwnerPlayerController)
+	{
+		OwnerPlayerState = OwnerPlayerController->GetPlayerState<ADkPlayerStateBase>();
+		OwnerPlayerState->OnAddOrUpdateTaskDelegate.AddUObject(this, &ThisClass::InsertOrUpdateTaskReference);
+	}
 }
 
 void UDkGameMenuCenterAreaTask::NativePreConstruct()
@@ -44,8 +49,6 @@ void UDkGameMenuCenterAreaTask::NativePreConstruct()
 void UDkGameMenuCenterAreaTask::NativeConstruct()
 {
 	Super::NativeConstruct();
-
-	InsertOrUpdateTaskReference(1);
 
 	ClearTaskDetailInfo();
 }
@@ -93,8 +96,7 @@ void UDkGameMenuCenterAreaTask::UpdateTaskReference(int InTaskId)
 	if (!TaskReferenceButtonMap.Contains(InTaskId)) return;
 
 	FTaskInfo CurTaskInfo = UDkTaskFunctionLibrary::GetTaskInfoById(InTaskId);
-	bool IsTaskFinished =
-		OwnerPlayerController && OwnerPlayerController->GetPlayerState<ADkPlayerStateBase>()->IsTaskFinished(InTaskId);
+	bool IsTaskFinished = OwnerPlayerState && OwnerPlayerState->IsTaskFinished(InTaskId);
 	UDkUITaskReferenceButton* TaskReferenceButton = TaskReferenceButtonMap.FindRef(InTaskId);
 	TaskReferenceButton->ConfigureTaskReference(CurTaskInfo, IsTaskFinished);
 
@@ -103,13 +105,17 @@ void UDkGameMenuCenterAreaTask::UpdateTaskReference(int InTaskId)
 		TaskReferenceButton->RemoveFromParent();
 		CompletedTaskList->AddChildToVerticalBox(TaskReferenceButton);
 	}
+
+	if (IsTaskDetailInfoNotEmpty())
+	{
+		UpdateTaskDetailInfo(InTaskId);
+	}
 }
 
 void UDkGameMenuCenterAreaTask::InsertTaskReference(int InTaskId)
 {
 	FTaskInfo CurTaskInfo = UDkTaskFunctionLibrary::GetTaskInfoById(InTaskId);
-	bool IsTaskFinished =
-		OwnerPlayerController && OwnerPlayerController->GetPlayerState<ADkPlayerStateBase>()->IsTaskFinished(InTaskId);
+	bool IsTaskFinished = OwnerPlayerState && OwnerPlayerState->IsTaskFinished(InTaskId);
 	UDkUITaskReferenceButton* TaskReferenceButton =
 		CreateWidget<UDkUITaskReferenceButton>(this, TaskReferenceButtonClass);
 	TaskReferenceButton->ConfigureTaskReference(CurTaskInfo, IsTaskFinished);
@@ -166,19 +172,21 @@ void UDkGameMenuCenterAreaTask::UpdateTaskDetailInfo(int InTaskId)
 	UpdateSubTaskList(InTaskId, CurTaskInfo.SubTaskList);
 }
 
+bool UDkGameMenuCenterAreaTask::IsTaskDetailInfoNotEmpty() const
+{
+	return TaskIcon->GetVisibility() != ESlateVisibility::Collapsed ||
+		!TaskName->GetText().IsEmpty() || SubTaskList->GetChildrenCount() != 0;
+}
+
 void UDkGameMenuCenterAreaTask::UpdateSubTaskList(int InMainTaskId, TArray<FSubTaskInfo> InSubTaskList)
 {
 	SubTaskList->ClearChildren();
 
 	for (const FSubTaskInfo& SubTaskInfo : InSubTaskList)
 	{
-		if (!OwnerPlayerController) continue;
-		ETaskState SubTaskState = OwnerPlayerController->GetPlayerState<ADkPlayerStateBase>()->GetSubTaskState(
-			InMainTaskId, SubTaskInfo.SubTaskId
-		);
-		int CurSubTaskProgress = OwnerPlayerController->GetPlayerState<ADkPlayerStateBase>()->GetSubTaskProgress(
-			InMainTaskId, SubTaskInfo.SubTaskId
-		);
+		if (!OwnerPlayerState) continue;
+		ETaskState SubTaskState = OwnerPlayerState->GetSubTaskState(InMainTaskId, SubTaskInfo.SubTaskId);
+		int CurSubTaskProgress = OwnerPlayerState->GetSubTaskProgress(InMainTaskId, SubTaskInfo.SubTaskId);
 
 		if (SubTaskState == ETaskState::ToBeAccepted) continue;
 

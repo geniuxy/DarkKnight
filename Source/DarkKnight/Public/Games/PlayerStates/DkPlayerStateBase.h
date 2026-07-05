@@ -10,6 +10,10 @@
 #include "DkPlayerStateBase.generated.h"
 
 class UDkTaskComponent;
+
+DECLARE_MULTICAST_DELEGATE_TwoParams(
+	FOnAddTaskNotice, ETaskNoticeState /*InTaskNoticeState*/, const FText& /*InTaskName*/)
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnAddOrUpdateTask, int /*InTaskId*/)
 /**
  * 
  */
@@ -20,6 +24,9 @@ class DARKKNIGHT_API ADkPlayerStateBase : public APlayerState
 
 public:
 	ADkPlayerStateBase();
+
+	FOnAddTaskNotice OnAddTaskNoticeDelegate;
+	FOnAddOrUpdateTask OnAddOrUpdateTaskDelegate;
 
 protected:
 	virtual void BeginPlay() override;
@@ -36,6 +43,7 @@ public:
 	bool IsTaskFinished(int InTaskId) const;
 	ETaskState GetSubTaskState(int InMainTaskId, int InSubTaskId) const;
 	int GetSubTaskProgress(int InMainTaskId, int InSubTaskId) const;
+	TArray<int> GetAllPlayerTaskId() const;
 
 protected:
 	UPROPERTY()

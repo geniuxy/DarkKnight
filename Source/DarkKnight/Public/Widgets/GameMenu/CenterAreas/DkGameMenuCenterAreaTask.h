@@ -7,6 +7,7 @@
 #include "Widgets/DkWidgetActivatableBase.h"
 #include "DkGameMenuCenterAreaTask.generated.h"
 
+class ADkPlayerStateBase;
 class UDkWidgetSubTaskTarget;
 class ADkGamePlayerController;
 class UDkUITaskReferenceButton;
@@ -62,6 +63,9 @@ private:
 	TObjectPtr<ADkGamePlayerController> OwnerPlayerController;
 
 	UPROPERTY()
+	TObjectPtr<ADkPlayerStateBase> OwnerPlayerState;
+
+	UPROPERTY()
 	TMap<int, UDkUITaskReferenceButton*> TaskReferenceButtonMap; 
 	
 	void HandleMainQuestTaskClicked();
@@ -73,6 +77,7 @@ private:
 	void InsertTaskReference(int InTaskId);
 	void ClearTaskDetailInfo();
 	void UpdateTaskDetailInfo(int InTaskId);
+	bool IsTaskDetailInfoNotEmpty() const;
 	void UpdateSubTaskList(int InMainTaskId, TArray<FSubTaskInfo> InSubTaskList);
 
 	UPROPERTY(EditDefaultsOnly, Category="Task Reference")

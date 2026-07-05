@@ -6,6 +6,7 @@
 #include "Widgets/DkWidgetActivatableBase.h"
 #include "DkWidgetGameHUDScreen.generated.h"
 
+class UTaskNoticeWidget;
 class UMiniMapWidget;
 class UAbilitySystemComponent;
 class UValueGauge;
@@ -40,6 +41,9 @@ private:
 
 	UPROPERTY(meta=(BindWidget))
 	UMiniMapWidget* MiniMap;
+
+	UPROPERTY(meta=(BindWidget))
+	UTaskNoticeWidget* TaskNoticeWidget;
 
 	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent> OwnerAbilitySystemComponent;

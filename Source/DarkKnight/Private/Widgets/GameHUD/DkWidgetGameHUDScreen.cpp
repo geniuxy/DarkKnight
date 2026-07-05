@@ -7,6 +7,7 @@
 #include "FunctionLibrarys/DkUIFunctionLibrary.h"
 #include "GAS/DkAttributeSet.h"
 #include "Widgets/GameHUD/Stats/ValueGauge.h"
+#include "Widgets/GameHUD/TaskNotice/TaskNoticeWidget.h"
 
 void UDkWidgetGameHUDScreen::NativeOnInitialized()
 {
@@ -20,6 +21,8 @@ void UDkWidgetGameHUDScreen::NativeOnActivated()
 	Super::NativeOnActivated();
 
 	UDkUIFunctionLibrary::ToggleInputMode(this, EDkInputMode::GameOnly);
+
+	TaskNoticeWidget->SetRenderOpacity(0.f);
 
 	OwnerAbilitySystemComponent = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetOwningPlayerPawn());
 	if (OwnerAbilitySystemComponent)

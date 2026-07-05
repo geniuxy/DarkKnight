@@ -528,3 +528,15 @@ struct FTaskCompletionStatus
 	UPROPERTY(BlueprintReadOnly)
 	TArray<FSubTaskCompletionStatus> SubTaskCompletionList;
 };
+
+USTRUCT(BlueprintType)
+struct FTaskNoticeInfo
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly)
+	ETaskNoticeState TaskNoticeState;
+
+	UPROPERTY(BlueprintReadOnly)
+	FText TaskName;
+};

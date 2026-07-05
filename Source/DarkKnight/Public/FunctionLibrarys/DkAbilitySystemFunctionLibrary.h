@@ -16,6 +16,7 @@ class DARKKNIGHT_API UDkAbilitySystemFunctionLibrary : public UAbilitySystemBlue
 
 public:
 	static bool IsActorDead(const AActor* ActorToCheck);
+	static bool IsActorInDialog(const AActor* ActorToCheck);
 
 	static bool ActorHasTag(const AActor* ActorToCheck, const FGameplayTag& Tag);
 };

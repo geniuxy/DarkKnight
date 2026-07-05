@@ -4,6 +4,9 @@
 #include "Components/DkTaskComponent.h"
 
 #include "DarkKnightDebugHelper.h"
+#include "Characters/DkCharacterHero.h"
+#include "FunctionLibrarys/DkTaskFunctionLibrary.h"
+#include "Games/PlayerStates/DkPlayerStateBase.h"
 #include "Subsytems/EngineSubsystems/DkDataSubsystem.h"
 
 
@@ -58,6 +61,60 @@ void UDkTaskComponent::AcceptTask(int InTaskId)
 
 	UpdateTaskState(InTaskId, ETaskState::InProgress);
 	UpdateSubTaskState(InTaskId, 1, ETaskState::InProgress);
+
+	if (OwnerPlayerState)
+	{
+		OwnerPlayerState->OnAddTaskNoticeDelegate.Broadcast(ETaskNoticeState::NewTask, CurTaskInfo.TaskName);
+		OwnerPlayerState->OnAddOrUpdateTaskDelegate.Broadcast(InTaskId);
+	}
+}
+
+void UDkTaskComponent::UpdateTask(int InTaskId, int InSubTaskId)
+{
+	if (!CurrentTaskCompletionStatus.Contains(InTaskId)) return;
+
+	TMap<int, FTaskInfo> TaskInfoMap = UDkDataSubsystem::Get()->GetTaskInfo();
+	if (!TaskInfoMap.Contains(InTaskId)) return;
+
+	FTaskInfo CurTaskInfo = TaskInfoMap.FindRef(InTaskId);
+	if (!CurTaskInfo.PreconditionTags.IsEmpty() && !HasFinishedAllPreconditionTask(CurTaskInfo.PreconditionTags))
+	{
+		return;
+	}
+
+	UpdateSubTaskState(InTaskId, InSubTaskId - 1, ETaskState::Completed);
+	UpdateSubTaskState(InTaskId, InSubTaskId, ETaskState::InProgress);
+
+	if (OwnerPlayerState)
+	{
+		OwnerPlayerState->OnAddTaskNoticeDelegate.Broadcast(ETaskNoticeState::TaskUpdate, CurTaskInfo.TaskName);
+		OwnerPlayerState->OnAddOrUpdateTaskDelegate.Broadcast(InTaskId);
+	}
+}
+
+void UDkTaskComponent::CompleteTask(int InTaskId)
+{
+	if (!CurrentTaskCompletionStatus.Contains(InTaskId)) return;
+
+	TMap<int, FTaskInfo> TaskInfoMap = UDkDataSubsystem::Get()->GetTaskInfo();
+	if (!TaskInfoMap.Contains(InTaskId)) return;
+	FTaskInfo CurTaskInfo = TaskInfoMap.FindRef(InTaskId);
+	if (!CurTaskInfo.PreconditionTags.IsEmpty() && !HasFinishedAllPreconditionTask(CurTaskInfo.PreconditionTags))
+	{
+		return;
+	}
+
+	UpdateTaskState(InTaskId, ETaskState::Completed);
+	for (int SubTaskId : UDkTaskFunctionLibrary::GetAllSubTaskId(InTaskId))
+	{
+		UpdateSubTaskState(InTaskId, SubTaskId, ETaskState::Completed);
+	}
+
+	if (OwnerPlayerState)
+	{
+		OwnerPlayerState->OnAddTaskNoticeDelegate.Broadcast(ETaskNoticeState::TaskCompleted, CurTaskInfo.TaskName);
+		OwnerPlayerState->OnAddOrUpdateTaskDelegate.Broadcast(InTaskId);
+	}
 }
 
 bool UDkTaskComponent::IsTaskFinished(int InTaskId) const
@@ -103,15 +160,42 @@ int UDkTaskComponent::GetSubTaskProgress(int InMainTaskId, int InSubTaskId) cons
 	return CurProgress;
 }
 
+TArray<int> UDkTaskComponent::GetAllPlayerTaskId() const
+{
+	TArray<int> Results;
+	for (TTuple<int, FTaskCompletionStatus> CompletionPair : CurrentTaskCompletionStatus)
+	{
+		if (CompletionPair.Value.TaskState != ETaskState::ToBeAccepted)
+		{
+			Results.Add(CompletionPair.Key);
+		}
+	}
+	return Results;
+}
+
 void UDkTaskComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
+	OwnerPlayerState = Cast<ADkPlayerStateBase>(GetOwner());
+
 	FTimerHandle TempTimeHandle;
-	GetWorld()->GetTimerManager().SetTimer(TempTimeHandle, FTimerDelegate::CreateLambda([this]()
+	GetWorld()->GetTimerManager().SetTimer(TempTimeHandle, FTimerDelegate::CreateLambda([=, this]()
 	{
 		AcceptTask(1);
-	}), 0.2f, false);
+	}), 5.f, false);
+
+	FTimerHandle TempTimeHandle1;
+	GetWorld()->GetTimerManager().SetTimer(TempTimeHandle1, FTimerDelegate::CreateLambda([this]()
+	{
+		UpdateTask(1, 2);
+	}), 10.f, false);
+
+	FTimerHandle TempTimeHandle2;
+	GetWorld()->GetTimerManager().SetTimer(TempTimeHandle2, FTimerDelegate::CreateLambda([this]()
+	{
+		CompleteTask(1);
+	}), 15.f, false);
 }
 
 bool UDkTaskComponent::HasFinishedAllPreconditionTask(const FGameplayTagContainer& InTagContainer) const
@@ -137,6 +221,8 @@ void UDkTaskComponent::UpdateSubTaskState(int InMainTaskId, int InSubTaskId, ETa
 			return SubTaskCompletion.SubTaskId == InSubTaskId;
 		}
 	);
+	if (SubTaskStatus->SubTaskId == 0) return;
+
 	SubTaskStatus->SubTaskState = InTaskState;
 
 	if (InTaskState == ETaskState::Completed && IsNextSubTaskIdZero(InMainTaskId, InSubTaskId))

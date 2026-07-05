@@ -239,6 +239,15 @@ enum class ETaskState: uint8
 	None
 };
 
+UENUM(BlueprintType)
+enum class ETaskNoticeState: uint8
+{
+	NewTask UMETA(DisplayName = "新任务"),
+	TaskUpdate UMETA(DisplayName = "任务更新"),
+	TaskCompleted UMETA(DisplayName = "任务完成"),
+	None
+};
+
 /**********************************************************************/
 /*                                Area                                */
 /**********************************************************************/

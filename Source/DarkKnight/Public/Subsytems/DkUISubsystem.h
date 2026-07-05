@@ -56,6 +56,10 @@ public:
 
 	bool IsWidgetStackEmpty(const FGameplayTag& InWidgetStackTag) const;
 
+	bool IsWidgetStackVisible(const FGameplayTag& InWidgetStackTag) const;
+
+	bool IsGameMenuOpen() const;
+
 	UPROPERTY(BlueprintAssignable)
 	FOnButtonDescriptionTextUpdatedDelegate OnButtonDescriptionTextUpdated;
 

@@ -12,6 +12,11 @@ bool UDkAbilitySystemFunctionLibrary::IsActorDead(const AActor* ActorToCheck)
 	return ActorHasTag(ActorToCheck, DkGameplayTags::Dk_Stats_Dead);
 }
 
+bool UDkAbilitySystemFunctionLibrary::IsActorInDialog(const AActor* ActorToCheck)
+{
+	return ActorHasTag(ActorToCheck, DkGameplayTags::Dk_Stats_InDialog);
+}
+
 bool UDkAbilitySystemFunctionLibrary::ActorHasTag(const AActor* ActorToCheck, const FGameplayTag& Tag)
 {
 	if (const IAbilitySystemInterface* ActorASI = Cast<IAbilitySystemInterface>(ActorToCheck))

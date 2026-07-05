@@ -124,3 +124,18 @@ bool UDkUISubsystem::IsWidgetStackEmpty(const FGameplayTag& InWidgetStackTag) co
 		CreatedPrimaryLayout->FindWidgetStackByTag(InWidgetStackTag);
 	return FoundWidgetStack->GetNumWidgets() == 0;
 }
+
+bool UDkUISubsystem::IsWidgetStackVisible(const FGameplayTag& InWidgetStackTag) const
+{
+	UCommonActivatableWidgetContainerBase* FoundWidgetStack =
+		CreatedPrimaryLayout->FindWidgetStackByTag(InWidgetStackTag);
+	return FoundWidgetStack->GetVisibility() != ESlateVisibility::Collapsed &&
+		FoundWidgetStack->GetVisibility() != ESlateVisibility::Hidden;
+}
+
+bool UDkUISubsystem::IsGameMenuOpen() const
+{
+	UCommonActivatableWidgetContainerBase* WidgetStack =
+		CreatedPrimaryLayout->FindWidgetStackByTag(DkGameplayTags::Dk_WidgetStack_GameMenu);
+	return WidgetStack->GetNumWidgets() > 0;
+}

@@ -21,6 +21,8 @@ void UGA_Sprint::ActivateAbility(
 	const FGameplayAbilityActivationInfo ActivationInfo,
 	const FGameplayEventData* TriggerEventData)
 {
+	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+	
 	if (!K2_CommitAbility() || !IncreaseMoveSpeedEffect)
 	{
 		K2_EndAbility();

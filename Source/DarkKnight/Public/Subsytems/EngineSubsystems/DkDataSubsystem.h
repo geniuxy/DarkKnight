@@ -58,11 +58,16 @@ public:
 	/**********************************************************************/
 public:
 	void InitializeTaskInfo();
+	void InitializeEnemyTaskInfo();
 
 private:
 	UPROPERTY(Transient)
 	TMap<int, FTaskInfo> CachedTaskInfoMap;
 
+	UPROPERTY(Transient)
+	TMap<FGameplayTag, FCommitTaskDetailsArray> CachedEnemyTaskMap;
+
 public:
 	FORCEINLINE TMap<int, FTaskInfo> GetTaskInfo() const { return CachedTaskInfoMap; }
+	FORCEINLINE TMap<FGameplayTag, FCommitTaskDetailsArray> GetEnemyTaskMap() const { return CachedEnemyTaskMap; }
 };

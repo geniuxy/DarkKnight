@@ -197,7 +197,7 @@ void UDkGameMenuCenterAreaTask::UpdateSubTaskList(int InMainTaskId, TArray<FSubT
 		ETaskState SubTaskState = OwnerPlayerState->GetSubTaskState(InMainTaskId, SubTaskInfo.SubTaskId);
 		int CurSubTaskProgress = OwnerPlayerState->GetSubTaskProgress(InMainTaskId, SubTaskInfo.SubTaskId);
 
-		if (SubTaskState == ETaskState::ToBeAccepted) continue;
+		if (SubTaskState == ETaskState::None || SubTaskState == ETaskState::ToBeAccepted) continue;
 
 		UDkWidgetSubTaskTarget* SubTaskTarget = CreateWidget<UDkWidgetSubTaskTarget>(this, SubTaskTargetClass);
 		SubTaskTarget->ConfigureSubTaskTarget(

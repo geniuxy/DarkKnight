@@ -9,12 +9,37 @@
 #include "Characters/DkCharacterBase.h"
 #include "FunctionLibrarys/DkAbilitySystemFunctionLibrary.h"
 #include "GameFramework/Character.h"
+#include "Games/PlayerStates/DkPlayerStateBase.h"
 #include "GAS/DkAbilitySystemComponent.h"
 
 UDkGameplayAbilityBase::UDkGameplayAbilityBase()
 {
 	ActivationBlockedTags.AddTag(DkGameplayTags::Dk_Stats_Stun);
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
+}
+
+void UDkGameplayAbilityBase::ActivateAbility(
+	const FGameplayAbilitySpecHandle Handle,
+	const FGameplayAbilityActorInfo* ActorInfo,
+	const FGameplayAbilityActivationInfo ActivationInfo,
+	const FGameplayEventData* TriggerEventData)
+{
+	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+
+	if (TaskToCommit.MainTaskId != 0 && TaskToCommit.SubTaskId != 0)
+	{
+		if (GetOwnerAvatarCharacter() && GetOwnerAvatarCharacter()->IsLocallyControlled())
+		{
+			if (ADkPlayerStateBase* OwnerPlayerState = GetOwnerAvatarCharacter()->GetPlayerState<ADkPlayerStateBase>())
+			{
+				OwnerPlayerState->OnCommitTaskDelegate.Broadcast(
+					TaskToCommit.MainTaskId,
+					TaskToCommit.SubTaskId,
+					TaskToCommit.CommitCount
+				);
+			}
+		}
+	}
 }
 
 bool UDkGameplayAbilityBase::CanActivateAbility(

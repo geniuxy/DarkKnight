@@ -82,3 +82,20 @@ void UDkDataSubsystem::InitializeTaskInfo()
 		}
 	}
 }
+
+void UDkDataSubsystem::InitializeEnemyTaskInfo()
+{
+	CachedEnemyTaskMap.Empty();
+	const UDkDataDeveloperSetting* DataDeveloperSettings = GetDefault<UDkDataDeveloperSetting>();
+	if (UDataTable* EnemyTaskDataTable = DataDeveloperSettings->GetEnemyTaskDataTable())
+	{
+		for (FName RowName : EnemyTaskDataTable->GetRowNames())
+		{
+			FEnemyTaskInfo* EnemyTaskInfo = EnemyTaskDataTable->FindRow<FEnemyTaskInfo>(RowName, TEXT("没找到RowName对应的Row"));
+			if (!CachedEnemyTaskMap.Contains(EnemyTaskInfo->EnemyTag))
+			{
+				CachedEnemyTaskMap.Add(EnemyTaskInfo->EnemyTag, EnemyTaskInfo->CommitTaskDetails);
+			}
+		}
+	}
+}

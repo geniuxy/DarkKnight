@@ -3,7 +3,6 @@
 
 #include "Components/DkTaskComponent.h"
 
-#include "DarkKnightDebugHelper.h"
 #include "Characters/DkCharacterHero.h"
 #include "FunctionLibrarys/DkTaskFunctionLibrary.h"
 #include "Games/PlayerStates/DkPlayerStateBase.h"
@@ -17,7 +16,7 @@ UDkTaskComponent::UDkTaskComponent()
 	CachedTaskTags.Reset();
 }
 
-void UDkTaskComponent::UpdatePlayerTaskCompletionStatus()
+void UDkTaskComponent::InitPlayerTaskCompletionStatus()
 {
 	TMap<int, FTaskInfo> TaskInfoMap = UDkDataSubsystem::Get()->GetTaskInfo();
 	for (TTuple<int, FTaskInfo> TaskInfoPair : TaskInfoMap)
@@ -33,15 +32,53 @@ void UDkTaskComponent::UpdatePlayerTaskCompletionStatus()
 				Status.TaskState = ETaskState::ToBeAccepted;
 			}
 			// TODO: 如果未来加入存档功能，可以在这更改初始任务状态
-			for (FSubTaskInfo SubTaskInfo : TaskInfo.SubTaskList)
+			for (int i = 0; i < TaskInfo.SubTaskList.Num(); ++i)
 			{
+				FSubTaskInfo SubTaskInfo = TaskInfo.SubTaskList[i];
 				FSubTaskCompletionStatus SubTaskCompletionStatus;
 				SubTaskCompletionStatus.SubTaskId = SubTaskInfo.SubTaskId;
-				SubTaskCompletionStatus.SubTaskState = ETaskState::ToBeAccepted;
+				SubTaskCompletionStatus.SubTaskState = i == 0 ? ETaskState::ToBeAccepted : ETaskState::None;
 				SubTaskCompletionStatus.CurrentProgress = 0;
 				Status.SubTaskCompletionList.Add(SubTaskCompletionStatus);
 			}
 			CurrentTaskCompletionStatus.Add(TaskInfoPair.Key, Status);
+		}
+	}
+}
+
+void UDkTaskComponent::CommitTask(int InTaskId, int InSubTaskId, int CommitCount)
+{
+	if (!CurrentTaskCompletionStatus.Contains(InTaskId)) return;
+
+	ETaskState TaskState = GetTaskState(InTaskId);
+	ETaskState SubTaskState = GetSubTaskState(InTaskId, InSubTaskId);
+	if (TaskState == ETaskState::Completed || SubTaskState == ETaskState::Completed || SubTaskState == ETaskState::None)
+	{
+		return;
+	}
+
+	if (TaskState == ETaskState::ToBeAccepted && SubTaskState == ETaskState::ToBeAccepted)
+	{
+		AcceptTask(InTaskId);
+	}
+	else if (TaskState == ETaskState::InProgress && SubTaskState == ETaskState::InProgress)
+	{
+		int SubTaskTarget = UDkTaskFunctionLibrary::GetSubTaskTarget(InTaskId, InSubTaskId);
+		int CurSubTaskProgress = GetSubTaskProgress(InTaskId, InSubTaskId) + CommitCount;
+		if (CurSubTaskProgress >= SubTaskTarget)
+		{
+			if (UDkTaskFunctionLibrary::IsNextSubTaskIdZero(InTaskId, InSubTaskId))
+			{
+				CompleteTask(InTaskId);
+			}
+			else
+			{
+				CompleteSubTask(InTaskId, InSubTaskId);
+			}
+		}
+		else
+		{
+			UpdateSubTaskProgress(InTaskId, InSubTaskId, CurSubTaskProgress);
 		}
 	}
 }
@@ -72,7 +109,33 @@ void UDkTaskComponent::AcceptTask(int InTaskId)
 	}
 }
 
-void UDkTaskComponent::UpdateTask(int InTaskId, int InSubTaskId)
+void UDkTaskComponent::UpdateSubTaskProgress(int InTaskId, int InSubTaskId, int CurProgress)
+{
+	if (!CurrentTaskCompletionStatus.Contains(InTaskId)) return;
+
+	FTaskCompletionStatus* TaskCompletionStatus = CurrentTaskCompletionStatus.Find(InTaskId);
+	for (FSubTaskCompletionStatus& SubTaskCompletionStatus : TaskCompletionStatus->SubTaskCompletionList)
+	{
+		if (SubTaskCompletionStatus.SubTaskId == InSubTaskId)
+		{
+			SubTaskCompletionStatus.CurrentProgress = CurProgress;
+		}
+	}
+
+	TMap<int, FTaskInfo> TaskInfoMap = UDkDataSubsystem::Get()->GetTaskInfo();
+	if (!TaskInfoMap.Contains(InTaskId)) return;
+	FTaskInfo CurTaskInfo = TaskInfoMap.FindRef(InTaskId);
+
+	if (OwnerPlayerState)
+	{
+		OwnerPlayerState->OnAddOrUpdateTaskDelegate.Broadcast(InTaskId);
+		OwnerPlayerState->OnUpdateTaskTrackingDelegate.Broadcast(
+			CurTaskInfo.TaskName, GetSubTaskDescription(InTaskId, InSubTaskId), false
+		);
+	}
+}
+
+void UDkTaskComponent::CompleteSubTask(int InTaskId, int InSubTaskId)
 {
 	if (!CurrentTaskCompletionStatus.Contains(InTaskId)) return;
 
@@ -85,15 +148,16 @@ void UDkTaskComponent::UpdateTask(int InTaskId, int InSubTaskId)
 		return;
 	}
 
-	UpdateSubTaskState(InTaskId, InSubTaskId - 1, ETaskState::Completed);
-	UpdateSubTaskState(InTaskId, InSubTaskId, ETaskState::InProgress);
+	UpdateSubTaskState(InTaskId, InSubTaskId, ETaskState::Completed);
+	int NextSubTaskId = UDkTaskFunctionLibrary::GetNextSubTaskId(InTaskId, InSubTaskId);
+	UpdateSubTaskState(InTaskId, NextSubTaskId, ETaskState::InProgress);
 
 	if (OwnerPlayerState)
 	{
 		OwnerPlayerState->OnAddTaskNoticeDelegate.Broadcast(ETaskNoticeState::TaskUpdate, CurTaskInfo.TaskName);
 		OwnerPlayerState->OnAddOrUpdateTaskDelegate.Broadcast(InTaskId);
 		OwnerPlayerState->OnUpdateTaskTrackingDelegate.Broadcast(
-			CurTaskInfo.TaskName, GetSubTaskDescription(InTaskId, InSubTaskId), false
+			CurTaskInfo.TaskName, GetSubTaskDescription(InTaskId, NextSubTaskId), false
 		);
 	}
 }
@@ -131,6 +195,13 @@ bool UDkTaskComponent::IsTaskFinished(int InTaskId) const
 	if (!CurrentTaskCompletionStatus.Contains(InTaskId)) return false;
 
 	return CurrentTaskCompletionStatus[InTaskId].TaskState == ETaskState::Completed;
+}
+
+ETaskState UDkTaskComponent::GetTaskState(int InMainTaskId) const
+{
+	if (!CurrentTaskCompletionStatus.Contains(InMainTaskId)) return ETaskState::None;
+
+	return CurrentTaskCompletionStatus[InMainTaskId].TaskState;
 }
 
 ETaskState UDkTaskComponent::GetSubTaskState(int InMainTaskId, int InSubTaskId) const
@@ -238,25 +309,10 @@ void UDkTaskComponent::BeginPlay()
 	Super::BeginPlay();
 
 	OwnerPlayerState = Cast<ADkPlayerStateBase>(GetOwner());
-
-	FTimerHandle TempTimeHandle;
-	GetWorld()->GetTimerManager().SetTimer(TempTimeHandle, FTimerDelegate::CreateLambda([=, this]()
+	if (OwnerPlayerState)
 	{
-		AcceptTask(1);
-		AcceptTask(2);
-	}), 5.f, false);
-
-	FTimerHandle TempTimeHandle1;
-	GetWorld()->GetTimerManager().SetTimer(TempTimeHandle1, FTimerDelegate::CreateLambda([this]()
-	{
-		UpdateTask(1, 2);
-	}), 10.f, false);
-
-	// FTimerHandle TempTimeHandle2;
-	// GetWorld()->GetTimerManager().SetTimer(TempTimeHandle2, FTimerDelegate::CreateLambda([this]()
-	// {
-	// 	CompleteTask(1);
-	// }), 15.f, false);
+		OwnerPlayerState->OnCommitTaskDelegate.AddUObject(this, &ThisClass::CommitTask);
+	}
 }
 
 bool UDkTaskComponent::HasFinishedAllPreconditionTask(const FGameplayTagContainer& InTagContainer) const
@@ -286,24 +342,12 @@ void UDkTaskComponent::UpdateSubTaskState(int InMainTaskId, int InSubTaskId, ETa
 
 	SubTaskStatus->SubTaskState = InTaskState;
 
-	if (InTaskState == ETaskState::Completed && IsNextSubTaskIdZero(InMainTaskId, InSubTaskId))
+	if (InTaskState == ETaskState::Completed)
 	{
-		UpdateTaskState(InMainTaskId, ETaskState::Completed);
-	}
-}
-
-bool UDkTaskComponent::IsNextSubTaskIdZero(int InMainTaskId, int InSubTaskId) const
-{
-	TMap<int, FTaskInfo> TaskInfoMap = UDkDataSubsystem::Get()->GetTaskInfo();
-	if (!TaskInfoMap.Contains(InMainTaskId)) return false;
-
-	for (const FSubTaskInfo& SubTaskInfo : TaskInfoMap[InMainTaskId].SubTaskList)
-	{
-		if (SubTaskInfo.SubTaskId == InSubTaskId)
+		SubTaskStatus->CurrentProgress = UDkTaskFunctionLibrary::GetSubTaskTarget(InMainTaskId, InSubTaskId);
+		if (UDkTaskFunctionLibrary::IsNextSubTaskIdZero(InMainTaskId, InSubTaskId))
 		{
-			return SubTaskInfo.NextSubTaskId == 0;
+			UpdateTaskState(InMainTaskId, ETaskState::Completed);
 		}
 	}
-
-	return true;
 }

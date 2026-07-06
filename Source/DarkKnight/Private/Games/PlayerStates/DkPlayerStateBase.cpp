@@ -16,7 +16,7 @@ void ADkPlayerStateBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	PlayerTaskComponent->UpdatePlayerTaskCompletionStatus();
+	PlayerTaskComponent->InitPlayerTaskCompletionStatus();
 }
 
 bool ADkPlayerStateBase::IsTaskFinished(int InTaskId) const

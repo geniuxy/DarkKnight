@@ -6,6 +6,7 @@
 #include "CommonLazyImage.h"
 #include "Characters/DkCharacterBase.h"
 #include "Engine/Canvas.h"
+#include "FunctionLibrarys/DkAbilitySystemFunctionLibrary.h"
 #include "FunctionLibrarys/DkGameFunctionLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
 
@@ -79,6 +80,7 @@ void UMiniMapWidget::DrawActorIconsToMiniMap(TArray<ADkCharacterBase*> Actors, U
 
 	for (ADkCharacterBase* Actor : Actors)
 	{
+		if (UDkAbilitySystemFunctionLibrary::IsActorDead(Actor)) continue;
 		if (DrawTexture)
 		{
 			CachedCanvas->K2_DrawTexture(

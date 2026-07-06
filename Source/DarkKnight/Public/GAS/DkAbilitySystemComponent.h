@@ -30,6 +30,8 @@ public:
 
 	UInputMappingContext* GetInputMappingContext() const;
 	TMap<EAbilityInputID, UInputAction*> GetGameplayAbilityInputActions() const;
+	
+	void IsKilledBy(AActor* Killer);
 
 protected:
 	virtual void BeginPlay() override;

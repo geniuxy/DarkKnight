@@ -69,6 +69,7 @@ private:
 	
 	bool bCanClickToNextDialog = false;
 	int CurDialogId = 0;
+	int LastDialogId = 0;
 	FDialogContent CurDialogContent;
 	
 	void DialogConfirmButtonClicked();

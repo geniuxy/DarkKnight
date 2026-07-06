@@ -3,6 +3,7 @@
 
 #include "GAS/DkAttributeSet.h"
 #include "GameplayEffectExtension.h"
+#include "GAS/DkAbilitySystemComponent.h"
 
 void UDkAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
 {
@@ -18,6 +19,9 @@ void UDkAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, fl
 
 void UDkAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
+	const FGameplayEffectContextHandle& Context = Data.EffectSpec.GetContext();
+	AActor* EffectCauser = Context.GetEffectCauser();
+
 	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
 	{
 		SetHealth(FMath::Clamp(GetHealth(), 0, GetMaxHealth()));
@@ -27,6 +31,14 @@ void UDkAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallback
 	{
 		SetEnergy(FMath::Clamp(GetEnergy(), 0, GetMaxEnergy()));
 		SetCachedEnergyPercent(GetEnergy() / GetMaxEnergy());
+	}
+
+	if (UDkAbilitySystemComponent* OwnerASC = Cast<UDkAbilitySystemComponent>(GetOwningAbilitySystemComponent()))
+	{
+		if (GetHealth() == 0)
+		{
+			OwnerASC->IsKilledBy(EffectCauser);
+		}
 	}
 }
 

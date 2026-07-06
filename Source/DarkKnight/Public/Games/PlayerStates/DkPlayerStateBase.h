@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/DkActionComponent.h"
 #include "DarkKnight/DarkKnight.h"
 #include "DkTypes/DkStructs.h"
 #include "GameFramework/PlayerState.h"
@@ -16,6 +15,8 @@ DECLARE_MULTICAST_DELEGATE_TwoParams(
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnAddOrUpdateTask, int /*InTaskId*/)
 DECLARE_MULTICAST_DELEGATE_ThreeParams(
 	FOnUpdateTaskTracking, const FText& /*InTaskNoticeState*/, const FText& /*InTaskName*/, bool /*bForce*/)
+DECLARE_MULTICAST_DELEGATE_ThreeParams(
+	FOnCommitTask, int /*InMainTaskId*/, int /*InSubTaskId*/, int /*InCommitCount*/)
 /**
  * 
  */
@@ -30,6 +31,7 @@ public:
 	FOnAddTaskNotice OnAddTaskNoticeDelegate;
 	FOnAddOrUpdateTask OnAddOrUpdateTaskDelegate;
 	FOnUpdateTaskTracking OnUpdateTaskTrackingDelegate;
+	FOnCommitTask OnCommitTaskDelegate;
 
 protected:
 	virtual void BeginPlay() override;

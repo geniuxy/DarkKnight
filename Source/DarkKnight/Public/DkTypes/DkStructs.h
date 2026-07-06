@@ -1,9 +1,8 @@
 ﻿#pragma once
-#include "ActiveGameplayEffectHandle.h"
 #include "GameplayAbilitySpec.h"
 #include "InputAction.h"
-#include "DarkKnight/DarkKnight.h"
 #include "DkTypes/DkEnums.h"
+#include "StructUtils/InstancedStruct.h"
 
 #include "DkStructs.generated.h"
 
@@ -438,12 +437,50 @@ struct FDialogContent : public FTableRowBase
 	
 	UPROPERTY(EditAnywhere)
 	int NextContentId;
+	
+	UPROPERTY(EditAnywhere, meta = (BaseStruct = "/Script/DarkKnight.CommitTaskDetails"))
+	FInstancedStruct CommitTaskDetails;
 };
-
 
 /**********************************************************************/
 /*                                Task                                */
 /**********************************************************************/
+
+USTRUCT(BlueprintType)
+struct FCommitTaskDetails
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere)
+	int MainTaskId = 0;
+
+	UPROPERTY(EditAnywhere)
+	int SubTaskId = 0;
+
+	UPROPERTY(EditAnywhere)
+	int CommitCount = 1;
+};
+
+USTRUCT(BlueprintType)
+struct FCommitTaskDetailsArray
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere)
+	TArray<FCommitTaskDetails> TaskDetails;
+};
+
+USTRUCT(BlueprintType)
+struct FEnemyTaskInfo : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, meta = (Categories = "Dk.Enemy"))
+	FGameplayTag EnemyTag;
+
+	UPROPERTY(EditAnywhere)
+	FCommitTaskDetailsArray CommitTaskDetails;
+};
 
 USTRUCT(BlueprintType)
 struct FSubTaskInfo

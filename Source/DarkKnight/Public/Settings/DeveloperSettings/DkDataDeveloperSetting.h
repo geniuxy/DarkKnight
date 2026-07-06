@@ -49,10 +49,17 @@ public:
 	UPROPERTY(Config, EditAnywhere, Category = "Task")
 	TSoftObjectPtr<UDataTable> TaskInfoDataTable;
 
+	UPROPERTY(Config, EditAnywhere, Category = "Task")
+	TSoftObjectPtr<UDataTable> EnemyTaskDataTable;
+
 	// 获取加载后的 DataTable
 	UDataTable* GetTaskInfoDataTable() const;
+	UDataTable* GetEnemyTaskDataTable() const;
 
 private:
 	UPROPERTY(Transient)
 	mutable TWeakObjectPtr<UDataTable> CachedTaskInfoDataTable;
+
+	UPROPERTY(Transient)
+	mutable TWeakObjectPtr<UDataTable> CachedEnemyTaskDataTable;
 };

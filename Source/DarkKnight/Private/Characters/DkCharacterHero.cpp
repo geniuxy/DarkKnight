@@ -8,6 +8,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/DkActionComponent.h"
 #include "Components/DkEquipmentComponent.h"
 #include "Components/DkInventoryComponent.h"
 #include "Components/DkPlayerDialogComponent.h"
@@ -19,6 +20,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Games/PlayerStates/DkPlayerStateBase.h"
 #include "GAS/DkAttributeSet.h"
+#include "Subsytems/EngineSubsystems/DkDataSubsystem.h"
 
 
 class UEnhancedInputLocalPlayerSubsystem;
@@ -134,6 +136,25 @@ void ADkCharacterHero::OnMovementModeChanged(EMovementMode PrevMovementMode, uin
 
 			ActionComponent->SetCurrentActionState(EActionState::InAir);
 		}
+	}
+}
+
+void ADkCharacterHero::HasKilledUnit(AActor* InActor)
+{
+	ADkCharacterBase* DeadMan = Cast<ADkCharacterBase>(InActor);
+	if (!DeadMan) return;
+	TMap<FGameplayTag, FCommitTaskDetailsArray> EnemyTaskMap = UDkDataSubsystem::Get()->GetEnemyTaskMap();
+	if (!EnemyTaskMap.Contains(DeadMan->GetCharacterTag())) return;
+
+	if (!IsValid(OwningPlayerState)) return;
+	FCommitTaskDetailsArray CommitTaskDetailsArray = EnemyTaskMap.FindRef(DeadMan->GetCharacterTag());
+	for (const FCommitTaskDetails& CommitTaskDetails : CommitTaskDetailsArray.TaskDetails)
+	{
+		OwningPlayerState->OnCommitTaskDelegate.Broadcast(
+			CommitTaskDetails.MainTaskId,
+			CommitTaskDetails.SubTaskId,
+			CommitTaskDetails.CommitCount
+		);
 	}
 }
 

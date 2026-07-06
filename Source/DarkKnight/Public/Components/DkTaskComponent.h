@@ -17,14 +17,17 @@ class DARKKNIGHT_API UDkTaskComponent : public UActorComponent
 public:
 	UDkTaskComponent();
 
-	void UpdatePlayerTaskCompletionStatus();
+	void InitPlayerTaskCompletionStatus();
 
+	void CommitTask(int InTaskId, int InSubTaskId, int CommitCount);
 	void AcceptTask(int InTaskId);
-	void UpdateTask(int InTaskId, int InSubTaskId);
+	void UpdateSubTaskProgress(int InTaskId, int InSubTaskId, int CurProgress);
+	void CompleteSubTask(int InTaskId, int InSubTaskId);
 	void CompleteTask(int InTaskId);
 
 	bool IsTaskFinished(int InTaskId) const;
 
+	ETaskState GetTaskState(int InMainTaskId) const;
 	ETaskState GetSubTaskState(int InMainTaskId, int InSubTaskId) const;
 
 	int GetSubTaskProgress(int InMainTaskId, int InSubTaskId) const;
@@ -49,5 +52,4 @@ private:
 	bool HasFinishedAllPreconditionTask(const FGameplayTagContainer& InTagContainer) const;
 	void UpdateTaskState(int InTaskId, ETaskState InTaskState);
 	void UpdateSubTaskState(int InMainTaskId, int InSubTaskId, ETaskState InTaskState);
-	bool IsNextSubTaskIdZero(int InMainTaskId, int InSubTaskId) const;
 };

@@ -12,7 +12,9 @@
 #include "Components/VerticalBox.h"
 #include "Controllers/DkGamePlayerController.h"
 #include "DkTypes/DkStructs.h"
+#include "FunctionLibrarys/DkDialogFunctionLibrary.h"
 #include "FunctionLibrarys/DkUIFunctionLibrary.h"
+#include "Games/PlayerStates/DkPlayerStateBase.h"
 #include "Kismet/GameplayStatics.h"
 #include "Subsytems/EngineSubsystems/DkDataSubsystem.h"
 #include "Widgets/Components/Buttons/DkUICommonButtonImage.h"
@@ -20,6 +22,7 @@
 
 void UDkWidgetDialogScreen::BeginDialog(int InStartDialogId, UDkNpcDialogComponent* InNpcDialogComponent)
 {
+	LastDialogId = InStartDialogId;
 	CurDialogId = InStartDialogId;
 	CurDialogContent = GetDialogInfoById(InStartDialogId);
 	NpcDialogComponent = InNpcDialogComponent;
@@ -62,6 +65,7 @@ void UDkWidgetDialogScreen::NativeOnDeactivated()
 void UDkWidgetDialogScreen::DialogConfirmButtonClicked()
 {
 	if (!bCanClickToNextDialog) return;
+	LastDialogId = CurDialogId;
 	CurDialogId = GetNextDialogId();
 	if (CurDialogId == 0)
 	{
@@ -176,10 +180,25 @@ void UDkWidgetDialogScreen::EndDialog()
 			OwnerDialogComponent->UpdateCameraFocus(0, EDialogCameraType::None, FTransform());
 		}
 	}), 0.5f, false);
+
+	// 结束对话后，如果有任务要更新的话，需要更新
+	if (CurDialogId == 0 && UDkDialogFunctionLibrary::HasTaskToCommit(LastDialogId))
+	{
+		FCommitTaskDetails CommitTaskDetails = UDkDialogFunctionLibrary::GetDialogCommitTaskDetails(LastDialogId);
+		if (ADkPlayerStateBase* OwnerPlayerState = OwnerCharacter->GetPlayerState<ADkPlayerStateBase>())
+		{
+			OwnerPlayerState->OnCommitTaskDelegate.Broadcast(
+				CommitTaskDetails.MainTaskId,
+				CommitTaskDetails.SubTaskId,
+				CommitTaskDetails.CommitCount
+			);
+		}
+	}
 }
 
 void UDkWidgetDialogScreen::JumpToBranchNextDialog(int InDialogId)
 {
+	LastDialogId = CurDialogId;
 	CurDialogId = InDialogId;
 	if (CurDialogId == 0)
 	{

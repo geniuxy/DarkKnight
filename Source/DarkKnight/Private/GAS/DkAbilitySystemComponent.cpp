@@ -8,6 +8,7 @@
 #include "DkGameplayTags.h"
 #include "DataAssets/PA_AbilitySystemGenerics.h"
 #include "GameplayEffectExtension.h"
+#include "Characters/DkCharacterHero.h"
 #include "DkTypes/DkStructs.h"
 #include "GAS/DkAttributeSet.h"
 #include "GAS/DkHeroAttributeSet.h"
@@ -66,6 +67,17 @@ UInputMappingContext* UDkAbilitySystemComponent::GetInputMappingContext() const
 TMap<EAbilityInputID, UInputAction*> UDkAbilitySystemComponent::GetGameplayAbilityInputActions() const
 {
 	return AbilitySystemGenerics->GetGameplayAbilityInputActions();
+}
+
+void UDkAbilitySystemComponent::IsKilledBy(AActor* Killer)
+{
+	if (ADkCharacterHero* CharacterKiller = Cast<ADkCharacterHero>(Killer))
+	{
+		if (CharacterKiller->HasAuthority())
+		{
+			CharacterKiller->HasKilledUnit(GetOwner());
+		}
+	}
 }
 
 void UDkAbilitySystemComponent::BeginPlay()

@@ -8,6 +8,7 @@
 #include "GenericTeamAgentInterface.h"
 #include "DarkKnight/DarkKnight.h"
 #include "DkTypes/DkEnums.h"
+#include "DkTypes/DkStructs.h"
 #include "GameFramework/Character.h"
 #include "DkCharacterBase.generated.h"
 
@@ -120,8 +121,11 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category= "GAS")
 	TObjectPtr<UDkAttributeSet> AttributeSet;
 
+	UPROPERTY(EditAnywhere, Category= "GAS")
+	FGameplayTag CharacterTag;
+
 	virtual void BindGASChangeDelegates();
-	
+
 	bool bIsLockingTarget = false;
 
 private:
@@ -132,6 +136,8 @@ private:
 
 	void MoveSpeedUpdated(const FOnAttributeChangeData& Data);
 
+public:
+	FORCEINLINE FGameplayTag GetCharacterTag() const { return CharacterTag;}
 	/**********************************************************************/
 	/*                        Death And Respawn                           */
 	/**********************************************************************/

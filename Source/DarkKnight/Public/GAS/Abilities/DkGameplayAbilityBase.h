@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Abilities/GameplayAbility.h"
 #include "GenericTeamAgentInterface.h"
+#include "DkTypes/DkStructs.h"
 #include "DkGameplayAbilityBase.generated.h"
 
 /**
@@ -17,6 +18,13 @@ class DARKKNIGHT_API UDkGameplayAbilityBase : public UGameplayAbility
 
 public:
 	UDkGameplayAbilityBase();
+
+	virtual void ActivateAbility(
+		const FGameplayAbilitySpecHandle Handle,
+		const FGameplayAbilityActorInfo* ActorInfo,
+		const FGameplayAbilityActivationInfo ActivationInfo,
+		const FGameplayEventData* TriggerEventData
+	) override;
 
 	virtual bool CanActivateAbility(
 		const FGameplayAbilitySpecHandle Handle,
@@ -67,9 +75,16 @@ protected:
 	AActor* GetClosetTargetInView(
 		float InDistance, float InRadius, ETeamAttitude::Type TeamAttitude = ETeamAttitude::Hostile
 	) const;
-	
+
 	AActor* GetCurrentLockTarget() const;
 	void SetCurrentLockTarget(AActor* NewLockTarget);
 	UAbilitySystemComponent* GetCurrentLockTargetASC();
 	bool HasValidLockTarget() const;
+
+	/**********************************************************************/
+	/*                           Commit Task                              */
+	/**********************************************************************/
+protected:
+	UPROPERTY(EditAnywhere, Category="Commit Task")
+	FCommitTaskDetails TaskToCommit;
 };

@@ -168,6 +168,9 @@ namespace DkGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Dialog_Branch_2, "Dk.Dialog.Branch.2");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Dialog_Branch_3, "Dk.Dialog.Branch.3");
 
+	// Enemy Tag
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Enemy_1, "Dk.Enemy.1");
+
 	// Action Input Buffer（弃用）
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Action_CanCombo, "Dk.Action.CanCombo");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Action_NoAction, "Dk.Action.NoAction");

@@ -78,3 +78,27 @@ int UDkTaskFunctionLibrary::GetNextSubTaskId(int InMainTaskId, int InSubTaskId)
 
 	return 0;
 }
+
+TMap<int, int> UDkTaskFunctionLibrary::GetTaskRewardsInfo(int InMainTaskId)
+{
+	TMap<int, FTaskInfo> TaskInfoMap = UDkDataSubsystem::Get()->GetTaskInfo();
+	if (!TaskInfoMap.Contains(InMainTaskId)) return TMap<int, int>();
+
+	return TaskInfoMap[InMainTaskId].TaskRewards;
+}
+
+TMap<int, int> UDkTaskFunctionLibrary::GetSubTaskRewardsInfo(int InMainTaskId, int InSubTaskId)
+{
+	TMap<int, FTaskInfo> TaskInfoMap = UDkDataSubsystem::Get()->GetTaskInfo();
+	if (!TaskInfoMap.Contains(InMainTaskId)) return TMap<int, int>();
+
+	for (const FSubTaskInfo& SubTaskInfo : TaskInfoMap[InMainTaskId].SubTaskList)
+	{
+		if (SubTaskInfo.SubTaskId == InSubTaskId)
+		{
+			return SubTaskInfo.SubTaskRewards;
+		}
+	}
+
+	return TMap<int, int>();
+}

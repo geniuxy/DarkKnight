@@ -4,8 +4,11 @@
 #include "Components/DkTaskComponent.h"
 
 #include "Characters/DkCharacterHero.h"
+#include "Components/DkInventoryComponent.h"
+#include "FunctionLibrarys/DkInventoryFunctionLibrary.h"
 #include "FunctionLibrarys/DkTaskFunctionLibrary.h"
 #include "Games/PlayerStates/DkPlayerStateBase.h"
+#include "Inventory/DkInventoryItem.h"
 #include "Subsytems/EngineSubsystems/DkDataSubsystem.h"
 
 
@@ -177,7 +180,10 @@ void UDkTaskComponent::CompleteTask(int InTaskId)
 	UpdateTaskState(InTaskId, ETaskState::Completed);
 	for (int SubTaskId : UDkTaskFunctionLibrary::GetAllSubTaskId(InTaskId))
 	{
-		UpdateSubTaskState(InTaskId, SubTaskId, ETaskState::Completed);
+		if (GetSubTaskState(InTaskId, SubTaskId) != ETaskState::Completed)
+		{
+			UpdateSubTaskState(InTaskId, SubTaskId, ETaskState::Completed);
+		}
 	}
 
 	if (OwnerPlayerState)
@@ -304,6 +310,55 @@ int UDkTaskComponent::GetCurSubTaskId(int InMainTaskId) const
 	return OutSubTaskId;
 }
 
+void UDkTaskComponent::TryGetTaskRewards(int InMainTaskId)
+{
+	TMap<int, int> TaskRewardsInfo = UDkTaskFunctionLibrary::GetTaskRewardsInfo(InMainTaskId);
+
+	for (TTuple<int, int> RewardInfo : TaskRewardsInfo)
+	{
+		AddItemToOwnerInventory(RewardInfo.Key, RewardInfo.Value);
+	}
+}
+
+void UDkTaskComponent::TryGetSubTaskRewards(int InMainTaskId, int InSubTaskId)
+{
+	TMap<int, int> SubTaskRewardsInfo = UDkTaskFunctionLibrary::GetSubTaskRewardsInfo(InMainTaskId, InSubTaskId);
+
+	for (TTuple<int, int> RewardInfo : SubTaskRewardsInfo)
+	{
+		AddItemToOwnerInventory(RewardInfo.Key, RewardInfo.Value);
+	}
+}
+
+void UDkTaskComponent::AddItemToOwnerInventory(int InItemId, int InItemStack)
+{
+	if (IsValid(GetOwnerInventoryComp()))
+	{
+		if (!UDkInventoryFunctionLibrary::IsItemStackable(this, InItemId))
+		{
+			for (int i = 0; i < InItemStack; ++i)
+			{
+				TryAddItem(InItemId, 1);
+			}
+		}
+		else
+		{
+			TryAddItem(InItemId, InItemStack);
+		}
+	}
+}
+
+void UDkTaskComponent::TryAddItem(int InItemId, int InItemStack)
+{
+	UDkInventoryItem* RewardItem = UDkInventoryFunctionLibrary::SpawnInventoryItemById(
+		OwnerInventoryComp, InItemId, InItemStack
+	);
+	if (IsValid(RewardItem))
+	{
+		OwnerInventoryComp->TryAddItem(RewardItem);
+	}
+}
+
 void UDkTaskComponent::BeginPlay()
 {
 	Super::BeginPlay();
@@ -313,6 +368,28 @@ void UDkTaskComponent::BeginPlay()
 	{
 		OwnerPlayerState->OnCommitTaskDelegate.AddUObject(this, &ThisClass::CommitTask);
 	}
+}
+
+ADkCharacterHero* UDkTaskComponent::GetOwnerCharacter()
+{
+	if (OwnerPlayerState)
+	{
+		OwnerCharacter = Cast<ADkCharacterHero>(OwnerPlayerState->GetPawn());
+		return OwnerCharacter;
+	}
+	return nullptr;
+}
+
+UDkInventoryComponent* UDkTaskComponent::GetOwnerInventoryComp()
+{
+	if (!IsValid(OwnerInventoryComp))
+	{
+		if (GetOwnerCharacter())
+		{
+			OwnerInventoryComp = OwnerCharacter->GetInventoryComponent();
+		}
+	}
+	return OwnerInventoryComp;
 }
 
 bool UDkTaskComponent::HasFinishedAllPreconditionTask(const FGameplayTagContainer& InTagContainer) const
@@ -325,6 +402,11 @@ void UDkTaskComponent::UpdateTaskState(int InTaskId, ETaskState InTaskState)
 	if (!CurrentTaskCompletionStatus.Contains(InTaskId)) return;
 
 	CurrentTaskCompletionStatus[InTaskId].TaskState = InTaskState;
+
+	if (InTaskState == ETaskState::Completed)
+	{
+		TryGetTaskRewards(InTaskId);
+	}
 }
 
 void UDkTaskComponent::UpdateSubTaskState(int InMainTaskId, int InSubTaskId, ETaskState InTaskState)
@@ -345,9 +427,6 @@ void UDkTaskComponent::UpdateSubTaskState(int InMainTaskId, int InSubTaskId, ETa
 	if (InTaskState == ETaskState::Completed)
 	{
 		SubTaskStatus->CurrentProgress = UDkTaskFunctionLibrary::GetSubTaskTarget(InMainTaskId, InSubTaskId);
-		if (UDkTaskFunctionLibrary::IsNextSubTaskIdZero(InMainTaskId, InSubTaskId))
-		{
-			UpdateTaskState(InMainTaskId, ETaskState::Completed);
-		}
+		TryGetSubTaskRewards(InMainTaskId, InSubTaskId);
 	}
 }

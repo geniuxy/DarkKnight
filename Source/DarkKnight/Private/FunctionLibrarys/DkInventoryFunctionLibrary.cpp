@@ -4,10 +4,11 @@
 #include "FunctionLibrarys/DkInventoryFunctionLibrary.h"
 
 #include "DkGameplayTags.h"
-#include "Blueprint/SlateBlueprintLibrary.h"
 #include "Characters/DkCharacterHero.h"
 #include "Components/DkInventoryComponent.h"
-#include "Components/Widget.h"
+#include "Inventory/DkInventoryItem.h"
+#include "Inventory/DkInventoryItemFragment.h"
+#include "Subsytems/DkInventorySubsystem.h"
 
 int32 UDkInventoryFunctionLibrary::GetIndexFromPosition(const FIntPoint& Position, const int32 Columns)
 {
@@ -59,4 +60,29 @@ FGameplayTag UDkInventoryFunctionLibrary::GetSubEntryTagByIndex(int32 InIndex)
 		break;
 	}
 	return FGameplayTag::EmptyTag;
+}
+
+UDkInventoryItem* UDkInventoryFunctionLibrary::SpawnInventoryItemById(UObject* NewOuter, int32 InItemId, int InStack)
+{
+	UDkInventoryItem* Item = NewObject<UDkInventoryItem>(NewOuter, UDkInventoryItem::StaticClass());
+	TMap<int, FDkItemInfo> ItemInfoTable = UDkInventorySubsystem::Get(NewOuter)->GetCachedItemTable();
+	if (!ItemInfoTable.Contains(InItemId)) return nullptr;
+
+	FDkItemInfo ItemInfo = ItemInfoTable.FindRef(InItemId);
+	Item->SetItemManifest(ItemInfo, InStack);
+
+	// 对新创建Item的ItemManifest的Fragments进行Manifest操作
+	for (auto& Fragment : Item->GetItemManifestMutable().GetFragmentsMutable())
+	{
+		Fragment.GetMutable().Manifest();
+	}
+	return Item;
+}
+
+bool UDkInventoryFunctionLibrary::IsItemStackable(UObject* WorldContextObject, int32 InItemId)
+{
+	TMap<int, FDkItemInfo> ItemInfoTable = UDkInventorySubsystem::Get(WorldContextObject)->GetCachedItemTable();
+	if (!ItemInfoTable.Contains(InItemId)) return false;
+
+	return ItemInfoTable[InItemId].MaxStack != INDEX_NONE;
 }

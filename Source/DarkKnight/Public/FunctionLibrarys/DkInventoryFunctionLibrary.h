@@ -7,6 +7,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "DkInventoryFunctionLibrary.generated.h"
 
+class UDkInventoryItem;
 class UDkInventoryComponent;
 /**
  * 
@@ -36,6 +37,12 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category="Inventory Function Library")
 	static FGameplayTag GetSubEntryTagByIndex(int32 InIndex);
+
+	UFUNCTION(BlueprintCallable, Category="Inventory Function Library")
+	static UDkInventoryItem* SpawnInventoryItemById(UObject* NewOuter, int32 InItemId, int InStack);
+
+	UFUNCTION(BlueprintCallable, Category="Inventory Function Library")
+	static bool IsItemStackable(UObject* WorldContextObject, int32 InItemId);
 };
 
 template <typename T, typename FuncT>

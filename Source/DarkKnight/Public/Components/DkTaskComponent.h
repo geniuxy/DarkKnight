@@ -7,6 +7,8 @@
 #include "DkTypes/DkStructs.h"
 #include "DkTaskComponent.generated.h"
 
+class ADkCharacterHero;
+class UDkInventoryComponent;
 class ADkPlayerStateBase;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
@@ -38,12 +40,27 @@ public:
 
 	int GetCurSubTaskId(int InMainTaskId) const;
 
+	void TryGetTaskRewards(int InMainTaskId);
+	void TryGetSubTaskRewards(int InMainTaskId, int InSubTaskId);
+
+	void AddItemToOwnerInventory(int InItemId, int InItemStack);
+	void TryAddItem(int InItemId, int InItemStack);
+
 protected:
 	virtual void BeginPlay() override;
 
 private:
 	UPROPERTY()
 	TObjectPtr<ADkPlayerStateBase> OwnerPlayerState;
+
+	UPROPERTY()
+	TObjectPtr<ADkCharacterHero> OwnerCharacter;
+
+	UPROPERTY()
+	TObjectPtr<UDkInventoryComponent> OwnerInventoryComp;
+
+	ADkCharacterHero* GetOwnerCharacter();
+	UDkInventoryComponent* GetOwnerInventoryComp();
 	
 	TMap<int, FTaskCompletionStatus> CurrentTaskCompletionStatus;
 

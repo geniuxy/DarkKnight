@@ -534,6 +534,9 @@ struct FTaskInfo : public FTableRowBase
 	
 	UPROPERTY(EditAnywhere)
 	TArray<FSubTaskInfo> SubTaskList;
+
+	UPROPERTY(EditAnywhere)
+	TMap<int, int> TaskRewards;
 };
 
 USTRUCT(BlueprintType)

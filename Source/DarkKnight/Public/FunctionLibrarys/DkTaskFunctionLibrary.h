@@ -30,4 +30,10 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category="Task Function Library")
 	static int GetNextSubTaskId(int InMainTaskId, int InSubTaskId);
+
+	UFUNCTION(BlueprintCallable, Category="Task Function Library")
+	static TMap<int, int> GetTaskRewardsInfo(int InMainTaskId);
+
+	UFUNCTION(BlueprintCallable, Category="Task Function Library")
+	static TMap<int, int> GetSubTaskRewardsInfo(int InMainTaskId, int InSubTaskId);
 };

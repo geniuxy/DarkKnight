@@ -27,6 +27,7 @@ public:
 	bool DoesItemTagMatch(const FGameplayTag& ItemTag) const;
 
 	void SetItemManifest(const FInventoryItemManifest& Manifest);
+	void SetItemManifest(const FDkItemInfo& ItemInfo, int32 InItemStack);
 	const FInventoryItemManifest& GetItemManifest() const { return ItemManifest.Get<FInventoryItemManifest>(); }
 	FInventoryItemManifest& GetItemManifestMutable() { return ItemManifest.GetMutable<FInventoryItemManifest>(); }
 

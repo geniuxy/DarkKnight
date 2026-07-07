@@ -31,3 +31,14 @@ void UDkInventoryItem::SetItemManifest(const FInventoryItemManifest& Manifest)
 	// 这里复制了一份Manifest给ItemManifest
 	ItemManifest = FInstancedStruct::Make<FInventoryItemManifest>(Manifest);
 }
+
+void UDkInventoryItem::SetItemManifest(const FDkItemInfo& ItemInfo, int32 InItemStack)
+{
+	FInventoryItemManifest Manifest;
+	Manifest.SetItemID(ItemInfo.ItemID);
+	Manifest.SetItemCategory(ItemInfo.ItemCategory);
+	Manifest.SetItemTag(ItemInfo.ItemTag);
+	Manifest.InitializeFragments(this, &ItemInfo, InItemStack);
+	
+	ItemManifest = FInstancedStruct::Make<FInventoryItemManifest>(Manifest);
+}

@@ -10,6 +10,7 @@
 #include "DkTypes/DkEnums.h"
 #include "DkTypes/DkStructs.h"
 #include "GameFramework/Character.h"
+#include "Interfaces/TaskTrackingInterface.h"
 #include "DkCharacterBase.generated.h"
 
 class UWidgetComponent;
@@ -22,7 +23,7 @@ class UMotionWarpingComponent;
 
 UCLASS()
 class DARKKNIGHT_API ADkCharacterBase : public ACharacter, public IAbilitySystemInterface,
-                                        public IGenericTeamAgentInterface
+                                        public IGenericTeamAgentInterface, public ITaskTrackingInterface
 {
 	GENERATED_BODY()
 
@@ -183,6 +184,12 @@ protected:
 	UPROPERTY(EditInstanceOnly)
 	FGenericTeamId TeamID;
 
+	/**********************************************************************/
+	/*                                Task                                */
+	/**********************************************************************/
+private:
+	void UpdateTaskTrackingActor();
+	
 	/**********************************************************************/
 	/*                         UI - OverHeadStats                         */
 	/**********************************************************************/

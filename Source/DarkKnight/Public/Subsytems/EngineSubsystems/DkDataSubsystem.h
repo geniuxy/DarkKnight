@@ -24,7 +24,7 @@ public:
 	//~Begin USubsystem Function
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	//~End USubsystem Function
-	
+
 	void InitializeData();
 	/**********************************************************************/
 	/*                              Dialog                                */
@@ -61,6 +61,10 @@ public:
 	void InitializeTaskInfo();
 	void InitializeEnemyTaskInfo();
 
+	void InitializeTaskTrackingInfo();
+	void UpdateTaskTrackingInfo(FGameplayTag InTag, AActor* InActor);
+	AActor* GetTaskTrackingActor(FGameplayTag InTag);
+
 private:
 	UPROPERTY(Transient)
 	TMap<int, FTaskInfo> CachedTaskInfoMap;
@@ -68,7 +72,11 @@ private:
 	UPROPERTY(Transient)
 	TMap<FGameplayTag, FCommitTaskDetailsArray> CachedEnemyTaskMap;
 
+	UPROPERTY(Transient)
+	TMap<FGameplayTag, FTaskTrackingInfo> CachedTaskTrackingMap;
+
 public:
 	FORCEINLINE TMap<int, FTaskInfo> GetTaskInfo() const { return CachedTaskInfoMap; }
 	FORCEINLINE TMap<FGameplayTag, FCommitTaskDetailsArray> GetEnemyTaskMap() const { return CachedEnemyTaskMap; }
+	FORCEINLINE TMap<FGameplayTag, FTaskTrackingInfo> GetCachedTaskTrackingMap() const { return CachedTaskTrackingMap; }
 };

@@ -38,3 +38,12 @@ UDataTable* UDkDataDeveloperSetting::GetEnemyTaskDataTable() const
 	}
 	return CachedEnemyTaskDataTable.Get();
 }
+
+UDataTable* UDkDataDeveloperSetting::GetCachedTaskTrackingInfoDataTable() const
+{
+	if (!CachedTaskTrackingInfoDataTable.IsValid() && !TaskTrackingInfoDataTable.IsNull())
+	{
+		CachedTaskTrackingInfoDataTable = TaskTrackingInfoDataTable.LoadSynchronous();
+	}
+	return CachedTaskTrackingInfoDataTable.Get();
+}

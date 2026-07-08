@@ -150,6 +150,9 @@ namespace DkGameplayTags
 	// Enemy Tag
 	DARKKNIGHT_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dk_Enemy_1);
 
+	// Task Tracking Tag
+	DARKKNIGHT_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dk_Task_Tracking_1);
+
 	// Action Input Buffer（弃用）
 	DARKKNIGHT_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dk_Action_CanCombo);
 	DARKKNIGHT_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dk_Action_NoAction);

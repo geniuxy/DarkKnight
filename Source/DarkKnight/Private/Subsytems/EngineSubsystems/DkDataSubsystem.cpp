@@ -24,6 +24,7 @@ void UDkDataSubsystem::InitializeData()
 	InitializeNpcInfo();
 	InitializeTaskInfo();
 	InitializeEnemyTaskInfo();
+	InitializeTaskTrackingInfo();
 }
 
 void UDkDataSubsystem::InitializeDialogContent()
@@ -99,11 +100,50 @@ void UDkDataSubsystem::InitializeEnemyTaskInfo()
 	{
 		for (FName RowName : EnemyTaskDataTable->GetRowNames())
 		{
-			FEnemyTaskInfo* EnemyTaskInfo = EnemyTaskDataTable->FindRow<FEnemyTaskInfo>(RowName, TEXT("没找到RowName对应的Row"));
+			FEnemyTaskInfo* EnemyTaskInfo = EnemyTaskDataTable->FindRow<FEnemyTaskInfo>(
+				RowName, TEXT("没找到RowName对应的Row"));
 			if (!CachedEnemyTaskMap.Contains(EnemyTaskInfo->EnemyTag))
 			{
 				CachedEnemyTaskMap.Add(EnemyTaskInfo->EnemyTag, EnemyTaskInfo->CommitTaskDetails);
 			}
 		}
 	}
+}
+
+void UDkDataSubsystem::InitializeTaskTrackingInfo()
+{
+	CachedTaskTrackingMap.Empty();
+	const UDkDataDeveloperSetting* DataDeveloperSettings = GetDefault<UDkDataDeveloperSetting>();
+	if (UDataTable* TaskTrackingInfoDataTable = DataDeveloperSettings->GetCachedTaskTrackingInfoDataTable())
+	{
+		for (FName RowName : TaskTrackingInfoDataTable->GetRowNames())
+		{
+			FTaskTrackingInfo* TaskTrackingInfo = TaskTrackingInfoDataTable->FindRow<FTaskTrackingInfo>(
+				RowName, TEXT("没找到RowName对应的Row")
+			);
+			if (!CachedTaskTrackingMap.Contains(TaskTrackingInfo->TaskTrackingTag))
+			{
+				CachedTaskTrackingMap.Add(TaskTrackingInfo->TaskTrackingTag, *TaskTrackingInfo);
+			}
+		}
+	}
+}
+
+void UDkDataSubsystem::UpdateTaskTrackingInfo(FGameplayTag InTag, AActor* InActor)
+{
+	for (TTuple<FGameplayTag, FTaskTrackingInfo>& TaskTrackingPair : CachedTaskTrackingMap)
+	{
+		if (TaskTrackingPair.Key == InTag)
+		{
+			TaskTrackingPair.Value.TrackingActor = InActor;
+			break;
+		}
+	}
+}
+
+AActor* UDkDataSubsystem::GetTaskTrackingActor(FGameplayTag InTag)
+{
+	if (!CachedTaskTrackingMap.Contains(InTag)) return nullptr;
+
+	return CachedTaskTrackingMap[InTag].TrackingActor;
 }

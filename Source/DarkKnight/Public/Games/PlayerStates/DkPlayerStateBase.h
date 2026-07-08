@@ -55,4 +55,10 @@ public:
 protected:
 	UPROPERTY()
 	UDkTaskComponent* PlayerTaskComponent;
+
+	FGameplayTag CurTrackingTaskTag;
+
+public:
+	FORCEINLINE FGameplayTag GetCurTrackingTaskTag() const { return CurTrackingTaskTag; }
+	void SetCurTrackingTaskTag(FGameplayTag InTag) { CurTrackingTaskTag = InTag; }
 };

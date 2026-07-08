@@ -102,3 +102,19 @@ TMap<int, int> UDkTaskFunctionLibrary::GetSubTaskRewardsInfo(int InMainTaskId, i
 
 	return TMap<int, int>();
 }
+
+FGameplayTag UDkTaskFunctionLibrary::GetSubTaskTargetTag(int InMainTaskId, int InSubTaskId)
+{
+	TMap<int, FTaskInfo> TaskInfoMap = UDkDataSubsystem::Get()->GetTaskInfo();
+	if (!TaskInfoMap.Contains(InMainTaskId)) return FGameplayTag();
+
+	for (const FSubTaskInfo& SubTaskInfo : TaskInfoMap[InMainTaskId].SubTaskList)
+	{
+		if (SubTaskInfo.SubTaskId == InSubTaskId)
+		{
+			return SubTaskInfo.TargetTag;
+		}
+	}
+
+	return FGameplayTag();
+}

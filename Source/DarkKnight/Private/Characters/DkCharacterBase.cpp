@@ -19,6 +19,7 @@
 #include "PickUp/DkPickUpActorBase.h"
 #include "PickUp/DkPickUpActorSkeletalMesh.h"
 #include "PickUp/DkPickUpActorStaticMesh.h"
+#include "Subsytems/EngineSubsystems/DkDataSubsystem.h"
 #include "Subsytems/EngineSubsystems/DkInventorySubsystem.h"
 #include "Widgets/GameHUD/Stats/OverHeadStatsGauge.h"
 
@@ -113,6 +114,8 @@ void ADkCharacterBase::BeginPlay()
 	BindGASChangeDelegates(); // 构造函数中调用虚函数不好，此时虚函数表还没构建完成，子类的重写不会被调用。
 	
 	ConfigureOverHeadStatsWidget(); // 头顶血条的显示
+
+	UpdateTaskTrackingActor();
 }
 
 void ADkCharacterBase::Tick(float DeltaSeconds)
@@ -456,6 +459,14 @@ void ADkCharacterBase::SetGenericTeamId(const FGenericTeamId& NewTeamID)
 FGenericTeamId ADkCharacterBase::GetGenericTeamId() const
 {
 	return TeamID;
+}
+
+void ADkCharacterBase::UpdateTaskTrackingActor()
+{
+	if (GetTaskTrackingTag().IsValid())
+	{
+		UDkDataSubsystem::Get()->UpdateTaskTrackingInfo(GetTaskTrackingTag(), this);
+	}
 }
 
 void ADkCharacterBase::ConfigureOverHeadStatsWidget()

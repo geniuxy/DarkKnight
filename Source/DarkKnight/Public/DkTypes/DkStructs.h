@@ -507,6 +507,9 @@ struct FSubTaskInfo
 
 	UPROPERTY(EditAnywhere)
 	int TargetProgress = 0;
+	
+	UPROPERTY(EditAnywhere)
+	FGameplayTag TargetTag;
 
 	UPROPERTY(EditAnywhere)
 	int NextSubTaskId;
@@ -591,4 +594,22 @@ struct FTaskNoticeInfo
 
 	UPROPERTY(BlueprintReadOnly)
 	FText TaskName;
+};
+
+USTRUCT(BlueprintType)
+struct FTaskTrackingInfo : public FTableRowBase
+{
+	GENERATED_BODY()
+	
+	UPROPERTY(EditAnywhere)
+	FGameplayTag TaskTrackingTag;
+	
+	UPROPERTY(EditAnywhere)
+	int MainTaskId;
+
+	UPROPERTY(EditAnywhere)
+	int SubTaskId;
+	
+	UPROPERTY(VisibleAnywhere)
+	AActor* TrackingActor = nullptr;
 };

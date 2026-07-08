@@ -28,7 +28,7 @@ void UDkGameplayAbilityBase::ActivateAbility(
 
 	if (TaskToCommit.MainTaskId != 0 && TaskToCommit.SubTaskId != 0)
 	{
-		if (GetOwnerAvatarCharacter() && GetOwnerAvatarCharacter()->IsLocallyControlled())
+		if (GetOwnerAvatarCharacter() && GetOwnerAvatarCharacter()->HasAuthority())
 		{
 			if (ADkPlayerStateBase* OwnerPlayerState = GetOwnerAvatarCharacter()->GetPlayerState<ADkPlayerStateBase>())
 			{

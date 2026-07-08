@@ -61,7 +61,8 @@ void UDkTaskComponent::CommitTask(int InTaskId, int InSubTaskId, int CommitCount
 		return;
 	}
 
-	if (TaskState == ETaskState::ToBeAccepted && SubTaskState == ETaskState::ToBeAccepted)
+	// 规定CommitCount=0时，为接受任务
+	if (TaskState == ETaskState::ToBeAccepted && SubTaskState == ETaskState::ToBeAccepted && CommitCount == 0)
 	{
 		AcceptTask(InTaskId);
 	}

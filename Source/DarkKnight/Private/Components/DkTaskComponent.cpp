@@ -41,7 +41,8 @@ void UDkTaskComponent::InitPlayerTaskCompletionStatus()
 				FSubTaskInfo SubTaskInfo = TaskInfo.SubTaskList[i];
 				FSubTaskCompletionStatus SubTaskCompletionStatus;
 				SubTaskCompletionStatus.SubTaskId = SubTaskInfo.SubTaskId;
-				SubTaskCompletionStatus.SubTaskState = i == 0 ? ETaskState::ToBeAccepted : ETaskState::None;
+				SubTaskCompletionStatus.SubTaskState =
+					SubTaskInfo.SubTaskId == 1 ? ETaskState::ToBeAccepted : ETaskState::None;
 				SubTaskCompletionStatus.CurrentProgress = 0;
 				Status.SubTaskCompletionList.Add(SubTaskCompletionStatus);
 			}
@@ -424,10 +425,10 @@ void UDkTaskComponent::UpdateSubTaskState(int InMainTaskId, int InSubTaskId, ETa
 	}
 	else if (InTaskState == ETaskState::InProgress)
 	{
-		if (UDkTaskFunctionLibrary::GetSubTaskTargetTag(InTaskState, InSubTaskId))
+		FGameplayTag SubTaskTargetTag = UDkTaskFunctionLibrary::GetSubTaskTargetTag(InMainTaskId, InSubTaskId);
 		if (OwnerPlayerState)
 		{
-			OwnerPlayerState->SetCurTrackingTaskTag()
+			OwnerPlayerState->SetCurTrackingTaskTag(SubTaskTargetTag);
 		}
 	}
 }

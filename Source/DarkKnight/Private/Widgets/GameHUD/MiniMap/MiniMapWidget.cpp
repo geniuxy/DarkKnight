@@ -4,17 +4,27 @@
 #include "Widgets/GameHUD/MiniMap/MiniMapWidget.h"
 
 #include "CommonLazyImage.h"
+#include "CommonTextBlock.h"
+#include "NavigationPath.h"
+#include "NavigationSystem.h"
 #include "Characters/DkCharacterBase.h"
+#include "Components/Border.h"
 #include "Engine/Canvas.h"
 #include "FunctionLibrarys/DkAbilitySystemFunctionLibrary.h"
 #include "FunctionLibrarys/DkGameFunctionLibrary.h"
+#include "Games/PlayerStates/DkPlayerStateBase.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Subsytems/EngineSubsystems/DkDataSubsystem.h"
 
 void UMiniMapWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
 	OwnerCharacter = Cast<ADkCharacterBase>(GetOwningPlayerPawn());
+	if (OwnerCharacter)
+	{
+		OwnerPlayerState = OwnerCharacter->GetPlayerState<ADkPlayerStateBase>();
+	}
 
 	float MapScaleDownSize = MiniMapImage->GetDynamicMaterial()->K2_GetScalarParameterValue("MapScaleDownSize");
 	float BorderCircleSize = MiniMapImage->GetDynamicMaterial()->K2_GetScalarParameterValue("BorderCircleSize");
@@ -32,7 +42,8 @@ void UMiniMapWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 	}
 
 	UpdatePlayerPositionInMiniMap();
-	UpdateActorIconsInMiniMap();
+
+	DrawElements();
 }
 
 void UMiniMapWidget::UpdatePlayerPositionInMiniMap()
@@ -52,10 +63,8 @@ void UMiniMapWidget::UpdatePlayerPositionInMiniMap()
 	MiniMapImage->GetDynamicMaterial()->SetScalarParameterValue("PositionY", curPosYInMiniMap);
 }
 
-void UMiniMapWidget::UpdateActorIconsInMiniMap()
+void UMiniMapWidget::DrawElements()
 {
-	if (!OwnerCharacter) return;
-
 	UTextureRenderTarget2D* CachedActorsRenderTargetTexture = ActorsRenderTargetTexture.LoadSynchronous();
 	if (!CachedActorsRenderTargetTexture) return;
 	UKismetRenderingLibrary::ClearRenderTarget2D(OwnerCharacter, CachedActorsRenderTargetTexture);
@@ -64,13 +73,65 @@ void UMiniMapWidget::UpdateActorIconsInMiniMap()
 		OwnerCharacter, CachedActorsRenderTargetTexture, CachedCanvas, CachedCanvasSize, CachedContext
 	);
 
+	UpdateActorIconsInMiniMap();
+	DrawTaskTrackingLine();
+
+	UKismetRenderingLibrary::EndDrawCanvasToRenderTarget(this, CachedContext);
+}
+
+void UMiniMapWidget::UpdateActorIconsInMiniMap()
+{
+	if (!OwnerCharacter) return;
+
 	TArray<ADkCharacterBase*> ActorsInRange = UDkGameFunctionLibrary::GetUnitsInRange<ADkCharacterBase>(
 		OwnerCharacter, OwnerCharacter->GetActorLocation(), ActorCheckDistance, 2
 	);
 
 	DrawActorIconsToMiniMap(ActorsInRange);
+}
 
-	UKismetRenderingLibrary::EndDrawCanvasToRenderTarget(this, CachedContext);
+void UMiniMapWidget::DrawTaskTrackingLine()
+{
+	if (!OwnerCharacter || !OwnerPlayerState) return;
+
+	FGameplayTag CurTrackingTaskTag = OwnerPlayerState->GetCurTrackingTaskTag();
+	if (!CurTrackingTaskTag.IsValid())
+	{
+		TaskTrackingBorder->SetVisibility(ESlateVisibility::Collapsed);
+		return;
+	}
+	AActor* TaskTrackingActor = UDkDataSubsystem::Get()->GetTaskTrackingActor(CurTrackingTaskTag);
+	if (!TaskTrackingActor)
+	{
+		TaskTrackingBorder->SetVisibility(ESlateVisibility::Collapsed);
+		return;
+	}
+
+	TaskTrackingBorder->SetVisibility(ESlateVisibility::Visible);
+	float DistanceToTarget = FMath::Min(OwnerCharacter->GetDistanceTo(TaskTrackingActor) / 100.f, 9999.f);
+	if (DistanceToTarget > ActorCheckDistance) return;
+
+	// 这种做法有个缺点是，在空中时距离为0.f
+	if (!CachedCanvas) return;
+	float DistanceWalkToTarget = 0.f;
+	UNavigationPath* OwnerCharacterToTargetPath = UNavigationSystemV1::FindPathToActorSynchronously(
+		this, OwnerCharacter->GetActorLocation(), TaskTrackingActor
+	);
+	if (!OwnerCharacterToTargetPath) return;
+	for (int i = 0; i < OwnerCharacterToTargetPath->PathPoints.Num(); ++i)
+	{
+		if (i == OwnerCharacterToTargetPath->PathPoints.Num() - 1) continue;
+		FVector2D PrevPoint = ConvertWorldLocationToMiniMap(OwnerCharacterToTargetPath->PathPoints[i]);
+		FVector2D NextPoint = ConvertWorldLocationToMiniMap(OwnerCharacterToTargetPath->PathPoints[i + 1]);
+		CachedCanvas->K2_DrawLine(PrevPoint, NextPoint, 5.f);
+		DistanceWalkToTarget += FMath::Abs(FVector::Distance(
+				OwnerCharacterToTargetPath->PathPoints[i], OwnerCharacterToTargetPath->PathPoints[i + 1])
+		);
+	}
+
+	FNumberFormattingOptions FormatOps = FNumberFormattingOptions().SetMaximumFractionalDigits(0);
+	FormatOps.UseGrouping = false;
+	DistanceText->SetText(FText::AsNumber(DistanceWalkToTarget / 100.f, &FormatOps));
 }
 
 void UMiniMapWidget::DrawActorIconsToMiniMap(TArray<ADkCharacterBase*> Actors, UTexture2D* DrawTexture)

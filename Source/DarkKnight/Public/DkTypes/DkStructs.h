@@ -508,7 +508,7 @@ struct FSubTaskInfo
 	UPROPERTY(EditAnywhere)
 	int TargetProgress = 0;
 	
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, meta=(Categories="Dk.Task.Tracking"))
 	FGameplayTag TargetTag;
 
 	UPROPERTY(EditAnywhere)
@@ -601,7 +601,7 @@ struct FTaskTrackingInfo : public FTableRowBase
 {
 	GENERATED_BODY()
 	
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, meta=(Categories="Dk.Task.Tracking"))
 	FGameplayTag TaskTrackingTag;
 	
 	UPROPERTY(EditAnywhere)

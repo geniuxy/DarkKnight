@@ -7,6 +7,8 @@
 #include "Kismet/KismetRenderingLibrary.h"
 #include "MiniMapWidget.generated.h"
 
+class UBorder;
+class ADkPlayerStateBase;
 class ADkCharacterBase;
 class UCommonTextBlock;
 class UCommonLazyImage;
@@ -32,12 +34,15 @@ private:
 	UPROPERTY(meta=(BindWidget))
 	TObjectPtr<UCommonTextBlock> DistanceText;
 
+	UPROPERTY(meta=(BindWidget))
+	TObjectPtr<UBorder> TaskTrackingBorder;
+
 	UPROPERTY()
 	ADkCharacterBase* OwnerCharacter;
 
-	void UpdatePlayerPositionInMiniMap();
-
-private:
+	UPROPERTY()
+	ADkPlayerStateBase* OwnerPlayerState;
+	
 	UPROPERTY(EditDefaultsOnly, Category="Render Target")
 	TSoftObjectPtr<UTextureRenderTarget2D> ActorsRenderTargetTexture;
 	
@@ -61,7 +66,12 @@ private:
 	UPROPERTY()
 	FDrawToRenderTargetContext CachedContext;
 	
+	void UpdatePlayerPositionInMiniMap();
+
+	void DrawElements();
 	void UpdateActorIconsInMiniMap();
+	void DrawTaskTrackingLine();
+
 	void DrawActorIconsToMiniMap(TArray<ADkCharacterBase*> Actors, UTexture2D* DrawTexture = nullptr);
 	FVector2D ConvertWorldLocationToMiniMap(FVector InWorldLocation);
 };

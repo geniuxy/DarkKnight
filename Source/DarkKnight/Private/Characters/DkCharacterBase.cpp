@@ -115,7 +115,11 @@ void ADkCharacterBase::BeginPlay()
 	
 	ConfigureOverHeadStatsWidget(); // 头顶血条的显示
 
-	UpdateTaskTrackingActor();
+	FTimerHandle DelayInitCharacterHandle;
+	GetWorld()->GetTimerManager().SetTimer(DelayInitCharacterHandle, FTimerDelegate::CreateLambda([this]()
+	{
+		UpdateTaskTrackingActor();
+	}), 0.2f, false);
 }
 
 void ADkCharacterBase::Tick(float DeltaSeconds)
@@ -459,6 +463,16 @@ void ADkCharacterBase::SetGenericTeamId(const FGenericTeamId& NewTeamID)
 FGenericTeamId ADkCharacterBase::GetGenericTeamId() const
 {
 	return TeamID;
+}
+
+FGameplayTag ADkCharacterBase::GetTaskTrackingTag() const
+{
+	return TaskTrackingTag;
+}
+
+void ADkCharacterBase::SetTaskTrackingTag(FGameplayTag InTag)
+{
+	TaskTrackingTag = InTag;
 }
 
 void ADkCharacterBase::UpdateTaskTrackingActor()

@@ -21,11 +21,7 @@ class DARKKNIGHT_API ITaskTrackingInterface
 {
 	GENERATED_BODY()
 
-protected:
-	UPROPERTY(EditAnywhere)
-	FGameplayTag TaskTrackingTag;
-
 public:
-	FORCEINLINE FGameplayTag GetTaskTrackingTag() const { return TaskTrackingTag; }
-	void SetTaskTrackingTag(FGameplayTag InTag) { TaskTrackingTag = InTag; }
+	virtual FGameplayTag GetTaskTrackingTag() const { return FGameplayTag(); }
+	virtual void SetTaskTrackingTag(FGameplayTag InTag) { }
 };

@@ -187,7 +187,14 @@ protected:
 	/**********************************************************************/
 	/*                                Task                                */
 	/**********************************************************************/
-private:
+public:
+	virtual FGameplayTag GetTaskTrackingTag() const override;
+	virtual void SetTaskTrackingTag(FGameplayTag InTag) override;
+	
+protected:
+	UPROPERTY(EditAnywhere, meta=(Categories="Dk.Task.Tracking"))
+	FGameplayTag TaskTrackingTag;
+
 	void UpdateTaskTrackingActor();
 	
 	/**********************************************************************/

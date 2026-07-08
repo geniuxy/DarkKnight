@@ -3,6 +3,7 @@
 
 #include "Components/DkItemComponent.h"
 
+#include "FunctionLibrarys/DkInventoryFunctionLibrary.h"
 #include "Net/UnrealNetwork.h"
 
 UDkItemComponent::UDkItemComponent()
@@ -33,10 +34,15 @@ void UDkItemComponent::InitializeItemComponent(const FDkItemInfo* ItemInfo, int3
 	ItemManifest.SetItemID(ItemInfo->ItemID);
 	ItemManifest.SetItemCategory(ItemInfo->ItemCategory);
 	ItemManifest.SetItemTag(ItemInfo->ItemTag);
-	ItemManifest.InitializeFragments(GetOwner(), ItemInfo, InItemStack);
+	ItemManifest.InitializeFragments(ItemInfo, InItemStack);
 }
 
 void UDkItemComponent::InitItemManifest(FInventoryItemManifest InItemManifest)
 {
 	ItemManifest = InItemManifest;
+}
+
+FText UDkItemComponent::GetItemName()
+{
+	return UDkInventoryFunctionLibrary::GetItemName(ItemManifest.GetItemID());
 }

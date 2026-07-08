@@ -18,6 +18,14 @@ void UDkDataSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	Super::Initialize(Collection);
 }
 
+void UDkDataSubsystem::InitializeData()
+{
+	InitializeDialogContent();
+	InitializeNpcInfo();
+	InitializeTaskInfo();
+	InitializeEnemyTaskInfo();
+}
+
 void UDkDataSubsystem::InitializeDialogContent()
 {
 	CachedDialogContentMap.Empty();

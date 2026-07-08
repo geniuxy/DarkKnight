@@ -24,6 +24,8 @@ public:
 
 	void InitItemManifest(FInventoryItemManifest InItemManifest);
 
+	FText GetItemName();
+
 	FInventoryItemManifest GetItemManifest() const { return ItemManifest; }
 
 	FInventoryItemManifest& GetItemManifestMutable() { return ItemManifest; }

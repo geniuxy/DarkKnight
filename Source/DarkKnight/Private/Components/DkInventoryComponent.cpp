@@ -13,7 +13,6 @@
 #include "Inventory/DkInventoryItem.h"
 #include "Inventory/DkInventoryItemFragment.h"
 #include "Net/UnrealNetwork.h"
-#include "Subsytems/DkInventorySubsystem.h"
 #include "Subsytems/DkUISubsystem.h"
 #include "Widgets/DkWidgetActivatableBase.h"
 #include "Widgets/GameMenu/DkWidgetGameMenuScreen.h"
@@ -41,11 +40,6 @@ void UDkInventoryComponent::OnLoadingScreenDeactivated_Implementation()
 	ConstructInventoryMenu();
 
 	InitializeInventoryComponent();
-
-	UDkInventorySubsystem* InventorySubsystem = UDkInventorySubsystem::Get(this);
-	checkf(InventorySubsystem, TEXT("InventorySubsystem为空！"));
-	InventorySubsystem->InitializeItemData();
-	InventorySubsystem->InitializeEntryData();
 }
 
 void UDkInventoryComponent::ConstructInventoryMenu()
@@ -115,6 +109,7 @@ void UDkInventoryComponent::TryAddItem(UDkItemComponent* ItemComponent)
 		// 为背包中已存在的物品添加堆叠数量。我们只想更新堆叠数量，
 		// 而不是创建这种类型的新物品。
 		OnStackChange.Broadcast(AddItemResult); // OnStackChange在Server和Client都会执行，光在Server执行，无法同步到Client
+		OnAddItemNotice.Broadcast(ItemComponent->GetItemName(), AddItemResult.TotalRoomToFill);
 		Server_AddStacksToItem(ItemComponent, AddItemResult.TotalRoomToFill, AddItemResult.Remainder);
 	}
 	else
@@ -146,6 +141,7 @@ void UDkInventoryComponent::TryAddItem(UDkInventoryItem* Item)
 		// 为背包中已存在的物品添加堆叠数量。我们只想更新堆叠数量，
 		// 而不是创建这种类型的新物品。
 		OnStackChange.Broadcast(AddItemResult); // OnStackChange在Server和Client都会执行，光在Server执行，无法同步到Client
+		OnAddItemNotice.Broadcast(Item->GetItemName(), AddItemResult.TotalRoomToFill);
 		Server_AddStacksToItemWithItem(Item, AddItemResult.TotalRoomToFill, AddItemResult.Remainder);
 	}
 	else
@@ -170,6 +166,7 @@ void UDkInventoryComponent::Server_AddNewItem_Implementation(
 			OwningCharacter->GetController()->GetNetMode() == NM_Standalone)
 		{
 			OnItemAdded.Broadcast(NewItem);
+			OnAddItemNotice.Broadcast(NewItem->GetItemName(), NewItem->IsItemStackable() ? StackCount : 1);
 		}
 	}
 
@@ -199,6 +196,7 @@ void UDkInventoryComponent::Server_AddNewItemWithItem_Implementation(
 			OwningCharacter->GetController()->GetNetMode() == NM_Standalone)
 		{
 			OnItemAdded.Broadcast(NewItem);
+			OnAddItemNotice.Broadcast(NewItem->GetItemName(), NewItem->IsItemStackable() ? StackCount : 1);
 		}
 	}
 
@@ -243,6 +241,7 @@ void UDkInventoryComponent::Server_AddStacksToItemWithItem_Implementation(
 	if (Remainder != 0)
 	{
 		Debug::Print(TEXT("进入背包时，剩余数量不为0，请检查！"));
+		// TODO: 这里应该是没写完的，后续可以补 
 	}
 }
 

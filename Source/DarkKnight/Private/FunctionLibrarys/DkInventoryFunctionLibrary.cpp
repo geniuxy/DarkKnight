@@ -8,7 +8,7 @@
 #include "Components/DkInventoryComponent.h"
 #include "Inventory/DkInventoryItem.h"
 #include "Inventory/DkInventoryItemFragment.h"
-#include "Subsytems/DkInventorySubsystem.h"
+#include "Subsytems/EngineSubsystems/DkInventorySubsystem.h"
 
 int32 UDkInventoryFunctionLibrary::GetIndexFromPosition(const FIntPoint& Position, const int32 Columns)
 {
@@ -65,7 +65,7 @@ FGameplayTag UDkInventoryFunctionLibrary::GetSubEntryTagByIndex(int32 InIndex)
 UDkInventoryItem* UDkInventoryFunctionLibrary::SpawnInventoryItemById(UObject* NewOuter, int32 InItemId, int InStack)
 {
 	UDkInventoryItem* Item = NewObject<UDkInventoryItem>(NewOuter, UDkInventoryItem::StaticClass());
-	TMap<int, FDkItemInfo> ItemInfoTable = UDkInventorySubsystem::Get(NewOuter)->GetCachedItemTable();
+	TMap<int, FDkItemInfo> ItemInfoTable = UDkInventorySubsystem::Get()->GetCachedItemTable();
 	if (!ItemInfoTable.Contains(InItemId)) return nullptr;
 
 	FDkItemInfo ItemInfo = ItemInfoTable.FindRef(InItemId);
@@ -79,10 +79,18 @@ UDkInventoryItem* UDkInventoryFunctionLibrary::SpawnInventoryItemById(UObject* N
 	return Item;
 }
 
-bool UDkInventoryFunctionLibrary::IsItemStackable(UObject* WorldContextObject, int32 InItemId)
+bool UDkInventoryFunctionLibrary::IsItemStackable(int32 InItemId)
 {
-	TMap<int, FDkItemInfo> ItemInfoTable = UDkInventorySubsystem::Get(WorldContextObject)->GetCachedItemTable();
+	TMap<int, FDkItemInfo> ItemInfoTable = UDkInventorySubsystem::Get()->GetCachedItemTable();
 	if (!ItemInfoTable.Contains(InItemId)) return false;
 
 	return ItemInfoTable[InItemId].MaxStack != INDEX_NONE;
+}
+
+FText UDkInventoryFunctionLibrary::GetItemName(int32 InItemId)
+{
+	TMap<int, FDkItemInfo> ItemInfoTable = UDkInventorySubsystem::Get()->GetCachedItemTable();
+	if (!ItemInfoTable.Contains(InItemId)) return FText::GetEmpty();
+
+	return ItemInfoTable[InItemId].ItemName;
 }

@@ -280,6 +280,18 @@ struct FRewardItemListInfo : public FTableRowBase // TODO: 关卡掉落、死亡
 	TArray<FRewardItemEntry> RewardItemList;
 };
 
+USTRUCT(BlueprintType)
+struct FItemNoticeInfo
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly)
+	FText ItemName;
+
+	UPROPERTY(BlueprintReadOnly)
+	int ItemCount;
+};
+
 /********/
 
 /* Input Structs */

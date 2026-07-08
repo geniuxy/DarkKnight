@@ -8,7 +8,7 @@
 #include "CommonTextBlock.h"
 #include "Components/DkInventoryComponent.h"
 #include "Components/SizeBox.h"
-#include "Subsytems/DkInventorySubsystem.h"
+#include "Subsytems/EngineSubsystems/DkInventorySubsystem.h"
 #include "Widgets/Inventory/DkInventoryItemDescriptionMenu.h"
 
 FReply UDkInventoryGridSlot::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
@@ -17,7 +17,7 @@ FReply UDkInventoryGridSlot::NativeOnMouseButtonDown(const FGeometry& InGeometry
 
 	if (ItemDescriptionMenu.IsValid())
 	{
-		UDkInventorySubsystem* InventorySubsystem = UDkInventorySubsystem::Get(this);
+		UDkInventorySubsystem* InventorySubsystem = UDkInventorySubsystem::Get();
 		checkf(InventorySubsystem, TEXT("InventorySubsystem为空！"));
 		UDkInventoryComponent* InventoryComponent = InventorySubsystem->GetCachedInventoryComponent();
 		checkf(InventoryComponent, TEXT("InventoryComponent未在InventorySubsystem中注册！"));
@@ -43,7 +43,7 @@ void UDkInventoryGridSlot::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
 
 	if (ItemDescriptionMenu.IsValid())
 	{
-		UDkInventorySubsystem* InventorySubsystem = UDkInventorySubsystem::Get(this);
+		UDkInventorySubsystem* InventorySubsystem = UDkInventorySubsystem::Get();
 		checkf(InventorySubsystem, TEXT("InventorySubsystem为空！"));
 		UDkInventoryComponent* InventoryComponent = InventorySubsystem->GetCachedInventoryComponent();
 		checkf(InventoryComponent, TEXT("InventoryComponent未在InventorySubsystem中注册！"));
@@ -131,7 +131,7 @@ void UDkInventoryGridSlot::CreateItemDescriptionMenu()
 	// 根据Fragments，同化(渲染)ItemDescription的内容
 	InventoryItem->GetItemManifest().AssimilateInventoryFragments(ItemDescriptionMenu.Get());
 
-	UDkInventorySubsystem* InventorySubsystem = UDkInventorySubsystem::Get(this);
+	UDkInventorySubsystem* InventorySubsystem = UDkInventorySubsystem::Get();
 	checkf(InventorySubsystem, TEXT("InventorySubsystem为空！"));
 	UDkInventoryComponent* InventoryComponent = InventorySubsystem->GetCachedInventoryComponent();
 	checkf(InventoryComponent, TEXT("InventoryComponent未在InventorySubsystem中注册！"));

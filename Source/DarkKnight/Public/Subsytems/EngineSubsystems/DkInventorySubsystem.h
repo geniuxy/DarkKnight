@@ -14,12 +14,12 @@ class UDkInventoryComponent;
  * 需要网络同步时：AGameState全局游戏状态 / APlayerState玩家相关状态
  */
 UCLASS()
-class DARKKNIGHT_API UDkInventorySubsystem : public UGameInstanceSubsystem
+class DARKKNIGHT_API UDkInventorySubsystem : public UEngineSubsystem
 {
 	GENERATED_BODY()
 
 public:
-	static UDkInventorySubsystem* Get(const UObject* WorldContextObject);
+	static UDkInventorySubsystem* Get();
 
 	//~Begin USubsystem Function
 	virtual bool ShouldCreateSubsystem(UObject* Outer) const override;
@@ -27,6 +27,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void RegisterCachedInventoryComponent(UDkInventoryComponent* InventoryComponent);
+
+	void InitializeData();
 
 	void InitializeItemData();
 

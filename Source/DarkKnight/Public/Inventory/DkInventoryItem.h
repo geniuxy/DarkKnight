@@ -24,6 +24,7 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual bool IsSupportedForNetworking() const override { return true; }
 	bool IsItemStackable() const;
+	FText GetItemName();
 	bool DoesItemTagMatch(const FGameplayTag& ItemTag) const;
 
 	void SetItemManifest(const FInventoryItemManifest& Manifest);

@@ -3,9 +3,7 @@
 
 #include "PickUp/DkPickUpActorBase.h"
 
-#include "Components/DkHighlightableSkeletalMesh.h"
 #include "Components/DkItemComponent.h"
-#include "Subsytems/DkInventorySubsystem.h"
 
 
 ADkPickUpActorBase::ADkPickUpActorBase()

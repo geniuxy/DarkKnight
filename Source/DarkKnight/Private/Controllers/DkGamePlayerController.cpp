@@ -20,8 +20,8 @@
 #include "GAS/DkAbilitySystemComponent.h"
 #include "Interfaces/HighlightInterface.h"
 #include "Kismet/GameplayStatics.h"
-#include "Subsytems/DkInventorySubsystem.h"
 #include "Subsytems/DkUISubsystem.h"
+#include "Subsytems/EngineSubsystems/DkInventorySubsystem.h"
 #include "Widgets/CommonActivatableWidgetContainer.h"
 #include "Widgets/DkWidgetPrimaryLayout.h"
 #include "Widgets/Interact/DkWidgetInteractScreen.h"
@@ -319,11 +319,10 @@ void ADkGamePlayerController::RefreshInventoryComponent()
 {
 	// 从PlayerController获取Character是通过GetPawn() (永远不要在 BeginPlay 里假设 Pawn 已准备好!）
 	InventoryComponent = CastChecked<ADkCharacterHero>(GetPawn())->FindComponentByClass<UDkInventoryComponent>();
-	UDkInventorySubsystem* InventorySubsystem = UDkInventorySubsystem::Get(this);
+	UDkInventorySubsystem* InventorySubsystem = UDkInventorySubsystem::Get();
 	checkf(InventorySubsystem, TEXT("InventorySubsystem为空！"));
 	InventorySubsystem->RegisterCachedInventoryComponent(InventoryComponent.Get());
 }
-
 
 void ADkGamePlayerController::TryStartDialog()
 {

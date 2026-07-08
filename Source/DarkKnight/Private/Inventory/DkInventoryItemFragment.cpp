@@ -6,7 +6,7 @@
 #include "Equipment/DkEquippedActorSkeletal.h"
 #include "Equipment/DkEquippedActorStatic.h"
 #include "FunctionLibrarys/DkInventoryFunctionLibrary.h"
-#include "Subsytems/DkInventorySubsystem.h"
+#include "Subsytems/EngineSubsystems/DkInventorySubsystem.h"
 #include "Widgets/Inventory/Composites/DkInventoryLeaf.h"
 #include "Widgets/Inventory/Composites/DkInventoryLeafImage.h"
 #include "Widgets/Inventory/Composites/DkInventoryLeafLabeledValue.h"
@@ -172,10 +172,9 @@ bool FInventoryItemFragment_Consumable::HasOptionalStats() const
 	return bHasOptionalStat;
 }
 
-void FInventoryItemFragment_Consumable::UpdateConsumableEntries(
-	const UObject* WorldContextObject, TArray<FItemEntryInfo> InEntries, bool bMainEntry)
+void FInventoryItemFragment_Consumable::UpdateConsumableEntries(TArray<FItemEntryInfo> InEntries, bool bMainEntry)
 {
-	UDkInventorySubsystem* InventorySubsystem = UDkInventorySubsystem::Get(WorldContextObject);
+	UDkInventorySubsystem* InventorySubsystem = UDkInventorySubsystem::Get();
 	checkf(InventorySubsystem, TEXT("添加Item词条时，InventorySubsystem为空！"));
 	for (int Index = 0; Index < InEntries.Num(); ++Index)
 	{
@@ -286,10 +285,9 @@ bool FInventoryItemFragment_Equipment::HasOptionalStats() const
 	return bHasOptionalStat;
 }
 
-void FInventoryItemFragment_Equipment::UpdateEquipEntries(
-	const UObject* WorldContextObject, TArray<FItemEntryInfo> InEntries, bool bMainEntry)
+void FInventoryItemFragment_Equipment::UpdateEquipEntries(TArray<FItemEntryInfo> InEntries, bool bMainEntry)
 {
-	UDkInventorySubsystem* InventorySubsystem = UDkInventorySubsystem::Get(WorldContextObject);
+	UDkInventorySubsystem* InventorySubsystem = UDkInventorySubsystem::Get();
 	checkf(InventorySubsystem, TEXT("添加Item词条时，InventorySubsystem为空！"));
 	for (int Index = 0; Index < InEntries.Num(); ++Index)
 	{
@@ -324,7 +322,7 @@ ADkEquippedActorBase* FInventoryItemFragment_Equipment::SpawnAttachActor(USkelet
 	if (!IsValid(AttachMesh)) return nullptr;
 
 	checkf(EquippedActorID != INDEX_NONE, TEXT("生成EquipmentItem时，EquippedActorID无效！"))
-	UDkInventorySubsystem* InventorySubsystem = UDkInventorySubsystem::Get(AttachMesh);
+	UDkInventorySubsystem* InventorySubsystem = UDkInventorySubsystem::Get();
 	checkf(InventorySubsystem, TEXT("生成EquipmentItem时，InventorySubsystem为空！"));
 
 	if (!InventorySubsystem->GetCachedItemTable().Contains(EquippedActorID)) return nullptr;

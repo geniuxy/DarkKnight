@@ -1,23 +1,19 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Subsytems/DkInventorySubsystem.h"
+#include "Subsytems/EngineSubsystems/DkInventorySubsystem.h"
 
 #include "DarkKnightDebugHelper.h"
 #include "Kismet/DataTableFunctionLibrary.h"
 #include "Settings/DkGameUserSettings.h"
 #include "Settings/DkInventoryDeveloperSettings.h"
 
-UDkInventorySubsystem* UDkInventorySubsystem::Get(const UObject* WorldContextObject)
+UDkInventorySubsystem* UDkInventorySubsystem::Get()
 {
-	if (GEngine)
-	{
-		UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::Assert);
-
-		return UGameInstance::GetSubsystem<UDkInventorySubsystem>(World->GetGameInstance());
-	}
-
-	return nullptr;
+	if (!GEngine) return nullptr;
+	auto* Subsystem = GEngine->GetEngineSubsystem<UDkInventorySubsystem>();
+	ensureMsgf(Subsystem, TEXT("UDkInventorySubsystem not available - called too early or after shutdown"));
+	return Subsystem;
 }
 
 bool UDkInventorySubsystem::ShouldCreateSubsystem(UObject* Outer) const
@@ -41,6 +37,12 @@ void UDkInventorySubsystem::RegisterCachedInventoryComponent(UDkInventoryCompone
 {
 	check(InventoryComponent);
 	CachedInventoryComponent = InventoryComponent;
+}
+
+void UDkInventorySubsystem::InitializeData()
+{
+	InitializeItemData();
+	InitializeEntryData();
 }
 
 void UDkInventorySubsystem::InitializeItemData()

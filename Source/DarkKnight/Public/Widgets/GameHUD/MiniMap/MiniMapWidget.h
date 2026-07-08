@@ -38,7 +38,6 @@ private:
 	void UpdatePlayerPositionInMiniMap();
 
 private:
-
 	UPROPERTY(EditDefaultsOnly, Category="Render Target")
 	TSoftObjectPtr<UTextureRenderTarget2D> ActorsRenderTargetTexture;
 	

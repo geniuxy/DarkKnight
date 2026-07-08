@@ -25,6 +25,7 @@ public:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	//~End USubsystem Function
 	
+	void InitializeData();
 	/**********************************************************************/
 	/*                              Dialog                                */
 	/**********************************************************************/

@@ -20,6 +20,8 @@ class ADkCharacterHero;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FInventoryItemChange, UDkInventoryItem*, Item);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAddItemNotice, const FText&, ItemName, int, Count);
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRoomInInventoryDelegate, const FText&, InText);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FStackChange, const FDkInventorySlotAvailabilityResult&, Result);
@@ -80,6 +82,7 @@ public:
 	FInventoryItemChange OnItemAdded; // item从无到有
 	FInventoryItemChange OnItemRemoved; // item从有到无
 	FStackChange OnStackChange; // item从有到更多
+	FOnAddItemNotice OnAddItemNotice; // 获取Item后需要通知
 	/********/
 
 	/* 道具物品的丢弃 */

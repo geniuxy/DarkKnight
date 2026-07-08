@@ -36,6 +36,10 @@ void FDkInventoryFastArray::PostReplicatedAdd(const TArrayView<int32>& AddedIndi
 	for (int32 Index : AddedIndices)
 	{
 		InventoryComponent->OnItemAdded.Broadcast(Entries[Index].Item);
+		InventoryComponent->OnAddItemNotice.Broadcast(
+			Entries[Index].Item->GetItemName(),
+			Entries[Index].Item->IsItemStackable() ? Entries[Index].Item->GetTotalStackCount() : 1 
+		);
 	}
 }
 

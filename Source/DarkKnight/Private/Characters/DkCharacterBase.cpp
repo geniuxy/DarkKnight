@@ -19,7 +19,7 @@
 #include "PickUp/DkPickUpActorBase.h"
 #include "PickUp/DkPickUpActorSkeletalMesh.h"
 #include "PickUp/DkPickUpActorStaticMesh.h"
-#include "Subsytems/DkInventorySubsystem.h"
+#include "Subsytems/EngineSubsystems/DkInventorySubsystem.h"
 #include "Widgets/GameHUD/Stats/OverHeadStatsGauge.h"
 
 ADkCharacterBase::ADkCharacterBase()
@@ -150,7 +150,7 @@ void ADkCharacterBase::ServerSpawnRewardItemActor_Implementation()
 	int32 RewardItemStack = RewardItemIdList[RandIndex].Stack;
 	checkf(RewardItemStack > 0, TEXT("生成RewardItem时，Stack数量为0！"))
 
-	UDkInventorySubsystem* InventorySubsystem = UDkInventorySubsystem::Get(this);
+	UDkInventorySubsystem* InventorySubsystem = UDkInventorySubsystem::Get();
 	checkf(InventorySubsystem, TEXT("生成RewardItem时，InventorySubsystem为空！"));
 
 	if (const FDkItemInfo* RewardItemInfo = InventorySubsystem->GetCachedItemTable().Find(RewardItemID))

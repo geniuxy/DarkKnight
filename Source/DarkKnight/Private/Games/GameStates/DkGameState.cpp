@@ -4,13 +4,12 @@
 #include "Games/GameStates/DkGameState.h"
 
 #include "Subsytems/EngineSubsystems/DkDataSubsystem.h"
+#include "Subsytems/EngineSubsystems/DkInventorySubsystem.h"
 
 void ADkGameState::BeginPlay()
 {
 	Super::BeginPlay();
 
-	UDkDataSubsystem::Get()->InitializeDialogContent();
-	UDkDataSubsystem::Get()->InitializeNpcInfo();
-	UDkDataSubsystem::Get()->InitializeTaskInfo();
-	UDkDataSubsystem::Get()->InitializeEnemyTaskInfo();
+	UDkDataSubsystem::Get()->InitializeData();
+	UDkInventorySubsystem::Get()->InitializeData();
 }

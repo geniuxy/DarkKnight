@@ -10,6 +10,7 @@
 #include "Games/PlayerStates/DkPlayerStateBase.h"
 #include "Inventory/DkInventoryItem.h"
 #include "Subsytems/EngineSubsystems/DkDataSubsystem.h"
+#include "Subsytems/EngineSubsystems/DkInventorySubsystem.h"
 
 
 UDkTaskComponent::UDkTaskComponent()
@@ -332,9 +333,10 @@ void UDkTaskComponent::TryGetSubTaskRewards(int InMainTaskId, int InSubTaskId)
 
 void UDkTaskComponent::AddItemToOwnerInventory(int InItemId, int InItemStack)
 {
-	if (IsValid(GetOwnerInventoryComp()))
+	OwnerInventoryComp = UDkInventorySubsystem::Get()->GetCachedInventoryComponent();
+	if (IsValid(OwnerInventoryComp))
 	{
-		if (!UDkInventoryFunctionLibrary::IsItemStackable(this, InItemId))
+		if (!UDkInventoryFunctionLibrary::IsItemStackable(InItemId))
 		{
 			for (int i = 0; i < InItemStack; ++i)
 			{
@@ -350,6 +352,8 @@ void UDkTaskComponent::AddItemToOwnerInventory(int InItemId, int InItemStack)
 
 void UDkTaskComponent::TryAddItem(int InItemId, int InItemStack)
 {
+	if (!IsValid(OwnerInventoryComp)) return;
+
 	UDkInventoryItem* RewardItem = UDkInventoryFunctionLibrary::SpawnInventoryItemById(
 		OwnerInventoryComp, InItemId, InItemStack
 	);
@@ -378,18 +382,6 @@ ADkCharacterHero* UDkTaskComponent::GetOwnerCharacter()
 		return OwnerCharacter;
 	}
 	return nullptr;
-}
-
-UDkInventoryComponent* UDkTaskComponent::GetOwnerInventoryComp()
-{
-	if (!IsValid(OwnerInventoryComp))
-	{
-		if (GetOwnerCharacter())
-		{
-			OwnerInventoryComp = OwnerCharacter->GetInventoryComponent();
-		}
-	}
-	return OwnerInventoryComp;
 }
 
 bool UDkTaskComponent::HasFinishedAllPreconditionTask(const FGameplayTagContainer& InTagContainer) const

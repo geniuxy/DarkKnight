@@ -395,7 +395,7 @@ struct FInventoryItemFragment_Consumable : public FInventoryItemFragment
 	virtual void Manifest() override;
 	bool HasOptionalStats() const;
 
-	void UpdateConsumableEntries(const UObject* WorldContextObject, TArray<FItemEntryInfo> InEntries, bool bMainEntry);
+	void UpdateConsumableEntries(TArray<FItemEntryInfo> InEntries, bool bMainEntry);
 
 private:
 	UPROPERTY(EditAnywhere, Category="Inventory", meta=(ExcludeBaseStruct))
@@ -469,7 +469,7 @@ struct FInventoryItemFragment_Equipment : public FInventoryItemFragment
 	virtual void Manifest() override;
 	bool HasOptionalStats() const;
 
-	void UpdateEquipEntries(const UObject* WorldContextObject, TArray<FItemEntryInfo> InEntries, bool bMainEntry);
+	void UpdateEquipEntries(TArray<FItemEntryInfo> InEntries, bool bMainEntry);
 
 	ADkEquippedActorBase* SpawnAttachActor(USkeletalMeshComponent* AttachMesh) const;
 

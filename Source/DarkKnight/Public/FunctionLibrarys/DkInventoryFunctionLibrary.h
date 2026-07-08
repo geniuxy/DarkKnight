@@ -42,7 +42,10 @@ public:
 	static UDkInventoryItem* SpawnInventoryItemById(UObject* NewOuter, int32 InItemId, int InStack);
 
 	UFUNCTION(BlueprintCallable, Category="Inventory Function Library")
-	static bool IsItemStackable(UObject* WorldContextObject, int32 InItemId);
+	static bool IsItemStackable(int32 InItemId);
+
+	UFUNCTION(BlueprintCallable, Category="Inventory Function Library")
+	static FText GetItemName(int32 InItemId);
 };
 
 template <typename T, typename FuncT>

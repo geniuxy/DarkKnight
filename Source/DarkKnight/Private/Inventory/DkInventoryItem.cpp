@@ -3,6 +3,7 @@
 
 #include "Inventory/DkInventoryItem.h"
 
+#include "FunctionLibrarys/DkInventoryFunctionLibrary.h"
 #include "Inventory/DkInventoryItemFragment.h"
 #include "Net/UnrealNetwork.h"
 
@@ -19,6 +20,11 @@ bool UDkInventoryItem::IsItemStackable() const
 	const FItemFragment_Stackable* StackableFragment =
 		GetItemManifest().GetFragmentOfType<FItemFragment_Stackable>();
 	return StackableFragment != nullptr;
+}
+
+FText UDkInventoryItem::GetItemName()
+{
+	return UDkInventoryFunctionLibrary::GetItemName(GetItemManifest().GetItemID());
 }
 
 bool UDkInventoryItem::DoesItemTagMatch(const FGameplayTag& ItemTag) const
@@ -38,7 +44,7 @@ void UDkInventoryItem::SetItemManifest(const FDkItemInfo& ItemInfo, int32 InItem
 	Manifest.SetItemID(ItemInfo.ItemID);
 	Manifest.SetItemCategory(ItemInfo.ItemCategory);
 	Manifest.SetItemTag(ItemInfo.ItemTag);
-	Manifest.InitializeFragments(this, &ItemInfo, InItemStack);
+	Manifest.InitializeFragments(&ItemInfo, InItemStack);
 	
 	ItemManifest = FInstancedStruct::Make<FInventoryItemManifest>(Manifest);
 }

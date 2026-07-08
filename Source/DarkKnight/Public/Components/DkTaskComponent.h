@@ -60,7 +60,6 @@ private:
 	TObjectPtr<UDkInventoryComponent> OwnerInventoryComp;
 
 	ADkCharacterHero* GetOwnerCharacter();
-	UDkInventoryComponent* GetOwnerInventoryComp();
 	
 	TMap<int, FTaskCompletionStatus> CurrentTaskCompletionStatus;
 

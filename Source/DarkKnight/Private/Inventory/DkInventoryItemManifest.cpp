@@ -8,11 +8,10 @@
 #include "PickUp/DkPickUpActorBase.h"
 #include "PickUp/DkPickUpActorSkeletalMesh.h"
 #include "PickUp/DkPickUpActorStaticMesh.h"
-#include "Subsytems/DkInventorySubsystem.h"
+#include "Subsytems/EngineSubsystems/DkInventorySubsystem.h"
 #include "Widgets/Inventory/DkInventoryItemDescriptionMenu.h"
 
-void FInventoryItemManifest::InitializeFragments(
-	const UObject* WorldContextObject, const FDkItemInfo* ItemInfo, int32 InItemStack)
+void FInventoryItemManifest::InitializeFragments(const FDkItemInfo* ItemInfo, int32 InItemStack)
 {
 	// ItemGrid (目前项目只考虑1*1格子大小的物品)
 	FItemFragment_Grid GridFragment = FItemFragment_Grid();
@@ -116,11 +115,11 @@ void FInventoryItemManifest::InitializeFragments(
 		);
 		if (!MainEntries.IsEmpty())
 		{
-			NewItemEquipmentFragment.UpdateEquipEntries(WorldContextObject, MainEntries, true);
+			NewItemEquipmentFragment.UpdateEquipEntries(MainEntries, true);
 		}
 		if (!SubEntries.IsEmpty())
 		{
-			NewItemEquipmentFragment.UpdateEquipEntries(WorldContextObject, SubEntries, false);
+			NewItemEquipmentFragment.UpdateEquipEntries(SubEntries, false);
 		}
 		AddFragment(NewItemEquipmentFragment);
 	}
@@ -131,11 +130,11 @@ void FInventoryItemManifest::InitializeFragments(
 		FInventoryItemFragment_Consumable NewItemConsumableFragment = FInventoryItemFragment_Consumable();
 		if (!MainEntries.IsEmpty())
 		{
-			NewItemConsumableFragment.UpdateConsumableEntries(WorldContextObject, MainEntries, true);
+			NewItemConsumableFragment.UpdateConsumableEntries(MainEntries, true);
 		}
 		if (!SubEntries.IsEmpty())
 		{
-			NewItemConsumableFragment.UpdateConsumableEntries(WorldContextObject, SubEntries, false);
+			NewItemConsumableFragment.UpdateConsumableEntries(SubEntries, false);
 		}
 		AddFragment(NewItemConsumableFragment);
 	}
@@ -254,7 +253,7 @@ void FInventoryItemManifest::SpawnPickUpActor(
 	if (!IsValid(SpawnActor)) return;
 
 	// 更新Item的Mesh
-	UDkInventorySubsystem* InventorySubsystem = UDkInventorySubsystem::Get(WorldContextObject);
+	UDkInventorySubsystem* InventorySubsystem = UDkInventorySubsystem::Get();
 	checkf(InventorySubsystem, TEXT("生成RewardItem时，InventorySubsystem为空！"));
 	if (const FDkItemInfo* ItemInfo = InventorySubsystem->GetCachedItemTable().Find(ItemID))
 	{

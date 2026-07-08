@@ -422,6 +422,10 @@ void UDkTaskComponent::UpdateSubTaskState(int InMainTaskId, int InSubTaskId, ETa
 	{
 		SubTaskStatus->CurrentProgress = UDkTaskFunctionLibrary::GetSubTaskTarget(InMainTaskId, InSubTaskId);
 		TryGetSubTaskRewards(InMainTaskId, InSubTaskId);
+		if (OwnerPlayerState)
+		{
+			OwnerPlayerState->SetCurTrackingTaskTag(FGameplayTag());
+		}
 	}
 	else if (InTaskState == ETaskState::InProgress)
 	{

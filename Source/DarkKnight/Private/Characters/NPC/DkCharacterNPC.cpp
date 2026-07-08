@@ -26,6 +26,8 @@ ADkCharacterNPC::ADkCharacterNPC()
 void ADkCharacterNPC::BeginPlay()
 {
 	Super::BeginPlay();
+
+	SetGenericTeamId(3);
 }
 
 void ADkCharacterNPC::HandleBoxOverlapped(

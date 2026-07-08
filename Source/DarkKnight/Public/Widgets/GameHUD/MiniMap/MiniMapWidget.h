@@ -47,7 +47,10 @@ private:
 	TSoftObjectPtr<UTextureRenderTarget2D> ActorsRenderTargetTexture;
 	
 	UPROPERTY(EditDefaultsOnly, Category="Render Target")
-	float IconSize = 10.f;
+	float IconSize = 80.f;
+
+	UPROPERTY(EditDefaultsOnly, Category="Render Target")
+	float PointSize = 20.f;
 
 	UPROPERTY(EditDefaultsOnly, Category="Mini Map Details")
 	FVector2D LeftDownWorldLocation = {-4000.f, -4000.f};
@@ -72,6 +75,6 @@ private:
 	void UpdateActorIconsInMiniMap();
 	void DrawTaskTrackingLine();
 
-	void DrawActorIconsToMiniMap(TArray<ADkCharacterBase*> Actors, UTexture2D* DrawTexture = nullptr);
+	void DrawActorIconsToMiniMap(TArray<ADkCharacterBase*> Actors);
 	FVector2D ConvertWorldLocationToMiniMap(FVector InWorldLocation);
 };

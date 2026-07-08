@@ -195,7 +195,13 @@ protected:
 	UPROPERTY(EditAnywhere, meta=(Categories="Dk.Task.Tracking"))
 	FGameplayTag TaskTrackingTag;
 
+	UPROPERTY(EditAnywhere)
+	TSoftObjectPtr<UTexture2D> TaskTrackingIcon;
+	
 	void UpdateTaskTrackingActor();
+
+public:
+	FORCEINLINE UTexture2D* GetTaskTrackingIcon() const { return TaskTrackingIcon.LoadSynchronous(); }
 	
 	/**********************************************************************/
 	/*                         UI - OverHeadStats                         */

@@ -88,6 +88,12 @@ void UMiniMapWidget::UpdateActorIconsInMiniMap()
 	);
 
 	DrawActorIconsToMiniMap(ActorsInRange);
+
+	TArray<ADkCharacterBase*> NpcListInRange = UDkGameFunctionLibrary::GetUnitsInRange<ADkCharacterBase>(
+		OwnerCharacter, OwnerCharacter->GetActorLocation(), ActorCheckDistance, 3
+	);
+
+	DrawActorIconsToMiniMap(NpcListInRange);
 }
 
 void UMiniMapWidget::DrawTaskTrackingLine()
@@ -134,7 +140,7 @@ void UMiniMapWidget::DrawTaskTrackingLine()
 	DistanceText->SetText(FText::AsNumber(DistanceWalkToTarget / 100.f, &FormatOps));
 }
 
-void UMiniMapWidget::DrawActorIconsToMiniMap(TArray<ADkCharacterBase*> Actors, UTexture2D* DrawTexture)
+void UMiniMapWidget::DrawActorIconsToMiniMap(TArray<ADkCharacterBase*> Actors)
 {
 	if (Actors.IsEmpty()) return;
 	if (!CachedCanvas) return;
@@ -142,18 +148,24 @@ void UMiniMapWidget::DrawActorIconsToMiniMap(TArray<ADkCharacterBase*> Actors, U
 	for (ADkCharacterBase* Actor : Actors)
 	{
 		if (UDkAbilitySystemFunctionLibrary::IsActorDead(Actor)) continue;
-		if (DrawTexture)
+		if (Actor->GetTaskTrackingIcon())
 		{
 			CachedCanvas->K2_DrawTexture(
-				DrawTexture, ConvertWorldLocationToMiniMap(Actor->GetActorLocation()) - FVector2D(IconSize * 4),
-				FVector2D(IconSize * 8), FVector2D::ZeroVector
+				Actor->GetTaskTrackingIcon(),
+				ConvertWorldLocationToMiniMap(Actor->GetActorLocation()) - FVector2D(IconSize / 2.f),
+				FVector2D(IconSize),
+				FVector2D::ZeroVector,
+				FVector2D::UnitVector,
+				FLinearColor::White,
+				BLEND_Translucent,
+				90.f
 			);
 		}
 		else
 		{
 			CachedCanvas->K2_DrawPolygon(
-				DrawTexture, ConvertWorldLocationToMiniMap(Actor->GetActorLocation()),
-				FVector2D(IconSize * 2), 20, FLinearColor(0.8f, 0.f, 0.f, 1.f)
+				nullptr, ConvertWorldLocationToMiniMap(Actor->GetActorLocation()),
+				FVector2D(PointSize), 20, FLinearColor(0.8f, 0.f, 0.f, 1.f)
 			);
 		}
 	}

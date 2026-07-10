@@ -8,6 +8,7 @@
 #include "DkTypes/DkStructs.h"
 #include "DkGameplayAbilityBase.generated.h"
 
+class ADkPlayerStateBase;
 /**
  * 
  */
@@ -53,6 +54,11 @@ protected:
 
 	UPROPERTY()
 	UAbilitySystemComponent* OwnerASC;
+
+	ADkPlayerStateBase* GetOwnerPlayerState();
+	
+	UPROPERTY()
+	ADkPlayerStateBase* OwnerPlayerState;
 
 	void SendLocalGameplayEvent(const FGameplayTag& EventTag, const FGameplayEventData& EventData);
 

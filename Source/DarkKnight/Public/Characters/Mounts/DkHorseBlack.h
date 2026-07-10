@@ -3,11 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "DkHorseBase.h"
+#include "DkMountBase.h"
 #include "DkHorseBlack.generated.h"
 
 UCLASS()
-class DARKKNIGHT_API ADkHorseBlack : public ADkHorseBase
+class DARKKNIGHT_API ADkHorseBlack : public ADkMountBase
 {
 	GENERATED_BODY()
 

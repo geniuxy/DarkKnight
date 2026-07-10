@@ -28,16 +28,13 @@ void UDkGameplayAbilityBase::ActivateAbility(
 
 	if (TaskToCommit.MainTaskId != 0 && TaskToCommit.SubTaskId != 0)
 	{
-		if (GetOwnerAvatarCharacter() && GetOwnerAvatarCharacter()->HasAuthority())
+		if (GetOwnerPlayerState() && GetOwnerPlayerState()->HasAuthority())
 		{
-			if (ADkPlayerStateBase* OwnerPlayerState = GetOwnerAvatarCharacter()->GetPlayerState<ADkPlayerStateBase>())
-			{
-				OwnerPlayerState->OnCommitTaskDelegate.Broadcast(
-					TaskToCommit.MainTaskId,
-					TaskToCommit.SubTaskId,
-					TaskToCommit.CommitCount
-				);
-			}
+			OwnerPlayerState->OnCommitTaskDelegate.Broadcast(
+				TaskToCommit.MainTaskId,
+				TaskToCommit.SubTaskId,
+				TaskToCommit.CommitCount
+			);
 		}
 	}
 }
@@ -112,6 +109,16 @@ UAbilitySystemComponent* UDkGameplayAbilityBase::GetOwnerASC()
 	}
 
 	return OwnerASC;
+}
+
+ADkPlayerStateBase* UDkGameplayAbilityBase::GetOwnerPlayerState()
+{
+	if (!OwnerPlayerState && GetOwnerAvatarCharacter())
+	{
+		OwnerPlayerState = OwnerAvatarCharacter->GetPlayerState<ADkPlayerStateBase>();
+	}
+
+	return OwnerPlayerState;
 }
 
 void UDkGameplayAbilityBase::SendLocalGameplayEvent(const FGameplayTag& EventTag, const FGameplayEventData& EventData)

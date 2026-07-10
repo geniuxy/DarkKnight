@@ -1,7 +1,7 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Characters/Horses/DkHorseBase.h"
+#include "Characters/Mounts/DkMountBase.h"
 
 #include "Camera/CameraComponent.h"
 #include "Components/BoxComponent.h"
@@ -11,7 +11,7 @@
 #include "GameFramework/SpringArmComponent.h"
 
 
-ADkHorseBase::ADkHorseBase()
+ADkMountBase::ADkMountBase()
 {
 	PrimaryActorTick.bCanEverTick = false;
 
@@ -56,7 +56,7 @@ ADkHorseBase::ADkHorseBase()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 }
 
-void ADkHorseBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void ADkMountBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 }

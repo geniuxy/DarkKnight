@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "DkHorseBase.generated.h"
+#include "DkMountBase.generated.h"
 
 class UCameraComponent;
 class USpringArmComponent;
@@ -13,12 +13,12 @@ class UWidgetComponent;
 class UBoxComponent;
 
 UCLASS()
-class DARKKNIGHT_API ADkHorseBase : public ACharacter
+class DARKKNIGHT_API ADkMountBase : public ACharacter
 {
 	GENERATED_BODY()
 
 public:
-	ADkHorseBase();
+	ADkMountBase();
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 

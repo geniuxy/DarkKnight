@@ -8,6 +8,7 @@
 #include "GameFramework/PlayerState.h"
 #include "DkPlayerStateBase.generated.h"
 
+class ADkMountBase;
 class UDkTaskComponent;
 
 DECLARE_MULTICAST_DELEGATE_TwoParams(
@@ -61,4 +62,15 @@ protected:
 public:
 	FORCEINLINE FGameplayTag GetCurTrackingTaskTag() const { return CurTrackingTaskTag; }
 	void SetCurTrackingTaskTag(FGameplayTag InTag) { CurTrackingTaskTag = InTag; }
+
+	/**********************************************************************/
+	/*                               Mount                                */
+	/**********************************************************************/
+private:
+	UPROPERTY(Transient)
+	ADkMountBase* CachedMount;
+
+public:
+	FORCEINLINE ADkMountBase* GetCachedMount() const { return CachedMount; }
+	void SetCachedMount(ADkMountBase* InMount) { CachedMount = InMount; }
 };

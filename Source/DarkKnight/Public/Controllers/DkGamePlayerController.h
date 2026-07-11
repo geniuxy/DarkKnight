@@ -8,6 +8,7 @@
 #include "Interfaces/LoadingScreenInterface.h"
 #include "DkGamePlayerController.generated.h"
 
+class ADkMountBase;
 class UDkAbilitySystemComponent;
 struct FGameplayTag;
 class ADkCharacterNPC;
@@ -75,6 +76,10 @@ private:
 	void OnInteract();
 	void OnOpenSystemMenu();
 	void OnOpenInventory();
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input Config", meta=(AllowPrivateAccess="true"))
+	UInputConfig* MountInputConfigDataAsset;
+	
 	/********/
 
 	/* 捡拾物品 */
@@ -116,4 +121,12 @@ private:
 public:
 	FORCEINLINE ADkCharacterNPC* GetInteractiveNPC() const { return InteractiveNPC; }
 	void SetInteractiveNPC(ADkCharacterNPC* InNPC) { InteractiveNPC = InNPC; }
+
+	/**********************************************************************/
+	/*                               Mounts                               */
+	/**********************************************************************/
+protected:
+	UPROPERTY()
+	TObjectPtr<ADkMountBase> OwningMount;
+	
 };

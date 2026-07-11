@@ -38,8 +38,10 @@ void UDkWidgetInteractScreen::NativeOnInitialized()
 
 	bSupportsActivationFocus = false;
 
-	UDkInventoryComponent* InventoryComponent =
-		CastChecked<ADkCharacterHero>(GetOwningPlayerPawn())->GetInventoryComponent();
+	ADkCharacterHero* OwningCharacterHero = Cast<ADkCharacterHero>(GetOwningPlayerPawn());
+	if (!OwningCharacterHero) return;
+
+	UDkInventoryComponent* InventoryComponent = OwningCharacterHero->GetInventoryComponent();
 	if (IsValid(InventoryComponent))
 	{
 		InventoryComponent->OnNoRoomInInventory.AddDynamic(this, &ThisClass::ShowGameMessageInHUD);

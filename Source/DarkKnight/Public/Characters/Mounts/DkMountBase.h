@@ -3,9 +3,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AbilitySystemInterface.h"
+#include "GenericTeamAgentInterface.h"
 #include "GameFramework/Character.h"
 #include "DkMountBase.generated.h"
 
+enum class EAbilityInputID : uint8;
+struct FInputActionValue;
+class UDkAttributeSet;
+class UDkAbilitySystemComponent;
 class UCameraComponent;
 class USpringArmComponent;
 class USphereComponent;
@@ -13,20 +19,20 @@ class UWidgetComponent;
 class UBoxComponent;
 
 UCLASS()
-class DARKKNIGHT_API ADkMountBase : public ACharacter
+class DARKKNIGHT_API ADkMountBase : public ACharacter, public IGenericTeamAgentInterface, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
 public:
 	ADkMountBase();
 
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual void PawnClientRestart() override;
 
 protected:
 	/* Actor Components */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UBoxComponent* PushCrowdBox;
-	
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UWidgetComponent* InteractionWidget;
 
@@ -69,4 +75,39 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	USceneComponent* CameraOriginalLocation;
 	/*********/
+
+	/**********************************************************************/
+	/*                         Gameplay Ability                           */
+	/**********************************************************************/
+public:
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+
+protected:
+	UPROPERTY(VisibleAnywhere, Category= "GAS")
+	TObjectPtr<UDkAbilitySystemComponent> AbilitySystemComponent;
+
+	UPROPERTY(VisibleAnywhere, Category= "GAS")
+	TObjectPtr<UDkAttributeSet> AttributeSet;
+
+	/**********************************************************************/
+	/*                              Input                                 */
+	/**********************************************************************/
+public:
+	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
+
+private:
+	void HandleAbilityInput(const FInputActionValue& InputActionValue, EAbilityInputID InputID);
+
+	/**********************************************************************/
+	/*                                Team                                */
+	/**********************************************************************/
+public:
+	//~ Begin IGenericTeamAgentInterface Interface
+	virtual void SetGenericTeamId(const FGenericTeamId& NewTeamID) override;
+	virtual FGenericTeamId GetGenericTeamId() const override;
+	//~ End IGenericTeamAgentInterface Interface
+
+protected:
+	UPROPERTY(EditInstanceOnly)
+	FGenericTeamId TeamID;
 };

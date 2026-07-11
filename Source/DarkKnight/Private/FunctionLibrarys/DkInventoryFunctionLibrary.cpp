@@ -23,8 +23,10 @@ FIntPoint UDkInventoryFunctionLibrary::GetPositionFormIndex(const int32 Index, c
 UDkInventoryComponent* UDkInventoryFunctionLibrary::GetInventoryComponent(const APlayerController* PlayerController)
 {
 	if (!IsValid(PlayerController)) return nullptr;
-	UDkInventoryComponent* InventoryComponent =
-		CastChecked<ADkCharacterHero>(PlayerController->GetPawn())->FindComponentByClass<UDkInventoryComponent>();
+	ADkCharacterHero* OwningCharacterHero = Cast<ADkCharacterHero>(PlayerController->GetPawn());
+	if (!OwningCharacterHero) return nullptr;
+
+	UDkInventoryComponent* InventoryComponent = OwningCharacterHero->FindComponentByClass<UDkInventoryComponent>();
 	return InventoryComponent;
 }
 

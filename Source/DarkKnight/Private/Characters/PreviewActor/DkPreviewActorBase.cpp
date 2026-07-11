@@ -93,7 +93,10 @@ void ADkPreviewActorBase::DelayedInitializeOwner()
 
 	SourceMesh = CharacterMesh;
 	Mesh->SetSkeletalMesh(SourceMesh->GetSkeletalMeshAsset());
-	Mesh->SetAnimInstanceClass(SourceMesh->GetAnimInstance()->GetClass());
+	if (SourceMesh->GetAnimInstance())
+	{
+		Mesh->SetAnimInstanceClass(SourceMesh->GetAnimInstance()->GetClass());
+	}
 
 	EquipmentComponent->InitializeOwner(PlayerController);
 }

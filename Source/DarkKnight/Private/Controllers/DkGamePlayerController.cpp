@@ -9,6 +9,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "Blueprint/UserWidget.h"
 #include "Characters/DkCharacterHero.h"
+#include "Characters/Mounts/DkMountBase.h"
 #include "Characters/NPC/DkCharacterNPC.h"
 #include "Components/DkActionComponent.h"
 #include "Components/DkNpcDialogComponent.h"
@@ -86,7 +87,7 @@ void ADkGamePlayerController::OnLoadingScreenDeactivated_Implementation()
 void ADkGamePlayerController::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	DisableInput(this);
 }
 
@@ -100,9 +101,17 @@ void ADkGamePlayerController::OnPossess(APawn* NewPawn)
 		OwningPlayerCharacter->ServerSideInit();
 		OwningPlayerCharacter->SetGenericTeamId(TeamID);
 		OwningASC = Cast<UDkAbilitySystemComponent>(OwningPlayerCharacter->GetAbilitySystemComponent());
+		RefreshInventoryComponent();
+		SetupInputComponent();
+		return;
 	}
 
-	RefreshInventoryComponent();
+	OwningMount = Cast<ADkMountBase>(NewPawn);
+	if (OwningMount)
+	{
+		OwningMount->SetGenericTeamId(TeamID);
+		SetupInputComponent();
+	}
 }
 
 void ADkGamePlayerController::AcknowledgePossession(APawn* NewPawn)
@@ -114,9 +123,15 @@ void ADkGamePlayerController::AcknowledgePossession(APawn* NewPawn)
 	{
 		OwningPlayerCharacter->ClientSideInit();
 		OwningASC = Cast<UDkAbilitySystemComponent>(OwningPlayerCharacter->GetAbilitySystemComponent());
+		RefreshInventoryComponent();
+		return;
 	}
 
-	RefreshInventoryComponent();
+	OwningMount = Cast<ADkMountBase>(NewPawn);
+	if (OwningMount)
+	{
+		OwningMount->SetGenericTeamId(TeamID);
+	}
 }
 
 // void ADkGamePlayerController::OnRep_Pawn()
@@ -133,31 +148,47 @@ void ADkGamePlayerController::SetupInputComponent()
 
 	checkf(InputConfigDataAsset, TEXT("忘记配置InputConfigDataAsset了！"));
 
-	UDkEnhancedInputComponent* EnhancedInputComponent = CastChecked<UDkEnhancedInputComponent>(InputComponent);
-	EnhancedInputComponent->BindNativeInputAction(
-		InputConfigDataAsset, DkGameplayTags::Dk_Input_Action_Move, ETriggerEvent::Triggered,
-		this, &ThisClass::HandleGroundMovementInput
-	);
-	EnhancedInputComponent->BindNativeInputAction(
-		InputConfigDataAsset, DkGameplayTags::Dk_Input_Action_Look, ETriggerEvent::Triggered,
-		this, &ThisClass::OnLookTriggered
-	);
-	EnhancedInputComponent->BindNativeInputAction(
-		InputConfigDataAsset, DkGameplayTags::Dk_Input_Action_Jump, ETriggerEvent::Started,
-		this, &ThisClass::OnJumpPressed
-	);
-	EnhancedInputComponent->BindNativeInputAction(
-		InputConfigDataAsset, DkGameplayTags::Dk_Input_Action_Interact, ETriggerEvent::Started,
-		this, &ThisClass::OnInteract
-	);
-	EnhancedInputComponent->BindNativeInputAction(
-		InputConfigDataAsset, DkGameplayTags::Dk_Input_Action_OpenSystemMenu, ETriggerEvent::Completed,
-		this, &ThisClass::OnOpenSystemMenu
-	);
-	EnhancedInputComponent->BindNativeInputAction(
-		InputConfigDataAsset, DkGameplayTags::Dk_Input_Action_OpenInventory, ETriggerEvent::Completed,
-		this, &ThisClass::OnOpenInventory
-	);
+	if (UDkEnhancedInputComponent* EnhancedInputComponent = CastChecked<UDkEnhancedInputComponent>(InputComponent))
+	{
+		if (ADkCharacterHero* OwningCharacter = Cast<ADkCharacterHero>(GetPawn()))
+		{
+			EnhancedInputComponent->BindNativeInputAction(
+				InputConfigDataAsset, DkGameplayTags::Dk_Input_Action_Move, ETriggerEvent::Triggered,
+				this, &ThisClass::HandleGroundMovementInput
+			);
+			EnhancedInputComponent->BindNativeInputAction(
+				InputConfigDataAsset, DkGameplayTags::Dk_Input_Action_Look, ETriggerEvent::Triggered,
+				this, &ThisClass::OnLookTriggered
+			);
+			EnhancedInputComponent->BindNativeInputAction(
+				InputConfigDataAsset, DkGameplayTags::Dk_Input_Action_Jump, ETriggerEvent::Started,
+				this, &ThisClass::OnJumpPressed
+			);
+			EnhancedInputComponent->BindNativeInputAction(
+				InputConfigDataAsset, DkGameplayTags::Dk_Input_Action_Interact, ETriggerEvent::Started,
+				this, &ThisClass::OnInteract
+			);
+			EnhancedInputComponent->BindNativeInputAction(
+				InputConfigDataAsset, DkGameplayTags::Dk_Input_Action_OpenSystemMenu, ETriggerEvent::Completed,
+				this, &ThisClass::OnOpenSystemMenu
+			);
+			EnhancedInputComponent->BindNativeInputAction(
+				InputConfigDataAsset, DkGameplayTags::Dk_Input_Action_OpenInventory, ETriggerEvent::Completed,
+				this, &ThisClass::OnOpenInventory
+			);
+		}
+		else if (ADkMountBase* Mount = Cast<ADkMountBase>(GetPawn()))
+		{
+			EnhancedInputComponent->BindNativeInputAction(
+				MountInputConfigDataAsset, DkGameplayTags::Dk_Input_Action_Move, ETriggerEvent::Triggered,
+				this, &ThisClass::HandleGroundMovementInput
+			);
+			EnhancedInputComponent->BindNativeInputAction(
+				MountInputConfigDataAsset, DkGameplayTags::Dk_Input_Action_Look, ETriggerEvent::Triggered,
+				this, &ThisClass::OnLookTriggered
+			);
+		}
+	}
 }
 
 void ADkGamePlayerController::HandleGroundMovementInput(const FInputActionValue& InputActionValue)
@@ -318,7 +349,10 @@ void ADkGamePlayerController::TraceForItem()
 void ADkGamePlayerController::RefreshInventoryComponent()
 {
 	// 从PlayerController获取Character是通过GetPawn() (永远不要在 BeginPlay 里假设 Pawn 已准备好!）
-	InventoryComponent = CastChecked<ADkCharacterHero>(GetPawn())->FindComponentByClass<UDkInventoryComponent>();
+	ADkCharacterHero* OwnerHero = Cast<ADkCharacterHero>(GetPawn());
+	if (!OwnerHero) return;
+
+	InventoryComponent = OwnerHero->FindComponentByClass<UDkInventoryComponent>();
 	UDkInventorySubsystem* InventorySubsystem = UDkInventorySubsystem::Get();
 	checkf(InventorySubsystem, TEXT("InventorySubsystem为空！"));
 	InventorySubsystem->RegisterCachedInventoryComponent(InventoryComponent.Get());
@@ -330,20 +364,20 @@ void ADkGamePlayerController::TryStartDialog()
 	UDkNpcDialogComponent* DialogComponent = GetInteractiveNPC()->GetNpcDialogComponent();
 	if (!IsValid(DialogComponent)) return;
 	if (!DialogComponent->CanStartDialog()) return;
-	
+
 	ClientSetCameraFade(true, FColor(ForceInit), FVector2D(0.f, 1.f), 1.f, false, true);
 	UDkUIFunctionLibrary::ToggleInputMode(this, EDkInputMode::UIOnly);
 
 	SetLowerWidgetStackVisibility(DkGameplayTags::Dk_WidgetStack_Interact, false);
 
 	OwningASC->ApplyDialogStatsEffect();
-		
+
 	FTimerHandle StartDialogHandle;
 	GetWorldTimerManager().SetTimer(StartDialogHandle, FTimerDelegate::CreateLambda([=, this]()
 	{
 		DialogComponent->TryStartDialog(this);
 	}), 0.5f, false);
-	
+
 	FTimerHandle CameraFadeHandle;
 	GetWorldTimerManager().SetTimer(CameraFadeHandle, FTimerDelegate::CreateLambda([this]()
 	{
@@ -354,11 +388,11 @@ void ADkGamePlayerController::TryStartDialog()
 void ADkGamePlayerController::EndDialog()
 {
 	ClientSetCameraFade(true, FColor(ForceInit), FVector2D(0.f, 1.f), 1.f, false, true);
-	
+
 	OwningASC->RemoveActiveEffectsWithGrantedTags(
 		FGameplayTagContainer(DkGameplayTags::Dk_Stats_InDialog)
 	);
-			
+
 	FTimerHandle CameraFadeHandle;
 	GetWorldTimerManager().SetTimer(CameraFadeHandle, FTimerDelegate::CreateLambda([this]()
 	{
@@ -374,7 +408,8 @@ void ADkGamePlayerController::SetLowerWidgetStackVisibility(FGameplayTag InWidge
 	for (int i = (int)EWidgetStackType::Num - 1; i > (int)WidgetStackType; --i)
 	{
 		FGameplayTag LowerWidgetStackTag = UDkUIFunctionLibrary::GetWidgetStackTagByType((EWidgetStackType)i);
-		UCommonActivatableWidgetContainerBase* LowerWidgetStack = PrimaryLayoutWidget->FindWidgetStackByTag(LowerWidgetStackTag);
+		UCommonActivatableWidgetContainerBase* LowerWidgetStack = PrimaryLayoutWidget->FindWidgetStackByTag(
+			LowerWidgetStackTag);
 		LowerWidgetStack->SetVisibility(bVisible ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
 	}
 }

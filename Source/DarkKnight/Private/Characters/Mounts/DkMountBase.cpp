@@ -3,13 +3,18 @@
 
 #include "Characters/Mounts/DkMountBase.h"
 
+#include "EnhancedInputSubsystems.h"
 #include "Camera/CameraComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "GAS/DkAbilitySystemComponent.h"
+#include "GAS/DkAttributeSet.h"
 
+
+class UEnhancedInputLocalPlayerSubsystem;
 
 ADkMountBase::ADkMountBase()
 {
@@ -34,8 +39,8 @@ ADkMountBase::ADkMountBase()
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(GetMesh());
 	CameraBoom->bUsePawnControlRotation = true;
-	CameraBoom->TargetArmLength = 170.f;
-	CameraBoom->SocketOffset = FVector(0.f, 60.f, 0.f);
+	CameraBoom->TargetArmLength = 200.f;
+	CameraBoom->SocketOffset = FVector(0.f, 80.f, 50.f);
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom);
 	FollowCamera->bUsePawnControlRotation = false;
@@ -53,10 +58,49 @@ ADkMountBase::ADkMountBase()
 	MountPoint_B->SetupAttachment(GetMesh());
 	CameraOriginalLocation->SetupAttachment(GetMesh());
 
+	AbilitySystemComponent = CreateDefaultSubobject<UDkAbilitySystemComponent>(TEXT("Ability System Component"));
+	AttributeSet = CreateDefaultSubobject<UDkAttributeSet>(TEXT("AttributeSet"));
+
 	GetCharacterMovement()->bOrientRotationToMovement = true;
+}
+
+void ADkMountBase::PawnClientRestart()
+{
+	Super::PawnClientRestart();
+
+	APlayerController* OwningPlayerController = GetController<APlayerController>();
+	if (OwningPlayerController)
+	{
+		UEnhancedInputLocalPlayerSubsystem* InputSubsystem =
+			OwningPlayerController->GetLocalPlayer()->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
+		if (InputSubsystem)
+		{
+			InputSubsystem->RemoveMappingContext(AbilitySystemComponent->GetInputMappingContext());
+			InputSubsystem->AddMappingContext(AbilitySystemComponent->GetInputMappingContext(), 0);
+		}
+	}
+}
+
+UAbilitySystemComponent* ADkMountBase::GetAbilitySystemComponent() const
+{
+	return AbilitySystemComponent;
 }
 
 void ADkMountBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+}
+
+void ADkMountBase::HandleAbilityInput(const FInputActionValue& InputActionValue, EAbilityInputID InputID)
+{
+}
+
+void ADkMountBase::SetGenericTeamId(const FGenericTeamId& NewTeamID)
+{
+	TeamID = NewTeamID;
+}
+
+FGenericTeamId ADkMountBase::GetGenericTeamId() const
+{
+	return TeamID;
 }

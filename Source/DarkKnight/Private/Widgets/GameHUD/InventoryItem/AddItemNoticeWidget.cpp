@@ -15,7 +15,10 @@ void UAddItemNoticeWidget::NativeOnInitialized()
 	Super::NativeOnInitialized();
 
 	OwnerInventoryComp = UDkInventorySubsystem::Get()->GetCachedInventoryComponent();
-	OwnerInventoryComp->OnAddItemNotice.AddDynamic(this, &ThisClass::AddItemNotice);
+	if (OwnerInventoryComp)
+	{
+		OwnerInventoryComp->OnAddItemNotice.AddDynamic(this, &ThisClass::AddItemNotice);
+	}
 }
 
 void UAddItemNoticeWidget::AddItemNotice(const FText& InItemName, int InItemCount)

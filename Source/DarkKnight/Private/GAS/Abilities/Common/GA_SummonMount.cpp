@@ -41,14 +41,41 @@ void UGA_SummonMount::ActivateAbility(
 		{
 			if (GetOwnerAvatarCharacter())
 			{
-				if (OwnerAvatarCharacter->GetDistanceTo(OwnerPlayerState->GetCachedMount()) > CheckDistance * 2)
+				if (OwnerAvatarCharacter->GetDistanceTo(OwnerPlayerState->GetCachedMount()) > CheckDistance)
 				{
 					OwnerPlayerState->GetCachedMount()->Destroy();
 					SpawnNewMount();
 				}
 				else
 				{
-					OwnerPlayerState->GetCachedMount()->SetActorLocation(FindPlaceToSummonMount());
+					FVector PlaceToSummonMount = FindPlaceToSummonMount();
+
+					FCollisionShape Shape = FCollisionShape::MakeCapsule(45.f, 90.f);
+					FCollisionQueryParams Params;
+					Params.AddIgnoredActor(OwnerPlayerState->GetCachedMount());
+					Params.AddIgnoredActor(OwnerAvatarCharacter);
+
+					FHitResult SafetyCheck;
+					bool bBlocked = GetWorld()->SweepSingleByChannel(
+						SafetyCheck,
+						PlaceToSummonMount,
+						PlaceToSummonMount,
+						FQuat::Identity,
+						ECC_Pawn,
+						Shape,
+						Params
+					);
+
+					if (!bBlocked)
+					{
+						// TODO:命令马匹走向主角
+						OwnerPlayerState->GetCachedMount()->SetActorLocation(PlaceToSummonMount);
+
+						FVector DirectionToOwner = GetOwnerAvatarCharacter()->GetActorLocation() - PlaceToSummonMount;
+						DirectionToOwner.Z = 0.f;
+						DirectionToOwner.Normalize();
+						OwnerPlayerState->GetCachedMount()->SetActorRotation(DirectionToOwner.Rotation());
+					}
 				}
 			}
 		}
@@ -65,8 +92,14 @@ void UGA_SummonMount::SpawnNewMount()
 	FVector PlaceToSummonMount = FindPlaceToSummonMount();
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
+	FVector DirectionToOwner = GetOwnerAvatarCharacter()->GetActorLocation() - PlaceToSummonMount;
+	DirectionToOwner.Z = 0.0f; // 保持水平朝向，忽略高度差（可选）
+	DirectionToOwner.Normalize();
+	FRotator SpawnRotation = DirectionToOwner.Rotation();
+
 	ADkMountBase* CachedMount = GetWorld()->SpawnActor<ADkMountBase>(
-		MountClass, PlaceToSummonMount, FRotator::ZeroRotator, SpawnParams
+		MountClass, PlaceToSummonMount, SpawnRotation, SpawnParams
 	);
 	CachedMount->SetInstigator(OwnerAvatarCharacter);
 	OwnerPlayerState->SetCachedMount(CachedMount);
@@ -84,13 +117,13 @@ FVector UGA_SummonMount::FindPlaceToSummonMount()
 		return LocationToSummon;
 	}
 
-	// 2. 尝试右侧
+	// 2. 尝试左侧
 	if (TryFindSummonLocationInDirection(OwnerAvatarCharacter->GetActorRightVector(), LocationToSummon))
 	{
 		return LocationToSummon;
 	}
 
-	// 3. 尝试左侧
+	// 3. 尝试右侧
 	if (TryFindSummonLocationInDirection(-OwnerAvatarCharacter->GetActorRightVector(), LocationToSummon))
 	{
 		return LocationToSummon;
@@ -103,7 +136,8 @@ bool UGA_SummonMount::TryFindSummonLocationInDirection(const FVector& Direction,
 {
 	for (int i = 0; i < 8; ++i)
 	{
-		FVector CheckPoint = OwnerAvatarCharacter->GetActorLocation() - Direction * CheckDistance + i * CheckDistance / 8.f;
+		FVector CheckPoint = OwnerAvatarCharacter->GetActorLocation() + Direction * (-CheckDistance + i * CheckDistance
+			/ 8.f);
 
 		if (CheckSummonLocationAtPoint(CheckPoint, OutLocation))
 		{
@@ -129,26 +163,35 @@ bool UGA_SummonMount::CheckSummonLocationAtPoint(const FVector& CheckPoint, FVec
 		HitResult.Location, OwnerAvatarCharacter->GetActorLocation()
 	);
 
+	// 胶囊体检测（检查该位置是否有足够空间）
+	FVector GroundLocation = HitResult.Location + FVector(0.f, 0.f, 95.f);
+
 	// 3. 胶囊体检测（检查该位置是否有足够空间）
-	FVector CheckCapsuleStartPoint = HitResult.Location + FVector(0.f, 0.f, 120.f);
-	FVector CheckCapsuleEndPoint = CheckCapsuleStartPoint +
+	FVector CheckCapsuleStartPoint = GroundLocation -
+		FVector(DirectionFromHitResultToOwner.X * 150.f, DirectionFromHitResultToOwner.Y * 150.f, 0.f);
+	FVector CheckCapsuleEndPoint = GroundLocation +
 		FVector(DirectionFromHitResultToOwner.X * 150.f, DirectionFromHitResultToOwner.Y * 150.f, 0.f);
 
 	FHitResult CapsuleHitResult;
 	EDrawDebugTrace::Type DrawDebugTrace =
 		bShouldDrawDebug ? EDrawDebugTrace::ForDuration : EDrawDebugTrace::None;
+	TArray<AActor*> ActorsToIgnore;
+	if (OwnerPlayerState->GetCachedMount())
+	{
+		ActorsToIgnore.Add(OwnerPlayerState->GetCachedMount());
+	}
 	bool bCapsuleHit = UKismetSystemLibrary::CapsuleTraceSingle(
 		this,
 		CheckCapsuleStartPoint,
 		CheckCapsuleEndPoint,
 		45.f,
 		90.f,
-		UEngineTypes::ConvertToTraceType(ECC_Visibility),
+		UEngineTypes::ConvertToTraceType(ECC_Pawn),
 		false,
-		TArray<AActor*>(),
+		ActorsToIgnore,
 		DrawDebugTrace,
 		CapsuleHitResult,
-		true
+		false
 	);
 	if (bCapsuleHit)
 	{
@@ -156,6 +199,6 @@ bool UGA_SummonMount::CheckSummonLocationAtPoint(const FVector& CheckPoint, FVec
 	}
 
 	// 找到有效位置
-	OutLocation = HitResult.Location + FVector(0.f, 0.f, 95.f);
+	OutLocation = GroundLocation;
 	return true;
 }

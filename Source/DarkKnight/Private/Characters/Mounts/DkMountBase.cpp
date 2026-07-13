@@ -110,6 +110,16 @@ void ADkMountBase::Tick(float DeltaSeconds)
 			LocomotionActualSpeed, LocomotionExpectedSpeed, DeltaSeconds, LocomotionInterpSpeed
 		);
 	}
+
+	if (IsLocallyControlledByPlayer())
+	{
+		UpdateCameraRotation(DeltaSeconds);
+	}
+}
+
+bool ADkMountBase::IsLocallyControlledByPlayer()
+{
+	return GetController() && GetController()->IsLocalPlayerController();
 }
 
 ADkCharacterBase* ADkMountBase::GetOwnerInstigator()
@@ -132,6 +142,67 @@ void ADkMountBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 void ADkMountBase::HandleAbilityInput(const FInputActionValue& InputActionValue, EAbilityInputID InputID)
 {
+}
+
+void ADkMountBase::UpdateCameraRotation(float DeltaSeconds)
+{
+	ADkCharacterBase* OwnerInstigator = GetOwnerInstigator();
+	if (!OwnerInstigator && false) // TODO: 这个记得修改
+	{
+		return;
+	}
+
+	if (LocomotionExpectedSpeed >= 100.f)
+	{
+		DeltaRotator =
+			UKismetMathLibrary::NormalizedDeltaRotator(GetBaseAimRotation(), GetActorRotation()).Yaw;
+		if ((DeltaRotator >= 35.f && DeltaRotator <= 145.f) || (DeltaRotator >= -145.f && DeltaRotator <= -35.f))
+		{
+			StartCameraFaceForward(DeltaSeconds);
+		}
+	}
+	else
+	{
+		bStartCameraLocateForward = false;
+	}
+}
+
+void ADkMountBase::StartCameraFaceForward(float DeltaSeconds)
+{
+	if (bStartCameraLocateForward) return;
+
+	bStartCameraLocateForward = true;
+	GetWorldTimerManager().SetTimer(
+		StartCameraFaceForwardHandle,
+		this,
+		&ThisClass::HandleCameraFaceForward,
+		DeltaSeconds,
+		true
+	);
+}
+
+void ADkMountBase::HandleCameraFaceForward()
+{
+	float DeltaSeconds = GetWorld()->GetDeltaSeconds();
+	if (!bTempStopCameraLocateForward)
+	{
+		double RotateSpeed = UKismetMathLibrary::MapRangeClamped(
+			FMath::Abs(DeltaRotator), 0.f, 180.f, 2.f, 5.f
+		);
+		FRotator NewRotation = UKismetMathLibrary::RInterpTo(
+			GetControlRotation(),
+			UKismetMathLibrary::Conv_VectorToRotator(GetActorForwardVector() - FVector(0.f, 0.f, 0.35f)), // 微调方向
+			DeltaSeconds,
+			RotateSpeed
+		);
+		GetController()->SetControlRotation(NewRotation);
+	}
+
+	// 站着不动时会停止摄像机朝前
+	if (!bStartCameraLocateForward)
+	{
+		GetWorldTimerManager().ClearTimer(StartCameraFaceForwardHandle);
+	}
 }
 
 FVector ADkMountBase::GetDesiredMovement()

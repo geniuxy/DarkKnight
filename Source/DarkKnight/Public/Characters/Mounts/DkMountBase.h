@@ -81,6 +81,8 @@ protected:
 	USceneComponent* CameraOriginalLocation;
 	/*********/
 
+	bool IsLocallyControlledByPlayer();
+
 	/**********************************************************************/
 	/*                            Instigator                              */
 	/**********************************************************************/
@@ -108,6 +110,24 @@ public:
 
 private:
 	void HandleAbilityInput(const FInputActionValue& InputActionValue, EAbilityInputID InputID);
+
+	/**********************************************************************/
+	/*                              Camera                                */
+	/**********************************************************************/
+protected:
+	void UpdateCameraRotation(float DeltaSeconds);
+	void StartCameraFaceForward(float DeltaSeconds);
+	void HandleCameraFaceForward();
+
+	float DeltaRotator = 0.f;
+
+	bool bStartCameraLocateForward = false;
+	bool bTempStopCameraLocateForward = false;
+
+	FTimerHandle StartCameraFaceForwardHandle;
+
+public:
+	void SetTempStopCameraLocateForward(bool bStop) { bTempStopCameraLocateForward = bStop; }
 
 	/**********************************************************************/
 	/*                         Desired Movement                           */

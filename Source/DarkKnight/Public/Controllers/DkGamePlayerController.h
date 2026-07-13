@@ -131,4 +131,7 @@ protected:
 	void OnMountGroundMovement(const FInputActionValue& InputActionValue);
 	void OnMountGroundMovementCompleted(const FInputActionValue& InputActionValue);
 	void OnMountLookTriggered(const FInputActionValue& InputActionValue);
+	void OnMountLookCompleted(const FInputActionValue& InputActionValue);
+
+	FTimerHandle MountLookCompletedTimerHandle;
 };

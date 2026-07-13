@@ -191,6 +191,10 @@ void ADkGamePlayerController::SetupInputComponent()
 				MountInputConfigDataAsset, DkGameplayTags::Dk_Input_Action_Look, ETriggerEvent::Triggered,
 				this, &ThisClass::OnMountLookTriggered
 			);
+			EnhancedInputComponent->BindNativeInputAction(
+				MountInputConfigDataAsset, DkGameplayTags::Dk_Input_Action_Look, ETriggerEvent::Completed,
+				this, &ThisClass::OnMountLookCompleted
+			);
 		}
 	}
 }
@@ -463,4 +467,23 @@ void ADkGamePlayerController::OnMountLookTriggered(const FInputActionValue& Inpu
 	{
 		GetPawn()->AddControllerYawInput(LookAxisVector.X);
 	}
+
+	if (OwningMount)
+	{
+		OwningMount->SetTempStopCameraLocateForward(true);
+	}
+
+	GetWorld()->GetTimerManager().ClearTimer(MountLookCompletedTimerHandle);
+}
+
+void ADkGamePlayerController::OnMountLookCompleted(const FInputActionValue& InputActionValue)
+{
+	// 镜头移动以后 等一会儿 再激活 镜头自动对齐移动方向
+	GetWorld()->GetTimerManager().SetTimer(MountLookCompletedTimerHandle, FTimerDelegate::CreateLambda([this]()
+	{
+		if (OwningMount)
+		{
+			OwningMount->SetTempStopCameraLocateForward(false);
+		}
+	}), 1.f, false);
 }

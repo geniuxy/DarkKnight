@@ -261,3 +261,19 @@ enum class EAreaType: uint8
 	Hogwarts UMETA(DisplayName = "霍格沃兹"),
 	None
 };
+
+/**********************************************************************/
+/*                               Mount                                */
+/**********************************************************************/
+UENUM(BlueprintType)
+enum class EMountMoveType: uint8
+{
+	Back UMETA(DisplayName = "后退"),
+	Idle UMETA(DisplayName = "停止"),
+	Walk UMETA(DisplayName = "慢走"),
+	Trot UMETA(DisplayName = "快走"),
+	Canter UMETA(DisplayName = "慢跑"),
+	Gallop UMETA(DisplayName = "快跑"),
+	Sprint UMETA(DisplayName = "冲刺"),
+	None
+};

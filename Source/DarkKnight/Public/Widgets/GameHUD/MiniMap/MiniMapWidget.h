@@ -38,7 +38,7 @@ private:
 	TObjectPtr<UBorder> TaskTrackingBorder;
 
 	UPROPERTY()
-	ADkCharacterBase* OwnerCharacter;
+	ACharacter* OwnerCharacter;
 
 	UPROPERTY()
 	ADkPlayerStateBase* OwnerPlayerState;

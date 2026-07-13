@@ -3,6 +3,8 @@
 
 #include "GAS/Abilities/Common/GA_SummonMount.h"
 
+#include "Animations/AnimInstances/DkAnimInstanceMountBase.h"
+#include "Characters/DkCharacterBase.h"
 #include "Characters/Mounts/DkMountBase.h"
 #include "GameFramework/Character.h"
 #include "Games/PlayerStates/DkPlayerStateBase.h"
@@ -101,8 +103,25 @@ void UGA_SummonMount::SpawnNewMount()
 	ADkMountBase* CachedMount = GetWorld()->SpawnActor<ADkMountBase>(
 		MountClass, PlaceToSummonMount, SpawnRotation, SpawnParams
 	);
-	CachedMount->SetInstigator(OwnerAvatarCharacter);
+	UpdateInstigator(CachedMount);
+	
 	OwnerPlayerState->SetCachedMount(CachedMount);
+}
+
+void UGA_SummonMount::UpdateInstigator(ADkMountBase* CachedMount)
+{
+	if (CachedMount && OwnerAvatarCharacter)
+	{
+		CachedMount->SetInstigator(OwnerAvatarCharacter);
+		ADkCharacterBase* OwnerCharacterBase = Cast<ADkCharacterBase>(OwnerAvatarCharacter);
+		if (USkeletalMeshComponent* Mesh = CachedMount->GetMesh())
+		{
+			if (UDkAnimInstanceMountBase* AnimInst = Cast<UDkAnimInstanceMountBase>(Mesh->GetAnimInstance()))
+			{
+				AnimInst->SetOwnerInstigator(OwnerCharacterBase);
+			}
+		}
+	}
 }
 
 FVector UGA_SummonMount::FindPlaceToSummonMount()

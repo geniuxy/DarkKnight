@@ -20,7 +20,7 @@ void UMiniMapWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	OwnerCharacter = Cast<ADkCharacterBase>(GetOwningPlayerPawn());
+	OwnerCharacter = Cast<ACharacter>(GetOwningPlayerPawn());
 	if (OwnerCharacter)
 	{
 		OwnerPlayerState = OwnerCharacter->GetPlayerState<ADkPlayerStateBase>();

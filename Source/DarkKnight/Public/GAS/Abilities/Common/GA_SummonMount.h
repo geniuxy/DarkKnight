@@ -27,6 +27,7 @@ public:
 
 private:
 	void SpawnNewMount();
+	void UpdateInstigator(ADkMountBase* CachedMount);
 	FVector FindPlaceToSummonMount();
 	bool TryFindSummonLocationInDirection(const FVector& Direction, FVector& OutLocation);
 	bool CheckSummonLocationAtPoint(const FVector& CheckPoint, FVector& OutLocation);

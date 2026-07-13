@@ -5,20 +5,28 @@
 
 #include "EnhancedInputSubsystems.h"
 #include "Camera/CameraComponent.h"
+#include "Characters/DkCharacterBase.h"
 #include "Components/BoxComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GAS/DkAbilitySystemComponent.h"
 #include "GAS/DkAttributeSet.h"
+#include "Kismet/KismetMathLibrary.h"
 
 
 class UEnhancedInputLocalPlayerSubsystem;
 
 ADkMountBase::ADkMountBase()
 {
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
+
+	bUseControllerRotationYaw = false;
+
+	GetCapsuleComponent()->SetCapsuleRadius(45.f);
+	GetCapsuleComponent()->SetCapsuleHalfHeight(90.f);
 
 	PushCrowdBox = CreateDefaultSubobject<UBoxComponent>(TEXT("PushCrowdBox"));
 	PushCrowdBox->SetupAttachment(GetRootComponent());
@@ -35,6 +43,10 @@ ADkMountBase::ADkMountBase()
 	Tail->SetupAttachment(GetMesh());
 	Saddle->SetupAttachment(GetMesh());
 	Reins->SetupAttachment(GetMesh());
+	Mane->SetLeaderPoseComponent(GetMesh());
+	Tail->SetLeaderPoseComponent(GetMesh());
+	Saddle->SetLeaderPoseComponent(GetMesh());
+	Reins->SetLeaderPoseComponent(GetMesh());
 
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(GetMesh());
@@ -62,6 +74,13 @@ ADkMountBase::ADkMountBase()
 	AttributeSet = CreateDefaultSubobject<UDkAttributeSet>(TEXT("AttributeSet"));
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
+	GetCharacterMovement()->RotationRate = FRotator(0.f, 500.f, 0.f);
+	GetCharacterMovement()->MaxAcceleration = 1500.f;
+	GetCharacterMovement()->MaxWalkSpeed = 500.f;
+	GetCharacterMovement()->SetFixedBrakingDistance(200.f); // AI导航：让 NPC 在到达目标点前恰好停在 200cm 处，不会冲过头
+	// 通常同角色的实际碰撞体，确保AI导航网格查询使用正确的角色体积
+	GetCharacterMovement()->NavAgentProps.AgentRadius = GetCapsuleComponent()->GetUnscaledCapsuleRadius();
+	GetCharacterMovement()->NavAgentProps.AgentHeight = GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight() * 2.f;
 }
 
 void ADkMountBase::PawnClientRestart()
@@ -81,6 +100,26 @@ void ADkMountBase::PawnClientRestart()
 	}
 }
 
+void ADkMountBase::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	if (LocomotionActualSpeed != LocomotionExpectedSpeed)
+	{
+		LocomotionActualSpeed = UKismetMathLibrary::FInterpTo(
+			LocomotionActualSpeed, LocomotionExpectedSpeed, DeltaSeconds, LocomotionInterpSpeed
+		);
+	}
+}
+
+ADkCharacterBase* ADkMountBase::GetOwnerInstigator()
+{
+	if (!GetInstigator()) return nullptr;
+
+	ADkCharacterBase* OwnerInstigator = Cast<ADkCharacterBase>(GetInstigator());
+	return OwnerInstigator;
+}
+
 UAbilitySystemComponent* ADkMountBase::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;
@@ -93,6 +132,27 @@ void ADkMountBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 void ADkMountBase::HandleAbilityInput(const FInputActionValue& InputActionValue, EAbilityInputID InputID)
 {
+}
+
+FVector ADkMountBase::GetDesiredMovement()
+{
+	FVector DesiredMovement;
+	ADkCharacterBase* OwnerInstigator = GetOwnerInstigator();
+	if (!OwnerInstigator && false) // TODO: 这个记得修改
+	{
+		DesiredMovement = UKismetMathLibrary::GetDirectionUnitVector(GetActorLocation(), AITargetLocation);
+	}
+	else
+	{
+		//FRotator()第一个是Pitch，第二个是Yaw，第三个是Roll，这个是根据显示器的xyz决定的，x左右，y上下，z垂直于显示器
+		FVector ForwardDesiredMovement =
+			UKismetMathLibrary::GetForwardVector(FRotator(0.f, GetControlRotation().Yaw, 0.f)) * MovementInputY;
+		FVector RightDesiredMovement =
+			UKismetMathLibrary::GetRightVector(FRotator(0.f, GetControlRotation().Yaw, 0.f)) * MovementInputX;
+		DesiredMovement = ForwardDesiredMovement + RightDesiredMovement;
+	}
+
+	return DesiredMovement;
 }
 
 void ADkMountBase::SetGenericTeamId(const FGenericTeamId& NewTeamID)

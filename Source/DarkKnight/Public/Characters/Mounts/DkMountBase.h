@@ -5,9 +5,12 @@
 #include "CoreMinimal.h"
 #include "AbilitySystemInterface.h"
 #include "GenericTeamAgentInterface.h"
+#include "DkTypes/DkEnums.h"
 #include "GameFramework/Character.h"
 #include "DkMountBase.generated.h"
 
+enum class EMountMoveType : uint8;
+class ADkCharacterBase;
 enum class EAbilityInputID : uint8;
 struct FInputActionValue;
 class UDkAttributeSet;
@@ -29,6 +32,8 @@ public:
 	virtual void PawnClientRestart() override;
 
 protected:
+	virtual void Tick(float DeltaSeconds) override;
+
 	/* Actor Components */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UBoxComponent* PushCrowdBox;
@@ -77,6 +82,12 @@ protected:
 	/*********/
 
 	/**********************************************************************/
+	/*                            Instigator                              */
+	/**********************************************************************/
+public:
+	ADkCharacterBase* GetOwnerInstigator();
+
+	/**********************************************************************/
 	/*                         Gameplay Ability                           */
 	/**********************************************************************/
 public:
@@ -97,6 +108,32 @@ public:
 
 private:
 	void HandleAbilityInput(const FInputActionValue& InputActionValue, EAbilityInputID InputID);
+
+	/**********************************************************************/
+	/*                         Desired Movement                           */
+	/**********************************************************************/
+public:
+	FVector GetDesiredMovement();
+
+private:
+	float MovementInputX = 0.f;
+	float MovementInputY = 0.f;
+
+	float LocomotionExpectedSpeed = 0.f;
+	float LocomotionInterpSpeed = 300.f;
+	float LocomotionActualSpeed = 0.f;
+	EMountMoveType MoveType = EMountMoveType::Idle;
+
+	FVector AITargetLocation = FVector();
+
+public:
+	void SetMovementInputX(float InActionX) { MovementInputX = InActionX; }
+	void SetMovementInputY(float InActionY) { MovementInputY = InActionY; }
+	void SetLocomotionExpectedSpeed(float InValue) { LocomotionExpectedSpeed = InValue; }
+	void SetLocomotionInterpSpeed(float InValue) { LocomotionActualSpeed = InValue; }
+	FORCEINLINE float GetLocomotionActualSpeed() const { return LocomotionActualSpeed; }
+	FORCEINLINE EMountMoveType GetMoveType() const { return MoveType; }
+	void SetMoveType(EMountMoveType InMoveType) { MoveType = InMoveType; }
 
 	/**********************************************************************/
 	/*                                Team                                */

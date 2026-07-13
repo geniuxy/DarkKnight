@@ -181,11 +181,15 @@ void ADkGamePlayerController::SetupInputComponent()
 		{
 			EnhancedInputComponent->BindNativeInputAction(
 				MountInputConfigDataAsset, DkGameplayTags::Dk_Input_Action_Move, ETriggerEvent::Triggered,
-				this, &ThisClass::HandleGroundMovementInput
+				this, &ThisClass::OnMountGroundMovement
+			);
+			EnhancedInputComponent->BindNativeInputAction(
+				MountInputConfigDataAsset, DkGameplayTags::Dk_Input_Action_Move, ETriggerEvent::Completed,
+				this, &ThisClass::OnMountGroundMovementCompleted
 			);
 			EnhancedInputComponent->BindNativeInputAction(
 				MountInputConfigDataAsset, DkGameplayTags::Dk_Input_Action_Look, ETriggerEvent::Triggered,
-				this, &ThisClass::OnLookTriggered
+				this, &ThisClass::OnMountLookTriggered
 			);
 		}
 	}
@@ -411,5 +415,52 @@ void ADkGamePlayerController::SetLowerWidgetStackVisibility(FGameplayTag InWidge
 		UCommonActivatableWidgetContainerBase* LowerWidgetStack = PrimaryLayoutWidget->FindWidgetStackByTag(
 			LowerWidgetStackTag);
 		LowerWidgetStack->SetVisibility(bVisible ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+	}
+}
+
+void ADkGamePlayerController::OnMountGroundMovement(const FInputActionValue& InputActionValue)
+{
+	const FVector2D MoveVector = InputActionValue.Get<FVector2D>();
+
+	if (OwningMount &&
+		(OwningMount->GetMoveType() == EMountMoveType::Idle ||
+			OwningMount->GetMoveType() == EMountMoveType::Walk ||
+			OwningMount->GetMoveType() == EMountMoveType::Trot))
+	{
+		OwningMount->SetMovementInputX(MoveVector.X);
+		OwningMount->SetMovementInputY(MoveVector.Y);
+		OwningMount->SetMoveType(EMountMoveType::Trot);
+		OwningMount->SetLocomotionExpectedSpeed(350.f);
+		OwningMount->SetLocomotionInterpSpeed(350.f);
+	}
+}
+
+void ADkGamePlayerController::OnMountGroundMovementCompleted(const FInputActionValue& InputActionValue)
+{
+	if (OwningMount ||
+		(OwningMount->GetMoveType() == EMountMoveType::Idle ||
+			OwningMount->GetMoveType() == EMountMoveType::Walk ||
+			OwningMount->GetMoveType() == EMountMoveType::Trot))
+	{
+		OwningMount->SetMovementInputX(0.f);
+		OwningMount->SetMovementInputY(0.f);
+		OwningMount->SetMoveType(EMountMoveType::Idle);
+		OwningMount->SetLocomotionExpectedSpeed(0.f);
+		OwningMount->SetLocomotionInterpSpeed(300.f);
+	}
+}
+
+void ADkGamePlayerController::OnMountLookTriggered(const FInputActionValue& InputActionValue)
+{
+	const FVector2D LookAxisVector = InputActionValue.Get<FVector2D>();
+
+	if (LookAxisVector.Y != 0.f)
+	{
+		GetPawn()->AddControllerPitchInput(LookAxisVector.Y);
+	}
+
+	if (LookAxisVector.X != 0.f)
+	{
+		GetPawn()->AddControllerYawInput(LookAxisVector.X);
 	}
 }

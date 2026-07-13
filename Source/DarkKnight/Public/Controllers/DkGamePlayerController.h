@@ -76,10 +76,6 @@ private:
 	void OnInteract();
 	void OnOpenSystemMenu();
 	void OnOpenInventory();
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input Config", meta=(AllowPrivateAccess="true"))
-	UInputConfig* MountInputConfigDataAsset;
-	
 	/********/
 
 	/* 捡拾物品 */
@@ -128,5 +124,11 @@ public:
 protected:
 	UPROPERTY()
 	TObjectPtr<ADkMountBase> OwningMount;
-	
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input Config", meta=(AllowPrivateAccess="true"))
+	UInputConfig* MountInputConfigDataAsset;
+
+	void OnMountGroundMovement(const FInputActionValue& InputActionValue);
+	void OnMountGroundMovementCompleted(const FInputActionValue& InputActionValue);
+	void OnMountLookTriggered(const FInputActionValue& InputActionValue);
 };

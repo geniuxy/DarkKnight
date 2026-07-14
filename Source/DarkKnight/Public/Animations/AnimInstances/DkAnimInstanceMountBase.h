@@ -68,7 +68,7 @@ protected:
 	float RightSpeed;
 
 	UPROPERTY(EditAnywhere, Category = "Animation")
-	float TurnLeftOrRightLerpSpeed = 3.f;
+	float TurnLeftOrRightLerpSpeed = 5.f;
 
 	/* Yaw旋转速度 */
 	FRotator BodyPrevRot;

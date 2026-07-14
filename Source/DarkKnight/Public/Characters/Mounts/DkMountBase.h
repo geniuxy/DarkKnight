@@ -167,12 +167,25 @@ public:
 	/*                            AI Movement                             */
 	/**********************************************************************/
 private:
+	void UpdateAIMovement(float DeltaSeconds);
+	void StopAIMovement();
+	void StartAIMovement();
+
+	void UpdateFollowTarget(float DeltaSeconds);
+	void UpdateLocomotionByDistance(float DistanceToOwner);
+	void CheckArrivalAtTarget();
+
+	// 以下3个函数已弃用
 	void MoveToAITargetLocation();
 	void TryToCalculateAITargetLocation();
 	void CalculateAITargetLocation();
 
 	FVector AITargetLocation = FVector();
 	bool IsAIMoving = false;
+	float TargetUpdateCooldown = 0.5f;
+
+	UPROPERTY(EditInstanceOnly, Category="AI Movement")
+	float StopFollowDistance;
 
 	FTimerHandle AIMovementTimerHandle;
 

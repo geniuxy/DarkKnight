@@ -108,7 +108,7 @@ void ADkMountBase::BeginPlay()
 
 	GetCharacterMovement()->SetMovementMode(MOVE_Walking);
 
-	TryToCalculateAITargetLocation();
+	// TryToCalculateAITargetLocation();
 }
 
 void ADkMountBase::Tick(float DeltaSeconds)
@@ -129,7 +129,8 @@ void ADkMountBase::Tick(float DeltaSeconds)
 
 	if (HasAuthority())
 	{
-		MoveToAITargetLocation();
+		// TODO: 用 AIController + MoveTo 替代手动寻路，并且马的动画RootMotion的话不适用于AIController, 马的动画不能用RootMotion
+		UpdateAIMovement(DeltaSeconds);
 	}
 }
 
@@ -241,6 +242,123 @@ FVector ADkMountBase::GetDesiredMovement()
 	}
 
 	return DesiredMovement;
+}
+
+void ADkMountBase::UpdateAIMovement(float DeltaSeconds)
+{
+	if (IsRiderOn) 
+	{
+		StopAIMovement();
+		return;
+	}
+    
+	if (!OwnerInstigator)
+	{
+		StopAIMovement();
+		return;
+	}
+    
+	float DistToOwner = GetHorizontalDistanceTo(OwnerInstigator);
+    
+	// 足够近，停止跟随
+	if (DistToOwner <= StopFollowDistance)  // 300.f
+	{
+		StopAIMovement();
+		return;
+	}
+    
+	// 需要跟随，但还没开始
+	if (!IsAIMoving)
+	{
+		StartAIMovement();
+	}
+    
+	// 更新目标点（降低频率，不依赖Timer）
+	UpdateFollowTarget(DeltaSeconds);
+    
+	// 根据距离平滑选择速度
+	UpdateLocomotionByDistance(DistToOwner);
+    
+	// 检查是否到达当前目标点
+	CheckArrivalAtTarget();
+}
+
+void ADkMountBase::StopAIMovement()
+{
+	if (!IsAIMoving) return;
+    
+	IsAIMoving = false;
+	SetMoveType(EMountMoveType::Idle);
+	SetLocomotionExpectedSpeed(0.f);
+	SetLocomotionInterpSpeed(85.f);
+	GetWorldTimerManager().ClearTimer(AIMovementTimerHandle);
+}
+
+void ADkMountBase::StartAIMovement()
+{
+	IsAIMoving = true;
+	// 初始给一个较高速度快速接近
+	SetLocomotionExpectedSpeed(650.f);
+	SetLocomotionInterpSpeed(400.f);
+}
+
+void ADkMountBase::UpdateFollowTarget(float DeltaSeconds)
+{
+	TargetUpdateCooldown -= DeltaSeconds;
+	if (TargetUpdateCooldown > 0.f) return;
+    
+	TargetUpdateCooldown = 0.5f;  // 每0.5秒更新一次目标
+    
+	if (!OwnerInstigator) return;
+    
+	FVector OwnerLoc = OwnerInstigator->GetActorLocation();
+    
+	// 固定偏移：在主人后方一定距离，带轻微随机
+	FVector DesiredOffset = OwnerInstigator->GetActorForwardVector() * -150.f  // 后方150
+						  + OwnerInstigator->GetActorRightVector() * FMath::FRandRange(-80.f, 80.f);
+    
+	FVector TargetLoc = OwnerLoc + DesiredOffset;
+    
+	// 寻路
+	UNavigationPath* Path = UNavigationSystemV1::FindPathToLocationSynchronously(
+		this, GetActorLocation(), TargetLoc);
+    
+	if (Path && Path->PathPoints.Num() > 0)
+	{
+		// 平滑目标点变化，避免跳动
+		FVector NewTarget = Path->PathPoints.Num() > 1 ? Path->PathPoints[1] : Path->PathPoints[0];
+		AITargetLocation = FMath::Lerp(AITargetLocation, NewTarget, 0.3f);  // 平滑过渡
+	}
+}
+
+void ADkMountBase::UpdateLocomotionByDistance(float DistanceToOwner)
+{
+	float T = FMath::Clamp((DistanceToOwner - 300.f) / 700.f, 0.f, 1.f);
+	float EasedT = FMath::InterpEaseInOut(0.f, 1.f, T, 2.f);  // 缓动曲线
+    
+	float TargetSpeed = EasedT * 650.f;
+	float InterpSpeed = FMath::Lerp(85.f, 400.f, EasedT);
+    
+	// 根据速度选择移动类型
+	EMountMoveType NewType = EMountMoveType::Idle;
+	if (TargetSpeed > 500.f)      NewType = EMountMoveType::Canter;
+	else if (TargetSpeed > 200.f) NewType = EMountMoveType::Trot;
+	else if (TargetSpeed > 10.f)  NewType = EMountMoveType::Walk;
+    
+	SetMoveType(NewType);
+	SetLocomotionExpectedSpeed(TargetSpeed);
+	SetLocomotionInterpSpeed(InterpSpeed);
+}
+
+void ADkMountBase::CheckArrivalAtTarget()
+{
+	float DistToTarget = UKismetMathLibrary::Vector_Distance2D(GetActorLocation(), AITargetLocation);
+	if (DistToTarget <= 100.f)
+	{
+		// 不停止移动，只是触发一次目标点刷新
+		// 让 UpdateFollowTarget 在下次冷却到期时计算新目标
+		TargetUpdateCooldown = 0.f;  // 强制立即刷新目标
+	}
 }
 
 void ADkMountBase::MoveToAITargetLocation()

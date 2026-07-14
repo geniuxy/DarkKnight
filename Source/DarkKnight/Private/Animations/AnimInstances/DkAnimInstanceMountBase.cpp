@@ -73,7 +73,7 @@ void UDkAnimInstanceMountBase::CalculateMovementSpeed(float DeltaSeconds)
 		);
 
 		RightSpeed = UKismetMathLibrary::FInterpTo(
-			RightSpeed, TargetRightSpeed, DeltaSeconds, TurnLeftOrRightLerpSpeed
+			RightSpeed, TargetRightSpeed, DeltaSeconds, TurnLeftOrRightLerpSpeed * 10.f
 		);
 	}
 	else

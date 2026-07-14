@@ -112,7 +112,7 @@ void UGA_SummonMount::UpdateInstigator(ADkMountBase* CachedMount)
 {
 	if (CachedMount && OwnerAvatarCharacter)
 	{
-		CachedMount->SetInstigator(OwnerAvatarCharacter);
+		CachedMount->SetOwnerInstigator(OwnerAvatarCharacter);
 		ADkCharacterBase* OwnerCharacterBase = Cast<ADkCharacterBase>(OwnerAvatarCharacter);
 		if (USkeletalMeshComponent* Mesh = CachedMount->GetMesh())
 		{

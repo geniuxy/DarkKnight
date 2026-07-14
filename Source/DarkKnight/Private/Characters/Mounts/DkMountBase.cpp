@@ -4,6 +4,8 @@
 #include "Characters/Mounts/DkMountBase.h"
 
 #include "EnhancedInputSubsystems.h"
+#include "NavigationPath.h"
+#include "NavigationSystem.h"
 #include "Camera/CameraComponent.h"
 #include "Characters/DkCharacterBase.h"
 #include "Components/BoxComponent.h"
@@ -100,6 +102,15 @@ void ADkMountBase::PawnClientRestart()
 	}
 }
 
+void ADkMountBase::BeginPlay()
+{
+	Super::BeginPlay();
+
+	GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+
+	TryToCalculateAITargetLocation();
+}
+
 void ADkMountBase::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
@@ -115,6 +126,11 @@ void ADkMountBase::Tick(float DeltaSeconds)
 	{
 		UpdateCameraRotation(DeltaSeconds);
 	}
+
+	if (HasAuthority())
+	{
+		MoveToAITargetLocation();
+	}
 }
 
 bool ADkMountBase::IsLocallyControlledByPlayer()
@@ -122,12 +138,15 @@ bool ADkMountBase::IsLocallyControlledByPlayer()
 	return GetController() && GetController()->IsLocalPlayerController();
 }
 
-ADkCharacterBase* ADkMountBase::GetOwnerInstigator()
+ADkCharacterBase* ADkMountBase::GetOwnerInstigator() const
 {
-	if (!GetInstigator()) return nullptr;
-
-	ADkCharacterBase* OwnerInstigator = Cast<ADkCharacterBase>(GetInstigator());
 	return OwnerInstigator;
+}
+
+void ADkMountBase::SetOwnerInstigator(ADkCharacterBase* InInstigator)
+{
+	SetInstigator(InInstigator);
+	OwnerInstigator = InInstigator;
 }
 
 UAbilitySystemComponent* ADkMountBase::GetAbilitySystemComponent() const
@@ -146,8 +165,7 @@ void ADkMountBase::HandleAbilityInput(const FInputActionValue& InputActionValue,
 
 void ADkMountBase::UpdateCameraRotation(float DeltaSeconds)
 {
-	ADkCharacterBase* OwnerInstigator = GetOwnerInstigator();
-	if (!OwnerInstigator && false) // TODO: 这个记得修改
+	if (!IsRiderOn && false) // TODO: 这个记得修改
 	{
 		return;
 	}
@@ -208,8 +226,7 @@ void ADkMountBase::HandleCameraFaceForward()
 FVector ADkMountBase::GetDesiredMovement()
 {
 	FVector DesiredMovement;
-	ADkCharacterBase* OwnerInstigator = GetOwnerInstigator();
-	if (!OwnerInstigator && false) // TODO: 这个记得修改
+	if (!IsRiderOn)
 	{
 		DesiredMovement = UKismetMathLibrary::GetDirectionUnitVector(GetActorLocation(), AITargetLocation);
 	}
@@ -224,6 +241,86 @@ FVector ADkMountBase::GetDesiredMovement()
 	}
 
 	return DesiredMovement;
+}
+
+void ADkMountBase::MoveToAITargetLocation()
+{
+	if (IsRiderOn) return;
+	if (!IsAIMoving)
+	{
+		TryToCalculateAITargetLocation();
+		return;
+	}
+
+	float DistanceToTarget = UKismetMathLibrary::Vector_Distance2D(GetActorLocation(), AITargetLocation);
+	if (DistanceToTarget <= 300.f)
+	{
+		SetMoveType(EMountMoveType::Idle);
+		SetLocomotionExpectedSpeed(0.f);
+		SetLocomotionInterpSpeed(85.f);
+		IsAIMoving = false;
+		GetWorldTimerManager().ClearTimer(AIMovementTimerHandle);
+	}
+	else if (DistanceToTarget <= 600.f)
+	{
+		SetMoveType(EMountMoveType::Walk);
+		SetLocomotionExpectedSpeed(100.f);
+		SetLocomotionInterpSpeed(200.f);
+	}
+	else if (DistanceToTarget <= 1000.f)
+	{
+		SetMoveType(EMountMoveType::Trot);
+		SetLocomotionExpectedSpeed(350.f);
+		SetLocomotionInterpSpeed(200.f);
+	}
+	else
+	{
+		SetMoveType(EMountMoveType::Canter);
+		SetLocomotionExpectedSpeed(650.f);
+		SetLocomotionInterpSpeed(400.f);
+	}
+}
+
+void ADkMountBase::TryToCalculateAITargetLocation()
+{
+	if (!OwnerInstigator) return;
+	if (GetHorizontalDistanceTo(OwnerInstigator) <= 300.f)
+	{
+		IsAIMoving = false;
+		return;
+	}
+
+	IsAIMoving = true;
+	SetMoveType(EMountMoveType::Canter);
+	SetLocomotionExpectedSpeed(650.f);
+	SetLocomotionInterpSpeed(400.f);
+
+	GetWorldTimerManager().SetTimer(
+		AIMovementTimerHandle,
+		this,
+		&ThisClass::CalculateAITargetLocation,
+		1.f,
+		true,
+		0.f
+	);
+}
+
+void ADkMountBase::CalculateAITargetLocation()
+{
+	if (!OwnerInstigator) return;
+	FVector OwnerInstigatorLocation = OwnerInstigator->GetActorLocation();
+	FVector MountLocation = GetActorLocation();
+	FVector LeftRightOffset = GetActorRightVector() * FMath::FRandRange(-100.f, 100.f);
+	FVector FwdBwdOffset = GetActorForwardVector() * FMath::FRandRange(-200.f, -50.f);
+	FVector TargetLocation = OwnerInstigatorLocation + LeftRightOffset + FwdBwdOffset;
+
+	UNavigationPath* MountToTargetPath = UNavigationSystemV1::FindPathToLocationSynchronously(
+		this, MountLocation, TargetLocation
+	);
+	if (!MountToTargetPath) return;
+	AITargetLocation =
+		MountToTargetPath->PathPoints.Num() > 1 ? MountToTargetPath->PathPoints[1] : MountToTargetPath->PathPoints[0];
+	DrawDebugSphere(GetWorld(), AITargetLocation, 5.f, 8, FColor::Green, false, 10.f);
 }
 
 void ADkMountBase::SetGenericTeamId(const FGenericTeamId& NewTeamID)

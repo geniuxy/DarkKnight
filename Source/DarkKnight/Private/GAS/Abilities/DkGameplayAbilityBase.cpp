@@ -95,7 +95,7 @@ ACharacter* UDkGameplayAbilityBase::GetOwnerAvatarCharacter()
 {
 	if (!OwnerAvatarCharacter)
 	{
-		OwnerAvatarCharacter = Cast<ACharacter>(GetAvatarActorFromActorInfo());
+		OwnerAvatarCharacter = Cast<ADkCharacterBase>(GetAvatarActorFromActorInfo());
 	}
 
 	return OwnerAvatarCharacter;

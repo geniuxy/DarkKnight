@@ -32,6 +32,7 @@ public:
 	virtual void PawnClientRestart() override;
 
 protected:
+	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
 
 	/* Actor Components */
@@ -87,8 +88,17 @@ protected:
 	/*                            Instigator                              */
 	/**********************************************************************/
 public:
-	ADkCharacterBase* GetOwnerInstigator();
+	ADkCharacterBase* GetOwnerInstigator() const;
+	void SetOwnerInstigator(ADkCharacterBase* InInstigator);
 
+protected:
+	UPROPERTY()
+	ADkCharacterBase* OwnerInstigator;
+
+	bool IsRiderOn = false;
+
+public:
+	FORCEINLINE bool GetIsRiderOn() const { return IsRiderOn; }
 	/**********************************************************************/
 	/*                         Gameplay Ability                           */
 	/**********************************************************************/
@@ -144,16 +154,27 @@ private:
 	float LocomotionActualSpeed = 0.f;
 	EMountMoveType MoveType = EMountMoveType::Idle;
 
-	FVector AITargetLocation = FVector();
-
 public:
 	void SetMovementInputX(float InActionX) { MovementInputX = InActionX; }
 	void SetMovementInputY(float InActionY) { MovementInputY = InActionY; }
 	void SetLocomotionExpectedSpeed(float InValue) { LocomotionExpectedSpeed = InValue; }
-	void SetLocomotionInterpSpeed(float InValue) { LocomotionActualSpeed = InValue; }
+	void SetLocomotionInterpSpeed(float InValue) { LocomotionInterpSpeed = InValue; }
 	FORCEINLINE float GetLocomotionActualSpeed() const { return LocomotionActualSpeed; }
 	FORCEINLINE EMountMoveType GetMoveType() const { return MoveType; }
 	void SetMoveType(EMountMoveType InMoveType) { MoveType = InMoveType; }
+
+	/**********************************************************************/
+	/*                            AI Movement                             */
+	/**********************************************************************/
+private:
+	void MoveToAITargetLocation();
+	void TryToCalculateAITargetLocation();
+	void CalculateAITargetLocation();
+
+	FVector AITargetLocation = FVector();
+	bool IsAIMoving = false;
+
+	FTimerHandle AIMovementTimerHandle;
 
 	/**********************************************************************/
 	/*                                Team                                */

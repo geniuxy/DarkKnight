@@ -48,7 +48,7 @@ protected:
 	ACharacter* GetOwnerAvatarCharacter();
 
 	UPROPERTY()
-	ACharacter* OwnerAvatarCharacter;
+	ADkCharacterBase* OwnerAvatarCharacter;
 
 	UAbilitySystemComponent* GetOwnerASC();
 

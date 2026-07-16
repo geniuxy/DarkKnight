@@ -4,6 +4,7 @@
 #include "PickUp/DkPickUpActorBase.h"
 
 #include "Components/DkItemComponent.h"
+#include "Subsytems/EngineSubsystems/DkInventorySubsystem.h"
 
 
 ADkPickUpActorBase::ADkPickUpActorBase()
@@ -19,5 +20,22 @@ void ADkPickUpActorBase::SetPickUpItemInfo(const FDkItemInfo* PickUpItemInfo, in
 	ItemComponent->InitializeItemComponent(PickUpItemInfo, InItemStack);
 }
 
+void ADkPickUpActorBase::BeginPlay()
+{
+	Super::BeginPlay();
 
+	if (IsCollectable)
+	{
+		FTimerHandle InitCollectionTimeHandle;
+		GetWorldTimerManager().SetTimer(InitCollectionTimeHandle, this, &ThisClass::InitCollectionsInfo, 0.2f);
+	}
+}
 
+void ADkPickUpActorBase::InitCollectionsInfo()
+{
+	if (const FDkItemInfo* CollectionInfo =
+		UDkInventorySubsystem::Get()->GetCachedItemTable().Find(ItemComponent->GetItemId()))
+	{
+		SetPickUpItemInfo(CollectionInfo, StackCount);
+	}
+}

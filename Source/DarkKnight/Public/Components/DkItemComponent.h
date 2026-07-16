@@ -24,7 +24,9 @@ public:
 
 	void InitItemManifest(FInventoryItemManifest InItemManifest);
 
-	FText GetItemName();
+	int32 GetItemId() const;
+
+	FText GetItemName() const;
 
 	FInventoryItemManifest GetItemManifest() const { return ItemManifest; }
 

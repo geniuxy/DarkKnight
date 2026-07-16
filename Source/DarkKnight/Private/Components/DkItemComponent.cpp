@@ -42,7 +42,12 @@ void UDkItemComponent::InitItemManifest(FInventoryItemManifest InItemManifest)
 	ItemManifest = InItemManifest;
 }
 
-FText UDkItemComponent::GetItemName()
+int32 UDkItemComponent::GetItemId() const
+{
+	return ItemManifest.GetItemID();
+}
+
+FText UDkItemComponent::GetItemName() const
 {
 	return UDkInventoryFunctionLibrary::GetItemName(ItemManifest.GetItemID());
 }

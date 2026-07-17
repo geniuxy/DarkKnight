@@ -7,6 +7,7 @@
 #include "Kismet/KismetRenderingLibrary.h"
 #include "MiniMapWidget.generated.h"
 
+class ADkPickUpActorBase;
 class UBorder;
 class ADkPlayerStateBase;
 class ADkCharacterBase;
@@ -73,8 +74,10 @@ private:
 
 	void DrawElements();
 	void UpdateActorIconsInMiniMap();
+	void UpdateCollectionIconsInMiniMap();
 	void DrawTaskTrackingLine();
 
 	void DrawActorIconsToMiniMap(TArray<ADkCharacterBase*> Actors);
+	void DrawCollectionIconsToMiniMap(TArray<ADkPickUpActorBase*> Actors);
 	FVector2D ConvertWorldLocationToMiniMap(FVector InWorldLocation);
 };

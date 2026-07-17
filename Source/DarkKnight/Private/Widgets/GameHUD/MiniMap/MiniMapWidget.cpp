@@ -14,6 +14,7 @@
 #include "FunctionLibrarys/DkGameFunctionLibrary.h"
 #include "Games/PlayerStates/DkPlayerStateBase.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "PickUp/DkPickUpActorBase.h"
 #include "Subsytems/EngineSubsystems/DkDataSubsystem.h"
 
 void UMiniMapWidget::NativeConstruct()
@@ -74,6 +75,7 @@ void UMiniMapWidget::DrawElements()
 	);
 
 	UpdateActorIconsInMiniMap();
+	UpdateCollectionIconsInMiniMap();
 	DrawTaskTrackingLine();
 
 	UKismetRenderingLibrary::EndDrawCanvasToRenderTarget(this, CachedContext);
@@ -94,6 +96,20 @@ void UMiniMapWidget::UpdateActorIconsInMiniMap()
 	);
 
 	DrawActorIconsToMiniMap(NpcListInRange);
+}
+
+void UMiniMapWidget::UpdateCollectionIconsInMiniMap()
+{
+	if (!OwnerCharacter) return;
+
+	TArray<ADkPickUpActorBase*> CollectionsInRange = UDkGameFunctionLibrary::GetUnitsInRange<ADkPickUpActorBase>(
+		OwnerCharacter, OwnerCharacter->GetActorLocation(), ActorCheckDistance,
+	[](ADkPickUpActorBase* Actor) -> bool
+	{
+		return Actor->GetIsCollectable();
+	});
+
+	DrawCollectionIconsToMiniMap(CollectionsInRange);
 }
 
 void UMiniMapWidget::DrawTaskTrackingLine()
@@ -169,6 +185,37 @@ void UMiniMapWidget::DrawActorIconsToMiniMap(TArray<ADkCharacterBase*> Actors)
 			);
 		}
 	}
+}
+
+void UMiniMapWidget::DrawCollectionIconsToMiniMap(TArray<ADkPickUpActorBase*> Actors)
+{
+	if (Actors.IsEmpty()) return;
+	if (!CachedCanvas) return;
+
+	for (ADkPickUpActorBase* Actor : Actors)
+	{
+		if (Actor->GetCollectionIcon())
+		{
+			CachedCanvas->K2_DrawTexture(
+				Actor->GetCollectionIcon(),
+				ConvertWorldLocationToMiniMap(Actor->GetActorLocation()) - FVector2D(IconSize / 2.f),
+				FVector2D(IconSize),
+				FVector2D::ZeroVector,
+				FVector2D::UnitVector,
+				FLinearColor::White,
+				BLEND_Translucent,
+				90.f
+			);
+		}
+		else
+		{
+			CachedCanvas->K2_DrawPolygon(
+				nullptr, ConvertWorldLocationToMiniMap(Actor->GetActorLocation()),
+				FVector2D(PointSize), 20, FLinearColor(0.f, 0.8f, 0.f, 1.f)
+			);
+		}
+	}
+	
 }
 
 FVector2D UMiniMapWidget::ConvertWorldLocationToMiniMap(FVector InWorldLocation)

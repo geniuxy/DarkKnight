@@ -22,7 +22,7 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-	
+
 	/* Actor Components */
 	UPROPERTY(VisibleAnywhere)
 	UDkItemComponent* ItemComponent;
@@ -34,5 +34,12 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Collections")
 	int StackCount = 0; // 0意味着不可堆叠，但数量为1个
 
+	UPROPERTY(EditAnywhere, Category="Collections")
+	UTexture2D* CollectionIcon;
+
 	void InitCollectionsInfo();
+
+public:
+	FORCEINLINE UTexture2D* GetCollectionIcon() const { return CollectionIcon; }
+	FORCEINLINE bool GetIsCollectable() const { return IsCollectable; }
 };

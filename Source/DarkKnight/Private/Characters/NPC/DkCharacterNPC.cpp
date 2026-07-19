@@ -42,6 +42,7 @@ void ADkCharacterNPC::HandleBoxOverlapped(
 	const FHitResult& SweepResult)
 {
 	if (!IsValid(NpcDialogComponent)) return;
+	if (!NpcDialogComponent->CanStartDialog()) return;
 	if (OtherActor == this) return;
 	ADkCharacterHero* OverlappedCharacter = Cast<ADkCharacterHero>(OtherActor);
 	if (!OverlappedCharacter) return;
@@ -64,6 +65,7 @@ void ADkCharacterNPC::HandleBoxEndOverlap(
 	int OtherBodyIndex)
 {
 	if (!IsValid(NpcDialogComponent)) return;
+	if (!NpcDialogComponent->CanStartDialog()) return;
 	if (OtherActor == this) return;
 	ADkCharacterHero* OverlappedCharacter = Cast<ADkCharacterHero>(OtherActor);
 	if (!OverlappedCharacter) return;

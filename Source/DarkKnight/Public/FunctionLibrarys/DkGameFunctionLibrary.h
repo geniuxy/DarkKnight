@@ -35,6 +35,12 @@ public:
 	static TArray<T*> GetUnitsInRange(
 		const UObject* WorldContextObject, FVector Center, float Range, TFunctionRef<bool(T*)> Predicate
 	);
+
+	// 获取范围内所有对应类的单位
+	template <typename T>
+	static T* GetClosestUnitsInRange(
+		const UObject* WorldContextObject, FVector Center, float Range, TFunctionRef<bool(T*)> Predicate
+	);
 };
 
 template <typename T>
@@ -83,6 +89,33 @@ TArray<T*> UDkGameFunctionLibrary::GetUnitsInRange(
 		if (FVector::DistSquared(Center, Unit->GetActorLocation()) <= RangeSq && Predicate(Unit))
 		{
 			Result.Add(Unit);
+		}
+	}
+
+	return Result;
+}
+
+template <typename T>
+T* UDkGameFunctionLibrary::GetClosestUnitsInRange(
+	const UObject* WorldContextObject, FVector Center, float Range, TFunctionRef<bool(T*)> Predicate)
+{
+	T* Result = nullptr;
+	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
+	if (!World || Range <= 0.0f) return Result;
+
+	const float RangeSq = FMath::Square(Range);
+	float ClosestRangeSq = RangeSq;
+
+	for (TActorIterator<T> It(World); It; ++It)
+	{
+		T* Unit = *It;
+		if (!IsValid(Unit)) continue;
+
+		float CurDistSq = FVector::DistSquared(Center, Unit->GetActorLocation());
+		if (CurDistSq <= ClosestRangeSq && Predicate(Unit))
+		{
+			ClosestRangeSq = CurDistSq;
+			Result = Unit;
 		}
 	}
 

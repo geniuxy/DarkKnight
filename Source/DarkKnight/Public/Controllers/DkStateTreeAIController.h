@@ -6,6 +6,7 @@
 #include "AIController.h"
 #include "DkStateTreeAIController.generated.h"
 
+class ADkCharacterBase;
 class UDkStateTreeAIComponent;
 class UStateTreeAIComponent;
 
@@ -16,10 +17,13 @@ class DARKKNIGHT_API ADkStateTreeAIController : public AAIController
 
 public:
 	ADkStateTreeAIController();
-	
+
 protected:
 	virtual void OnPossess(APawn* InPawn) override;
 	virtual void OnUnPossess() override;
+
+	UPROPERTY()
+	ADkCharacterBase* OwningCharacter;
 
 	/**********************************************************************/
 	/*                             StateTree                              */

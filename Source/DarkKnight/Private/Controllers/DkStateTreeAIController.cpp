@@ -4,6 +4,7 @@
 #include "Controllers/DkStateTreeAIController.h"
 
 #include "DarkKnightDebugHelper.h"
+#include "DkGameplayTags.h"
 #include "Components/DkStateTreeAIComponent.h"
 #include "Components/StateTreeAIComponent.h"
 
@@ -29,6 +30,12 @@ void ADkStateTreeAIController::OnPossess(APawn* InPawn)
 	{
 		StateTreeComponent->StartLogic();
 	}
+
+	FTimerHandle DelayWorkHandle;
+	GetWorld()->GetTimerManager().SetTimer(DelayWorkHandle, FTimerDelegate::CreateLambda([this]()
+	{
+		StateTreeComponent->SendStateTreeEvent(DkGameplayTags::Dk_StateTree_Event_Work);
+	}), 4.f, false);
 }
 
 void ADkStateTreeAIController::OnUnPossess()

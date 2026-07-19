@@ -174,6 +174,11 @@ namespace DkGameplayTags
 	// Task Tracking Tag
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Task_Tracking_1, "Dk.Task.Tracking.1");
 
+	// StateTree Events
+	UE_DEFINE_GAMEPLAY_TAG(Dk_StateTree_Event_Sleep, "Dk.StateTree.Event.Sleep");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_StateTree_Event_Eat, "Dk.StateTree.Event.Eat");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_StateTree_Event_Work, "Dk.StateTree.Event.Work");
+
 	// Action Input Buffer（弃用）
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Action_CanCombo, "Dk.Action.CanCombo");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Action_NoAction, "Dk.Action.NoAction");

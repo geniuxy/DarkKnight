@@ -6,6 +6,7 @@
 #include "Characters/DkCharacterBase.h"
 #include "DkCharacterNPC.generated.h"
 
+class UDkStateTreeAIComponent;
 class UDkNpcDialogComponent;
 class UBoxComponent;
 

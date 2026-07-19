@@ -8,6 +8,7 @@
 #include "Components/DkNpcDialogComponent.h"
 #include "Controllers/DkGamePlayerController.h"
 #include "FunctionLibrarys/DkAbilitySystemFunctionLibrary.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Widgets/Interact/DkWidgetInteractScreen.h"
 
 
@@ -19,6 +20,8 @@ ADkCharacterNPC::ADkCharacterNPC()
 	BoxComponent->SetupAttachment(GetRootComponent());
 	BoxComponent->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::HandleBoxOverlapped);
 	BoxComponent->OnComponentEndOverlap.AddDynamic(this, &ThisClass::HandleBoxEndOverlap);
+
+	GetCharacterMovement()->GetNavMovementProperties()->bUseAccelerationForPaths = true;
 
 	NpcDialogComponent = CreateDefaultSubobject<UDkNpcDialogComponent>(TEXT("NpcDialogComponent"));
 }

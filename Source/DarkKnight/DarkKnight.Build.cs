@@ -28,7 +28,9 @@ public class DarkKnight : ModuleRules
 			"MotionWarping",
 			"AnimGraphRuntime", // UKismetAnimationLibrary
 			"AIModule",
-			"NavigationSystem"
+			"NavigationSystem",
+			"StateTreeModule",
+			"GameplayStateTreeModule"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {});

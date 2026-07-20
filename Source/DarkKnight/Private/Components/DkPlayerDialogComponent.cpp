@@ -3,6 +3,7 @@
 
 #include "Components/DkPlayerDialogComponent.h"
 
+#include "DarkKnightDebugHelper.h"
 #include "Camera/CameraActor.h"
 #include "Camera/CameraComponent.h"
 #include "Characters/DkCharacterHero.h"
@@ -128,4 +129,11 @@ void UDkPlayerDialogComponent::BeginPlay()
 	{
 		UDkDataSubsystem::Get()->UpdateNpcInfo(1, GetOwner());
 	}
+
+	OnDialogBranchEventTriggered.AddUObject(this, &ThisClass::HandleDialogBranchEventTriggered);
+}
+
+void UDkPlayerDialogComponent::HandleDialogBranchEventTriggered(FString TriggerEvent, int JumpToContentId)
+{
+	Debug::Print(TEXT("触发的事件为"), TriggerEvent);
 }

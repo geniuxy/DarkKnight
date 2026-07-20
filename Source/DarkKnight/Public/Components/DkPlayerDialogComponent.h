@@ -11,6 +11,8 @@
 
 struct FDialogNpcDetail;
 
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnDialogBranchEventTriggered, FString /* TriggerEvent */, int /* JumpToContentId */)
+
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class DARKKNIGHT_API UDkPlayerDialogComponent : public UActorComponent
 {
@@ -24,8 +26,12 @@ public:
 	void UpdateCameraFocus(int CameraFocusNpcId, EDialogCameraType CameraType, const FTransform& CustomCameraTransform);
 	void UseCustomCameraTransform(const FTransform& CustomCameraTransform);
 
+	FOnDialogBranchEventTriggered OnDialogBranchEventTriggered;
+
 protected:
 	virtual void BeginPlay() override;
+
+	void HandleDialogBranchEventTriggered(FString TriggerEvent, int JumpToContentId);
 
 private:
 	FGameplayTagContainer CachedDialogTags;

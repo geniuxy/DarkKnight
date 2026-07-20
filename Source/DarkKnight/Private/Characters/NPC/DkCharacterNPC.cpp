@@ -18,6 +18,7 @@ ADkCharacterNPC::ADkCharacterNPC()
 
 	BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComponent"));
 	BoxComponent->SetupAttachment(GetRootComponent());
+	BoxComponent->SetBoxExtent(FVector(100.f));
 	BoxComponent->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::HandleBoxOverlapped);
 	BoxComponent->OnComponentEndOverlap.AddDynamic(this, &ThisClass::HandleBoxEndOverlap);
 

@@ -35,7 +35,14 @@ void UDkUIDialogSelectionButton::NativeOnClicked()
 		OwnerDialogComponent->AddDialogTag(CurBranchInfo.AddDialogTag);
 	}
 
-	OnSelectionButtonClicked.Broadcast(CurBranchInfo.JumpToContentId);
+	if (!CurBranchInfo.TriggerEvent.IsEmpty())
+	{
+		OwnerDialogComponent->OnDialogBranchEventTriggered.Broadcast(CurBranchInfo.TriggerEvent, CurBranchInfo.JumpToContentId);
+	}
+	else
+	{
+		OnSelectionButtonClicked.Broadcast(CurBranchInfo.JumpToContentId);
+	}
 }
 
 void UDkUIDialogSelectionButton::NativeOnHovered()

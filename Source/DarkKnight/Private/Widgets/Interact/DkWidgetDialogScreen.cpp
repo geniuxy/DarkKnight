@@ -164,7 +164,10 @@ void UDkWidgetDialogScreen::EndDialog()
 	{
 		OwnerPC->EndDialog();
 	}
-	CachedAudioComponent->StopDelayed(0.5f);
+	if (IsValid(CachedAudioComponent))
+	{
+		CachedAudioComponent->StopDelayed(0.5f);
+	}
 
 	FTimerHandle DeactivateHandle;
 	GetWorld()->GetTimerManager().SetTimer(DeactivateHandle, FTimerDelegate::CreateLambda([this]()

@@ -8,10 +8,11 @@
 #include "DkTypes/DkStructs.h"
 
 void UDkUIDialogSelectionButton::ConfigureDialogSelectionButton(
-	const FDialogBranchInfo& InBranchInfo, UDkPlayerDialogComponent* InDialogComp)
+	const FDialogBranchInfo& InBranchInfo, UDkPlayerDialogComponent* InDialogComp, int InNpcId)
 {
 	CurBranchInfo = InBranchInfo;
 	OwnerDialogComponent = InDialogComp;
+	CurNpcId = InNpcId;
 
 	if (!CommonButtonTextBlock) return;
 	SetButtonText(CurBranchInfo.BranchText);
@@ -35,9 +36,9 @@ void UDkUIDialogSelectionButton::NativeOnClicked()
 		OwnerDialogComponent->AddDialogTag(CurBranchInfo.AddDialogTag);
 	}
 
-	if (!CurBranchInfo.TriggerEvent.IsEmpty())
+	if (CurBranchInfo.TriggerEvent.IsValid())
 	{
-		OwnerDialogComponent->OnDialogBranchEventTriggered.Broadcast(CurBranchInfo.TriggerEvent, CurBranchInfo.JumpToContentId);
+		OwnerDialogComponent->OnDialogBranchEventTriggered.Broadcast(CurNpcId, CurBranchInfo);
 	}
 	else
 	{

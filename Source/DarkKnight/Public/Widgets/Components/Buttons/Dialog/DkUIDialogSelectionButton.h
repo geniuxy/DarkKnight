@@ -19,7 +19,9 @@ class DARKKNIGHT_API UDkUIDialogSelectionButton : public UDkUICommonButtonImage
 	GENERATED_BODY()
 
 public:
-	void ConfigureDialogSelectionButton(const FDialogBranchInfo& InBranchInfo, UDkPlayerDialogComponent* InDialogComp);
+	void ConfigureDialogSelectionButton(
+		const FDialogBranchInfo& InBranchInfo, UDkPlayerDialogComponent* InDialogComp, int InNpcId
+	);
 
 	//~Begin UCommonButtonBase UFunction
 	virtual void NativeOnClicked() override;
@@ -39,6 +41,8 @@ private:
 	TObjectPtr<UDkPlayerDialogComponent> OwnerDialogComponent;
 	
 	FDialogBranchInfo CurBranchInfo;
+
+	int CurNpcId;
 	
 	UPROPERTY(EditAnywhere, Category="Branch Text")
 	FLinearColor FinishedBranchTextColor = FLinearColor(0.4f,0.4f,0.4f,1.f);

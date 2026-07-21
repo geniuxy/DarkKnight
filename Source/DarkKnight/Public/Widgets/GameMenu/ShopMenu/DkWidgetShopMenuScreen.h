@@ -6,6 +6,7 @@
 #include "Widgets/DkWidgetActivatableBase.h"
 #include "DkWidgetShopMenuScreen.generated.h"
 
+class UDkNpcDialogComponent;
 class UDkWidgetInventoryMenu;
 class UCanvasPanel;
 /**
@@ -15,6 +16,9 @@ UCLASS()
 class DARKKNIGHT_API UDkWidgetShopMenuScreen : public UDkWidgetActivatableBase
 {
 	GENERATED_BODY()
+
+public:
+	void ConfigureShopMenu(int InNpcId, int InDialogId);
 
 protected:
 	//~Begin UUserWidget Function
@@ -30,11 +34,21 @@ private:
 	//***** Bound Widgets *****//
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget, AllowPrivateAccess="true"))
 	TObjectPtr<UCanvasPanel> CanvasPanel_ShopMenu;
-	
+
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget, AllowPrivateAccess="true"))
 	TObjectPtr<UDkWidgetInventoryMenu> WBP_PlayerInventoryMenu;
 
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget, AllowPrivateAccess="true"))
 	TObjectPtr<UDkWidgetInventoryMenu> WBP_MerchantInventoryMenu;
 	//***** Bound Widgets *****//
+	
+	int CurNpcId = 0;
+	int NextDialogId = 0;
+
+	UPROPERTY()
+	UDkNpcDialogComponent* CachedNpcDialogComponent;
+
+	UDkNpcDialogComponent* GetNpcDialogComponent();
+
+	void OnBackBoundActionTriggered();
 };

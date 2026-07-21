@@ -29,6 +29,7 @@ void UDkWidgetDialogScreen::BeginDialog(int InStartDialogId, UDkNpcDialogCompone
 	if (NpcDialogComponent)
 	{
 		NpcDialogComponent->CacheNpcTransform(CurDialogContent.NPCInfos);
+		NpcDialogComponent->OnTriggerNextDialog.AddUObject(this, &ThisClass::JumpToBranchNextDialog);
 	}
 
 	UpdateDialogContent();
@@ -129,9 +130,11 @@ void UDkWidgetDialogScreen::UpdateDialogContent()
 			UDkUIDialogSelectionButton* DialogSelectionButton = CreateWidget<UDkUIDialogSelectionButton>(
 				this, DialogSelectionButtonClass
 			);
-			if (IsValid(OwnerDialogComponent))
+			if (IsValid(OwnerDialogComponent) && IsValid(NpcDialogComponent))
 			{
-				DialogSelectionButton->ConfigureDialogSelectionButton(BranchContentPair.Value, OwnerDialogComponent);
+				DialogSelectionButton->ConfigureDialogSelectionButton(
+					BranchContentPair.Value, OwnerDialogComponent, NpcDialogComponent->GetNpcId()
+				);
 			}
 			SelectionList->AddChild(DialogSelectionButton);
 			DialogSelectionButton->OnSelectionButtonClicked.AddUObject(this, &ThisClass::JumpToBranchNextDialog);

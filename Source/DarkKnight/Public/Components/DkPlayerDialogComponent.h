@@ -11,7 +11,8 @@
 
 struct FDialogNpcDetail;
 
-DECLARE_MULTICAST_DELEGATE_TwoParams(FOnDialogBranchEventTriggered, FString /* TriggerEvent */, int /* JumpToContentId */)
+DECLARE_MULTICAST_DELEGATE_TwoParams(
+	FOnDialogBranchEventTriggered, int /* NpcId */, const FDialogBranchInfo& /* DialogBranchInfo */)
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class DARKKNIGHT_API UDkPlayerDialogComponent : public UActorComponent
@@ -31,7 +32,8 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	void HandleDialogBranchEventTriggered(FString TriggerEvent, int JumpToContentId);
+	void HandleDialogBranchEventTriggered(int InNpcId, const FDialogBranchInfo& InDialogBranchInfo);
+	void HandleOpenShop(int InNpcId, const FDialogBranchInfo& InDialogBranchInfo);
 
 private:
 	FGameplayTagContainer CachedDialogTags;

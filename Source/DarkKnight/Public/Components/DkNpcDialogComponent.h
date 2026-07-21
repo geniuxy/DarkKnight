@@ -12,6 +12,8 @@ class UGameplayEffect;
 class UDkWidgetDialogScreen;
 class ADkGamePlayerController;
 
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnTriggerNextDialog, int /* NextDialogId */);
+
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class DARKKNIGHT_API UDkNpcDialogComponent : public UActorComponent
 {
@@ -26,6 +28,8 @@ public:
 	void CacheNpcTransform(TMap<int, FDialogNpcDetail> InNpcInfos);
 	void UpdateNpcTransform(TMap<int, FDialogNpcDetail> InNpcInfos);
 	void ResetNpcTransform();
+
+	FOnTriggerNextDialog OnTriggerNextDialog;
 
 protected:
 	virtual void BeginPlay() override;
@@ -51,4 +55,5 @@ private:
 
 public:
 	FORCEINLINE FString GetInteractMessage() const { return InteractMessage; }
+	FORCEINLINE int GetNpcId() const { return NpcId; }
 };

@@ -4,12 +4,16 @@
 #include "Components/DkPlayerDialogComponent.h"
 
 #include "DarkKnightDebugHelper.h"
+#include "DkGameplayTags.h"
 #include "Camera/CameraActor.h"
 #include "Camera/CameraComponent.h"
 #include "Characters/DkCharacterHero.h"
 #include "Components/CapsuleComponent.h"
+#include "FunctionLibrarys/DkUIFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
+#include "Subsytems/DkUISubsystem.h"
 #include "Subsytems/EngineSubsystems/DkDataSubsystem.h"
+#include "Widgets/GameMenu/ShopMenu/DkWidgetShopMenuScreen.h"
 
 UDkPlayerDialogComponent::UDkPlayerDialogComponent()
 {
@@ -133,7 +137,32 @@ void UDkPlayerDialogComponent::BeginPlay()
 	OnDialogBranchEventTriggered.AddUObject(this, &ThisClass::HandleDialogBranchEventTriggered);
 }
 
-void UDkPlayerDialogComponent::HandleDialogBranchEventTriggered(FString TriggerEvent, int JumpToContentId)
+void UDkPlayerDialogComponent::HandleDialogBranchEventTriggered(int InNpcId, const FDialogBranchInfo& InDialogBranchInfo)
 {
-	Debug::Print(TEXT("触发的事件为"), TriggerEvent);
+	Debug::Print(TEXT("触发的事件为"), InDialogBranchInfo.TriggerEvent.ToString());
+
+	if (InDialogBranchInfo.TriggerEvent == DkGameplayTags::Dk_Dialog_Branch_TriggerEvent_OpenShop)
+	{
+		HandleOpenShop(InNpcId, InDialogBranchInfo);
+	}
+}
+
+void UDkPlayerDialogComponent::HandleOpenShop(int InNpcId, const FDialogBranchInfo& InDialogBranchInfo)
+{
+	UDkUISubsystem::Get(this)->PushSoftWidgetToStackAsync(
+		DkGameplayTags::Dk_WidgetStack_GameMenu,
+		UDkUIFunctionLibrary::GetUISoftWidgetClassByTag(DkGameplayTags::Dk_Widget_ShopMenu),
+		[=, this](EAsyncPushWidgetState InPushState, UDkWidgetActivatableBase* PushedWidget)
+		{
+			if (InPushState == EAsyncPushWidgetState::OnCreatedBeforePush)
+			{
+				UDkUIFunctionLibrary::ToggleInputMode(this, EDkInputMode::UIOnly, false);
+			}
+			if (InPushState == EAsyncPushWidgetState::AfterPush)
+			{
+				UDkWidgetShopMenuScreen* GameMenuScreen = CastChecked<UDkWidgetShopMenuScreen>(PushedWidget);
+				GameMenuScreen->ConfigureShopMenu(InNpcId, InDialogBranchInfo.JumpToContentId);
+			}
+		}
+	);
 }

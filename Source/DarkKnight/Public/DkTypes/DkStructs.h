@@ -405,8 +405,8 @@ struct FDialogBranchInfo
 	UPROPERTY(EditAnywhere, meta=(Categories = "Dk.Dialog.Branch"))
 	FGameplayTagContainer Preconditions; // 前置分支Tag标识
 
-	UPROPERTY(EditAnywhere)
-	FString TriggerEvent; // 触发事件(这个暂时不知道咋用)
+	UPROPERTY(EditAnywhere, meta=(Categories = "Dk.Dialog.Branch.TriggerEvent"))
+	FGameplayTag TriggerEvent; // 触发事件
 
 	UPROPERTY(EditAnywhere)
 	int JumpToContentId; // 下一步跳转对话Id

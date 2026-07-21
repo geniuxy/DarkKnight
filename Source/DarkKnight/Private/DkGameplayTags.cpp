@@ -74,6 +74,7 @@ namespace DkGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Widget_GameMenu_Inventory, "Dk.Widget.GameMenu.Inventory");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Widget_GameMenu_Task, "Dk.Widget.GameMenu.Task");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Widget_GameMenu_Map, "Dk.Widget.GameMenu.Map");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Widget_ShopMenu, "Dk.Widget.ShopMenu");
 
 	// Images
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Image_TestImage, "Dk.Image.TestImage");
@@ -163,10 +164,13 @@ namespace DkGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Item_Entry_MaxToxin, "Dk.Item.Entry.MaxToxin");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Item_Entry_MaxAdrenaline, "Dk.Item.Entry.MaxAdrenaline");
 
-	// Dialog Tag
+	// Dialog Branch Tag
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Dialog_Branch_1, "Dk.Dialog.Branch.1");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Dialog_Branch_2, "Dk.Dialog.Branch.2");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Dialog_Branch_3, "Dk.Dialog.Branch.3");
+	
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Dialog_Branch_TriggerEvent_OpenShop, "Dk.Dialog.Branch.TriggerEvent.OpenShop");
+	UE_DEFINE_GAMEPLAY_TAG(Dk_Dialog_Branch_TriggerEvent_OpenManufacture, "Dk.Dialog.Branch.TriggerEvent.OpenManufacture");
 
 	// Enemy Tag
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Enemy_1, "Dk.Enemy.1");

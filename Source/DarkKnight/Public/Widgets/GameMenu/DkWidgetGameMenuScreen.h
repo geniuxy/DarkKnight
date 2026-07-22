@@ -6,6 +6,7 @@
 #include "Widgets/DkWidgetActivatableBase.h"
 #include "DkWidgetGameMenuScreen.generated.h"
 
+class UDkInventoryComponent;
 class UDkGameMenuCenterAreaTask;
 struct FGameplayTag;
 class UDkWidgetInventoryMenu;
@@ -28,7 +29,7 @@ public:
 	virtual void NativeOnActivated() override;
 	virtual void NativeOnDeactivated() override;
 	//~ End UCommonActivatableWidget Function
-	
+
 	UDkWidgetInventoryMenu* GetInventoryMenu() const;
 
 	void SetVisibleCenterArea(const FGameplayTag& InTag) const;
@@ -51,5 +52,10 @@ private:
 	UDkWidgetActivatableBase* GetActivatableCenterAreaWidget(const FGameplayTag& InTag) const;
 
 	void OnBackBoundActionTriggered();
+
+	UPROPERTY()
+	UDkInventoryComponent* OwnerInventoryComp;
+
 public:
+	void SetOwnerInventoryComp(UDkInventoryComponent* InInventoryComp) { OwnerInventoryComp = InInventoryComp; }
 };

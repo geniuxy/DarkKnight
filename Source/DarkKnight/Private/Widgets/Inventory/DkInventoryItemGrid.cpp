@@ -5,7 +5,7 @@
 
 #include "DkGameplayTags.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
-#include "Components/DkInventoryComponent.h"
+#include "Components/InventoryComps/DkInventoryComponent.h"
 #include "Components/DkItemComponent.h"
 #include "Widgets/Inventory/DkInventoryGridSlot.h"
 
@@ -39,14 +39,11 @@ FDkInventorySlotAvailabilityResult UDkInventoryItemGrid::HasRoomForItem(const FI
 	const int32 MaxStackCount = StackableFragment ? StackableFragment->GetMaxStackSize() : 1;
 	int32 AmountToFill = StackableFragment ? StackableFragment->GetStackCount() : 1;
 
-	TSet<int32> CheckedIndices;
 	// For each Grid Slot:
 	for (const auto& GridSlot : GridSlots)
 	{
 		//   如果已经没有剩余要填充的数量，提前跳出循环。
 		if (AmountToFill == 0) break;
-		//   该索引是否已被占用(claimed)？
-		if (CheckedIndices.Contains(GridSlot->GetTileIndex())) continue;
 
 		//   物品能否放进这里？
 		UDkInventoryItem* CurSlotItem = GridSlot->GetInventoryItem();
@@ -68,7 +65,7 @@ FDkInventorySlotAvailabilityResult UDkInventoryItemGrid::HasRoomForItem(const FI
 		//   更新SlotAvailabilityResult
 		Result.TotalRoomToFill += AmountToFillInSlot;
 		Result.SlotAvailabilities.Emplace(
-			IsValid(GridSlot->GetInventoryItem()) ? GridSlot->GetUpperLeftIndex() : GridSlot->GetTileIndex(),
+			GridSlot->GetTileIndex(),
 			Result.bStackable ? AmountToFillInSlot : 0,
 			IsValid(GridSlot->GetInventoryItem())
 		);
@@ -248,6 +245,27 @@ void UDkInventoryItemGrid::ConstructGrid()
 			GridSlot->GridSlotClicked.AddDynamic(this, &ThisClass::OnGridSlotClicked);
 		}
 	}
+}
+
+TArray<FInventoryItemBriefInfo> UDkInventoryItemGrid::GetGridSlotsBriefInfo() const
+{
+	TArray<FInventoryItemBriefInfo> BriefInfoList;
+	BriefInfoList.Reserve(Rows * Columns);
+
+	for (int32 j = 0; j < Rows; ++j)
+	{
+		for (int32 i = 0; i < Columns; ++i)
+		{
+			FInventoryItemBriefInfo BriefInfo;
+			BriefInfo.Index = j * Rows + i;
+			BriefInfo.InventoryItem = GridSlots[j * Rows + i]->GetInventoryItem();
+			BriefInfo.StackCount = GridSlots[j * Rows + i]->GetStackCount();
+
+			BriefInfoList[j * Rows + i] = BriefInfo;
+		}
+	}
+
+	return BriefInfoList;
 }
 
 bool UDkInventoryItemGrid::IsSameStackableWithDraggedItem(const UDkInventoryItem* ClickedInventoryItem)

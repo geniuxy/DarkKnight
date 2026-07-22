@@ -14,7 +14,7 @@
 #include "Components/DkActionComponent.h"
 #include "Components/DkNpcDialogComponent.h"
 #include "Components/DkEnhancedInputComponent.h"
-#include "Components/DkInventoryComponent.h"
+#include "Components/InventoryComps/DkInventoryComponent.h"
 #include "Components/DkItemComponent.h"
 #include "DarkKnight/DarkKnight.h"
 #include "FunctionLibrarys/DkUIFunctionLibrary.h"
@@ -43,6 +43,9 @@ void ADkGamePlayerController::Tick(float DeltaSeconds)
 
 void ADkGamePlayerController::OnLoadingScreenDeactivated_Implementation()
 {
+	// 当Loading界面结束后，进行InventoryComponent的初始化
+	// 初始化的变量仅在客户端上存在，因为OnLoadingScreenDeactivated_Implementation仅在Client端执行
+
 	if (!IsLocalController()) return;
 	PrimaryLayoutWidget = CreateWidget<UDkWidgetPrimaryLayout>(this, PrimaryLayoutClass);
 	if (IsValid(PrimaryLayoutWidget))

@@ -6,6 +6,7 @@
 #include "DkCharacterBase.h"
 #include "DkCharacterHero.generated.h"
 
+class UDkPlayerInventoryComp;
 class UDkPlayerDialogComponent;
 struct FInputActionValue;
 class UInputMappingContext;
@@ -16,7 +17,6 @@ class ADkPlayerStateBase;
 class USpringArmComponent;
 class UCameraComponent;
 class UDkEquipmentComponent;
-class UDkInventoryComponent;
 
 UCLASS()
 class DARKKNIGHT_API ADkCharacterHero : public ADkCharacterBase
@@ -43,7 +43,7 @@ protected:
 
 	/* Actor Components */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	UDkInventoryComponent* InventoryComponent;
+	UDkPlayerInventoryComp* InventoryComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UDkEquipmentComponent* EquipmentComponent;
@@ -67,7 +67,7 @@ protected:
 	/*********/
 
 public:
-	FORCEINLINE UDkInventoryComponent* GetInventoryComponent() const { return InventoryComponent; }
+	FORCEINLINE UDkPlayerInventoryComp* GetInventoryComponent() const { return InventoryComponent; }
 
 	/**********************************************************************/
 	/*                         Gameplay Ability                           */

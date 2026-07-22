@@ -5,10 +5,12 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Interfaces/LoadingScreenInterface.h"
+#include "Inventory/DkInventoryCategoryItems.h"
 #include "Inventory/DkInventoryFastArray.h"
 #include "DkInventoryComponent.generated.h"
 
 
+struct FInventoryItemManifest;
 class UDkAbilitySystemComponent;
 class UDkInventoryItemDescriptionMenu;
 class UDkInventoryDraggedItem;
@@ -40,7 +42,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnItemDescriptionMenuRemoved);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FItemEquipStatusChanged, UDkInventoryItem*, Item);
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), Blueprintable)
-class DARKKNIGHT_API UDkInventoryComponent : public UActorComponent, public ILoadingScreenInterface
+class DARKKNIGHT_API UDkInventoryComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
@@ -49,27 +51,25 @@ public:
 
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 
-	//~Begin ILoadingScreenInterface Interface
-	virtual void OnLoadingScreenDeactivated_Implementation() override;
-	//~End ILoadingScreenInterface Interface
-
 	/* 构建背包界面 */
 	void ConstructInventoryMenu();
 	void InitializeInventoryComponent();
-	
-	bool bHasInitInventoryMenu = false;
 	/********/
 
 	/* 道具物品的添加和删除 */
 	void TryAddItem(UDkItemComponent* ItemComponent);
 
 	void TryAddItem(UDkInventoryItem* Item);
-	
-	UFUNCTION(Server, Reliable)
-	void Server_AddNewItem(UDkItemComponent* ItemComponent, int32 StackCount, int32 Remainder);
 
 	UFUNCTION(Server, Reliable)
-	void Server_AddNewItemWithItem(UDkInventoryItem* Item, int32 StackCount, int32 Remainder);
+	void Server_AddNewItem(
+		UDkItemComponent* ItemComponent, int32 StackCount, FDkInventorySlotAvailabilityResult Result
+	);
+
+	UFUNCTION(Server, Reliable)
+	void Server_AddNewItemWithItem(
+		UDkInventoryItem* Item, int32 StackCount, FDkInventorySlotAvailabilityResult Result
+	);
 
 	UFUNCTION(Server, Reliable)
 	void Server_AddStacksToItem(UDkItemComponent* ItemComponent, int32 StackCount, int32 Remainder);
@@ -143,12 +143,49 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
-	TWeakObjectPtr<ADkCharacterHero> OwningCharacter; // 仅在客户端上存在， 这个在初始化的时候用了一下。直接用GetOwner获取角色即可
-	
+	TWeakObjectPtr<ADkCharacterHero> OwningCharacter;
 	TWeakObjectPtr<UDkAbilitySystemComponent> OwnerASC;
-
-	TWeakObjectPtr<UDkWidgetInventoryMenu> CachedInventoryMenu; // 仅在客户端上存在
 
 	UPROPERTY(Replicated)
 	FDkInventoryFastArray InventoryList;
+
+	/**********************************************************************/
+	/*                     Inventory Item Brief Info                      */
+	/**********************************************************************/
+public:
+	void InitInventoryCategoryItemsArray();
+	void UpdateInventoryCategoryItemsArray(const FDkInventorySlotAvailabilityResult& Result);
+
+	const FInventoryCategoryItemsArray& GetInventoryCategoryItemsArray() const
+	{
+		return InventoryCategoryItemsArray.Get<FInventoryCategoryItemsArray>();
+	}
+	FInventoryCategoryItemsArray& GetInventoryCategoryItemsArrayMutable()
+	{
+		return InventoryCategoryItemsArray.GetMutable<FInventoryCategoryItemsArray>();
+	}
+
+protected:
+	UPROPERTY(VisibleAnywhere, meta=(BaseStruct="/Script/DarkKnight.InventoryCategoryItemsArray"), Replicated)
+	FInstancedStruct InventoryCategoryItemsArray;
+	
+	UPROPERTY(EditAnywhere, Category="Inventory Item Category")
+	TArray<FInventoryItemCategoryGridSize> GridSizeInfoList;
+
+	/**********************************************************************/
+	/*                           Check Has Room                           */
+	/**********************************************************************/
+public:
+	FDkInventorySlotAvailabilityResult HasRoomForItem(const UDkItemComponent* ItemComponent);
+	FDkInventorySlotAvailabilityResult HasRoomForItem(const UDkInventoryItem* Item);
+
+private:
+	FDkInventorySlotAvailabilityResult HasRoomForItem(const FInventoryItemManifest& Manifest);
+
+	int32 CalculateFillAmountForSlot(
+		const bool bStackable,
+		const int32 MaxStackSize,
+		const int32 AmountToFill,
+		const FInventoryItemBriefInfo& ItemBriefInfo
+	) const;
 };

@@ -4,7 +4,7 @@
 #include "Components/DkTaskComponent.h"
 
 #include "Characters/DkCharacterHero.h"
-#include "Components/DkInventoryComponent.h"
+#include "Components/InventoryComps/DkInventoryComponent.h"
 #include "FunctionLibrarys/DkInventoryFunctionLibrary.h"
 #include "FunctionLibrarys/DkTaskFunctionLibrary.h"
 #include "Games/PlayerStates/DkPlayerStateBase.h"

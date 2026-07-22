@@ -5,7 +5,7 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "Characters/DkCharacterBase.h"
-#include "Components/DkInventoryComponent.h"
+#include "Components/InventoryComps/DkInventoryComponent.h"
 #include "Equipment/DkEquippedActorBase.h"
 #include "Equipment/DkEquippedActorStatic.h"
 #include "Equipment/DkEquippedActorStaticWithAdditional.h"

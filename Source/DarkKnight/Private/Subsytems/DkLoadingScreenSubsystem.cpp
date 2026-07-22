@@ -5,7 +5,7 @@
 #include "PreLoadScreenManager.h"
 #include "Blueprint/UserWidget.h"
 #include "Characters/DkCharacterHero.h"
-#include "Components/DkInventoryComponent.h"
+#include "Components/InventoryComps/DkInventoryComponent.h"
 #include "Interfaces/LoadingScreenInterface.h"
 #include "Settings/DkLoadingScreenSettings.h"
 
@@ -281,22 +281,6 @@ void UDkLoadingScreenSubsystem::NotifyLoadingScreenVisibilityChanged(bool bIsVis
 					else
 					{
 						ILoadingScreenInterface::Execute_OnLoadingScreenDeactivated(OwningPawn);
-					}
-				}
-			}
-
-			if (ADkCharacterHero* OwningHero = Cast<ADkCharacterHero>(PC->GetPawn()))
-			{
-				UDkInventoryComponent* InventoryComponent = OwningHero->GetInventoryComponent();
-				if (InventoryComponent->Implements<ULoadingScreenInterface>())
-				{
-					if (bIsVisible)
-					{
-						ILoadingScreenInterface::Execute_OnLoadingScreenActivated(InventoryComponent);
-					}
-					else
-					{
-						ILoadingScreenInterface::Execute_OnLoadingScreenDeactivated(InventoryComponent);
 					}
 				}
 			}

@@ -6,7 +6,7 @@
 
 #include "CommonLazyImage.h"
 #include "CommonTextBlock.h"
-#include "Components/DkInventoryComponent.h"
+#include "Components/InventoryComps/DkInventoryComponent.h"
 #include "Components/SizeBox.h"
 #include "Subsytems/EngineSubsystems/DkInventorySubsystem.h"
 #include "Widgets/Inventory/DkInventoryItemDescriptionMenu.h"

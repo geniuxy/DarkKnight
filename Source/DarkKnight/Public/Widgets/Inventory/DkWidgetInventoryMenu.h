@@ -8,6 +8,7 @@
 #include "Widgets/DkWidgetActivatableBase.h"
 #include "DkWidgetInventoryMenu.generated.h"
 
+class UDkInventoryComponent;
 class UDkUICommonButtonImage;
 class UDkItemComponent;
 class UCommonLazyImage;
@@ -73,6 +74,8 @@ protected:
 
 	TWeakObjectPtr<UDkInventoryItemGrid> ActiveGrid;
 
+	TWeakObjectPtr<UDkInventoryComponent> InventoryComponent;
+
 	void ShowEquipments();
 	void ShowConsumables();
 	void ShowCraftingMaterials();
@@ -80,5 +83,8 @@ protected:
 	void SelectButton(UDkUICommonButtonImage* Button);
 	void ShowSelectedUnderline(UDkInventoryItemGrid* Grid);
 	void SetActiveGrid(UDkInventoryItemGrid* Grid, UDkUICommonButtonImage* Button);
+
+public:
+	TArray<UDkInventoryItemGrid*> GetAllInventoryItemGrid() const;
 	/********/
 };

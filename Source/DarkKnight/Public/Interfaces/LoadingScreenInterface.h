@@ -14,7 +14,7 @@ class ULoadingScreenInterface : public UInterface
 };
 
 /**
- * 
+ * Tips：这个接口的方法只在Client上执行
  */
 class DARKKNIGHT_API ILoadingScreenInterface
 {

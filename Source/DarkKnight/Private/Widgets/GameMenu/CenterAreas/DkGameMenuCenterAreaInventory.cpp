@@ -6,7 +6,7 @@
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Components/CanvasPanel.h"
 #include "Components/CanvasPanelSlot.h"
-#include "Components/DkInventoryComponent.h"
+#include "Components/InventoryComps/DkInventoryComponent.h"
 #include "FunctionLibrarys/DkInventoryFunctionLibrary.h"
 #include "FunctionLibrarys/DkUIFunctionLibrary.h"
 #include "Widgets/Inventory/DkInventoryDraggedItem.h"

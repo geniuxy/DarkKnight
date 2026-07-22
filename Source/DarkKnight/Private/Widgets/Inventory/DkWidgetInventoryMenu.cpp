@@ -122,3 +122,12 @@ void UDkWidgetInventoryMenu::SetActiveGrid(UDkInventoryItemGrid* Grid, UDkUIComm
 		break;
 	}
 }
+
+TArray<UDkInventoryItemGrid*> UDkWidgetInventoryMenu::GetAllInventoryItemGrid() const
+{
+	TArray<UDkInventoryItemGrid*> GridList;
+	GridList.Add(GridEquipments);
+	GridList.Add(GridConsumables);
+	GridList.Add(GridCraftingMaterials);
+	return GridList;
+}

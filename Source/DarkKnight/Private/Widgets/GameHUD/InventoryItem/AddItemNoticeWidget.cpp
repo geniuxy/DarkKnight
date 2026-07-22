@@ -3,7 +3,7 @@
 
 #include "Widgets/GameHUD/InventoryItem/AddItemNoticeWidget.h"
 
-#include "Components/DkInventoryComponent.h"
+#include "Components/InventoryComps/DkInventoryComponent.h"
 #include "Components/VerticalBox.h"
 #include "Kismet/GameplayStatics.h"
 #include "Subsytems/DkUISubsystem.h"

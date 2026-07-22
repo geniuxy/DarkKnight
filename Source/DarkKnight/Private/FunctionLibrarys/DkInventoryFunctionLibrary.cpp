@@ -5,7 +5,7 @@
 
 #include "DkGameplayTags.h"
 #include "Characters/DkCharacterHero.h"
-#include "Components/DkInventoryComponent.h"
+#include "Components/InventoryComps/DkInventoryComponent.h"
 #include "Inventory/DkInventoryItem.h"
 #include "Inventory/DkInventoryItemFragment.h"
 #include "Subsytems/EngineSubsystems/DkInventorySubsystem.h"

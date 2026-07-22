@@ -10,8 +10,8 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/DkActionComponent.h"
 #include "Components/DkEquipmentComponent.h"
-#include "Components/DkInventoryComponent.h"
 #include "Components/DkPlayerDialogComponent.h"
+#include "Components/InventoryComps/DkPlayerInventoryComp.h"
 #include "DataAssets/CharacterInfo.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -39,7 +39,7 @@ ADkCharacterHero::ADkCharacterHero()
 	Camera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	Camera->bUsePawnControlRotation = false;
 
-	InventoryComponent = CreateDefaultSubobject<UDkInventoryComponent>(TEXT("DkInventoryComponent"));
+	InventoryComponent = CreateDefaultSubobject<UDkPlayerInventoryComp>(TEXT("DkInventoryComponent"));
 	EquipmentComponent = CreateDefaultSubobject<UDkEquipmentComponent>(TEXT("DkEquipmentComponent"));
 	PlayerDialogComponent = CreateDefaultSubobject<UDkPlayerDialogComponent>(TEXT("DkPlayerDialogComponent"));
 

@@ -11,6 +11,7 @@
 #include "Inventory/DkInventorySlotAvailabilty.h"
 #include "DkInventoryItemGrid.generated.h"
 
+struct FInventoryItemBriefInfo;
 class UDkInventoryItemDescriptionMenu;
 class UDkInventoryPopUpMenu;
 struct FInventoryTileParameters;
@@ -96,9 +97,16 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Inventory")
 	float SlotDistance = 8.f;
+
+public:
+	TArray<FInventoryItemBriefInfo> GetGridSlotsBriefInfo() const;
+	int32 GetGridRow() const { return Rows; }
+	int32 GetGridColumn() const { return Columns; }
+	int32 GetGridSize() const { return Rows * Columns; }
 	/********/
 
 	/* 拖拽Item */
+protected:
 	bool IsSameStackableWithDraggedItem(const UDkInventoryItem* ClickedInventoryItem);
 
 	virtual void SwapWithDraggedItem(UDkInventoryItem* ClickedInventoryItem, const int32 GridIndex);

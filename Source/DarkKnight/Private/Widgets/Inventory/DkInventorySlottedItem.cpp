@@ -7,7 +7,7 @@
 
 #include "CommonLazyImage.h"
 #include "CommonTextBlock.h"
-#include "Components/DkInventoryComponent.h"
+#include "Components/InventoryComps/DkInventoryComponent.h"
 #include "Subsytems/EngineSubsystems/DkInventorySubsystem.h"
 
 FReply UDkInventorySlottedItem::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)

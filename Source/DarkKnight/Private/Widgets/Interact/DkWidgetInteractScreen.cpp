@@ -4,7 +4,7 @@
 #include "Widgets/Interact/DkWidgetInteractScreen.h"
 
 #include "Characters/DkCharacterHero.h"
-#include "Components/DkInventoryComponent.h"
+#include "Components/InventoryComps/DkPlayerInventoryComp.h"
 #include "Widgets/Interact/DkWidgetInfoMessage.h"
 #include "Widgets/Interact/DkWidgetPickUpBox.h"
 
@@ -41,7 +41,7 @@ void UDkWidgetInteractScreen::NativeOnInitialized()
 	ADkCharacterHero* OwningCharacterHero = Cast<ADkCharacterHero>(GetOwningPlayerPawn());
 	if (!OwningCharacterHero) return;
 
-	UDkInventoryComponent* InventoryComponent = OwningCharacterHero->GetInventoryComponent();
+	UDkPlayerInventoryComp* InventoryComponent = OwningCharacterHero->GetInventoryComponent();
 	if (IsValid(InventoryComponent))
 	{
 		InventoryComponent->OnNoRoomInInventory.AddDynamic(this, &ThisClass::ShowGameMessageInHUD);

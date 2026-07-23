@@ -257,9 +257,11 @@ void UDKInventoryItemSpatialGrid::UpdateGridSlots(
 }
 
 
-void UDKInventoryItemSpatialGrid::ConstructGrid()
+void UDKInventoryItemSpatialGrid::ConstructGrid(int32 InRows, int32 InColumns)
 {
 	GridSlots.Reset();
+	Rows = InRows;
+	Columns = InColumns;
 	GridSlots.Reserve(Rows * Columns);
 
 	for (int32 j = 0; j < Rows; ++j)

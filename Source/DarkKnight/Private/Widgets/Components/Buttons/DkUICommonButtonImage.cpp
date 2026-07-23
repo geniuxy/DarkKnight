@@ -15,6 +15,14 @@ void UDkUICommonButtonImage::SetButtonDisplayImage(const FSlateBrush& InBrush)
 	}
 }
 
+void UDkUICommonButtonImage::SetButtonDisplayImage(UTexture2D* InTexture)
+{
+	if (CommonLazyImage_ButtonImage)
+	{
+		CommonLazyImage_ButtonImage->SetBrushFromTexture(InTexture);
+	}
+}
+
 void UDkUICommonButtonImage::ToggleHighlightState(bool bShouldHighlight)
 {
 	if (!CommonLazyImage_ButtonImage) return;

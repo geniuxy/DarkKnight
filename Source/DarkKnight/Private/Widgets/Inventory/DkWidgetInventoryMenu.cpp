@@ -3,131 +3,64 @@
 
 #include "Widgets/Inventory/DkWidgetInventoryMenu.h"
 
-#include "CommonTextBlock.h"
-#include "DarkKnightDebugHelper.h"
-#include "Components/DkItemComponent.h"
-#include "Components/WidgetSwitcher.h"
+#include "CommonListView.h"
+#include "Components/InventoryComps/DkInventoryComponent.h"
 #include "Widgets/Inventory/DkInventoryItemGrid.h"
-#include "Widgets/Components/Buttons/DkUICommonButtonBase.h"
-#include "Widgets/Components/Buttons/DkUICommonButtonImage.h"
+#include "Widgets/Inventory/Components/DkInventoryCategoryButton.h"
 
-FDkInventorySlotAvailabilityResult UDkWidgetInventoryMenu::HasRoomForItem(UDkItemComponent* ItemComponent) const
+void UDkWidgetInventoryMenu::SetInventoryComponent(UDkInventoryComponent* InInventoryComp)
 {
-	switch (ItemComponent->GetItemManifest().GetItemCategory())
-	{
-	case EInventoryItemCategory::Equipment:
-		return GridEquipments->HasRoomForItem(ItemComponent);
-	case EInventoryItemCategory::Consumable:
-		return GridConsumables->HasRoomForItem(ItemComponent);
-	case EInventoryItemCategory::CraftingMaterial:
-		return GridCraftingMaterials->HasRoomForItem(ItemComponent);
-	case EInventoryItemCategory::None:
-		Debug::Print(TEXT("ItemComponent没有配置ItemCategory"));
-		return FDkInventorySlotAvailabilityResult();
-	}
-	return FDkInventorySlotAvailabilityResult();
-}
+	InventoryComponent = InInventoryComp;
 
-FDkInventorySlotAvailabilityResult UDkWidgetInventoryMenu::HasRoomForItem(UDkInventoryItem* Item) const
-{
-	switch (Item->GetItemManifest().GetItemCategory())
-	{
-	case EInventoryItemCategory::Equipment:
-		return GridEquipments->HasRoomForItem(Item);
-	case EInventoryItemCategory::Consumable:
-		return GridConsumables->HasRoomForItem(Item);
-	case EInventoryItemCategory::CraftingMaterial:
-		return GridCraftingMaterials->HasRoomForItem(Item);
-	case EInventoryItemCategory::None:
-		Debug::Print(TEXT("Item没有配置ItemCategory"));
-		return FDkInventorySlotAvailabilityResult();
-	}
-	return FDkInventorySlotAvailabilityResult();
+	InitInventoryCategoryButtons();
 }
 
 void UDkWidgetInventoryMenu::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
-
-	Button_Equipment->OnClicked().AddUObject(this, &ThisClass::ShowEquipments);
-	Button_Consumable->OnClicked().AddUObject(this, &ThisClass::ShowConsumables);
-	Button_CraftingMaterial->OnClicked().AddUObject(this, &ThisClass::ShowCraftingMaterials);
-
-	CategoryButtonMap.Add(EInventoryItemCategory::Equipment, Button_Equipment);
-	CategoryButtonMap.Add(EInventoryItemCategory::Consumable, Button_Consumable);
-	CategoryButtonMap.Add(EInventoryItemCategory::CraftingMaterial, Button_CraftingMaterial);
-
-	SelectedUnderlineMap.Add(EInventoryItemCategory::Equipment, SelectedEquipmentUnderline);
-	SelectedUnderlineMap.Add(EInventoryItemCategory::Consumable, SelectedConsumableUnderline);
-	SelectedUnderlineMap.Add(EInventoryItemCategory::CraftingMaterial, SelectedCraftingMaterialUnderline);
-
-	ShowEquipments();
 }
 
-void UDkWidgetInventoryMenu::ShowEquipments()
+void UDkWidgetInventoryMenu::InitInventoryCategoryButtons()
 {
-	SetActiveGrid(GridEquipments, Button_Equipment);
-}
+	if (!InventoryComponent.IsValid()) return;
 
-void UDkWidgetInventoryMenu::ShowConsumables()
-{
-	SetActiveGrid(GridConsumables, Button_Consumable);
-}
-
-void UDkWidgetInventoryMenu::ShowCraftingMaterials()
-{
-	SetActiveGrid(GridCraftingMaterials, Button_CraftingMaterial);
-}
-
-void UDkWidgetInventoryMenu::SelectButton(UDkUICommonButtonImage* Button)
-{
-	for (TTuple<EInventoryItemCategory, TObjectPtr<UDkUICommonButtonImage>> Pair : CategoryButtonMap)
+	CategoryButtonListView->ClearListItems();
+	for (const FInventoryItemCategoryInfo& CategoryInfo : InventoryComponent->GetAllInventoryCategoryInfo())
 	{
-		Pair.Value->ToggleHighlightState(false);
+		UInventoryItemCategoryData* CategoryData = NewObject<UInventoryItemCategoryData>();
+		CategoryData->Info = CategoryInfo;
+		CategoryButtonListView->AddItem(CategoryData);
 	}
-	Button->ToggleHighlightState(true);
+
+	CategoryButtonListView->OnItemSelectionChanged().AddUObject(this, &ThisClass::CategoryButtonPressed);
+
+	// AddItem会创建Widget，要等下一次Tick再处理点击逻辑，不然会有空指针
+	GetWorld()->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateLambda([this]()
+		{
+			CategoryButtonListView->SetSelectedIndex(0);
+		})
+	);
 }
 
-void UDkWidgetInventoryMenu::ShowSelectedUnderline(UDkInventoryItemGrid* Grid)
+void UDkWidgetInventoryMenu::CategoryButtonPressed(UObject* SelectedUObject)
 {
-	for (TTuple<EInventoryItemCategory, TObjectPtr<UCommonLazyImage>> Pair : SelectedUnderlineMap)
+	if (const UInventoryItemCategoryData* CategoryData = Cast<UInventoryItemCategoryData>(SelectedUObject))
 	{
-		Pair.Value->SetVisibility(ESlateVisibility::Hidden);
+		if (LastSelectedCategoryButton)
+		{
+			LastSelectedCategoryButton->ToggleHighlightState(false);
+		}
+		UDkInventoryCategoryButton* SelectedCategoryButton =
+			CategoryButtonListView->GetEntryWidgetFromItem<UDkInventoryCategoryButton>(CategoryData);
+		if (SelectedCategoryButton)
+		{
+			SelectedCategoryButton->ToggleHighlightState(true);
+			LastSelectedCategoryButton = SelectedCategoryButton;
+		}
+
+		if (InventoryGrid)
+		{
+			InventoryGrid->ConstructGrid(CategoryData->Info.Rows, CategoryData->Info.Columns);
+		}
 	}
-	SelectedUnderlineMap[Grid->GetItemCategory()]->SetVisibility(ESlateVisibility::Visible);
-}
-
-void UDkWidgetInventoryMenu::SetActiveGrid(UDkInventoryItemGrid* Grid, UDkUICommonButtonImage* Button)
-{
-	SelectButton(Button);
-
-	ActiveGrid = Grid;
-
-	ShowSelectedUnderline(Grid);
-
-	Switcher->SetActiveWidget(Grid);
-
-	switch (Grid->GetItemCategory())
-	{
-	case EInventoryItemCategory::Equipment:
-		InventoryTitleTxt->SetText(FText::FromString(TEXT("装备")));
-		break;
-	case EInventoryItemCategory::Consumable:
-		InventoryTitleTxt->SetText(FText::FromString(TEXT("消耗品")));
-		break;
-	case EInventoryItemCategory::CraftingMaterial:
-		InventoryTitleTxt->SetText(FText::FromString(TEXT("合成材料")));
-		break;
-	case EInventoryItemCategory::None:
-		break;
-	}
-}
-
-TArray<UDkInventoryItemGrid*> UDkWidgetInventoryMenu::GetAllInventoryItemGrid() const
-{
-	TArray<UDkInventoryItemGrid*> GridList;
-	GridList.Add(GridEquipments);
-	GridList.Add(GridConsumables);
-	GridList.Add(GridCraftingMaterials);
-	return GridList;
 }

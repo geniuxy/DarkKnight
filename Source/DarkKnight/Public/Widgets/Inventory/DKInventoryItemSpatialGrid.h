@@ -72,7 +72,7 @@ protected:
 	/********/
 
 	/* 构造Grid */
-	virtual void ConstructGrid() override;
+	virtual void ConstructGrid(int32 InRows, int32 InColumns) override;
 
 	virtual void RemoveItemFromGrid(UDkInventoryItem* InventoryItem, const int32 GridIndex) override;
 	/********/

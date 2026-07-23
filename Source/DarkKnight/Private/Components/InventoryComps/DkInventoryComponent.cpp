@@ -12,6 +12,7 @@
 #include "GAS/DkAbilitySystemComponent.h"
 #include "Inventory/DkInventoryItem.h"
 #include "Inventory/DkInventoryItemFragment.h"
+#include "Inventory/DkInventorySlotAvailabilty.h"
 #include "Net/UnrealNetwork.h"
 #include "Subsytems/DkUISubsystem.h"
 #include "Widgets/DkWidgetActivatableBase.h"
@@ -54,7 +55,8 @@ void UDkInventoryComponent::ConstructInventoryMenu()
 			{
 				UDkWidgetGameMenuScreen* GameMenuScreen = CastChecked<UDkWidgetGameMenuScreen>(PushedWidget);
 				GameMenuScreen->SetVisibleCenterArea(DkGameplayTags::Dk_Widget_GameMenu_Inventory);
-				GameMenuScreen->SetOwnerInventoryComp(this);
+				UDkWidgetInventoryMenu* InventoryMenu = GameMenuScreen->GetInventoryMenu();
+				InventoryMenu->SetInventoryComponent(this);
 			}
 		}
 	);
@@ -335,13 +337,13 @@ void UDkInventoryComponent::InitInventoryCategoryItemsArray()
 
 	InventoryCategoryItemsArray = FInstancedStruct::Make<FInventoryCategoryItemsArray>();
 
-	for (const FInventoryItemCategoryGridSize& GridSizeInfo : GridSizeInfoList)
+	for (const FInventoryItemCategoryInfo& CategoryInfo : CategoryInfoList)
 	{
-		EInventoryItemCategory ItemCategory = GridSizeInfo.Category;
+		EInventoryItemCategory ItemCategory = CategoryInfo.Category;
 		if (!GetInventoryCategoryItemsArray().ContainCategory(ItemCategory))
 		{
 			FInventoryCategoryItemsArray& ItemsArrayMutable = GetInventoryCategoryItemsArrayMutable();
-			ItemsArrayMutable.AddNewCategory(ItemCategory, GridSizeInfo.Rows * GridSizeInfo.Columns);
+			ItemsArrayMutable.AddNewCategory(ItemCategory, CategoryInfo.Rows * CategoryInfo.Columns);
 		}
 	}
 }

@@ -3,11 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "DkTypes/DkEnums.h"
-#include "Inventory/DkInventorySlotAvailabilty.h"
 #include "Widgets/DkWidgetActivatableBase.h"
 #include "DkWidgetInventoryMenu.generated.h"
 
+class UDkInventoryCategoryButton;
+class UCommonListView;
 class UDkInventoryComponent;
 class UDkUICommonButtonImage;
 class UDkItemComponent;
@@ -25,8 +25,7 @@ class DARKKNIGHT_API UDkWidgetInventoryMenu : public UCommonUserWidget
 	GENERATED_BODY()
 
 public:
-	virtual FDkInventorySlotAvailabilityResult HasRoomForItem(UDkItemComponent* ItemComponent) const;
-	virtual FDkInventorySlotAvailabilityResult HasRoomForItem(UDkInventoryItem* Item) const;
+	void SetInventoryComponent(UDkInventoryComponent* InInventoryComp);
 
 protected:
 	//~Begin UUserWidget Function
@@ -38,53 +37,18 @@ protected:
 	TObjectPtr<UCommonTextBlock> InventoryTitleTxt;
 
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget))
-	TObjectPtr<UDkUICommonButtonImage> Button_Equipment;
+	UCommonListView* CategoryButtonListView;
 
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget))
-	TObjectPtr<UDkUICommonButtonImage> Button_Consumable;
-
-	UPROPERTY(BlueprintReadOnly, meta=(BindWidget))
-	TObjectPtr<UDkUICommonButtonImage> Button_CraftingMaterial;
-
-	UPROPERTY(BlueprintReadOnly, meta=(BindWidget))
-	TObjectPtr<UCommonLazyImage> SelectedEquipmentUnderline;
-
-	UPROPERTY(BlueprintReadOnly, meta=(BindWidget))
-	TObjectPtr<UCommonLazyImage> SelectedConsumableUnderline;
-
-	UPROPERTY(BlueprintReadOnly, meta=(BindWidget))
-	TObjectPtr<UCommonLazyImage> SelectedCraftingMaterialUnderline;
-
-	UPROPERTY(BlueprintReadOnly, meta=(BindWidget))
-	TObjectPtr<UWidgetSwitcher> Switcher;
-
-	UPROPERTY(BlueprintReadOnly, meta=(BindWidget))
-	TObjectPtr<UDkInventoryItemGrid> GridEquipments;
-
-	UPROPERTY(BlueprintReadOnly, meta=(BindWidget))
-	TObjectPtr<UDkInventoryItemGrid> GridConsumables;
-
-	UPROPERTY(BlueprintReadOnly, meta=(BindWidget))
-	TObjectPtr<UDkInventoryItemGrid> GridCraftingMaterials;
+	TObjectPtr<UDkInventoryItemGrid> InventoryGrid;
 	//***** Bound Widgets *****//
-
-	/* 切换ItemCategory */
-	TMap<EInventoryItemCategory, TObjectPtr<UDkUICommonButtonImage>> CategoryButtonMap;
-	TMap<EInventoryItemCategory, TObjectPtr<UCommonLazyImage>> SelectedUnderlineMap;
-
-	TWeakObjectPtr<UDkInventoryItemGrid> ActiveGrid;
 
 	TWeakObjectPtr<UDkInventoryComponent> InventoryComponent;
 
-	void ShowEquipments();
-	void ShowConsumables();
-	void ShowCraftingMaterials();
+	UPROPERTY()
+	UDkInventoryCategoryButton* LastSelectedCategoryButton;
 
-	void SelectButton(UDkUICommonButtonImage* Button);
-	void ShowSelectedUnderline(UDkInventoryItemGrid* Grid);
-	void SetActiveGrid(UDkInventoryItemGrid* Grid, UDkUICommonButtonImage* Button);
-
-public:
-	TArray<UDkInventoryItemGrid*> GetAllInventoryItemGrid() const;
-	/********/
+private:
+	void InitInventoryCategoryButtons();
+	void CategoryButtonPressed(UObject* SelectedUObject);
 };

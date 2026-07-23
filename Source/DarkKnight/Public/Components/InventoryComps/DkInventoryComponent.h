@@ -170,8 +170,10 @@ protected:
 	FInstancedStruct InventoryCategoryItemsArray;
 	
 	UPROPERTY(EditAnywhere, Category="Inventory Item Category")
-	TArray<FInventoryItemCategoryGridSize> GridSizeInfoList;
-
+	TArray<FInventoryItemCategoryInfo> CategoryInfoList;
+	
+public:
+	FORCEINLINE TArray<FInventoryItemCategoryInfo> GetAllInventoryCategoryInfo() const { return CategoryInfoList; }
 	/**********************************************************************/
 	/*                           Check Has Room                           */
 	/**********************************************************************/

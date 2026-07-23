@@ -6,11 +6,13 @@
 #include "DkGameplayTags.h"
 #include "ICommonInputModule.h"
 #include "DkTypes/DkEnums.h"
+#include "FunctionLibrarys/DkInventoryFunctionLibrary.h"
 #include "FunctionLibrarys/DkUIFunctionLibrary.h"
 #include "Input/CommonUIInputTypes.h"
 #include "Subsytems/DkUISubsystem.h"
 #include "Widgets/Components/Buttons/DkUICommonButtonImage.h"
 #include "Widgets/GameMenu/DkWidgetGameMenuScreen.h"
+#include "Widgets/Inventory/DkWidgetInventoryMenu.h"
 
 void UDkWidgetSystemMenuScreen::NativeOnInitialized()
 {
@@ -58,6 +60,10 @@ void UDkWidgetSystemMenuScreen::HandleSelectButtonInventory()
 			{
 				UDkWidgetGameMenuScreen* GameMenuScreen = CastChecked<UDkWidgetGameMenuScreen>(PushedWidget);
 				GameMenuScreen->SetVisibleCenterArea(DkGameplayTags::Dk_Widget_GameMenu_Inventory);
+				UDkWidgetInventoryMenu* InventoryMenu = GameMenuScreen->GetInventoryMenu();
+				UDkInventoryComponent* OwnerInventoryComp =
+					UDkInventoryFunctionLibrary::GetInventoryComponent(GetOwningPlayer());
+				InventoryMenu->SetInventoryComponent(OwnerInventoryComp);
 			}
 		}
 	);

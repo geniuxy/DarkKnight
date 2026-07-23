@@ -61,18 +61,30 @@ struct FInventoryCategoryItemsArray
 };
 
 USTRUCT(BlueprintType)
-struct FInventoryItemCategoryGridSize // 背包物品各个类别的限制格子数量
+struct FInventoryItemCategoryInfo // 背包物品各个类别的相关信息
 {
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere)
 	EInventoryItemCategory Category;
-
+	
+	UPROPERTY(EditAnywhere)
+	UTexture2D* CategoryIcon = nullptr;
+	
 	UPROPERTY(EditAnywhere)
 	int Rows = 0;
 
 	UPROPERTY(EditAnywhere)
 	int Columns = 0;
+};
 
-	// TODO: 后续这里还可以补个Icon，自动生成背包类型的按钮
+// 这个类的作用是因为ListView的AddItem只接受UObject，AI推荐我创建个UObject来包装
+UCLASS()
+class DARKKNIGHT_API UInventoryItemCategoryData : public UObject
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintReadWrite)
+	FInventoryItemCategoryInfo Info;
 };

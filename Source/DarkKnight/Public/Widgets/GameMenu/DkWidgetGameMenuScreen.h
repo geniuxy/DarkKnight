@@ -52,10 +52,4 @@ private:
 	UDkWidgetActivatableBase* GetActivatableCenterAreaWidget(const FGameplayTag& InTag) const;
 
 	void OnBackBoundActionTriggered();
-
-	UPROPERTY()
-	UDkInventoryComponent* OwnerInventoryComp;
-
-public:
-	void SetOwnerInventoryComp(UDkInventoryComponent* InInventoryComp) { OwnerInventoryComp = InInventoryComp; }
 };

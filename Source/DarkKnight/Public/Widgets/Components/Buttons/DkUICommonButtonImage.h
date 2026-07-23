@@ -16,8 +16,9 @@ class DARKKNIGHT_API UDkUICommonButtonImage : public UDkUICommonButtonBase
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintCallable)
 	void SetButtonDisplayImage(const FSlateBrush& InBrush);
+
+	void SetButtonDisplayImage(UTexture2D* InTexture);
 
 	UFUNCTION(BlueprintCallable)
 	void ToggleHighlightState(bool bShouldHighlight);

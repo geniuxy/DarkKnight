@@ -115,8 +115,6 @@ void UDkInventoryItemGrid::NativeOnInitialized()
 		UniformGridPanel->SetSlotPadding(FMargin(SlotDistance));
 	}
 
-	ConstructGrid();
-
 	InventoryComponent = UDkInventoryFunctionLibrary::GetInventoryComponent(GetOwningPlayer());
 	InventoryComponent->OnItemAdded.AddDynamic(this, &ThisClass::AddItem);
 	InventoryComponent->OnStackChange.AddDynamic(this, &ThisClass::HandleStackChanged);
@@ -224,11 +222,14 @@ void UDkInventoryItemGrid::UpdateGridSlots(
 	}
 }
 
-void UDkInventoryItemGrid::ConstructGrid()
+void UDkInventoryItemGrid::ConstructGrid(int32 InRows, int32 InColumns)
 {
 	GridSlots.Reset();
+	Rows = InRows;
+	Columns = InColumns;
 	GridSlots.Reserve(Rows * Columns);
 
+	UniformGridPanel->ClearChildren();
 	for (int32 j = 0; j < Rows; ++j)
 	{
 		for (int32 i = 0; i < Columns; ++i)
@@ -245,27 +246,6 @@ void UDkInventoryItemGrid::ConstructGrid()
 			GridSlot->GridSlotClicked.AddDynamic(this, &ThisClass::OnGridSlotClicked);
 		}
 	}
-}
-
-TArray<FInventoryItemBriefInfo> UDkInventoryItemGrid::GetGridSlotsBriefInfo() const
-{
-	TArray<FInventoryItemBriefInfo> BriefInfoList;
-	BriefInfoList.Reserve(Rows * Columns);
-
-	for (int32 j = 0; j < Rows; ++j)
-	{
-		for (int32 i = 0; i < Columns; ++i)
-		{
-			FInventoryItemBriefInfo BriefInfo;
-			BriefInfo.Index = j * Rows + i;
-			BriefInfo.InventoryItem = GridSlots[j * Rows + i]->GetInventoryItem();
-			BriefInfo.StackCount = GridSlots[j * Rows + i]->GetStackCount();
-
-			BriefInfoList[j * Rows + i] = BriefInfo;
-		}
-	}
-
-	return BriefInfoList;
 }
 
 bool UDkInventoryItemGrid::IsSameStackableWithDraggedItem(const UDkInventoryItem* ClickedInventoryItem)

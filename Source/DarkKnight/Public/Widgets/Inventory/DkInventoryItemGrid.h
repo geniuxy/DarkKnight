@@ -78,8 +78,10 @@ protected:
 	/********/
 
 	/* 构造Grid */
-	virtual void ConstructGrid();
+public:
+	virtual void ConstructGrid(int32 InRows, int32 InColumns);
 
+protected:
 	UPROPERTY()
 	TArray<TObjectPtr<UDkInventoryGridSlot>> GridSlots;
 
@@ -87,22 +89,16 @@ protected:
 	TSubclassOf<UDkInventoryGridSlot> GridSlotClass;
 
 	UPROPERTY(EditAnywhere, Category = "Inventory")
-	int32 Rows = 8;
+	int32 Rows = 0;
 
 	UPROPERTY(EditAnywhere, Category = "Inventory")
-	int32 Columns = 8;
+	int32 Columns = 0;
 
 	UPROPERTY(EditAnywhere, Category = "Inventory")
 	float TileSize = 50.f;
 
 	UPROPERTY(EditAnywhere, Category = "Inventory")
 	float SlotDistance = 8.f;
-
-public:
-	TArray<FInventoryItemBriefInfo> GetGridSlotsBriefInfo() const;
-	int32 GetGridRow() const { return Rows; }
-	int32 GetGridColumn() const { return Columns; }
-	int32 GetGridSize() const { return Rows * Columns; }
 	/********/
 
 	/* 拖拽Item */

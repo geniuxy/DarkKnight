@@ -17,11 +17,10 @@ FReply UDkInventoryGridSlot::NativeOnMouseButtonDown(const FGeometry& InGeometry
 
 	if (ItemDescriptionMenu.IsValid())
 	{
-		UDkInventorySubsystem* InventorySubsystem = UDkInventorySubsystem::Get();
-		checkf(InventorySubsystem, TEXT("InventorySubsystem为空！"));
-		UDkInventoryComponent* InventoryComponent = InventorySubsystem->GetCachedInventoryComponent();
-		checkf(InventoryComponent, TEXT("InventoryComponent未在InventorySubsystem中注册！"));
-		InventoryComponent->OnItemDescriptionMenuRemoved.Broadcast();
+		if (UDkInventoryComponent* InventoryComponent = UDkInventorySubsystem::Get()->GetCachedInventoryComponent())
+		{
+			InventoryComponent->OnItemDescriptionMenuRemoved.Broadcast();
+		}
 		ItemDescriptionMenu = nullptr;
 	}
 

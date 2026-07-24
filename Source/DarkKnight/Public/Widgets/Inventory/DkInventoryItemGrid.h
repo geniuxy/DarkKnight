@@ -81,7 +81,7 @@ protected:
 	/**********************************************************************/
 public:
 	void PopulateGrid(EInventoryItemCategory InCategory);
-	
+
 	/* 更新GridSlot背景 */
 protected:
 	virtual void UpdateGridSlots(UDkInventoryItem* NewItem, const int32 Index, int32 StackAmount, bool bStackable);
@@ -214,4 +214,5 @@ protected:
 
 public:
 	FORCEINLINE EInventoryItemCategory GetItemCategory() const { return ItemCategory; }
+	void SetItemCategory(EInventoryItemCategory InCategory) { ItemCategory = InCategory; }
 };

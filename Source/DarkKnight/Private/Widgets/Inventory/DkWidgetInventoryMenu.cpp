@@ -66,6 +66,7 @@ void UDkWidgetInventoryMenu::CategoryButtonPressed(UObject* SelectedUObject)
 
 		if (InventoryGrid)
 		{
+			InventoryGrid->SetItemCategory(CategoryData->Info.Category);
 			InventoryGrid->ConstructGrid(CategoryData->Info.Rows, CategoryData->Info.Columns);
 			InventoryGrid->PopulateGrid(CategoryData->Info.Category);
 		}

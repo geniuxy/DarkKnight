@@ -3,6 +3,7 @@
 
 #include "Widgets/Inventory/DkInventoryItemGrid.h"
 
+#include "DarkKnightDebugHelper.h"
 #include "DkGameplayTags.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Components/InventoryComps/DkInventoryComponent.h"
@@ -150,6 +151,7 @@ void UDkInventoryItemGrid::PopulateGrid(EInventoryItemCategory InCategory)
 		GridSlot->SetUpperLeftIndex(Index);
 		GridSlot->SetOccupiedBrush();
 		GridSlot->SetIsAvailable(false);
+		GridSlot->SetStackCount(ItemBriefInfo.StackCount);
 	}
 }
 

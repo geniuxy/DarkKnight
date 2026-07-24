@@ -7,6 +7,7 @@
 #include "DkInventoryGridSlot.h"
 #include "DkTypes/DkEnums.h"
 #include "DkTypes/DkStructs.h"
+#include "Inventory/DkInventoryCategoryItems.h"
 #include "Inventory/DkInventoryItem.h"
 #include "Inventory/DkInventorySlotAvailabilty.h"
 #include "DkInventoryItemGrid.generated.h"
@@ -36,6 +37,8 @@ public:
 	FDkInventorySlotAvailabilityResult HasRoomForItem(const UDkItemComponent* ItemComponent);
 	FDkInventorySlotAvailabilityResult HasRoomForItem(const UDkInventoryItem* Item);
 
+	void SetInventoryComp(UDkInventoryComponent* InInventoryComp);
+
 protected:
 	//~Begin UUserWidget Function
 	virtual void NativeOnInitialized() override;
@@ -49,7 +52,7 @@ protected:
 
 	TWeakObjectPtr<UDkInventoryComponent> InventoryComponent;
 
-	/* 添加/删除Item */
+	/* 添加/删除Item(部分方法弃用) */
 	UFUNCTION()
 	void AddItem(UDkInventoryItem* Item);
 
@@ -73,7 +76,14 @@ protected:
 	virtual void PutDownOnIndex(const int32 Index);
 	/********/
 
+	/**********************************************************************/
+	/*                             显示物品信息                             */
+	/**********************************************************************/
+public:
+	void PopulateGrid(EInventoryItemCategory InCategory);
+	
 	/* 更新GridSlot背景 */
+protected:
 	virtual void UpdateGridSlots(UDkInventoryItem* NewItem, const int32 Index, int32 StackAmount, bool bStackable);
 	/********/
 
@@ -88,10 +98,7 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Inventory")
 	TSubclassOf<UDkInventoryGridSlot> GridSlotClass;
 
-	UPROPERTY(EditAnywhere, Category = "Inventory")
 	int32 Rows = 0;
-
-	UPROPERTY(EditAnywhere, Category = "Inventory")
 	int32 Columns = 0;
 
 	UPROPERTY(EditAnywhere, Category = "Inventory")

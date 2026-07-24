@@ -28,6 +28,19 @@ FDkInventorySlotAvailabilityResult UDkInventoryItemGrid::HasRoomForItem(const UD
 	return HasRoomForItem(Item->GetItemManifest());
 }
 
+void UDkInventoryItemGrid::SetInventoryComp(UDkInventoryComponent* InInventoryComp)
+{
+	InventoryComponent = InInventoryComp;
+	// InventoryComponent->OnItemAdded.AddDynamic(this, &ThisClass::AddItem);
+	// InventoryComponent->OnStackChange.AddDynamic(this, &ThisClass::HandleStackChanged);
+	// 绑定DraggedItem创建相关的回调
+	InventoryComponent->OnDraggedItemCreated.AddUniqueDynamic(this, &ThisClass::HandleDraggedItemCreated);
+	InventoryComponent->OnDraggedItemRemoved.AddUniqueDynamic(this, &ThisClass::HandleDraggedItemRemoved);
+	InventoryComponent->OnExitGameMenuRecoverGridItem.AddUniqueDynamic(
+		this, &ThisClass::HandleDraggedItemRecovered
+	);
+}
+
 FDkInventorySlotAvailabilityResult UDkInventoryItemGrid::HasRoomForItem(const FInventoryItemManifest& Manifest)
 {
 	FDkInventorySlotAvailabilityResult Result;
@@ -106,6 +119,40 @@ void UDkInventoryItemGrid::PutDownOnIndex(const int32 Index)
 	ClearDraggedItem();
 }
 
+void UDkInventoryItemGrid::PopulateGrid(EInventoryItemCategory InCategory)
+{
+	if (!InventoryComponent.IsValid()) return;
+
+	const TArray<FInventoryItemBriefInfo>* ItemBriefInfos = InventoryComponent->GetItemBriefInfoByCategory(InCategory);
+	if (!ItemBriefInfos) return;
+
+	for (const FInventoryItemBriefInfo& ItemBriefInfo : *ItemBriefInfos)
+	{
+		if (!ItemBriefInfo.IsValid() || ItemBriefInfo.IsEmpty()) continue;
+		int Index = ItemBriefInfo.Index;
+		if (!GridSlots.IsValidIndex(Index)) continue;
+		UDkInventoryGridSlot* GridSlot = GridSlots[Index];
+
+		const FInventoryItemFragment_Image* ImageFragment = GetFragment<FInventoryItemFragment_Image>(
+			ItemBriefInfo.InventoryItem, DkGameplayTags::Dk_Inventory_Fragment_Icon
+		);
+		if (!ImageFragment) continue;
+
+		FSlateBrush Brush;
+		Brush.SetResourceObject(ImageFragment->GetIcon());
+		Brush.DrawAs = ESlateBrushDrawType::Image;
+		Brush.ImageSize = FVector2D(100.f);
+		GridSlot->SetItemIcon(Brush);
+		
+		GridSlot->SetItemStackNum(ItemBriefInfo.StackCount);
+
+		GridSlot->SetInventoryItem(ItemBriefInfo.InventoryItem);
+		GridSlot->SetUpperLeftIndex(Index);
+		GridSlot->SetOccupiedBrush();
+		GridSlot->SetIsAvailable(false);
+	}
+}
+
 void UDkInventoryItemGrid::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
@@ -114,16 +161,6 @@ void UDkInventoryItemGrid::NativeOnInitialized()
 	{
 		UniformGridPanel->SetSlotPadding(FMargin(SlotDistance));
 	}
-
-	InventoryComponent = UDkInventoryFunctionLibrary::GetInventoryComponent(GetOwningPlayer());
-	InventoryComponent->OnItemAdded.AddDynamic(this, &ThisClass::AddItem);
-	InventoryComponent->OnStackChange.AddDynamic(this, &ThisClass::HandleStackChanged);
-	// 绑定DraggedItem创建相关的回调
-	InventoryComponent->OnDraggedItemCreated.AddUniqueDynamic(this, &ThisClass::HandleDraggedItemCreated);
-	InventoryComponent->OnDraggedItemRemoved.AddUniqueDynamic(this, &ThisClass::HandleDraggedItemRemoved);
-	InventoryComponent->OnExitGameMenuRecoverGridItem.AddUniqueDynamic(
-		this, &ThisClass::HandleDraggedItemRecovered
-	);
 }
 
 void UDkInventoryItemGrid::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -154,7 +191,7 @@ void UDkInventoryItemGrid::AddItem(UDkInventoryItem* Item)
 void UDkInventoryItemGrid::HandleStackChanged(const FDkInventorySlotAvailabilityResult& Result)
 {
 	if (!Result.Item.IsValid() || !MatchesCategory(Result.Item.Get())) return;
-	
+
 	AddStacks(Result);
 }
 

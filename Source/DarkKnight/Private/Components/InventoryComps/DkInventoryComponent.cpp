@@ -92,9 +92,8 @@ void UDkInventoryComponent::TryAddItem(UDkItemComponent* ItemComponent)
 		// 为背包中已存在的物品添加堆叠数量。我们只想更新堆叠数量，
 		// 而不是创建这种类型的新物品。
 		OnAddItemNotice.Broadcast(ItemComponent->GetItemName(), AddItemResult.TotalRoomToFill);
-		UpdateInventoryCategoryItemsArray(AddItemResult);
 		// OnStackChange.Broadcast(AddItemResult); // OnStackChange在Server和Client都会执行，光在Server执行，无法同步到Client
-		Server_AddStacksToItem(ItemComponent, AddItemResult.TotalRoomToFill, AddItemResult.Remainder);
+		Server_AddStacksToItem(ItemComponent, AddItemResult);
 	}
 	else
 	{
@@ -125,11 +124,10 @@ void UDkInventoryComponent::TryAddItem(UDkInventoryItem* Item)
 	if (AddItemResult.Item.IsValid() && AddItemResult.bStackable)
 	{
 		OnAddItemNotice.Broadcast(Item->GetItemName(), AddItemResult.TotalRoomToFill);
-		UpdateInventoryCategoryItemsArray(AddItemResult);
 		// 为背包中已存在的物品添加堆叠数量。我们只想更新堆叠数量，
 		// 而不是创建这种类型的新物品。
 		// OnStackChange.Broadcast(AddItemResult); // OnStackChange在Server和Client都会执行，光在Server执行，无法同步到Client
-		Server_AddStacksToItemWithItem(Item, AddItemResult.TotalRoomToFill, AddItemResult.Remainder);
+		Server_AddStacksToItemWithItem(Item, AddItemResult);
 	}
 	else
 	{
@@ -197,17 +195,26 @@ void UDkInventoryComponent::Server_AddNewItemWithItem_Implementation(
 }
 
 void UDkInventoryComponent::Server_AddStacksToItem_Implementation(
-	UDkItemComponent* ItemComponent, int32 StackCount, int32 Remainder)
+	UDkItemComponent* ItemComponent, FDkInventorySlotAvailabilityResult Result)
 {
 	const FGameplayTag& ItemTag =
 		IsValid(ItemComponent) ? ItemComponent->GetItemManifest().GetItemTag() : FGameplayTag::EmptyTag;
 	UDkInventoryItem* Item = InventoryList.FindFirstItemByTag(ItemTag);
 	if (!IsValid(Item)) return;
 
-	Item->SetTotalStackCount(Item->GetTotalStackCount() + StackCount);
+	Item->SetTotalStackCount(Item->GetTotalStackCount() + Result.TotalRoomToFill);
+
+	if (OwningCharacter.IsValid())
+	{
+		if (OwningCharacter->GetController()->GetNetMode() == NM_ListenServer ||
+			OwningCharacter->GetController()->GetNetMode() == NM_Standalone)
+		{
+			UpdateInventoryCategoryItemsArray(Result);
+		}
+	}
 
 	// 如果Remainder零，则 执行PickedUp操作（销毁 Owner 道具Actor等）
-	if (Remainder == 0)
+	if (Result.Remainder == 0)
 	{
 		ItemComponent->OnPickedUp();
 	}
@@ -215,20 +222,29 @@ void UDkInventoryComponent::Server_AddStacksToItem_Implementation(
 	else if (FItemFragment_Stackable* StackableFragment =
 		ItemComponent->GetItemManifestMutable().GetFragmentOfTypeMutable<FItemFragment_Stackable>())
 	{
-		StackableFragment->SetStackCount(Remainder);
+		StackableFragment->SetStackCount(Result.Remainder);
 	}
 }
 
 void UDkInventoryComponent::Server_AddStacksToItemWithItem_Implementation(
-	UDkInventoryItem* InItem, int32 StackCount, int32 Remainder)
+	UDkInventoryItem* InItem, FDkInventorySlotAvailabilityResult Result)
 {
 	const FGameplayTag& ItemTag = IsValid(InItem) ? InItem->GetItemManifest().GetItemTag() : FGameplayTag::EmptyTag;
 	UDkInventoryItem* Item = InventoryList.FindFirstItemByTag(ItemTag);
 	if (!IsValid(Item)) return;
 
-	Item->SetTotalStackCount(Item->GetTotalStackCount() + StackCount);
+	Item->SetTotalStackCount(Item->GetTotalStackCount() + Result.TotalRoomToFill);
 
-	if (Remainder != 0)
+	if (OwningCharacter.IsValid())
+	{
+		if (OwningCharacter->GetController()->GetNetMode() == NM_ListenServer ||
+			OwningCharacter->GetController()->GetNetMode() == NM_Standalone)
+		{
+			UpdateInventoryCategoryItemsArray(Result);
+		}
+	}
+
+	if (Result.Remainder != 0)
 	{
 		Debug::Print(TEXT("进入背包时，剩余数量不为0，请检查！"));
 		// TODO: 这里应该是没写完的，后续可以补 
@@ -369,6 +385,12 @@ void UDkInventoryComponent::UpdateInventoryCategoryItemsArray(const FDkInventory
 	Debug::Print("123");
 	// TODO: 这边加一个OnInventoryItemBriefMapUpdated, 并把OnStackChange删掉 （用来实时更新背包的内容）
 	// TODO: 这个更新InventoryItemBriefMap的也可以改成Server端执行
+}
+
+const TArray<FInventoryItemBriefInfo>* UDkInventoryComponent::GetItemBriefInfoByCategory(
+	EInventoryItemCategory InCategory) const
+{
+	return GetInventoryCategoryItemsArray().FindItems(InCategory);
 }
 
 FDkInventorySlotAvailabilityResult UDkInventoryComponent::HasRoomForItem(const UDkItemComponent* ItemComponent)

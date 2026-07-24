@@ -72,10 +72,10 @@ public:
 	);
 
 	UFUNCTION(Server, Reliable)
-	void Server_AddStacksToItem(UDkItemComponent* ItemComponent, int32 StackCount, int32 Remainder);
+	void Server_AddStacksToItem(UDkItemComponent* ItemComponent, FDkInventorySlotAvailabilityResult Result);
 
 	UFUNCTION(Server, Reliable)
-	void Server_AddStacksToItemWithItem(UDkInventoryItem* InItem, int32 StackCount, int32 Remainder);
+	void Server_AddStacksToItemWithItem(UDkInventoryItem* InItem, FDkInventorySlotAvailabilityResult Result);
 
 	void AddRepSubObj(UObject* SubObj);
 
@@ -164,6 +164,8 @@ public:
 	{
 		return InventoryCategoryItemsArray.GetMutable<FInventoryCategoryItemsArray>();
 	}
+
+	const TArray<FInventoryItemBriefInfo>* GetItemBriefInfoByCategory(EInventoryItemCategory InCategory) const;
 
 protected:
 	UPROPERTY(VisibleAnywhere, meta=(BaseStruct="/Script/DarkKnight.InventoryCategoryItemsArray"), Replicated)

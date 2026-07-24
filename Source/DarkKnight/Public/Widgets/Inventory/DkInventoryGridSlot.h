@@ -42,8 +42,8 @@ public:
 	virtual void SetDisabledBrush();
 	virtual void SetGrayedOutBrush();
 	void SetDefaultItemIcon() const;
-	void SetItemIcon(const FSlateBrush& InBrush) const;
 
+	void SetItemIcon(const FSlateBrush& InBrush) const;
 	void SetItemStackNum(int32 InStack);
 
 	UDkInventoryItem* GetInventoryItem() const;
@@ -103,10 +103,10 @@ protected:
 	TWeakObjectPtr<UDkInventoryItem> InventoryItem;
 
 	UPROPERTY(EditAnywhere, Category="Inventory")
-	int32 TileIndex = INDEX_NONE;
+	int32 TileIndex = INDEX_NONE; // 该格索引
 	
 	int32 StackCount = 0;
-	int32 UpperLeftIndex = INDEX_NONE;
+	int32 UpperLeftIndex = INDEX_NONE; // 该格所代表物品的实际左上角索引
 	bool bAvailable = true;
 
 public:

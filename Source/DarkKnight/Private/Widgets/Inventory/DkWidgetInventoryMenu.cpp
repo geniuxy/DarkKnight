@@ -10,7 +10,13 @@
 
 void UDkWidgetInventoryMenu::SetInventoryComponent(UDkInventoryComponent* InInventoryComp)
 {
+	if (!IsValid(InInventoryComp)) return;
+
 	InventoryComponent = InInventoryComp;
+	if (InventoryGrid)
+	{
+		InventoryGrid->SetInventoryComp(InInventoryComp);
+	}
 
 	InitInventoryCategoryButtons();
 }
@@ -61,6 +67,7 @@ void UDkWidgetInventoryMenu::CategoryButtonPressed(UObject* SelectedUObject)
 		if (InventoryGrid)
 		{
 			InventoryGrid->ConstructGrid(CategoryData->Info.Rows, CategoryData->Info.Columns);
+			InventoryGrid->PopulateGrid(CategoryData->Info.Category);
 		}
 	}
 }

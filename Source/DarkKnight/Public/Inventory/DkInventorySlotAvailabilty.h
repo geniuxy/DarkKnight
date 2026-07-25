@@ -20,8 +20,11 @@ struct FDkInventorySlotAvailability
 		bItemAtIndex = bHasItem;
 	}
 
+	UPROPERTY()
 	int32 Index = INDEX_NONE;
+	UPROPERTY()
 	int32 AmountToFill = 0;
+	UPROPERTY()
 	bool bItemAtIndex = false;
 };
 
@@ -34,9 +37,14 @@ struct FDkInventorySlotAvailabilityResult
 	{
 	}
 
-	TWeakObjectPtr<UDkInventoryItem> Item;
+	UPROPERTY()
+	UDkInventoryItem* Item = nullptr;
+	UPROPERTY()
 	int32 TotalRoomToFill = 0;
+	UPROPERTY()
 	int32 Remainder = 0;
+	UPROPERTY()
 	bool bStackable = false;
+	UPROPERTY()
 	TArray<FDkInventorySlotAvailability> SlotAvailabilities;
 };

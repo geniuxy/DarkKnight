@@ -3,13 +3,11 @@
 
 #include "Widgets/Inventory/DkInventoryItemGrid.h"
 
-#include "DarkKnightDebugHelper.h"
 #include "DkGameplayTags.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Components/InventoryComps/DkInventoryComponent.h"
 #include "Components/DkItemComponent.h"
 #include "Components/UniformGridPanel.h"
-#include "Components/InventoryComps/DkPlayerInventoryComp.h"
 #include "FunctionLibrarys/DkCommonFunctionLibrary.h"
 #include "FunctionLibrarys/DkInventoryFunctionLibrary.h"
 #include "FunctionLibrarys/DkUIFunctionLibrary.h"
@@ -245,7 +243,7 @@ void UDkInventoryItemGrid::AddItem(UDkInventoryItem* Item)
 
 void UDkInventoryItemGrid::HandleStackChanged(const FDkInventorySlotAvailabilityResult& Result)
 {
-	if (!Result.Item.IsValid() || !MatchesCategory(Result.Item.Get())) return;
+	if (!IsValid(Result.Item) || !MatchesCategory(Result.Item)) return;
 
 	AddStacks(Result);
 }
@@ -262,8 +260,8 @@ void UDkInventoryItemGrid::AddStacks(const FDkInventorySlotAvailabilityResult& R
 		}
 		else
 		{
-			AddItemToIndex(Result.Item.Get(), Availability.Index, Availability.AmountToFill, Result.bStackable);
-			UpdateGridSlots(Result.Item.Get(), Availability.Index, Availability.AmountToFill, Result.bStackable);
+			AddItemToIndex(Result.Item, Availability.Index, Availability.AmountToFill, Result.bStackable);
+			UpdateGridSlots(Result.Item, Availability.Index, Availability.AmountToFill, Result.bStackable);
 		}
 	}
 }

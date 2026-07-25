@@ -36,7 +36,7 @@ void UDKInventoryItemSpatialGrid::NativeTick(const FGeometry& MyGeometry, float 
 
 void UDKInventoryItemSpatialGrid::AddStacks(const FDkInventorySlotAvailabilityResult& Result)
 {
-	if (!Result.Item.IsValid() || !MatchesCategory(Result.Item.Get())) return;
+	if (!IsValid(Result.Item) || !MatchesCategory(Result.Item)) return;
 
 	for (const auto& Availability : Result.SlotAvailabilities)
 	{
@@ -49,8 +49,8 @@ void UDKInventoryItemSpatialGrid::AddStacks(const FDkInventorySlotAvailabilityRe
 		}
 		else
 		{
-			AddItemToIndex(Result.Item.Get(), Availability.Index, Availability.AmountToFill, Result.bStackable);
-			UpdateGridSlots(Result.Item.Get(), Availability.Index, Availability.AmountToFill, Result.bStackable);
+			AddItemToIndex(Result.Item, Availability.Index, Availability.AmountToFill, Result.bStackable);
+			UpdateGridSlots(Result.Item, Availability.Index, Availability.AmountToFill, Result.bStackable);
 		}
 	}
 }

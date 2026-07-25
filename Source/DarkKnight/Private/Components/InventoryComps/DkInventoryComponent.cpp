@@ -44,6 +44,7 @@ void UDkInventoryComponent::InitializeInventoryComponent()
 
 void UDkInventoryComponent::TryAddItem(UDkItemComponent* ItemComponent, bool bNeedNotice)
 {
+	// TODO:为什么计算的工作放到客户端做..
 	FDkInventorySlotAvailabilityResult AddItemResult = HasRoomForItem(ItemComponent);
 
 	UDkInventoryItem* FoundItem = InventoryList.FindFirstItemByTag(ItemComponent->GetItemManifest().GetItemTag());
@@ -56,7 +57,7 @@ void UDkInventoryComponent::TryAddItem(UDkItemComponent* ItemComponent, bool bNe
 	}
 
 	// 将Item添加到Inventory中
-	if (AddItemResult.Item.IsValid() && AddItemResult.bStackable)
+	if (IsValid(AddItemResult.Item) && AddItemResult.bStackable)
 	{
 		// 为背包中已存在的物品添加堆叠数量。我们只想更新堆叠数量，
 		// 而不是创建这种类型的新物品。
@@ -96,7 +97,7 @@ void UDkInventoryComponent::TryAddItem(UDkInventoryItem* Item, bool bNeedNotice)
 	}
 
 	// 将Item添加到Inventory中
-	if (AddItemResult.Item.IsValid() && AddItemResult.bStackable)
+	if (IsValid(AddItemResult.Item) && AddItemResult.bStackable)
 	{
 		if (bNeedNotice)
 		{
@@ -130,14 +131,7 @@ void UDkInventoryComponent::Server_AddNewItem_Implementation(
 	NewItem->SetTotalStackCount(StackCount);
 	Result.Item = NewItem;
 
-	if (OwningCharacter.IsValid())
-	{
-		if (OwningCharacter->GetController()->GetNetMode() == NM_ListenServer ||
-			OwningCharacter->GetController()->GetNetMode() == NM_Standalone)
-		{
-			UpdateInventorySlotArray(Result);
-		}
-	}
+	UpdateInventorySlotArray(Result);
 
 	// 如果Remainder零，则 执行PickedUp操作（销毁 Owner 道具Actor等）
 	if (Result.Remainder == 0)
@@ -160,14 +154,7 @@ void UDkInventoryComponent::Server_AddNewItemWithItem_Implementation(
 	NewItem->SetTotalStackCount(StackCount);
 	Result.Item = NewItem;
 
-	if (OwningCharacter.IsValid())
-	{
-		if (OwningCharacter->GetController()->GetNetMode() == NM_ListenServer ||
-			OwningCharacter->GetController()->GetNetMode() == NM_Standalone)
-		{
-			UpdateInventorySlotArray(Result);
-		}
-	}
+	UpdateInventorySlotArray(Result);
 
 	if (Result.Remainder != 0)
 	{
@@ -185,14 +172,7 @@ void UDkInventoryComponent::Server_AddStacksToItem_Implementation(
 
 	Item->SetTotalStackCount(Item->GetTotalStackCount() + Result.TotalRoomToFill);
 
-	if (OwningCharacter.IsValid())
-	{
-		if (OwningCharacter->GetController()->GetNetMode() == NM_ListenServer ||
-			OwningCharacter->GetController()->GetNetMode() == NM_Standalone)
-		{
-			UpdateInventorySlotArray(Result);
-		}
-	}
+	UpdateInventorySlotArray(Result);
 
 	// 如果Remainder零，则 执行PickedUp操作（销毁 Owner 道具Actor等）
 	if (Result.Remainder == 0)
@@ -216,14 +196,7 @@ void UDkInventoryComponent::Server_AddStacksToItemWithItem_Implementation(
 
 	Item->SetTotalStackCount(Item->GetTotalStackCount() + Result.TotalRoomToFill);
 
-	if (OwningCharacter.IsValid())
-	{
-		if (OwningCharacter->GetController()->GetNetMode() == NM_ListenServer ||
-			OwningCharacter->GetController()->GetNetMode() == NM_Standalone)
-		{
-			UpdateInventorySlotArray(Result);
-		}
-	}
+	UpdateInventorySlotArray(Result);
 
 	if (Result.Remainder != 0)
 	{
@@ -372,7 +345,7 @@ void UDkInventoryComponent::InitInventorySlotArray()
 
 void UDkInventoryComponent::UpdateInventorySlotArray(const FDkInventorySlotAvailabilityResult& Result)
 {
-	if (!Result.Item.IsValid()) return;
+	if (!IsValid(Result.Item)) return;
 	EInventoryItemCategory ItemCategory = Result.Item->GetItemManifest().GetItemCategory();
 	if (!HasCategory(ItemCategory)) return;
 
@@ -381,7 +354,7 @@ void UDkInventoryComponent::UpdateInventorySlotArray(const FDkInventorySlotAvail
 		FDkInventorySlotEntry* SlotEntry = InventorySlotArray.FindBySlotIndex(ItemCategory, Availability.Index);
 		if (!Availability.bItemAtIndex)
 		{
-			SlotEntry->BriefInfo.InventoryItem = Result.Item.Get();
+			SlotEntry->BriefInfo.InventoryItem = Result.Item;
 		}
 		SlotEntry->BriefInfo.StackCount += Availability.AmountToFill;
 		InventorySlotArray.MarkItemDirty(*SlotEntry);
@@ -406,8 +379,8 @@ void UDkInventoryComponent::Server_UpdateInventorySlotArray_Implementation(
 	{
 		SlotEntry->BriefInfo.InventoryItem = ItemBriefInfos[SlotEntry->BriefInfo.Index].InventoryItem;
 		SlotEntry->BriefInfo.StackCount = ItemBriefInfos[SlotEntry->BriefInfo.Index].StackCount;
+		InventorySlotArray.MarkItemDirty(*SlotEntry);
 	}
-	InventorySlotArray.MarkArrayDirty();
 }
 
 bool UDkInventoryComponent::Server_UpdateInventorySlotArray_Validate(EInventoryItemCategory InCategory,

@@ -28,6 +28,11 @@ struct FInventoryItemBriefInfo // 背包物品简约信息
 
 	bool IsEmpty() const { return InventoryItem == nullptr; }
 	bool IsValid() const { return Index != INDEX_NONE; }
+	void Empty()
+	{
+		InventoryItem = nullptr;
+		StackCount = 0;
+	}
 };
 
 USTRUCT()
@@ -62,7 +67,8 @@ struct FInventoryCategoryItemsArray
 	void AddNewCategory(EInventoryItemCategory Category, int Size);
 	void AddItem(EInventoryItemCategory Category, const FInventoryItemBriefInfo& Item);
 	void RemoveItem(EInventoryItemCategory Category, const FInventoryItemBriefInfo& Item);
-	bool RemoveItemByIndex(EInventoryItemCategory Category, int32 Index, int32 RemoveCount = 1);
+	bool RemoveItemByIndex(
+		EInventoryItemCategory Category, int32 Index, UDkInventoryItem* InventoryItem, int32 RemoveCount = 1);
 	bool RemoveItemByInventoryItem(
 		EInventoryItemCategory Category, UDkInventoryItem* InventoryItem, int32 RemoveCount = 1
 	);

@@ -43,9 +43,10 @@ void UDkPlayerInventoryComp::RequestMoveItem(EInventoryItemCategory Category, in
 	Server_MoveItem(Category, FromSlot, ToSlot, StackCount);
 }
 
-void UDkPlayerInventoryComp::RequestSwapItems(EInventoryItemCategory Category, int32 SlotA, int32 SlotB)
+void UDkPlayerInventoryComp::RequestSwapItems(
+	EInventoryItemCategory Category, int32 SlotA, int32 SlotB, int32 StackCountFromA)
 {
-	Server_SwapItems(Category, SlotA, SlotB);
+	Server_SwapItems(Category, SlotA, SlotB, StackCountFromA);
 }
 
 void UDkPlayerInventoryComp::Server_MoveItem_Implementation(
@@ -79,12 +80,14 @@ bool UDkPlayerInventoryComp::Server_MoveItem_Validate(
 	return true;
 }
 
-void UDkPlayerInventoryComp::Server_SwapItems_Implementation(EInventoryItemCategory Category, int32 SlotA, int32 SlotB)
+void UDkPlayerInventoryComp::Server_SwapItems_Implementation(
+	EInventoryItemCategory Category, int32 SlotA, int32 SlotB, int32 StackCountFromA)
 {
-	ApplySwapItems(Category, SlotA, SlotB);
+	ApplySwapItems(Category, SlotA, SlotB, StackCountFromA);
 }
 
-bool UDkPlayerInventoryComp::Server_SwapItems_Validate(EInventoryItemCategory Category, int32 SlotA, int32 SlotB)
+bool UDkPlayerInventoryComp::Server_SwapItems_Validate(
+	EInventoryItemCategory Category, int32 SlotA, int32 SlotB, int32 StackCountFromA)
 {
 	return true;
 }
@@ -119,7 +122,7 @@ void UDkPlayerInventoryComp::ApplyMoveItem(
 	CommitCategoryItemsArray(CategoryItemsArray);
 }
 
-void UDkPlayerInventoryComp::ApplySwapItems(EInventoryItemCategory Category, int32 SlotA, int32 SlotB)
+void UDkPlayerInventoryComp::ApplySwapItems(EInventoryItemCategory Category, int32 SlotA, int32 SlotB, int32 StackCountFromA)
 {
 	FInventoryCategoryItemsArray CategoryItemsArray = GetInventoryCategoryItemsArray();
 
@@ -131,10 +134,23 @@ void UDkPlayerInventoryComp::ApplySwapItems(EInventoryItemCategory Category, int
 	FInventoryItemBriefInfo SlotBItemInfo = (*ItemBriefInfos)[SlotB];
 
 	// 执行移动
-	SlotBItemInfo.Index = SlotA;
-	(*ItemBriefInfos)[SlotA] = SlotBItemInfo;
-	SlotAItemInfo.Index = SlotB;
-	(*ItemBriefInfos)[SlotB] = SlotAItemInfo;
+	FInventoryItemBriefInfo NewSlotAItemInfo = FInventoryItemBriefInfo(SlotA);
+	if (SlotAItemInfo.StackCount > StackCountFromA)
+	{
+		NewSlotAItemInfo.InventoryItem = SlotAItemInfo.InventoryItem;
+		NewSlotAItemInfo.StackCount = SlotAItemInfo.StackCount - StackCountFromA;
+	}
+	else
+	{
+		NewSlotAItemInfo.InventoryItem = SlotBItemInfo.InventoryItem;
+		NewSlotAItemInfo.StackCount = SlotBItemInfo.StackCount;
+	}
+	(*ItemBriefInfos)[SlotA] = NewSlotAItemInfo;
+
+	FInventoryItemBriefInfo NewSlotBItemInfo = FInventoryItemBriefInfo(SlotB);
+	NewSlotBItemInfo.InventoryItem = SlotAItemInfo.InventoryItem;
+	NewSlotBItemInfo.StackCount = StackCountFromA;
+	(*ItemBriefInfos)[SlotB] = NewSlotBItemInfo;
 
 	// 提交变更（触发 Replication）
 	CommitCategoryItemsArray(CategoryItemsArray);

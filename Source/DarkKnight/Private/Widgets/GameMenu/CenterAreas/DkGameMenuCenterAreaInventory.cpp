@@ -84,6 +84,7 @@ void UDkGameMenuCenterAreaInventory::NativeOnDeactivated()
 		}
 		DraggedItem = nullptr;
 		InventoryComponent->OnDraggedItemRemoved.Broadcast();
+		InventoryComponent->OnItemDescriptionMenuRemoved.Broadcast();
 	}
 
 	WBP_InventoryMenu->ClearGridItems();

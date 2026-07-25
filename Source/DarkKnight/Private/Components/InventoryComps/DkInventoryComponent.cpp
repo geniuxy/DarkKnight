@@ -13,6 +13,7 @@
 #include "Inventory/DkInventoryItemFragment.h"
 #include "Inventory/DkInventorySlotAvailabilty.h"
 #include "Net/UnrealNetwork.h"
+#include "Widgets/Inventory/DkInventoryDraggedItem.h"
 
 UDkInventoryComponent::UDkInventoryComponent() : InventoryList(this)
 {
@@ -227,19 +228,29 @@ void UDkInventoryComponent::AddRepSubObj(UObject* SubObj)
 	}
 }
 
-void UDkInventoryComponent::ServerDropItem_Implementation(UDkInventoryItem* Item, int32 DroppedCount)
+void UDkInventoryComponent::ServerDropItem_Implementation(UDkInventoryDraggedItem* DroppedItem)
 {
-	const int32 NewStackCount = Item->GetTotalStackCount() - DroppedCount;
+	if (!DroppedItem || !DroppedItem->GetInventoryItem()) return;
+
+	const int32 NewStackCount = DroppedItem->GetInventoryItem()->GetTotalStackCount() - DroppedItem->GetStackCount();
 	if (NewStackCount <= 0)
 	{
-		InventoryList.RemoveEntry(Item);
+		InventoryList.RemoveEntry(DroppedItem->GetInventoryItem());
 	}
 	else
 	{
-		Item->SetTotalStackCount(NewStackCount);
+		DroppedItem->GetInventoryItem()->SetTotalStackCount(NewStackCount);
 	}
 
-	SpawnDroppedItem(Item, DroppedCount);
+	FInventoryCategoryItemsArray& CategoryItemsArrayMutable = GetInventoryCategoryItemsArrayMutable();
+	CategoryItemsArrayMutable.RemoveItemByIndex(
+		DroppedItem->GetItemCategory(),
+		DroppedItem->GetPreviousGridIndex(),
+		DroppedItem->GetInventoryItem(),
+		DroppedItem->GetStackCount()
+	);
+
+	SpawnDroppedItem(DroppedItem->GetInventoryItem(), DroppedItem->GetStackCount());
 }
 
 void UDkInventoryComponent::SpawnDroppedItem(UDkInventoryItem* Item, int32 DroppedCount)
@@ -263,7 +274,7 @@ void UDkInventoryComponent::SpawnDroppedItem(UDkInventoryItem* Item, int32 Dropp
 	ItemManifest.SpawnPickUpActor(this, SpawnLocation, SpawnRotation);
 }
 
-void UDkInventoryComponent::ServerConsumeItem_Implementation(UDkInventoryItem* Item)
+void UDkInventoryComponent::ServerConsumeItem_Implementation(UDkInventoryItem* Item, int Index)
 {
 	if (!OwnerASC.IsValid()) return;
 
@@ -276,6 +287,9 @@ void UDkInventoryComponent::ServerConsumeItem_Implementation(UDkInventoryItem* I
 	{
 		Item->SetTotalStackCount(NewStackCount);
 	}
+
+	FInventoryCategoryItemsArray& CategoryItemsArrayMutable = GetInventoryCategoryItemsArrayMutable();
+	CategoryItemsArrayMutable.RemoveItemByIndex(Item->GetItemCategory(), Index, Item, 1);
 
 	if (FInventoryItemFragment_Consumable* ConsumableFragment =
 		Item->GetItemManifestMutable().GetFragmentOfTypeMutable<FInventoryItemFragment_Consumable>())
@@ -357,7 +371,6 @@ void UDkInventoryComponent::UpdateInventoryCategoryItemsArray(const FDkInventory
 
 void UDkInventoryComponent::OnRep_InventoryCategoryItemsArray()
 {
-	
 }
 
 const TArray<FInventoryItemBriefInfo>* UDkInventoryComponent::GetItemBriefInfoByCategory(

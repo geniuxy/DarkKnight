@@ -8,6 +8,7 @@
 #include "CommonTextBlock.h"
 #include "Components/InventoryComps/DkInventoryComponent.h"
 #include "Components/SizeBox.h"
+#include "Components/InventoryComps/DkPlayerInventoryComp.h"
 #include "Subsytems/EngineSubsystems/DkInventorySubsystem.h"
 #include "Widgets/Inventory/DkInventoryItemDescriptionMenu.h"
 
@@ -17,7 +18,7 @@ FReply UDkInventoryGridSlot::NativeOnMouseButtonDown(const FGeometry& InGeometry
 
 	if (ItemDescriptionMenu.IsValid())
 	{
-		if (UDkInventoryComponent* InventoryComponent = UDkInventorySubsystem::Get()->GetCachedInventoryComponent())
+		if (UDkPlayerInventoryComp* InventoryComponent = UDkInventorySubsystem::Get()->GetCachedInventoryComponent())
 		{
 			InventoryComponent->OnItemDescriptionMenuRemoved.Broadcast();
 		}
@@ -42,11 +43,10 @@ void UDkInventoryGridSlot::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
 
 	if (ItemDescriptionMenu.IsValid())
 	{
-		UDkInventorySubsystem* InventorySubsystem = UDkInventorySubsystem::Get();
-		checkf(InventorySubsystem, TEXT("InventorySubsystem为空！"));
-		UDkInventoryComponent* InventoryComponent = InventorySubsystem->GetCachedInventoryComponent();
-		checkf(InventoryComponent, TEXT("InventoryComponent未在InventorySubsystem中注册！"));
-		InventoryComponent->OnItemDescriptionMenuRemoved.Broadcast();
+		if (UDkPlayerInventoryComp* InventoryComponent = UDkInventorySubsystem::Get()->GetCachedInventoryComponent())
+		{
+			InventoryComponent->OnItemDescriptionMenuRemoved.Broadcast();
+		}
 		ItemDescriptionMenu = nullptr;
 	}
 }

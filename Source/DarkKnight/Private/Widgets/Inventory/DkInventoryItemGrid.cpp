@@ -310,12 +310,12 @@ void UDkInventoryItemGrid::SwapWithDraggedItem(UDkInventoryItem* ClickedInventor
 	const int32 TempStackCount = DraggedItem->GetStackCount();
 	const bool bTempIsStackable = DraggedItem->GetIsStackable();
 
+	RequestSwapItem();
+
 	AssignDraggedItem(ClickedInventoryItem, GridIndex, DraggedItem->GetPreviousGridIndex());
 	RemoveItemFromGrid(ClickedInventoryItem, GridIndex);
 	AddItemToIndex(TempInventoryItem, ItemDropIndex, TempStackCount, bTempIsStackable);
 	UpdateGridSlots(TempInventoryItem, ItemDropIndex, TempStackCount, bTempIsStackable);
-
-	RequestSwapItem();
 }
 
 void UDkInventoryItemGrid::ConsumeDraggedItemStack(int32 ClickedStackCount, int32 DraggedStackCount, int32 GridIndex)
@@ -505,7 +505,7 @@ void UDkInventoryItemGrid::RequestSwapItem()
 		if (UDkPlayerInventoryComp* PlayerInventoryComp = Cast<UDkPlayerInventoryComp>(InventoryComponent.Get()))
 		{
 			PlayerInventoryComp->RequestSwapItems(
-				ItemCategory, DraggedItem->GetPreviousGridIndex(), ItemDropIndex
+				ItemCategory, DraggedItem->GetPreviousGridIndex(), ItemDropIndex, DraggedItem->GetStackCount()
 			);
 		}
 	}
@@ -790,7 +790,7 @@ void UDkInventoryItemGrid::DropItem()
 	if (!IsValid(DraggedItem)) return;
 	if (!IsValid(DraggedItem->GetInventoryItem())) return;
 
-	InventoryComponent->ServerDropItem(DraggedItem->GetInventoryItem(), DraggedItem->GetStackCount());
+	InventoryComponent->ServerDropItem(DraggedItem);
 
 	ClearDraggedItem();
 }
@@ -812,7 +812,7 @@ void UDkInventoryItemGrid::OnPopUpMenuConsume(int32 Index)
 	UpperLeftGridSlot->SetStackCount(NewStackCount);
 	UpperLeftGridSlot->SetItemStackNum(NewStackCount);
 
-	InventoryComponent->ServerConsumeItem(RightClickedItem);
+	InventoryComponent->ServerConsumeItem(RightClickedItem, Index);
 
 	if (NewStackCount <= 0)
 	{

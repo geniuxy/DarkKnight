@@ -97,3 +97,11 @@ FText UDkInventoryFunctionLibrary::GetItemName(int32 InItemId)
 
 	return ItemInfoTable[InItemId].ItemName;
 }
+
+EInventoryItemCategory UDkInventoryFunctionLibrary::GetItemCategory(int32 InItemId)
+{
+	TMap<int, FDkItemInfo> ItemInfoTable = UDkInventorySubsystem::Get()->GetCachedItemTable();
+	if (!ItemInfoTable.Contains(InItemId)) return EInventoryItemCategory::None;
+
+	return ItemInfoTable[InItemId].ItemCategory;
+}

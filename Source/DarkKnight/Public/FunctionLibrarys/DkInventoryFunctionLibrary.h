@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
+#include "DkTypes/DkEnums.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "DkInventoryFunctionLibrary.generated.h"
 
@@ -46,6 +47,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="Inventory Function Library")
 	static FText GetItemName(int32 InItemId);
+	
+	UFUNCTION(BlueprintCallable, Category="Inventory Function Library")
+	static EInventoryItemCategory GetItemCategory(int32 InItemId);
 };
 
 template <typename T, typename FuncT>

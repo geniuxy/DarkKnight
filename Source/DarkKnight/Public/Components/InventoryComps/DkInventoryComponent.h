@@ -84,7 +84,7 @@ public:
 
 	/* 道具物品的丢弃 */
 	UFUNCTION(Server, Reliable)
-	void ServerDropItem(UDkInventoryItem* Item, int32 DroppedCount);
+	void ServerDropItem(UDkInventoryDraggedItem* DroppedItem);
 
 	void SpawnDroppedItem(UDkInventoryItem* Item, int32 DroppedCount);
 
@@ -106,7 +106,7 @@ public:
 
 	/* 道具物品的使用 */
 	UFUNCTION(Server, Reliable)
-	void ServerConsumeItem(UDkInventoryItem* Item);
+	void ServerConsumeItem(UDkInventoryItem* Item, int Index);
 	/********/
 
 	/* 判断是否背包有空间 */

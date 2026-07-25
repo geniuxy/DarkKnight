@@ -51,6 +51,15 @@ FGameplayTag UDkInventoryDraggedItem::GetItemTag() const
 	return FGameplayTag();
 }
 
+EInventoryItemCategory UDkInventoryDraggedItem::GetItemCategory() const
+{
+	if (InventoryItem.IsValid())
+	{
+		return InventoryItem->GetItemManifest().GetItemCategory();
+	}
+	return EInventoryItemCategory::None;
+}
+
 void UDkInventoryDraggedItem::SetIsStackable(bool bInIsStackable)
 {
 	bIsStackable = bInIsStackable;

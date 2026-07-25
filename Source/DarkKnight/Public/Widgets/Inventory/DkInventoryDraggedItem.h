@@ -6,6 +6,7 @@
 #include "CommonUserWidget.h"
 #include "GameplayTagContainer.h"
 #include "DarkKnight/DarkKnight.h"
+#include "DkTypes/DkEnums.h"
 #include "DkInventoryDraggedItem.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDraggedItemEvent, const FPointerEvent&, MouseEvent);
@@ -32,6 +33,7 @@ public:
 	void UpdateStackCount(const int32 Count);
 
 	FGameplayTag GetItemTag() const;
+	EInventoryItemCategory GetItemCategory() const;
 
 	bool IsPreviousEquipped() const { return bPreviousEquipped; }
 	void SetIsPreviousEquipped(bool bInPreviousEquipped) { bPreviousEquipped = bInPreviousEquipped; }

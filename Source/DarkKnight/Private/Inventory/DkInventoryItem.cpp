@@ -22,9 +22,14 @@ bool UDkInventoryItem::IsItemStackable() const
 	return StackableFragment != nullptr;
 }
 
-FText UDkInventoryItem::GetItemName()
+FText UDkInventoryItem::GetItemName() const
 {
 	return UDkInventoryFunctionLibrary::GetItemName(GetItemManifest().GetItemID());
+}
+
+EInventoryItemCategory UDkInventoryItem::GetItemCategory() const
+{
+	return UDkInventoryFunctionLibrary::GetItemCategory(GetItemManifest().GetItemID());
 }
 
 bool UDkInventoryItem::DoesItemTagMatch(const FGameplayTag& ItemTag) const

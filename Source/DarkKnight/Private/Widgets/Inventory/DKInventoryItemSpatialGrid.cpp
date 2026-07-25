@@ -727,7 +727,7 @@ void UDKInventoryItemSpatialGrid::OnPopUpMenuConsume(int32 Index)
 	UpperLeftGridSlot->SetStackCount(NewStackCount);
 	SlottedItemMap.FindChecked(UpperLeftIndex)->UpdateStackCount(NewStackCount);
 
-	InventoryComponent->ServerConsumeItem(RightClickedItem);
+	InventoryComponent->ServerConsumeItem(RightClickedItem, Index);
 
 	if (NewStackCount <= 0)
 	{

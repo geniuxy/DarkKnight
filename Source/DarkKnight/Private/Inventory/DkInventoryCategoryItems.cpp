@@ -178,8 +178,11 @@ void FInventoryCategoryItemsArray::RemoveItem(EInventoryItemCategory Category, c
 	}
 }
 
-bool FInventoryCategoryItemsArray::RemoveItemByIndex(EInventoryItemCategory Category, int32 Index, int32 RemoveCount)
+bool FInventoryCategoryItemsArray::RemoveItemByIndex(
+	EInventoryItemCategory Category, int32 Index, UDkInventoryItem* InventoryItem, int32 RemoveCount)
 {
+	if (!IsValid(InventoryItem)) return false;
+
 	for (int32 i = 0; i < Array.Num(); ++i)
 	{
 		if (Array[i].Category == Category)
@@ -189,13 +192,17 @@ bool FInventoryCategoryItemsArray::RemoveItemByIndex(EInventoryItemCategory Cate
 			{
 				if (Items[j].Index == Index)
 				{
+					if (Items[j].InventoryItem != InventoryItem)
+					{
+						return false;
+					}
 					if (Items[j].StackCount > RemoveCount)
 					{
 						Items[j].StackCount -= RemoveCount;
 					}
 					else
 					{
-						Items.RemoveAtSwap(j);
+						Items[j].Empty();
 					}
 					return true;
 				}
@@ -209,7 +216,7 @@ bool FInventoryCategoryItemsArray::RemoveItemByIndex(EInventoryItemCategory Cate
 bool FInventoryCategoryItemsArray::RemoveItemByInventoryItem(
 	EInventoryItemCategory Category, UDkInventoryItem* InventoryItem, int32 RemoveCount)
 {
-	if (InventoryItem == nullptr) return false;
+	if (!IsValid(InventoryItem)) return false;
 
 	for (int32 i = 0; i < Array.Num(); ++i)
 	{
@@ -226,9 +233,13 @@ bool FInventoryCategoryItemsArray::RemoveItemByInventoryItem(
 					}
 					else
 					{
-						Items.RemoveAtSwap(j);
+						Items[j].Empty();
+						RemoveCount -= Items[j].StackCount;
 					}
-					return true;
+					if (RemoveCount <= 0)
+					{
+						return true;
+					}
 				}
 			}
 			break;

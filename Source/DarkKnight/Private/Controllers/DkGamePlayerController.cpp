@@ -128,6 +128,7 @@ void ADkGamePlayerController::AcknowledgePossession(APawn* NewPawn)
 		OwningPlayerCharacter->ClientSideInit();
 		OwningASC = Cast<UDkAbilitySystemComponent>(OwningPlayerCharacter->GetAbilitySystemComponent());
 		RefreshInventoryComponent();
+		SetupInputComponent();
 		return;
 	}
 
@@ -135,6 +136,7 @@ void ADkGamePlayerController::AcknowledgePossession(APawn* NewPawn)
 	if (OwningMount)
 	{
 		OwningMount->SetGenericTeamId(TeamID);
+		SetupInputComponent();
 	}
 }
 
@@ -289,8 +291,6 @@ void ADkGamePlayerController::OnOpenSystemMenu()
 void ADkGamePlayerController::OnOpenInventory()
 {
 	checkf(InventoryComponent.IsValid(), TEXT("打开库存失败，InventoryComponent未有效"));
-
-	Debug::Print(TEXT("我正在打开库存！"));
 
 	InventoryComponent->ConstructInventoryMenu();
 }

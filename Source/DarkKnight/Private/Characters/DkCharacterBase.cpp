@@ -56,16 +56,11 @@ ADkCharacterBase::ADkCharacterBase()
 
 	GetCharacterMovement()->GravityScale = 2.5f;
 	GetCharacterMovement()->MaxAcceleration = 800.f;
-	GetCharacterMovement()->bUseSeparateBrakingFriction = true;
 	GetCharacterMovement()->MaxWalkSpeed = 170.f;
-	GetCharacterMovement()->BrakingDecelerationWalking = 800.f; // 行走减速度
 	GetCharacterMovement()->JumpZVelocity = 1000.f;
 	GetCharacterMovement()->JumpOffJumpZFactor = 0.f; // 踩在头上不会“弹开”，不会造成冲击力
-	GetCharacterMovement()->AirControl = 1.f; // 在空中能完全控制自己
 	GetCharacterMovement()->RotationRate = FRotator(0.f, 300.f, 0.f);
 	GetCharacterMovement()->bOrientRotationToMovement = true;
-	GetCharacterMovement()->PushForceFactor = 500.f;
-	GetCharacterMovement()->RepulsionForce = 0.f;
 	GetCharacterMovement()->NavAgentProps.AgentRadius = 42.f;
 	GetCharacterMovement()->NavAgentProps.AgentHeight = 192.f; // 试图解决Ai的问题(但不知道是什么)
 

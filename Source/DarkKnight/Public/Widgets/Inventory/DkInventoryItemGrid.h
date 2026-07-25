@@ -83,8 +83,11 @@ protected:
 public:
 	void PopulateGrid(EInventoryItemCategory InCategory);
 
+	void HandleInventoryCategoryItemsArrayUpdated();
+	
 	/* 更新GridSlot背景 */
 protected:
+	void UpdateGridSlotInfo(const FInventoryItemBriefInfo& ItemBriefInfo, int Index, UDkInventoryGridSlot* GridSlot);
 	virtual void UpdateGridSlots(UDkInventoryItem* NewItem, const int32 Index, int32 StackAmount, bool bStackable);
 	/********/
 
@@ -146,6 +149,7 @@ protected:
 	virtual void OnDraggedItemClicked(const FPointerEvent& MouseEvent);
 
 	void RequestMoveItem(int MoveStackCount);
+	void RequestMoveItemFromEquipment(UDkInventoryItem* Item, int MoveStackCount);
 	void RequestSwapItem();
 	/********/
 

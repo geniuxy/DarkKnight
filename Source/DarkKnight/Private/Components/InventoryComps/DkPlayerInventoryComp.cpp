@@ -37,10 +37,16 @@ void UDkPlayerInventoryComp::ConstructInventoryMenu()
 	);
 }
 
-void UDkPlayerInventoryComp::RequestMoveItem(EInventoryItemCategory Category, int32 FromSlot, int32 ToSlot,
-                                             int32 StackCount)
+void UDkPlayerInventoryComp::RequestMoveItem(
+	EInventoryItemCategory Category, int32 FromSlot, int32 ToSlot, int32 StackCount)
 {
 	Server_MoveItem(Category, FromSlot, ToSlot, StackCount);
+}
+
+void UDkPlayerInventoryComp::RequestMoveItemFromEquipment(
+	EInventoryItemCategory Category, UDkInventoryItem* Item, int32 ToSlot, int32 StackCount)
+{
+	Server_MoveItemFromEquipment(Category, Item, ToSlot, StackCount);
 }
 
 void UDkPlayerInventoryComp::RequestSwapItems(
@@ -74,8 +80,30 @@ bool UDkPlayerInventoryComp::Server_MoveItem_Validate(
 		return false;
 	}
 
-	FGameplayTag ItemTag = (*ItemBriefInfos)[FromSlot].InventoryItem->GetItemManifest().GetItemTag();
-	if (!InventoryList.FindFirstItemByTag(ItemTag)) return false;
+	if ((*ItemBriefInfos)[FromSlot].InventoryItem)
+	{
+		FGameplayTag ItemTag = (*ItemBriefInfos)[FromSlot].InventoryItem->GetItemManifest().GetItemTag();
+		if (!InventoryList.FindFirstItemByTag(ItemTag)) return false;
+	}
+
+	return true;
+}
+
+void UDkPlayerInventoryComp::Server_MoveItemFromEquipment_Implementation(
+	EInventoryItemCategory Category, UDkInventoryItem* Item, int32 ToSlot, int32 StackCount)
+{
+	ApplyMoveItemFromEquipment(Category, Item, ToSlot, StackCount);
+}
+
+bool UDkPlayerInventoryComp::Server_MoveItemFromEquipment_Validate(
+	EInventoryItemCategory Category, UDkInventoryItem* Item, int32 ToSlot, int32 StackCount)
+{
+	if (ToSlot < 0) return false;
+	FInventoryCategoryItemsArray CategoryItemsArray = GetInventoryCategoryItemsArray();
+	TArray<FInventoryItemBriefInfo>* ItemBriefInfos = CategoryItemsArray.FindItems(Category);
+	if (!ItemBriefInfos) return false;
+	if (!ItemBriefInfos->IsValidIndex(ToSlot)) return false;
+	if (!(*ItemBriefInfos)[ToSlot].IsEmpty()) return false;
 
 	return true;
 }
@@ -118,6 +146,27 @@ void UDkPlayerInventoryComp::ApplyMoveItem(
 	}
 	(*ItemBriefInfos)[FromSlot] = NewSourceItemInfo;
 
+	// 提交变更（触发 Replication）
+	CommitCategoryItemsArray(CategoryItemsArray);
+}
+
+void UDkPlayerInventoryComp::ApplyMoveItemFromEquipment(
+	EInventoryItemCategory Category, UDkInventoryItem* Item, int32 ToSlot, int32 MoveStackCount)
+{
+	FInventoryCategoryItemsArray CategoryItemsArray = GetInventoryCategoryItemsArray();
+
+	// 根据 Category 获取对应槽位数组
+	TArray<FInventoryItemBriefInfo>* ItemBriefInfos = CategoryItemsArray.FindItems(Category);
+	if (!ItemBriefInfos) return;
+
+	FInventoryItemBriefInfo TargetItemInfo = (*ItemBriefInfos)[ToSlot];
+
+	// 执行移动
+	FInventoryItemBriefInfo NewTargetItemInfo = FInventoryItemBriefInfo(ToSlot);
+	NewTargetItemInfo.InventoryItem = Item;
+	NewTargetItemInfo.StackCount = MoveStackCount + TargetItemInfo.StackCount;
+	(*ItemBriefInfos)[ToSlot] = NewTargetItemInfo;
+	
 	// 提交变更（触发 Replication）
 	CommitCategoryItemsArray(CategoryItemsArray);
 }

@@ -28,7 +28,7 @@ void UDkInventoryComponent::GetLifetimeReplicatedProps(TArray<class FLifetimePro
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ThisClass, InventoryList);
-	DOREPLIFETIME(ThisClass, InventoryCategoryItemsArray);
+	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, InventoryCategoryItemsArray, COND_None, REPNOTIFY_Always);
 }
 
 void UDkInventoryComponent::InitializeInventoryComponent()
@@ -42,7 +42,7 @@ void UDkInventoryComponent::InitializeInventoryComponent()
 	}
 }
 
-void UDkInventoryComponent::TryAddItem(UDkItemComponent* ItemComponent)
+void UDkInventoryComponent::TryAddItem(UDkItemComponent* ItemComponent, bool bNeedNotice)
 {
 	FDkInventorySlotAvailabilityResult AddItemResult = HasRoomForItem(ItemComponent);
 
@@ -60,23 +60,29 @@ void UDkInventoryComponent::TryAddItem(UDkItemComponent* ItemComponent)
 	{
 		// 为背包中已存在的物品添加堆叠数量。我们只想更新堆叠数量，
 		// 而不是创建这种类型的新物品。
-		OnAddItemNotice.Broadcast(ItemComponent->GetItemName(), AddItemResult.TotalRoomToFill);
+		if (bNeedNotice)
+		{
+			OnAddItemNotice.Broadcast(ItemComponent->GetItemName(), AddItemResult.TotalRoomToFill);
+		}
 		// OnStackChange.Broadcast(AddItemResult); // OnStackChange在Server和Client都会执行，光在Server执行，无法同步到Client
 		Server_AddStacksToItem(ItemComponent, AddItemResult);
 	}
 	else
 	{
 		int StackCount = AddItemResult.bStackable ? AddItemResult.TotalRoomToFill : 0;
-		OnAddItemNotice.Broadcast(
-			ItemComponent->GetItemName(),
-			AddItemResult.bStackable ? StackCount : 1
-		);
+		if (bNeedNotice)
+		{
+			OnAddItemNotice.Broadcast(
+				ItemComponent->GetItemName(),
+				AddItemResult.bStackable ? StackCount : 1
+			);
+		}
 		// 此物品类型在物品栏中不存在。请创建一个新物品并更新所有相关栏位。
 		Server_AddNewItem(ItemComponent, StackCount, AddItemResult);
 	}
 }
 
-void UDkInventoryComponent::TryAddItem(UDkInventoryItem* Item)
+void UDkInventoryComponent::TryAddItem(UDkInventoryItem* Item, bool bNeedNotice)
 {
 	FDkInventorySlotAvailabilityResult AddItemResult = HasRoomForItem(Item);
 
@@ -92,7 +98,10 @@ void UDkInventoryComponent::TryAddItem(UDkInventoryItem* Item)
 	// 将Item添加到Inventory中
 	if (AddItemResult.Item.IsValid() && AddItemResult.bStackable)
 	{
-		OnAddItemNotice.Broadcast(Item->GetItemName(), AddItemResult.TotalRoomToFill);
+		if (bNeedNotice)
+		{
+			OnAddItemNotice.Broadcast(Item->GetItemName(), AddItemResult.TotalRoomToFill);
+		}
 		// 为背包中已存在的物品添加堆叠数量。我们只想更新堆叠数量，
 		// 而不是创建这种类型的新物品。
 		// OnStackChange.Broadcast(AddItemResult); // OnStackChange在Server和Client都会执行，光在Server执行，无法同步到Client
@@ -101,10 +110,13 @@ void UDkInventoryComponent::TryAddItem(UDkInventoryItem* Item)
 	else
 	{
 		int StackCount = AddItemResult.bStackable ? AddItemResult.TotalRoomToFill : 0;
-		OnAddItemNotice.Broadcast(
-			Item->GetItemName(),
-			AddItemResult.bStackable ? StackCount : 1
-		);
+		if (bNeedNotice)
+		{
+			OnAddItemNotice.Broadcast(
+				Item->GetItemName(),
+				AddItemResult.bStackable ? StackCount : 1
+			);
+		}
 		// 此物品类型在物品栏中不存在。请创建一个新物品并更新所有相关栏位。
 		Server_AddNewItemWithItem(Item, StackCount, AddItemResult);
 	}
@@ -371,6 +383,7 @@ void UDkInventoryComponent::UpdateInventoryCategoryItemsArray(const FDkInventory
 
 void UDkInventoryComponent::OnRep_InventoryCategoryItemsArray()
 {
+	OnInventoryCategoryItemsArrayUpdated.Broadcast();
 }
 
 const TArray<FInventoryItemBriefInfo>* UDkInventoryComponent::GetItemBriefInfoByCategory(

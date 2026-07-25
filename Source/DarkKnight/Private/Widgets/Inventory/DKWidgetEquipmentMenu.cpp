@@ -84,6 +84,18 @@ void UDKWidgetEquipmentMenu::PutItemOnEquipSlot(int32 EquipIndex)
 			BroadcastEquippedDelegate(DraggedItem->GetInventoryItem());
 		}
 
+		if (InventoryComponent.IsValid())
+		{
+			FInventoryCategoryItemsArray& CategoryItemsArrayMutable =
+				InventoryComponent->GetInventoryCategoryItemsArrayMutable();
+			CategoryItemsArrayMutable.RemoveItemByIndex(
+				DraggedItem->GetItemCategory(),
+				DraggedItem->GetPreviousGridIndex(),
+				DraggedItem->GetInventoryItem(),
+				DraggedItem->GetStackCount()
+			);
+		}
+
 		ClearDraggedItem();
 	}
 }
@@ -176,15 +188,16 @@ void UDKWidgetEquipmentMenu::HandleDraggedItemClicked(const FPointerEvent& Mouse
 	if (!EquippedGridSlots.IsValidIndex(ItemEquipIndex)) return;
 	if (!DraggedItem->GetItemTag().MatchesTag(EquippedGridSlots[ItemEquipIndex]->GetEquipmentTypeTag())) return;
 	if (!bMouseWithInCanvas) return;
-
+	
 	// 已有Equipment，则交换俩者的位置
-	if (UDkInventoryItem* LastInventoryItem = EquippedGridSlots[ItemEquipIndex]->GetInventoryItem())
+	UDkInventoryItem* LastInventoryItem = EquippedGridSlots[ItemEquipIndex]->GetInventoryItem();
+	PutItemOnEquipSlot(ItemEquipIndex);
+	if (LastInventoryItem)
 	{
 		check(InventoryComponent.IsValid());
-		InventoryComponent->TryAddItem(LastInventoryItem);
+		InventoryComponent->TryAddItem(LastInventoryItem, false);
+		InventoryComponent->OnInventoryCategoryItemsArrayUpdated.Broadcast();
 	}
-
-	PutItemOnEquipSlot(ItemEquipIndex);
 }
 
 void UDKWidgetEquipmentMenu::ClearDraggedItem()

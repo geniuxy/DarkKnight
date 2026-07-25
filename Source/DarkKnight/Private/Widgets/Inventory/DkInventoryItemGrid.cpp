@@ -41,12 +41,42 @@ void UDkInventoryItemGrid::SetInventoryComp(UDkInventoryComponent* InInventoryCo
 	InventoryComponent->OnExitGameMenuRecoverGridItem.AddUniqueDynamic(
 		this, &ThisClass::HandleDraggedItemRecovered
 	);
+	InventoryComponent->OnInventoryCategoryItemsArrayUpdated.AddUObject(
+		this, &ThisClass::HandleInventoryCategoryItemsArrayUpdated
+	);
 }
 
 void UDkInventoryItemGrid::ClearItems()
 {
 	GridSlots.Reset();
 	UniformGridPanel->ClearChildren();
+}
+
+void UDkInventoryItemGrid::NativeOnInitialized()
+{
+	Super::NativeOnInitialized();
+
+	if (UniformGridPanel)
+	{
+		UniformGridPanel->SetSlotPadding(FMargin(SlotDistance));
+	}
+}
+
+void UDkInventoryItemGrid::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+
+	// 根据鼠标的位置，更改Hover的格子样式
+	const FVector2D PanelPosition = UDkUIFunctionLibrary::GetWidgetPosition(UniformGridPanel);
+	// 这里的MousePosition是逻辑/虚拟像素大小，不受DPI影响
+	const FVector2D MousePosition = UWidgetLayoutLibrary::GetMousePositionOnViewport(GetOwningPlayer());
+
+	if (CursorExitedCanvas(PanelPosition, UDkUIFunctionLibrary::GetWidgetSize(UniformGridPanel), MousePosition))
+	{
+		return;
+	}
+
+	UpdateItemDropIndex(PanelPosition, MousePosition);
 }
 
 FDkInventorySlotAvailabilityResult UDkInventoryItemGrid::HasRoomForItem(const FInventoryItemManifest& Manifest)
@@ -141,52 +171,51 @@ void UDkInventoryItemGrid::PopulateGrid(EInventoryItemCategory InCategory)
 		if (!GridSlots.IsValidIndex(Index)) continue;
 		UDkInventoryGridSlot* GridSlot = GridSlots[Index];
 
-		const FInventoryItemFragment_Image* ImageFragment = GetFragment<FInventoryItemFragment_Image>(
-			ItemBriefInfo.InventoryItem, DkGameplayTags::Dk_Inventory_Fragment_Icon
-		);
-		if (!ImageFragment) continue;
-
-		FSlateBrush Brush;
-		Brush.SetResourceObject(ImageFragment->GetIcon());
-		Brush.DrawAs = ESlateBrushDrawType::Image;
-		Brush.ImageSize = FVector2D(100.f);
-		GridSlot->SetItemIcon(Brush);
-
-		GridSlot->SetItemStackNum(ItemBriefInfo.StackCount);
-
-		GridSlot->SetInventoryItem(ItemBriefInfo.InventoryItem);
-		GridSlot->SetUpperLeftIndex(Index);
-		GridSlot->SetOccupiedBrush();
-		GridSlot->SetIsAvailable(false);
-		GridSlot->SetStackCount(ItemBriefInfo.StackCount);
+		UpdateGridSlotInfo(ItemBriefInfo, Index, GridSlot);
 	}
 }
 
-void UDkInventoryItemGrid::NativeOnInitialized()
+void UDkInventoryItemGrid::HandleInventoryCategoryItemsArrayUpdated()
 {
-	Super::NativeOnInitialized();
+	if (!InventoryComponent.IsValid()) return;
 
-	if (UniformGridPanel)
+	const TArray<FInventoryItemBriefInfo>* ItemBriefInfos =
+		InventoryComponent->GetItemBriefInfoByCategory(ItemCategory);
+	if (!ItemBriefInfos) return;
+
+	for (UDkInventoryGridSlot* GridSlot : GridSlots)
 	{
-		UniformGridPanel->SetSlotPadding(FMargin(SlotDistance));
+		FInventoryItemBriefInfo ItemBriefInfo = (*ItemBriefInfos)[GridSlot->GetTileIndex()];
+
+		if (GridSlot->GetStackCount() != ItemBriefInfo.StackCount ||
+			GridSlot->GetInventoryItem() != ItemBriefInfo.InventoryItem ||
+			GridSlot->GetTileIndex() != ItemBriefInfo.Index)
+		{
+			UpdateGridSlotInfo(ItemBriefInfo, ItemBriefInfo.Index, GridSlot);
+		}
 	}
 }
 
-void UDkInventoryItemGrid::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+void UDkInventoryItemGrid::UpdateGridSlotInfo(const FInventoryItemBriefInfo& ItemBriefInfo, int Index, UDkInventoryGridSlot* GridSlot)
 {
-	Super::NativeTick(MyGeometry, InDeltaTime);
+	const FInventoryItemFragment_Image* ImageFragment = GetFragment<FInventoryItemFragment_Image>(
+		ItemBriefInfo.InventoryItem, DkGameplayTags::Dk_Inventory_Fragment_Icon
+	);
+	if (!ImageFragment) return;
 
-	// 根据鼠标的位置，更改Hover的格子样式
-	const FVector2D PanelPosition = UDkUIFunctionLibrary::GetWidgetPosition(UniformGridPanel);
-	// 这里的MousePosition是逻辑/虚拟像素大小，不受DPI影响
-	const FVector2D MousePosition = UWidgetLayoutLibrary::GetMousePositionOnViewport(GetOwningPlayer());
+	FSlateBrush Brush;
+	Brush.SetResourceObject(ImageFragment->GetIcon());
+	Brush.DrawAs = ESlateBrushDrawType::Image;
+	Brush.ImageSize = FVector2D(100.f);
+	GridSlot->SetItemIcon(Brush);
 
-	if (CursorExitedCanvas(PanelPosition, UDkUIFunctionLibrary::GetWidgetSize(UniformGridPanel), MousePosition))
-	{
-		return;
-	}
+	GridSlot->SetItemStackNum(ItemBriefInfo.StackCount);
 
-	UpdateItemDropIndex(PanelPosition, MousePosition);
+	GridSlot->SetInventoryItem(ItemBriefInfo.InventoryItem);
+	GridSlot->SetUpperLeftIndex(Index);
+	GridSlot->SetOccupiedBrush();
+	GridSlot->SetIsAvailable(false);
+	GridSlot->SetStackCount(ItemBriefInfo.StackCount);
 }
 
 void UDkInventoryItemGrid::AddItem(UDkInventoryItem* Item)
@@ -478,7 +507,14 @@ void UDkInventoryItemGrid::OnDraggedItemClicked(const FPointerEvent& MouseEvent)
 	UDkInventoryGridSlot* GridSlot = GridSlots[ItemDropIndex];
 	if (!IsValid(GridSlot->GetInventoryItem()))
 	{
-		RequestMoveItem(DraggedItem->GetStackCount());
+		if (!DraggedItem->IsPreviousEquipped())
+		{
+			RequestMoveItem(DraggedItem->GetStackCount());
+		}
+		else
+		{
+			RequestMoveItemFromEquipment(DraggedItem->GetInventoryItem(), DraggedItem->GetStackCount());
+		}
 		PutDownOnIndex(ItemDropIndex);
 	}
 }
@@ -492,6 +528,20 @@ void UDkInventoryItemGrid::RequestMoveItem(int MoveStackCount)
 		{
 			PlayerInventoryComp->RequestMoveItem(
 				ItemCategory, DraggedItem->GetPreviousGridIndex(), ItemDropIndex, MoveStackCount
+			);
+		}
+	}
+}
+
+void UDkInventoryItemGrid::RequestMoveItemFromEquipment(UDkInventoryItem* Item, int MoveStackCount)
+{
+	if (!IsValid(DraggedItem)) return;
+	if (InventoryComponent.IsValid())
+	{
+		if (UDkPlayerInventoryComp* PlayerInventoryComp = Cast<UDkPlayerInventoryComp>(InventoryComponent.Get()))
+		{
+			PlayerInventoryComp->RequestMoveItemFromEquipment(
+				ItemCategory, Item, ItemDropIndex, MoveStackCount
 			);
 		}
 	}

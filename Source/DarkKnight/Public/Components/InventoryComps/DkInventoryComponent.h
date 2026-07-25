@@ -41,6 +41,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnItemDescriptionMenuRemoved);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FItemEquipStatusChanged, UDkInventoryItem*, Item);
 
+DECLARE_MULTICAST_DELEGATE(FOnInventoryCategoryItemsArrayUpdated);
+
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), Blueprintable)
 class DARKKNIGHT_API UDkInventoryComponent : public UActorComponent
 {
@@ -50,13 +52,13 @@ public:
 	UDkInventoryComponent();
 
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
-	
+
 	void InitializeInventoryComponent();
 
 	/* 道具物品的添加和删除 */
-	void TryAddItem(UDkItemComponent* ItemComponent);
+	void TryAddItem(UDkItemComponent* ItemComponent, bool bNeedNotice = true);
 
-	void TryAddItem(UDkInventoryItem* Item);
+	void TryAddItem(UDkInventoryItem* Item, bool bNeedNotice = true);
 
 	UFUNCTION(Server, Reliable)
 	void Server_AddNewItem(
@@ -163,7 +165,9 @@ public:
 	}
 
 	UFUNCTION()
-	virtual void OnRep_InventoryCategoryItemsArray();
+	void OnRep_InventoryCategoryItemsArray();
+
+	FOnInventoryCategoryItemsArrayUpdated OnInventoryCategoryItemsArrayUpdated;
 
 	const TArray<FInventoryItemBriefInfo>* GetItemBriefInfoByCategory(EInventoryItemCategory InCategory) const;
 

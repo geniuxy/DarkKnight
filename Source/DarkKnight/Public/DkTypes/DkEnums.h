@@ -137,6 +137,7 @@ enum class EInventoryItemCategory: uint8
 	Equipment UMETA(DisplayName = "装备"),
 	Consumable UMETA(DisplayName = "消耗品"),
 	CraftingMaterial UMETA(DisplayName = "制作材料"),
+	All UMETA(DisplayName = "全部"),
 	None
 };
 

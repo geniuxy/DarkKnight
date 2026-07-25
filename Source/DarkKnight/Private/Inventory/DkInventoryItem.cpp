@@ -27,6 +27,11 @@ FText UDkInventoryItem::GetItemName() const
 	return UDkInventoryFunctionLibrary::GetItemName(GetItemManifest().GetItemID());
 }
 
+FGameplayTag UDkInventoryItem::GetItemTag() const
+{
+	return UDkInventoryFunctionLibrary::GetItemTag(GetItemManifest().GetItemID());
+}
+
 EInventoryItemCategory UDkInventoryItem::GetItemCategory() const
 {
 	return UDkInventoryFunctionLibrary::GetItemCategory(GetItemManifest().GetItemID());

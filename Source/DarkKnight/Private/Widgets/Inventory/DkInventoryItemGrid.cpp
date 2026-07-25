@@ -8,8 +8,6 @@
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Components/InventoryComps/DkInventoryComponent.h"
 #include "Components/DkItemComponent.h"
-#include "Widgets/Inventory/DkInventoryGridSlot.h"
-
 #include "Components/UniformGridPanel.h"
 #include "Components/InventoryComps/DkPlayerInventoryComp.h"
 #include "FunctionLibrarys/DkCommonFunctionLibrary.h"
@@ -18,6 +16,7 @@
 #include "Inventory/DkInventoryItemFragment.h"
 #include "Inventory/DkInventorySlotAvailabilty.h"
 #include "Widgets/Inventory/DkInventoryDraggedItem.h"
+#include "Widgets/Inventory/DkInventoryGridSlot.h"
 #include "Widgets/Inventory/DkInventoryPopUpMenu.h"
 
 FDkInventorySlotAvailabilityResult UDkInventoryItemGrid::HasRoomForItem(const UDkItemComponent* ItemComponent)
@@ -41,8 +40,8 @@ void UDkInventoryItemGrid::SetInventoryComp(UDkInventoryComponent* InInventoryCo
 	InventoryComponent->OnExitGameMenuRecoverGridItem.AddUniqueDynamic(
 		this, &ThisClass::HandleDraggedItemRecovered
 	);
-	InventoryComponent->OnInventoryCategoryItemsArrayUpdated.AddUObject(
-		this, &ThisClass::HandleInventoryCategoryItemsArrayUpdated
+	InventoryComponent->OnInventorySlotArrayUpdated.AddUObject(
+		this, &ThisClass::HandleInventorySlotArrayUpdated
 	);
 }
 
@@ -161,10 +160,10 @@ void UDkInventoryItemGrid::PopulateGrid(EInventoryItemCategory InCategory)
 {
 	if (!InventoryComponent.IsValid()) return;
 
-	const TArray<FInventoryItemBriefInfo>* ItemBriefInfos = InventoryComponent->GetItemBriefInfoByCategory(InCategory);
-	if (!ItemBriefInfos) return;
+	const TArray<FInventoryItemBriefInfo>& ItemBriefInfos = InventoryComponent->GetCategorySlots(InCategory);
+	if (ItemBriefInfos.IsEmpty()) return;
 
-	for (const FInventoryItemBriefInfo& ItemBriefInfo : *ItemBriefInfos)
+	for (const FInventoryItemBriefInfo& ItemBriefInfo : ItemBriefInfos)
 	{
 		if (!ItemBriefInfo.IsValid() || ItemBriefInfo.IsEmpty()) continue;
 		int Index = ItemBriefInfo.Index;
@@ -175,28 +174,46 @@ void UDkInventoryItemGrid::PopulateGrid(EInventoryItemCategory InCategory)
 	}
 }
 
-void UDkInventoryItemGrid::HandleInventoryCategoryItemsArrayUpdated()
+void UDkInventoryItemGrid::HandleInventorySlotArrayUpdated()
 {
 	if (!InventoryComponent.IsValid()) return;
 
-	const TArray<FInventoryItemBriefInfo>* ItemBriefInfos =
-		InventoryComponent->GetItemBriefInfoByCategory(ItemCategory);
-	if (!ItemBriefInfos) return;
+	const TArray<FInventoryItemBriefInfo>& ItemBriefInfos = InventoryComponent->GetCategorySlots(ItemCategory);
+	if (ItemBriefInfos.IsEmpty()) return;
 
 	for (UDkInventoryGridSlot* GridSlot : GridSlots)
 	{
-		FInventoryItemBriefInfo ItemBriefInfo = (*ItemBriefInfos)[GridSlot->GetTileIndex()];
+		const FInventoryItemBriefInfo* ItemBriefInfo = ItemBriefInfos.FindByPredicate(
+			[=, this](const FInventoryItemBriefInfo& Info)
+			{
+				return Info.Index == GridSlot->GetTileIndex();
+			}
+		);
 
-		if (GridSlot->GetStackCount() != ItemBriefInfo.StackCount ||
-			GridSlot->GetInventoryItem() != ItemBriefInfo.InventoryItem ||
-			GridSlot->GetTileIndex() != ItemBriefInfo.Index)
+		if (GridSlot->GetStackCount() != ItemBriefInfo->StackCount ||
+			GridSlot->GetInventoryItem() != ItemBriefInfo->InventoryItem)
 		{
-			UpdateGridSlotInfo(ItemBriefInfo, ItemBriefInfo.Index, GridSlot);
+			UpdateGridSlotInfo(*ItemBriefInfo, ItemBriefInfo->Index, GridSlot);
 		}
 	}
 }
 
-void UDkInventoryItemGrid::UpdateGridSlotInfo(const FInventoryItemBriefInfo& ItemBriefInfo, int Index, UDkInventoryGridSlot* GridSlot)
+void UDkInventoryItemGrid::UpdateInventorySlotArray()
+{
+	TArray<FInventoryItemBriefInfo> ItemBriefInfos;
+	for (int iIdx = 0; iIdx < GridSlots.Num(); iIdx++)
+	{
+		FInventoryItemBriefInfo ItemBriefInfo;
+		ItemBriefInfo.Index = iIdx;
+		ItemBriefInfo.InventoryItem = GridSlots[iIdx]->GetInventoryItem();
+		ItemBriefInfo.StackCount = GridSlots[iIdx]->GetStackCount();
+		ItemBriefInfos.Add(ItemBriefInfo);
+	}
+	InventoryComponent->SetInventorySlotArray(ItemCategory, ItemBriefInfos);
+}
+
+void UDkInventoryItemGrid::UpdateGridSlotInfo(const FInventoryItemBriefInfo& ItemBriefInfo, int Index,
+                                              UDkInventoryGridSlot* GridSlot)
 {
 	const FInventoryItemFragment_Image* ImageFragment = GetFragment<FInventoryItemFragment_Image>(
 		ItemBriefInfo.InventoryItem, DkGameplayTags::Dk_Inventory_Fragment_Icon
@@ -339,9 +356,9 @@ void UDkInventoryItemGrid::SwapWithDraggedItem(UDkInventoryItem* ClickedInventor
 	const int32 TempStackCount = DraggedItem->GetStackCount();
 	const bool bTempIsStackable = DraggedItem->GetIsStackable();
 
-	RequestSwapItem();
+	// RequestSwapItem();
 
-	AssignDraggedItem(ClickedInventoryItem, GridIndex, DraggedItem->GetPreviousGridIndex());
+	AssignDraggedItem(ClickedInventoryItem, GridIndex, GridIndex);
 	RemoveItemFromGrid(ClickedInventoryItem, GridIndex);
 	AddItemToIndex(TempInventoryItem, ItemDropIndex, TempStackCount, bTempIsStackable);
 	UpdateGridSlots(TempInventoryItem, ItemDropIndex, TempStackCount, bTempIsStackable);
@@ -456,7 +473,8 @@ void UDkInventoryItemGrid::HandleDraggedItemRecovered(UDkInventoryDraggedItem* I
 
 	if (!InDraggedItem->IsPreviousEquipped() && IsValid(InDraggedItem->GetInventoryItem()))
 	{
-		FDkInventorySlotAvailabilityResult AddItemResult = HasRoomForItem(InDraggedItem->GetInventoryItem());
+		FDkInventorySlotAvailabilityResult AddItemResult =
+			InventoryComponent->HasRoomForItem(InDraggedItem->GetInventoryItem());
 		AddItemResult.Item = InDraggedItem->GetInventoryItem();
 		if (AddItemResult.TotalRoomToFill == 0)
 		{
@@ -465,14 +483,12 @@ void UDkInventoryItemGrid::HandleDraggedItemRecovered(UDkInventoryDraggedItem* I
 			return;
 		}
 
-		// 将Item添加到Inventory中
-		if (AddItemResult.Item.IsValid() && AddItemResult.bStackable)
+		InventoryComponent->UpdateInventorySlotArray(AddItemResult);
+		if (AddItemResult.Remainder != 0)
 		{
-			AddStacks(AddItemResult);
-		}
-		else
-		{
-			AddItem(InDraggedItem->GetInventoryItem());
+			InDraggedItem->SetStackCount(AddItemResult.Remainder);
+			InventoryComponent->OnNoRoomInInventory.Broadcast(FText::FromString(TEXT("拖拽物品暂无空间放置，请整理后重新加入背包")));
+			DropItem();
 		}
 	}
 }
@@ -507,59 +523,60 @@ void UDkInventoryItemGrid::OnDraggedItemClicked(const FPointerEvent& MouseEvent)
 	UDkInventoryGridSlot* GridSlot = GridSlots[ItemDropIndex];
 	if (!IsValid(GridSlot->GetInventoryItem()))
 	{
-		if (!DraggedItem->IsPreviousEquipped())
-		{
-			RequestMoveItem(DraggedItem->GetStackCount());
-		}
-		else
-		{
-			RequestMoveItemFromEquipment(DraggedItem->GetInventoryItem(), DraggedItem->GetStackCount());
-		}
+		// if (!DraggedItem->IsPreviousEquipped())
+		// {
+		// 	RequestMoveItem(DraggedItem->GetStackCount());
+		// }
+		// else
+		// {
+		// 	RequestMoveItemFromEquipment(DraggedItem->GetInventoryItem(), DraggedItem->GetStackCount());
+		// }
 		PutDownOnIndex(ItemDropIndex);
+		UpdateInventorySlotArray();
 	}
 }
 
-void UDkInventoryItemGrid::RequestMoveItem(int MoveStackCount)
-{
-	if (!IsValid(DraggedItem)) return;
-	if (InventoryComponent.IsValid())
-	{
-		if (UDkPlayerInventoryComp* PlayerInventoryComp = Cast<UDkPlayerInventoryComp>(InventoryComponent.Get()))
-		{
-			PlayerInventoryComp->RequestMoveItem(
-				ItemCategory, DraggedItem->GetPreviousGridIndex(), ItemDropIndex, MoveStackCount
-			);
-		}
-	}
-}
-
-void UDkInventoryItemGrid::RequestMoveItemFromEquipment(UDkInventoryItem* Item, int MoveStackCount)
-{
-	if (!IsValid(DraggedItem)) return;
-	if (InventoryComponent.IsValid())
-	{
-		if (UDkPlayerInventoryComp* PlayerInventoryComp = Cast<UDkPlayerInventoryComp>(InventoryComponent.Get()))
-		{
-			PlayerInventoryComp->RequestMoveItemFromEquipment(
-				ItemCategory, Item, ItemDropIndex, MoveStackCount
-			);
-		}
-	}
-}
-
-void UDkInventoryItemGrid::RequestSwapItem()
-{
-	if (!IsValid(DraggedItem)) return;
-	if (InventoryComponent.IsValid())
-	{
-		if (UDkPlayerInventoryComp* PlayerInventoryComp = Cast<UDkPlayerInventoryComp>(InventoryComponent.Get()))
-		{
-			PlayerInventoryComp->RequestSwapItems(
-				ItemCategory, DraggedItem->GetPreviousGridIndex(), ItemDropIndex, DraggedItem->GetStackCount()
-			);
-		}
-	}
-}
+// void UDkInventoryItemGrid::RequestMoveItem(int MoveStackCount)
+// {
+// 	if (!IsValid(DraggedItem)) return;
+// 	if (InventoryComponent.IsValid())
+// 	{
+// 		if (UDkPlayerInventoryComp* PlayerInventoryComp = Cast<UDkPlayerInventoryComp>(InventoryComponent.Get()))
+// 		{
+// 			PlayerInventoryComp->RequestMoveItem(
+// 				ItemCategory, DraggedItem->GetPreviousGridIndex(), ItemDropIndex, MoveStackCount
+// 			);
+// 		}
+// 	}
+// }
+//
+// void UDkInventoryItemGrid::RequestMoveItemFromEquipment(UDkInventoryItem* Item, int MoveStackCount)
+// {
+// 	if (!IsValid(DraggedItem)) return;
+// 	if (InventoryComponent.IsValid())
+// 	{
+// 		if (UDkPlayerInventoryComp* PlayerInventoryComp = Cast<UDkPlayerInventoryComp>(InventoryComponent.Get()))
+// 		{
+// 			PlayerInventoryComp->RequestMoveItemFromEquipment(
+// 				ItemCategory, Item, ItemDropIndex, MoveStackCount
+// 			);
+// 		}
+// 	}
+// }
+//
+// void UDkInventoryItemGrid::RequestSwapItem()
+// {
+// 	if (!IsValid(DraggedItem)) return;
+// 	if (InventoryComponent.IsValid())
+// 	{
+// 		if (UDkPlayerInventoryComp* PlayerInventoryComp = Cast<UDkPlayerInventoryComp>(InventoryComponent.Get()))
+// 		{
+// 			PlayerInventoryComp->RequestSwapItems(
+// 				ItemCategory, DraggedItem->GetPreviousGridIndex(), ItemDropIndex, DraggedItem->GetStackCount()
+// 			);
+// 		}
+// 	}
+// }
 
 void UDkInventoryItemGrid::UpdateItemDropIndex(const FVector2D& PanelPosition, const FVector2D& MousePosition)
 {
@@ -721,8 +738,9 @@ void UDkInventoryItemGrid::OnGridSlotClicked(int GridIndex, const FPointerEvent&
 			GridSlot->SetItemStackNum(DraggedStackCount);
 
 			DraggedItem->UpdateStackCount(ClickedStackCount);
-
-			RequestSwapItem();
+			DraggedItem->SetPreviousGridIndex(GridIndex);
+			
+			UpdateInventorySlotArray();
 
 			return;
 		}
@@ -730,8 +748,8 @@ void UDkInventoryItemGrid::OnGridSlotClicked(int GridIndex, const FPointerEvent&
 		//	是否可以合并DraggedItem
 		if (SpaceInClickedSlot >= DraggedStackCount)
 		{
-			RequestMoveItem(DraggedItem->GetStackCount());
 			ConsumeDraggedItemStack(ClickedStackCount, DraggedStackCount, GridIndex);
+			UpdateInventorySlotArray();
 			return;
 		}
 
@@ -744,8 +762,8 @@ void UDkInventoryItemGrid::OnGridSlotClicked(int GridIndex, const FPointerEvent&
 			GridSlot->SetItemStackNum(MaxStackSize);
 
 			DraggedItem->UpdateStackCount(DraggedStackCount - SpaceInClickedSlot);
-
-			RequestMoveItem(SpaceInClickedSlot);
+			
+			UpdateInventorySlotArray();
 
 			return;
 		}
@@ -754,6 +772,7 @@ void UDkInventoryItemGrid::OnGridSlotClicked(int GridIndex, const FPointerEvent&
 	}
 	// 和DraggedItem交换位置
 	SwapWithDraggedItem(ClickedInventoryItem, GridIndex);
+	UpdateInventorySlotArray();
 }
 
 void UDkInventoryItemGrid::CreateItemPopUp(const int32 GridIndex)

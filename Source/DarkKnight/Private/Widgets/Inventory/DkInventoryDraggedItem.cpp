@@ -5,6 +5,7 @@
 
 #include "CommonLazyImage.h"
 #include "CommonTextBlock.h"
+#include "DarkKnightDebugHelper.h"
 #include "Inventory/DkInventoryItem.h"
 #include "Inventory/DkInventoryItemFragment.h"
 
@@ -12,6 +13,21 @@ FReply UDkInventoryDraggedItem::NativeOnMouseButtonDown(const FGeometry& InGeome
 {
 	OnDraggedItemClicked.Broadcast(InMouseEvent);
 	return FReply::Handled();
+}
+
+void UDkInventoryDraggedItem::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+
+	// const FItemFragment_Stackable* Fragment_Stackable =
+	// 	GetInventoryItem()->GetItemManifest().GetFragmentOfType<FItemFragment_Stackable>();
+	// Debug::Print(FString::Printf(
+	// 		TEXT("当前DragItem的名称为%s, PreviousIndex为%d, StackCount为%d"),
+	// 		*InventoryItem->GetItemName().ToString(),
+	// 		GetPreviousGridIndex(),
+	// 		Fragment_Stackable->GetStackCount()
+	// 	), 1, 10, FColor::Purple
+	// );
 }
 
 void UDkInventoryDraggedItem::SetImageBrush(const FSlateBrush& Brush) const

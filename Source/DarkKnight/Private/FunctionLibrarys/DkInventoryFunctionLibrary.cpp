@@ -98,6 +98,14 @@ FText UDkInventoryFunctionLibrary::GetItemName(int32 InItemId)
 	return ItemInfoTable[InItemId].ItemName;
 }
 
+FGameplayTag UDkInventoryFunctionLibrary::GetItemTag(int32 InItemId)
+{
+	TMap<int, FDkItemInfo> ItemInfoTable = UDkInventorySubsystem::Get()->GetCachedItemTable();
+	if (!ItemInfoTable.Contains(InItemId)) return FGameplayTag();
+
+	return ItemInfoTable[InItemId].ItemTag;
+}
+
 EInventoryItemCategory UDkInventoryFunctionLibrary::GetItemCategory(int32 InItemId)
 {
 	TMap<int, FDkItemInfo> ItemInfoTable = UDkInventorySubsystem::Get()->GetCachedItemTable();

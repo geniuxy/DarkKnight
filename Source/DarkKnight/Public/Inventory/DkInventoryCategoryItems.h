@@ -36,42 +36,58 @@ struct FInventoryItemBriefInfo // 背包物品简约信息
 };
 
 USTRUCT()
-struct FInventoryCategoryItems
+struct FDkInventorySlotEntry : public FFastArraySerializerItem
 {
 	GENERATED_BODY()
 
 	UPROPERTY()
-	EInventoryItemCategory Category;
-
+	int32 GlobalIndex = INDEX_NONE; // 全局物理坐标（全部视图中的固定格子）
 	UPROPERTY()
-	TArray<FInventoryItemBriefInfo> Items;
+	EInventoryItemCategory Category = EInventoryItemCategory::None; // 这个格子属于哪个分类
+	UPROPERTY()
+	FInventoryItemBriefInfo BriefInfo; // 里面的物品 + 分类内序号
 
-	void InitializeGrid(int32 Size);
-	int32 FindEmptySlot() const;
-	bool IsSlotEmpty(int32 Index) const;
-	FInventoryItemBriefInfo* GetItemAt(int32 Index);
+	void PreReplicatedRemove(const FFastArraySerializer& InArraySerializer);
+	void PostReplicatedAdd(const FFastArraySerializer& InArraySerializer);
+	void PostReplicatedChange(const FFastArraySerializer& InArraySerializer);
+
+	bool IsSameItemByTag(FGameplayTag InTag) const;
 };
 
 USTRUCT()
-struct FInventoryCategoryItemsArray
+struct FDkInventorySlotArray : public FFastArraySerializer
 {
 	GENERATED_BODY()
 
-	UPROPERTY()
-	TArray<FInventoryCategoryItems> Array;
+	FDkInventorySlotArray() : OwnerComp(nullptr)
+	{
+	}
 
-	bool ContainCategory(EInventoryItemCategory Category) const;
-	TArray<FInventoryItemBriefInfo>* FindItems(EInventoryItemCategory Category);
-	const TArray<FInventoryItemBriefInfo>* FindItems(EInventoryItemCategory Category) const;
-	int GetCategoryMaxSize(EInventoryItemCategory Category) const;
-	void AddNewCategory(EInventoryItemCategory Category, int Size);
-	void AddItem(EInventoryItemCategory Category, const FInventoryItemBriefInfo& Item);
-	void RemoveItem(EInventoryItemCategory Category, const FInventoryItemBriefInfo& Item);
-	bool RemoveItemByIndex(
-		EInventoryItemCategory Category, int32 Index, UDkInventoryItem* InventoryItem, int32 RemoveCount = 1);
-	bool RemoveItemByInventoryItem(
-		EInventoryItemCategory Category, UDkInventoryItem* InventoryItem, int32 RemoveCount = 1
-	);
+	FDkInventorySlotArray(UActorComponent* InOwnerComponent) : OwnerComp(InOwnerComponent)
+	{
+	}
+	
+	UPROPERTY()
+	TArray<FDkInventorySlotEntry> Slots;
+
+	FDkInventorySlotEntry* FindByGlobalIndex(int32 InGlobalIndex);
+
+	FDkInventorySlotEntry* FindBySlotIndex(EInventoryItemCategory InCategory, int32 InSlotIndex);
+	TArray<FDkInventorySlotEntry*> FindByCategory(EInventoryItemCategory InCategory);
+    
+	bool NetDeltaSerialize(FNetDeltaSerializeInfo& DeltaParams)
+	{
+		return FastArrayDeltaSerialize<FDkInventorySlotEntry, FDkInventorySlotArray>(
+			Slots, DeltaParams, *this);
+	}
+
+	TWeakObjectPtr<UActorComponent> OwnerComp;
+};
+
+template<>
+struct TStructOpsTypeTraits<FDkInventorySlotArray> : public TStructOpsTypeTraitsBase2<FDkInventorySlotArray>
+{
+	enum { WithNetDeltaSerializer = true };
 };
 
 USTRUCT(BlueprintType)

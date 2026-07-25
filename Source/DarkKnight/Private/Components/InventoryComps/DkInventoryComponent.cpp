@@ -15,7 +15,7 @@
 #include "Net/UnrealNetwork.h"
 #include "Widgets/Inventory/DkInventoryDraggedItem.h"
 
-UDkInventoryComponent::UDkInventoryComponent() : InventoryList(this)
+UDkInventoryComponent::UDkInventoryComponent() : InventoryList(this), InventorySlotArray(this)
 {
 	PrimaryComponentTick.bCanEverTick = false;
 
@@ -28,7 +28,7 @@ void UDkInventoryComponent::GetLifetimeReplicatedProps(TArray<class FLifetimePro
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ThisClass, InventoryList);
-	DOREPLIFETIME_CONDITION_NOTIFY(ThisClass, InventoryCategoryItemsArray, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME(ThisClass, InventorySlotArray);
 }
 
 void UDkInventoryComponent::InitializeInventoryComponent()
@@ -135,7 +135,7 @@ void UDkInventoryComponent::Server_AddNewItem_Implementation(
 		if (OwningCharacter->GetController()->GetNetMode() == NM_ListenServer ||
 			OwningCharacter->GetController()->GetNetMode() == NM_Standalone)
 		{
-			UpdateInventoryCategoryItemsArray(Result);
+			UpdateInventorySlotArray(Result);
 		}
 	}
 
@@ -165,7 +165,7 @@ void UDkInventoryComponent::Server_AddNewItemWithItem_Implementation(
 		if (OwningCharacter->GetController()->GetNetMode() == NM_ListenServer ||
 			OwningCharacter->GetController()->GetNetMode() == NM_Standalone)
 		{
-			UpdateInventoryCategoryItemsArray(Result);
+			UpdateInventorySlotArray(Result);
 		}
 	}
 
@@ -190,7 +190,7 @@ void UDkInventoryComponent::Server_AddStacksToItem_Implementation(
 		if (OwningCharacter->GetController()->GetNetMode() == NM_ListenServer ||
 			OwningCharacter->GetController()->GetNetMode() == NM_Standalone)
 		{
-			UpdateInventoryCategoryItemsArray(Result);
+			UpdateInventorySlotArray(Result);
 		}
 	}
 
@@ -221,7 +221,7 @@ void UDkInventoryComponent::Server_AddStacksToItemWithItem_Implementation(
 		if (OwningCharacter->GetController()->GetNetMode() == NM_ListenServer ||
 			OwningCharacter->GetController()->GetNetMode() == NM_Standalone)
 		{
-			UpdateInventoryCategoryItemsArray(Result);
+			UpdateInventorySlotArray(Result);
 		}
 	}
 
@@ -254,13 +254,18 @@ void UDkInventoryComponent::ServerDropItem_Implementation(UDkInventoryDraggedIte
 		DroppedItem->GetInventoryItem()->SetTotalStackCount(NewStackCount);
 	}
 
-	FInventoryCategoryItemsArray& CategoryItemsArrayMutable = GetInventoryCategoryItemsArrayMutable();
-	CategoryItemsArrayMutable.RemoveItemByIndex(
-		DroppedItem->GetItemCategory(),
-		DroppedItem->GetPreviousGridIndex(),
-		DroppedItem->GetInventoryItem(),
-		DroppedItem->GetStackCount()
-	);
+	FDkInventorySlotEntry* SlotEntry =
+		InventorySlotArray.FindBySlotIndex(DroppedItem->GetItemCategory(), DroppedItem->GetPreviousGridIndex());
+	if (SlotEntry->BriefInfo.InventoryItem &&
+		SlotEntry->BriefInfo.InventoryItem->GetItemTag() == DroppedItem->GetItemTag())
+	{
+		if (SlotEntry->BriefInfo.StackCount <= DroppedItem->GetStackCount())
+		{
+			SlotEntry->BriefInfo.InventoryItem = nullptr;
+		}
+		SlotEntry->BriefInfo.StackCount -= DroppedItem->GetStackCount();
+		InventorySlotArray.MarkItemDirty(*SlotEntry);
+	}
 
 	SpawnDroppedItem(DroppedItem->GetInventoryItem(), DroppedItem->GetStackCount());
 }
@@ -300,8 +305,13 @@ void UDkInventoryComponent::ServerConsumeItem_Implementation(UDkInventoryItem* I
 		Item->SetTotalStackCount(NewStackCount);
 	}
 
-	FInventoryCategoryItemsArray& CategoryItemsArrayMutable = GetInventoryCategoryItemsArrayMutable();
-	CategoryItemsArrayMutable.RemoveItemByIndex(Item->GetItemCategory(), Index, Item, 1);
+	FDkInventorySlotEntry* SlotEntry = InventorySlotArray.FindBySlotIndex(Item->GetItemCategory(), Index);
+	if (SlotEntry->BriefInfo.StackCount <= 1)
+	{
+		SlotEntry->BriefInfo.InventoryItem = nullptr;
+	}
+	SlotEntry->BriefInfo.StackCount -= 1;
+	InventorySlotArray.MarkItemDirty(*SlotEntry);
 
 	if (FInventoryItemFragment_Consumable* ConsumableFragment =
 		Item->GetItemManifestMutable().GetFragmentOfTypeMutable<FInventoryItemFragment_Consumable>())
@@ -336,44 +346,45 @@ void UDkInventoryComponent::BeginPlay()
 
 	InitializeInventoryComponent();
 
-	InitInventoryCategoryItemsArray();
+	InitInventorySlotArray();
 }
 
-void UDkInventoryComponent::InitInventoryCategoryItemsArray()
+void UDkInventoryComponent::InitInventorySlotArray()
 {
-	// 应该只在Client端执行
 	if (!OwningCharacter.IsValid()) return;
 	if (!OwningCharacter->HasAuthority()) return;
 
-	InventoryCategoryItemsArray = FInstancedStruct::Make<FInventoryCategoryItemsArray>();
-
+	int GlobalIndex = 0;
 	for (const FInventoryItemCategoryInfo& CategoryInfo : CategoryInfoList)
 	{
-		EInventoryItemCategory ItemCategory = CategoryInfo.Category;
-		if (!GetInventoryCategoryItemsArray().ContainCategory(ItemCategory))
+		for (int iSlotIndex = 0; iSlotIndex < CategoryInfo.Rows * CategoryInfo.Columns; iSlotIndex++)
 		{
-			FInventoryCategoryItemsArray& ItemsArrayMutable = GetInventoryCategoryItemsArrayMutable();
-			ItemsArrayMutable.AddNewCategory(ItemCategory, CategoryInfo.Rows * CategoryInfo.Columns);
+			FDkInventorySlotEntry& NewEntry = InventorySlotArray.Slots.AddDefaulted_GetRef();
+			NewEntry.Category = CategoryInfo.Category;
+			NewEntry.GlobalIndex = GlobalIndex;
+			NewEntry.BriefInfo = FInventoryItemBriefInfo(iSlotIndex);
+			GlobalIndex++;
 		}
 	}
+
+	InventorySlotArray.MarkArrayDirty();
 }
 
-void UDkInventoryComponent::UpdateInventoryCategoryItemsArray(const FDkInventorySlotAvailabilityResult& Result)
+void UDkInventoryComponent::UpdateInventorySlotArray(const FDkInventorySlotAvailabilityResult& Result)
 {
 	if (!Result.Item.IsValid()) return;
 	EInventoryItemCategory ItemCategory = Result.Item->GetItemManifest().GetItemCategory();
-	if (!GetInventoryCategoryItemsArray().ContainCategory(ItemCategory)) return;
+	if (!HasCategory(ItemCategory)) return;
 
-	FInventoryCategoryItemsArray& ItemsArrayMutable = GetInventoryCategoryItemsArrayMutable();
-	TArray<FInventoryItemBriefInfo>* ItemBriefInfos = ItemsArrayMutable.FindItems(ItemCategory);
 	for (const auto& Availability : Result.SlotAvailabilities)
 	{
-		FInventoryItemBriefInfo& ItemInfo = (*ItemBriefInfos)[Availability.Index];
+		FDkInventorySlotEntry* SlotEntry = InventorySlotArray.FindBySlotIndex(ItemCategory, Availability.Index);
 		if (!Availability.bItemAtIndex)
 		{
-			ItemInfo.InventoryItem = Result.Item.Get();
+			SlotEntry->BriefInfo.InventoryItem = Result.Item.Get();
 		}
-		ItemInfo.StackCount += Availability.AmountToFill;
+		SlotEntry->BriefInfo.StackCount += Availability.AmountToFill;
+		InventorySlotArray.MarkItemDirty(*SlotEntry);
 	}
 
 	Debug::Print("123");
@@ -381,15 +392,78 @@ void UDkInventoryComponent::UpdateInventoryCategoryItemsArray(const FDkInventory
 	// TODO: 这个更新InventoryItemBriefMap的也可以改成Server端执行
 }
 
-void UDkInventoryComponent::OnRep_InventoryCategoryItemsArray()
+void UDkInventoryComponent::SetInventorySlotArray(
+	EInventoryItemCategory InCategory, const TArray<FInventoryItemBriefInfo>& ItemBriefInfos)
 {
-	OnInventoryCategoryItemsArrayUpdated.Broadcast();
+	Server_UpdateInventorySlotArray(InCategory, ItemBriefInfos);
 }
 
-const TArray<FInventoryItemBriefInfo>* UDkInventoryComponent::GetItemBriefInfoByCategory(
-	EInventoryItemCategory InCategory) const
+void UDkInventoryComponent::Server_UpdateInventorySlotArray_Implementation(
+	EInventoryItemCategory InCategory, const TArray<FInventoryItemBriefInfo>& ItemBriefInfos)
 {
-	return GetInventoryCategoryItemsArray().FindItems(InCategory);
+	TArray<FDkInventorySlotEntry*> SlotEntries = InventorySlotArray.FindByCategory(InCategory);
+	for (FDkInventorySlotEntry* SlotEntry : SlotEntries)
+	{
+		SlotEntry->BriefInfo.InventoryItem = ItemBriefInfos[SlotEntry->BriefInfo.Index].InventoryItem;
+		SlotEntry->BriefInfo.StackCount = ItemBriefInfos[SlotEntry->BriefInfo.Index].StackCount;
+	}
+	InventorySlotArray.MarkArrayDirty();
+}
+
+bool UDkInventoryComponent::Server_UpdateInventorySlotArray_Validate(EInventoryItemCategory InCategory,
+                                                                     const TArray<FInventoryItemBriefInfo>&
+                                                                     ItemBriefInfos)
+{
+	return true;
+}
+
+TArray<FInventoryItemBriefInfo> UDkInventoryComponent::GetCategorySlots(EInventoryItemCategory Category) const
+{
+	TArray<FInventoryItemBriefInfo> Result;
+	for (const auto& Slot : InventorySlotArray.Slots)
+	{
+		if (Slot.Category == Category)
+		{
+			Result.Add(Slot.BriefInfo);
+		}
+	}
+	Result.Sort([](const FInventoryItemBriefInfo& A, const FInventoryItemBriefInfo& B)
+	{
+		return A.Index < B.Index;
+	});
+	return Result;
+}
+
+void UDkInventoryComponent::TryToRemoveItem(EInventoryItemCategory InCategory, int Index, int Count)
+{
+	Server_RemoveItem(InCategory, Index, Count);
+}
+
+void UDkInventoryComponent::Server_RemoveItem_Implementation(EInventoryItemCategory InCategory, int Index, int Count)
+{
+	FDkInventorySlotEntry* SlotEntry = InventorySlotArray.FindBySlotIndex(InCategory, Index);
+	if (SlotEntry->BriefInfo.StackCount <= Count)
+	{
+		SlotEntry->BriefInfo.InventoryItem = nullptr;
+	}
+	SlotEntry->BriefInfo.StackCount -= Count;
+	InventorySlotArray.MarkItemDirty(*SlotEntry);
+}
+
+bool UDkInventoryComponent::Server_RemoveItem_Validate(EInventoryItemCategory InCategory, int Index, int Count)
+{
+	return true;
+}
+
+bool UDkInventoryComponent::HasCategory(EInventoryItemCategory InCategory)
+{
+	FInventoryItemCategoryInfo* ItemCategoryInfo = CategoryInfoList.FindByPredicate(
+		[InCategory](const FInventoryItemCategoryInfo& CategoryInfo)
+		{
+			return CategoryInfo.Category == InCategory;
+		}
+	);
+	return ItemCategoryInfo != nullptr;
 }
 
 FDkInventorySlotAvailabilityResult UDkInventoryComponent::HasRoomForItem(const UDkItemComponent* ItemComponent)
@@ -406,7 +480,7 @@ FDkInventorySlotAvailabilityResult UDkInventoryComponent::HasRoomForItem(const F
 {
 	FDkInventorySlotAvailabilityResult Result;
 	EInventoryItemCategory ItemCategory = Manifest.GetItemCategory();
-	if (!GetInventoryCategoryItemsArray().ContainCategory(ItemCategory)) return Result;
+	if (!HasCategory(ItemCategory)) return Result;
 	// 判断物品是否可堆叠
 	const FItemFragment_Stackable* StackableFragment =
 		Manifest.GetFragmentOfType<FItemFragment_Stackable>();
@@ -416,15 +490,13 @@ FDkInventorySlotAvailabilityResult UDkInventoryComponent::HasRoomForItem(const F
 	int32 AmountToFill = StackableFragment ? StackableFragment->GetStackCount() : 1;
 
 	// For each Grid Slot:
-	for (int iIdx = 0; iIdx < GetInventoryCategoryItemsArray().GetCategoryMaxSize(ItemCategory); ++iIdx)
+	for (FDkInventorySlotEntry* Slot : InventorySlotArray.FindByCategory(ItemCategory))
 	{
-		const TArray<FInventoryItemBriefInfo>* ItemBriefList = GetInventoryCategoryItemsArray().FindItems(ItemCategory);
-		const FInventoryItemBriefInfo& ItemBriefInfo = (*ItemBriefList)[iIdx];
 		//   如果已经没有剩余要填充的数量，提前跳出循环。
 		if (AmountToFill == 0) break;
 
 		//   物品能否放进这里？
-		UDkInventoryItem* CurSlotItem = ItemBriefInfo.InventoryItem;
+		UDkInventoryItem* CurSlotItem = Slot->BriefInfo.InventoryItem;
 		if (IsValid(CurSlotItem))
 		{
 			//     是可堆叠物品吗？如果不是，则当前索引的格子没有空间可以放Item
@@ -432,20 +504,20 @@ FDkInventorySlotAvailabilityResult UDkInventoryComponent::HasRoomForItem(const F
 			//     该物品与待添加物品Tag相同吗？
 			if (!CurSlotItem->DoesItemTagMatch(Manifest.GetItemTag())) continue;
 			//     如果可堆叠，该槽位是否已达到最大堆叠上限？
-			if (ItemBriefInfo.StackCount >= MaxStackCount) continue;
+			if (Slot->BriefInfo.StackCount >= MaxStackCount) continue;
 		}
 
 		//   需要填充多少？如果是0，说明这个格子不需要考虑
 		const int32 AmountToFillInSlot =
-			CalculateFillAmountForSlot(Result.bStackable, MaxStackCount, AmountToFill, ItemBriefInfo);
+			CalculateFillAmountForSlot(Result.bStackable, MaxStackCount, AmountToFill, Slot->BriefInfo);
 		if (AmountToFillInSlot == 0) continue;
 
 		//   更新SlotAvailabilityResult
 		Result.TotalRoomToFill += AmountToFillInSlot;
 		Result.SlotAvailabilities.Emplace(
-			ItemBriefInfo.Index,
+			Slot->BriefInfo.Index,
 			Result.bStackable ? AmountToFillInSlot : 0,
-			IsValid(ItemBriefInfo.InventoryItem)
+			IsValid(Slot->BriefInfo.InventoryItem)
 		);
 		//   更新剩余待填充数量（AmountToFill）
 		AmountToFill -= AmountToFillInSlot;

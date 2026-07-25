@@ -47,6 +47,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="Inventory Function Library")
 	static FText GetItemName(int32 InItemId);
+
+	UFUNCTION(BlueprintCallable, Category="Inventory Function Library")
+	static FGameplayTag GetItemTag(int32 InItemId);
 	
 	UFUNCTION(BlueprintCallable, Category="Inventory Function Library")
 	static EInventoryItemCategory GetItemCategory(int32 InItemId);

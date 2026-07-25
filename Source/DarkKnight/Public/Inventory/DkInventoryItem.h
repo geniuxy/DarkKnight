@@ -25,6 +25,7 @@ public:
 	virtual bool IsSupportedForNetworking() const override { return true; }
 	bool IsItemStackable() const;
 	FText GetItemName() const;
+	FGameplayTag GetItemTag() const;
 	EInventoryItemCategory GetItemCategory() const;
 	bool DoesItemTagMatch(const FGameplayTag& ItemTag) const;
 

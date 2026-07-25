@@ -25,6 +25,7 @@ class DARKKNIGHT_API UDkInventoryDraggedItem : public UCommonUserWidget
 public:
 	//~Begin UUserWidget Function
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 	//~End UUserWidget Function
 
 	FDraggedItemEvent OnDraggedItemClicked;

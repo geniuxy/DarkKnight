@@ -54,6 +54,8 @@ UDkInventoryItem* FDkInventoryFastArray::AddEntry(UDkItemComponent* ItemComponen
 	FDkInventoryFastArrayEntry& NewEntry = Entries.AddDefaulted_GetRef();
 	NewEntry.Item = ItemComponent->GetItemManifest().Manifest(OwningActor);
 
+	// AddRepSubObj是为了把UDkInventoryItem注册为 Component的 Replicated SubObject，获得 NetGUID
+	// 不然Client上，Item为 nullptr
 	InventoryComponent->AddRepSubObj(NewEntry.Item);
 	MarkItemDirty(NewEntry);
 	return NewEntry.Item;

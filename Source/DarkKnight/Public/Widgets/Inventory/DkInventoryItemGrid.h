@@ -83,7 +83,9 @@ protected:
 public:
 	void PopulateGrid(EInventoryItemCategory InCategory);
 
-	void HandleInventoryCategoryItemsArrayUpdated();
+	void HandleInventorySlotArrayUpdated();
+	
+	void UpdateInventorySlotArray();
 	
 	/* 更新GridSlot背景 */
 protected:
@@ -148,9 +150,9 @@ protected:
 
 	virtual void OnDraggedItemClicked(const FPointerEvent& MouseEvent);
 
-	void RequestMoveItem(int MoveStackCount);
-	void RequestMoveItemFromEquipment(UDkInventoryItem* Item, int MoveStackCount);
-	void RequestSwapItem();
+	// void RequestMoveItem(int MoveStackCount);
+	// void RequestMoveItemFromEquipment(UDkInventoryItem* Item, int MoveStackCount);
+	// void RequestSwapItem();
 	/********/
 
 	/* 鼠标Hover背包网格，改变其样式 */

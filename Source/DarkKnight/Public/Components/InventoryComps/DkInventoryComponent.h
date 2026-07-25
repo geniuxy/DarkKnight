@@ -41,7 +41,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnItemDescriptionMenuRemoved);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FItemEquipStatusChanged, UDkInventoryItem*, Item);
 
-DECLARE_MULTICAST_DELEGATE(FOnInventoryCategoryItemsArrayUpdated);
+DECLARE_MULTICAST_DELEGATE(FOnInventorySlotArrayUpdated);
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), Blueprintable)
 class DARKKNIGHT_API UDkInventoryComponent : public UActorComponent
@@ -151,36 +151,41 @@ protected:
 	/*                     Inventory Item Brief Info                      */
 	/**********************************************************************/
 public:
-	void InitInventoryCategoryItemsArray();
-	void UpdateInventoryCategoryItemsArray(const FDkInventorySlotAvailabilityResult& Result);
+	void InitInventorySlotArray();
+	void UpdateInventorySlotArray(const FDkInventorySlotAvailabilityResult& Result);
 
-	const FInventoryCategoryItemsArray& GetInventoryCategoryItemsArray() const
-	{
-		return InventoryCategoryItemsArray.Get<FInventoryCategoryItemsArray>();
-	}
+	void SetInventorySlotArray(
+		EInventoryItemCategory InCategory, const TArray<FInventoryItemBriefInfo>& ItemBriefInfos
+	);
 
-	FInventoryCategoryItemsArray& GetInventoryCategoryItemsArrayMutable()
-	{
-		return InventoryCategoryItemsArray.GetMutable<FInventoryCategoryItemsArray>();
-	}
+	UFUNCTION(Server, Reliable, WithValidation)
+	void Server_UpdateInventorySlotArray(
+		EInventoryItemCategory InCategory, const TArray<FInventoryItemBriefInfo>& ItemBriefInfos
+	);
 
-	UFUNCTION()
-	void OnRep_InventoryCategoryItemsArray();
+	FOnInventorySlotArrayUpdated OnInventorySlotArrayUpdated;
 
-	FOnInventoryCategoryItemsArrayUpdated OnInventoryCategoryItemsArrayUpdated;
+	TArray<FInventoryItemBriefInfo> GetCategorySlots(EInventoryItemCategory Category) const;
 
-	const TArray<FInventoryItemBriefInfo>* GetItemBriefInfoByCategory(EInventoryItemCategory InCategory) const;
+	void TryToRemoveItem(EInventoryItemCategory InCategory, int Index, int Count);
+
+	UFUNCTION(Server, Reliable, WithValidation)
+	void Server_RemoveItem(EInventoryItemCategory InCategory, int Index, int Count);
 
 protected:
-	UPROPERTY(VisibleAnywhere, meta=(BaseStruct="/Script/DarkKnight.InventoryCategoryItemsArray"),
-		ReplicatedUsing=OnRep_InventoryCategoryItemsArray)
-	FInstancedStruct InventoryCategoryItemsArray; // 用于记录背包里的放置情况
+	UPROPERTY(Replicated)
+	FDkInventorySlotArray InventorySlotArray; // 用于记录背包里的放置情况
 
 	UPROPERTY(EditAnywhere, Category="Inventory Item Category")
 	TArray<FInventoryItemCategoryInfo> CategoryInfoList;
 
+private:
+	bool HasCategory(EInventoryItemCategory InCategory);
+
 public:
 	FORCEINLINE TArray<FInventoryItemCategoryInfo> GetAllInventoryCategoryInfo() const { return CategoryInfoList; }
+	FORCEINLINE FDkInventorySlotArray GetInventorySlotArray() const { return InventorySlotArray; }
+
 	/**********************************************************************/
 	/*                           Check Has Room                           */
 	/**********************************************************************/

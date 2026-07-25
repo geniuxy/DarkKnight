@@ -122,6 +122,8 @@ void ADkGamePlayerController::AcknowledgePossession(APawn* NewPawn)
 {
 	Super::AcknowledgePossession(NewPawn);
 
+	if (HasAuthority()) return;
+
 	OwningPlayerCharacter = Cast<ADkCharacterBase>(NewPawn);
 	if (OwningPlayerCharacter)
 	{

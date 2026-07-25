@@ -27,6 +27,8 @@ class DARKKNIGHT_API UDkWidgetInventoryMenu : public UCommonUserWidget
 public:
 	void SetInventoryComponent(UDkInventoryComponent* InInventoryComp);
 
+	void ClearGridItems();
+
 protected:
 	//~Begin UUserWidget Function
 	virtual void NativeOnInitialized() override;

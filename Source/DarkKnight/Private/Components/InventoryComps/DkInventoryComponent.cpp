@@ -4,7 +4,6 @@
 #include "Components/InventoryComps/DkInventoryComponent.h"
 
 #include "DarkKnightDebugHelper.h"
-#include "DkGameplayTags.h"
 #include "Characters/DkCharacterHero.h"
 #include "Components/DkItemComponent.h"
 #include "FunctionLibrarys/DkUIFunctionLibrary.h"
@@ -14,10 +13,6 @@
 #include "Inventory/DkInventoryItemFragment.h"
 #include "Inventory/DkInventorySlotAvailabilty.h"
 #include "Net/UnrealNetwork.h"
-#include "Subsytems/DkUISubsystem.h"
-#include "Widgets/DkWidgetActivatableBase.h"
-#include "Widgets/GameMenu/DkWidgetGameMenuScreen.h"
-#include "Widgets/Inventory/DkWidgetInventoryMenu.h"
 
 UDkInventoryComponent::UDkInventoryComponent() : InventoryList(this)
 {
@@ -33,33 +28,6 @@ void UDkInventoryComponent::GetLifetimeReplicatedProps(TArray<class FLifetimePro
 
 	DOREPLIFETIME(ThisClass, InventoryList);
 	DOREPLIFETIME(ThisClass, InventoryCategoryItemsArray);
-}
-
-void UDkInventoryComponent::ConstructInventoryMenu()
-{
-	if (OwningCharacter.IsValid() && !OwningCharacter->IsLocallyControlled())
-	{
-		return;
-	}
-
-	UDkUISubsystem::Get(this)->PushSoftWidgetToStackAsync(
-		DkGameplayTags::Dk_WidgetStack_GameMenu,
-		UDkUIFunctionLibrary::GetUISoftWidgetClassByTag(DkGameplayTags::Dk_Widget_GameMenu),
-		[this](EAsyncPushWidgetState InPushState, UDkWidgetActivatableBase* PushedWidget)
-		{
-			if (InPushState == EAsyncPushWidgetState::OnCreatedBeforePush)
-			{
-				UDkUIFunctionLibrary::ToggleInputMode(this, EDkInputMode::UIOnly);
-			}
-			if (InPushState == EAsyncPushWidgetState::AfterPush)
-			{
-				UDkWidgetGameMenuScreen* GameMenuScreen = CastChecked<UDkWidgetGameMenuScreen>(PushedWidget);
-				GameMenuScreen->SetVisibleCenterArea(DkGameplayTags::Dk_Widget_GameMenu_Inventory);
-				UDkWidgetInventoryMenu* InventoryMenu = GameMenuScreen->GetInventoryMenu();
-				InventoryMenu->SetInventoryComponent(this);
-			}
-		}
-	);
 }
 
 void UDkInventoryComponent::InitializeInventoryComponent()
@@ -385,6 +353,11 @@ void UDkInventoryComponent::UpdateInventoryCategoryItemsArray(const FDkInventory
 	Debug::Print("123");
 	// TODO: 这边加一个OnInventoryItemBriefMapUpdated, 并把OnStackChange删掉 （用来实时更新背包的内容）
 	// TODO: 这个更新InventoryItemBriefMap的也可以改成Server端执行
+}
+
+void UDkInventoryComponent::OnRep_InventoryCategoryItemsArray()
+{
+	
 }
 
 const TArray<FInventoryItemBriefInfo>* UDkInventoryComponent::GetItemBriefInfoByCategory(

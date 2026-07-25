@@ -8,6 +8,7 @@
 #include "CommonLazyImage.h"
 #include "CommonTextBlock.h"
 #include "Components/InventoryComps/DkInventoryComponent.h"
+#include "Components/InventoryComps/DkPlayerInventoryComp.h"
 #include "Subsytems/EngineSubsystems/DkInventorySubsystem.h"
 
 FReply UDkInventorySlottedItem::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
@@ -16,11 +17,10 @@ FReply UDkInventorySlottedItem::NativeOnMouseButtonDown(const FGeometry& InGeome
 
 	if (ItemDescriptionMenu.IsValid())
 	{
-		UDkInventorySubsystem* InventorySubsystem = UDkInventorySubsystem::Get();
-		checkf(InventorySubsystem, TEXT("InventorySubsystem为空！"));
-		UDkInventoryComponent* InventoryComponent = InventorySubsystem->GetCachedInventoryComponent();
-		checkf(InventoryComponent, TEXT("InventoryComponent未在InventorySubsystem中注册！"));
-		InventoryComponent->OnItemDescriptionMenuRemoved.Broadcast();
+		if (UDkPlayerInventoryComp* InventoryComponent = UDkInventorySubsystem::Get()->GetCachedInventoryComponent())
+		{
+			InventoryComponent->OnItemDescriptionMenuRemoved.Broadcast();
+		}
 		ItemDescriptionMenu = nullptr;
 	}
 
@@ -38,11 +38,10 @@ void UDkInventorySlottedItem::NativeOnMouseLeave(const FPointerEvent& MouseEvent
 {
 	if (ItemDescriptionMenu.IsValid())
 	{
-		UDkInventorySubsystem* InventorySubsystem = UDkInventorySubsystem::Get();
-		checkf(InventorySubsystem, TEXT("InventorySubsystem为空！"));
-		UDkInventoryComponent* InventoryComponent = InventorySubsystem->GetCachedInventoryComponent();
-		checkf(InventoryComponent, TEXT("InventoryComponent未在InventorySubsystem中注册！"));
-		InventoryComponent->OnItemDescriptionMenuRemoved.Broadcast();
+		if (UDkPlayerInventoryComp* InventoryComponent = UDkInventorySubsystem::Get()->GetCachedInventoryComponent())
+		{
+			InventoryComponent->OnItemDescriptionMenuRemoved.Broadcast();
+		}
 		ItemDescriptionMenu = nullptr;
 	}
 }
@@ -132,9 +131,8 @@ void UDkInventorySlottedItem::CreateItemDescriptionMenu()
 	// 根据Fragments，同化(渲染)ItemDescription的内容
 	InventoryItem->GetItemManifest().AssimilateInventoryFragments(ItemDescriptionMenu.Get());
 
-	UDkInventorySubsystem* InventorySubsystem = UDkInventorySubsystem::Get();
-	checkf(InventorySubsystem, TEXT("InventorySubsystem为空！"));
-	UDkInventoryComponent* InventoryComponent = InventorySubsystem->GetCachedInventoryComponent();
-	checkf(InventoryComponent, TEXT("InventoryComponent未在InventorySubsystem中注册！"));
-	InventoryComponent->OnItemDescriptionMenuCreated.Broadcast(ItemDescriptionMenu.Get());
+	if (UDkPlayerInventoryComp* InventoryComponent = UDkInventorySubsystem::Get()->GetCachedInventoryComponent())
+	{
+		InventoryComponent->OnItemDescriptionMenuCreated.Broadcast(ItemDescriptionMenu.Get());
+	}
 }

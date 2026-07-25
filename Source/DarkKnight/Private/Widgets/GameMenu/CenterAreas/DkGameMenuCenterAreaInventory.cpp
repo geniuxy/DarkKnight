@@ -6,10 +6,11 @@
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Components/CanvasPanel.h"
 #include "Components/CanvasPanelSlot.h"
-#include "Components/InventoryComps/DkInventoryComponent.h"
+#include "Components/InventoryComps/DkPlayerInventoryComp.h"
 #include "FunctionLibrarys/DkInventoryFunctionLibrary.h"
 #include "FunctionLibrarys/DkUIFunctionLibrary.h"
 #include "Widgets/Inventory/DkInventoryDraggedItem.h"
+#include "Widgets/Inventory/DkWidgetInventoryMenu.h"
 
 void UDkGameMenuCenterAreaInventory::NativeOnInitialized()
 {
@@ -84,6 +85,8 @@ void UDkGameMenuCenterAreaInventory::NativeOnDeactivated()
 		DraggedItem = nullptr;
 		InventoryComponent->OnDraggedItemRemoved.Broadcast();
 	}
+
+	WBP_InventoryMenu->ClearGridItems();
 }
 
 void UDkGameMenuCenterAreaInventory::HandleDraggedItemCreated(UDkInventoryDraggedItem* InDraggedItem)

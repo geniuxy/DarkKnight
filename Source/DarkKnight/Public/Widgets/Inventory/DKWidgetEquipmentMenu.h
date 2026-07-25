@@ -8,11 +8,11 @@
 
 #define NUM_OF_COLUMNS 6
 
+class UDkPlayerInventoryComp;
 class UDkInventoryItem;
 class UDkInventoryEquipmentGridSlot;
 class UCanvasPanel;
 class UDkInventoryDraggedItem;
-class UDkInventoryComponent;
 /**
  * 
  */
@@ -27,7 +27,7 @@ protected:
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 	//~End UUserWidget Function
 
-	TWeakObjectPtr<UDkInventoryComponent> InventoryComponent;
+	TWeakObjectPtr<UDkPlayerInventoryComp> InventoryComponent;
 
 private:
 	//***** Bound Widgets *****//

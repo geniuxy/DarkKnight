@@ -21,6 +21,14 @@ void UDkWidgetInventoryMenu::SetInventoryComponent(UDkInventoryComponent* InInve
 	InitInventoryCategoryButtons();
 }
 
+void UDkWidgetInventoryMenu::ClearGridItems()
+{
+	if (InventoryGrid)
+	{
+		InventoryGrid->ClearItems();
+	}
+}
+
 void UDkWidgetInventoryMenu::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();

@@ -50,11 +50,8 @@ public:
 	UDkInventoryComponent();
 
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
-
-	/* 构建背包界面 */
-	void ConstructInventoryMenu();
+	
 	void InitializeInventoryComponent();
-	/********/
 
 	/* 道具物品的添加和删除 */
 	void TryAddItem(UDkItemComponent* ItemComponent);
@@ -142,7 +139,6 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-private:
 	TWeakObjectPtr<ADkCharacterHero> OwningCharacter;
 	TWeakObjectPtr<UDkAbilitySystemComponent> OwnerASC;
 
@@ -160,20 +156,25 @@ public:
 	{
 		return InventoryCategoryItemsArray.Get<FInventoryCategoryItemsArray>();
 	}
+
 	FInventoryCategoryItemsArray& GetInventoryCategoryItemsArrayMutable()
 	{
 		return InventoryCategoryItemsArray.GetMutable<FInventoryCategoryItemsArray>();
 	}
 
+	UFUNCTION()
+	virtual void OnRep_InventoryCategoryItemsArray();
+
 	const TArray<FInventoryItemBriefInfo>* GetItemBriefInfoByCategory(EInventoryItemCategory InCategory) const;
 
 protected:
-	UPROPERTY(VisibleAnywhere, meta=(BaseStruct="/Script/DarkKnight.InventoryCategoryItemsArray"), Replicated)
-	FInstancedStruct InventoryCategoryItemsArray;
-	
+	UPROPERTY(VisibleAnywhere, meta=(BaseStruct="/Script/DarkKnight.InventoryCategoryItemsArray"),
+		ReplicatedUsing=OnRep_InventoryCategoryItemsArray)
+	FInstancedStruct InventoryCategoryItemsArray; // 用于记录背包里的放置情况
+
 	UPROPERTY(EditAnywhere, Category="Inventory Item Category")
 	TArray<FInventoryItemCategoryInfo> CategoryInfoList;
-	
+
 public:
 	FORCEINLINE TArray<FInventoryItemCategoryInfo> GetAllInventoryCategoryInfo() const { return CategoryInfoList; }
 	/**********************************************************************/

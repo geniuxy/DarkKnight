@@ -9,6 +9,14 @@ struct FInventoryItemBriefInfo // 背包物品简约信息
 {
 	GENERATED_BODY()
 
+	FInventoryItemBriefInfo()
+	{
+	}
+
+	FInventoryItemBriefInfo(int InIndex) : Index(InIndex)
+	{
+	}
+
 	UPROPERTY()
 	int Index = INDEX_NONE; // 类别里的第几个
 
@@ -46,7 +54,7 @@ struct FInventoryCategoryItemsArray
 
 	UPROPERTY()
 	TArray<FInventoryCategoryItems> Array;
-	
+
 	bool ContainCategory(EInventoryItemCategory Category) const;
 	TArray<FInventoryItemBriefInfo>* FindItems(EInventoryItemCategory Category);
 	const TArray<FInventoryItemBriefInfo>* FindItems(EInventoryItemCategory Category) const;
@@ -67,10 +75,10 @@ struct FInventoryItemCategoryInfo // 背包物品各个类别的相关信息
 
 	UPROPERTY(EditAnywhere)
 	EInventoryItemCategory Category;
-	
+
 	UPROPERTY(EditAnywhere)
 	UTexture2D* CategoryIcon = nullptr;
-	
+
 	UPROPERTY(EditAnywhere)
 	int Rows = 0;
 

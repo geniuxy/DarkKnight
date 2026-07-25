@@ -13,15 +13,29 @@ class DARKKNIGHT_API UDkPlayerInventoryComp : public UDkInventoryComponent
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this component's properties
-	UDkPlayerInventoryComp();
+
+	/* 构建背包界面 */
+	void ConstructInventoryMenu();
+	/**************/
+	
+	/* 请求将某槽位的物品移动到另一槽位（空位） */
+	UFUNCTION(BlueprintCallable, Category="Category Items Array")
+	void RequestMoveItem(EInventoryItemCategory Category, int32 FromSlot, int32 ToSlot, int32 StackCount);
+
+	/* 请求交换两个槽位的物品 */
+	UFUNCTION(BlueprintCallable, Category="Category Items Array")
+	void RequestSwapItems(EInventoryItemCategory Category, int32 SlotA, int32 SlotB);
 
 protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
+	UFUNCTION(Server, Reliable, WithValidation)
+	void Server_MoveItem(EInventoryItemCategory Category, int32 FromSlot, int32 ToSlot, int32 StackCount);
 
-public:
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
-	                           FActorComponentTickFunction* ThisTickFunction) override;
+	UFUNCTION(Server, Reliable, WithValidation)
+	void Server_SwapItems(EInventoryItemCategory Category, int32 SlotA, int32 SlotB);
+
+	void ApplyMoveItem(EInventoryItemCategory Category, int32 FromSlot, int32 ToSlot, int32 MoveStackCount);
+	void ApplySwapItems(EInventoryItemCategory Category, int32 SlotA, int32 SlotB);
+
+	/* 布局变更后统一调用，触发 Replication */
+	void CommitCategoryItemsArray(const FInventoryCategoryItemsArray& InCategoryItemsArray);
 };

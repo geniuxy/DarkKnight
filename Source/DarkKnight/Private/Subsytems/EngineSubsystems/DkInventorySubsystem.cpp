@@ -3,9 +3,8 @@
 
 #include "Subsytems/EngineSubsystems/DkInventorySubsystem.h"
 
-#include "DarkKnightDebugHelper.h"
+#include "Components/InventoryComps/DkPlayerInventoryComp.h"
 #include "Kismet/DataTableFunctionLibrary.h"
-#include "Settings/DkGameUserSettings.h"
 #include "Settings/DkInventoryDeveloperSettings.h"
 
 UDkInventorySubsystem* UDkInventorySubsystem::Get()
@@ -33,7 +32,7 @@ bool UDkInventorySubsystem::ShouldCreateSubsystem(UObject* Outer) const
 	// return false;
 }
 
-void UDkInventorySubsystem::RegisterCachedInventoryComponent(UDkInventoryComponent* InventoryComponent)
+void UDkInventorySubsystem::RegisterCachedInventoryComponent(UDkPlayerInventoryComp* InventoryComponent)
 {
 	check(InventoryComponent);
 	CachedInventoryComponent = InventoryComponent;
@@ -47,6 +46,7 @@ void UDkInventorySubsystem::InitializeData()
 
 void UDkInventorySubsystem::InitializeItemData()
 {
+	CachedItemTable.Empty();
 	const UDkInventoryDeveloperSettings* UIDeveloperSettings = GetDefault<UDkInventoryDeveloperSettings>();
 	const UDataTable* ItemDataTable = UIDeveloperSettings->GetItemDataTable();
 	checkf(ItemDataTable, TEXT("整体Item信息表还没有配置！"));
@@ -65,6 +65,7 @@ void UDkInventorySubsystem::InitializeItemData()
 
 void UDkInventorySubsystem::InitializeEntryData()
 {
+	CachedEntryTable.Empty();
 	const UDkInventoryDeveloperSettings* UIDeveloperSettings = GetDefault<UDkInventoryDeveloperSettings>();
 	const UDataTable* EntryTable = UIDeveloperSettings->GetEntryTable();
 	checkf(EntryTable, TEXT("整体Entry信息表还没有配置！"));

@@ -3,33 +3,144 @@
 
 #include "Components/InventoryComps/DkPlayerInventoryComp.h"
 
+#include "DkGameplayTags.h"
+#include "Characters/DkCharacterHero.h"
+#include "FunctionLibrarys/DkUIFunctionLibrary.h"
+#include "Subsytems/DkUISubsystem.h"
+#include "Widgets/GameMenu/DkWidgetGameMenuScreen.h"
+#include "Widgets/Inventory/DkWidgetInventoryMenu.h"
 
-// Sets default values for this component's properties
-UDkPlayerInventoryComp::UDkPlayerInventoryComp()
+void UDkPlayerInventoryComp::ConstructInventoryMenu()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
+	if (OwningCharacter.IsValid() && !OwningCharacter->IsLocallyControlled())
+	{
+		return;
+	}
 
-	// ...
+	UDkUISubsystem::Get(this)->PushSoftWidgetToStackAsync(
+		DkGameplayTags::Dk_WidgetStack_GameMenu,
+		UDkUIFunctionLibrary::GetUISoftWidgetClassByTag(DkGameplayTags::Dk_Widget_GameMenu),
+		[this](EAsyncPushWidgetState InPushState, UDkWidgetActivatableBase* PushedWidget)
+		{
+			if (InPushState == EAsyncPushWidgetState::OnCreatedBeforePush)
+			{
+				UDkUIFunctionLibrary::ToggleInputMode(this, EDkInputMode::UIOnly);
+			}
+			if (InPushState == EAsyncPushWidgetState::AfterPush)
+			{
+				UDkWidgetGameMenuScreen* GameMenuScreen = CastChecked<UDkWidgetGameMenuScreen>(PushedWidget);
+				GameMenuScreen->SetVisibleCenterArea(DkGameplayTags::Dk_Widget_GameMenu_Inventory);
+				UDkWidgetInventoryMenu* InventoryMenu = GameMenuScreen->GetInventoryMenu();
+				InventoryMenu->SetInventoryComponent(this);
+			}
+		}
+	);
 }
 
-
-// Called when the game starts
-void UDkPlayerInventoryComp::BeginPlay()
+void UDkPlayerInventoryComp::RequestMoveItem(EInventoryItemCategory Category, int32 FromSlot, int32 ToSlot,
+                                             int32 StackCount)
 {
-	Super::BeginPlay();
-
-	// ...
-	
+	Server_MoveItem(Category, FromSlot, ToSlot, StackCount);
 }
 
-
-// Called every frame
-void UDkPlayerInventoryComp::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UDkPlayerInventoryComp::RequestSwapItems(EInventoryItemCategory Category, int32 SlotA, int32 SlotB)
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
+	Server_SwapItems(Category, SlotA, SlotB);
 }
 
+void UDkPlayerInventoryComp::Server_MoveItem_Implementation(
+	EInventoryItemCategory Category, int32 FromSlot, int32 ToSlot, int32 StackCount)
+{
+	ApplyMoveItem(Category, FromSlot, ToSlot, StackCount);
+}
+
+bool UDkPlayerInventoryComp::Server_MoveItem_Validate(
+	EInventoryItemCategory Category, int32 FromSlot, int32 ToSlot, int32 StackCount)
+{
+	if (FromSlot < 0 || ToSlot < 0 || FromSlot == ToSlot)
+	{
+		return false;
+	}
+	FInventoryCategoryItemsArray CategoryItemsArray = GetInventoryCategoryItemsArray();
+	TArray<FInventoryItemBriefInfo>* ItemBriefInfos = CategoryItemsArray.FindItems(Category);
+	if (!ItemBriefInfos) return false;
+	if (!ItemBriefInfos->IsValidIndex(FromSlot) || !ItemBriefInfos->IsValidIndex(ToSlot)) return false;
+	if (!(*ItemBriefInfos)[FromSlot].IsValid()) return false;
+	if ((*ItemBriefInfos)[FromSlot].StackCount < StackCount) return false;
+	if (!(*ItemBriefInfos)[ToSlot].IsEmpty() &&
+		(*ItemBriefInfos)[FromSlot].InventoryItem != (*ItemBriefInfos)[ToSlot].InventoryItem)
+	{
+		return false;
+	}
+
+	FGameplayTag ItemTag = (*ItemBriefInfos)[FromSlot].InventoryItem->GetItemManifest().GetItemTag();
+	if (!InventoryList.FindFirstItemByTag(ItemTag)) return false;
+
+	return true;
+}
+
+void UDkPlayerInventoryComp::Server_SwapItems_Implementation(EInventoryItemCategory Category, int32 SlotA, int32 SlotB)
+{
+	ApplySwapItems(Category, SlotA, SlotB);
+}
+
+bool UDkPlayerInventoryComp::Server_SwapItems_Validate(EInventoryItemCategory Category, int32 SlotA, int32 SlotB)
+{
+	return true;
+}
+
+void UDkPlayerInventoryComp::ApplyMoveItem(
+	EInventoryItemCategory Category, int32 FromSlot, int32 ToSlot, int32 MoveStackCount)
+{
+	FInventoryCategoryItemsArray CategoryItemsArray = GetInventoryCategoryItemsArray();
+
+	// 根据 Category 获取对应槽位数组
+	TArray<FInventoryItemBriefInfo>* ItemBriefInfos = CategoryItemsArray.FindItems(Category);
+	if (!ItemBriefInfos) return;
+
+	FInventoryItemBriefInfo TargetItemInfo = (*ItemBriefInfos)[ToSlot];
+	FInventoryItemBriefInfo SourceItemInfo = (*ItemBriefInfos)[FromSlot];
+
+	// 执行移动
+	FInventoryItemBriefInfo NewTargetItemInfo = FInventoryItemBriefInfo(ToSlot);
+	NewTargetItemInfo.InventoryItem = SourceItemInfo.InventoryItem;
+	NewTargetItemInfo.StackCount = MoveStackCount + TargetItemInfo.StackCount;
+	(*ItemBriefInfos)[ToSlot] = NewTargetItemInfo;
+
+	FInventoryItemBriefInfo NewSourceItemInfo = FInventoryItemBriefInfo(FromSlot);
+	if (SourceItemInfo.StackCount > MoveStackCount)
+	{
+		NewSourceItemInfo.InventoryItem = SourceItemInfo.InventoryItem;
+		NewSourceItemInfo.StackCount = SourceItemInfo.StackCount - MoveStackCount;
+	}
+	(*ItemBriefInfos)[FromSlot] = NewSourceItemInfo;
+
+	// 提交变更（触发 Replication）
+	CommitCategoryItemsArray(CategoryItemsArray);
+}
+
+void UDkPlayerInventoryComp::ApplySwapItems(EInventoryItemCategory Category, int32 SlotA, int32 SlotB)
+{
+	FInventoryCategoryItemsArray CategoryItemsArray = GetInventoryCategoryItemsArray();
+
+	// 根据 Category 获取对应槽位数组
+	TArray<FInventoryItemBriefInfo>* ItemBriefInfos = CategoryItemsArray.FindItems(Category);
+	if (!ItemBriefInfos) return;
+
+	FInventoryItemBriefInfo SlotAItemInfo = (*ItemBriefInfos)[SlotA];
+	FInventoryItemBriefInfo SlotBItemInfo = (*ItemBriefInfos)[SlotB];
+
+	// 执行移动
+	SlotBItemInfo.Index = SlotA;
+	(*ItemBriefInfos)[SlotA] = SlotBItemInfo;
+	SlotAItemInfo.Index = SlotB;
+	(*ItemBriefInfos)[SlotB] = SlotAItemInfo;
+
+	// 提交变更（触发 Replication）
+	CommitCategoryItemsArray(CategoryItemsArray);
+}
+
+void UDkPlayerInventoryComp::CommitCategoryItemsArray(const FInventoryCategoryItemsArray& InCategoryItemsArray)
+{
+	InventoryCategoryItemsArray = FInstancedStruct::Make(InCategoryItemsArray);
+}

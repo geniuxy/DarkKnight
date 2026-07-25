@@ -8,7 +8,7 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "DkInventorySubsystem.generated.h"
 
-class UDkInventoryComponent;
+class UDkPlayerInventoryComp;
 /**
  * UGameInstanceSubsystem 本质上不适用于网络同步场景，但是Client和Server上都存在，适合存放静态的数据
  * 需要网络同步时：AGameState全局游戏状态 / APlayerState玩家相关状态
@@ -26,7 +26,7 @@ public:
 	//~End USubsystem Function
 
 	UFUNCTION(BlueprintCallable)
-	void RegisterCachedInventoryComponent(UDkInventoryComponent* InventoryComponent);
+	void RegisterCachedInventoryComponent(UDkPlayerInventoryComp* InventoryComponent);
 
 	void InitializeData();
 
@@ -36,7 +36,7 @@ public:
 
 private:
 	UPROPERTY(Transient) // 不保存到磁盘，不参与网络复制
-	UDkInventoryComponent* CachedInventoryComponent;
+	UDkPlayerInventoryComp* CachedInventoryComponent;
 
 	UPROPERTY(Transient)
 	TMap<int, FDkItemInfo> CachedItemTable;
@@ -45,7 +45,7 @@ private:
 	TMap<FName, FDkEntryInfo> CachedEntryTable;
 
 public:
-	LIST_DATA_ACCESSOR(UDkInventoryComponent*, CachedInventoryComponent)
+	LIST_DATA_ACCESSOR(UDkPlayerInventoryComp*, CachedInventoryComponent)
 
 	// 返回TMap的引用比较好，不容易指针悬空
 	FORCEINLINE const TMap<int, FDkItemInfo>& GetCachedItemTable() const { return CachedItemTable; }

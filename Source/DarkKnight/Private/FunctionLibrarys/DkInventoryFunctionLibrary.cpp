@@ -6,6 +6,7 @@
 #include "DkGameplayTags.h"
 #include "Characters/DkCharacterHero.h"
 #include "Components/InventoryComps/DkInventoryComponent.h"
+#include "Components/InventoryComps/DkPlayerInventoryComp.h"
 #include "Inventory/DkInventoryItem.h"
 #include "Inventory/DkInventoryItemFragment.h"
 #include "Subsytems/EngineSubsystems/DkInventorySubsystem.h"
@@ -20,13 +21,13 @@ FIntPoint UDkInventoryFunctionLibrary::GetPositionFormIndex(const int32 Index, c
 	return FIntPoint(Index % Columns, Index / Columns);
 }
 
-UDkInventoryComponent* UDkInventoryFunctionLibrary::GetInventoryComponent(const APlayerController* PlayerController)
+UDkPlayerInventoryComp* UDkInventoryFunctionLibrary::GetInventoryComponent(const APlayerController* PlayerController)
 {
 	if (!IsValid(PlayerController)) return nullptr;
 	ADkCharacterHero* OwningCharacterHero = Cast<ADkCharacterHero>(PlayerController->GetPawn());
 	if (!OwningCharacterHero) return nullptr;
 
-	UDkInventoryComponent* InventoryComponent = OwningCharacterHero->FindComponentByClass<UDkInventoryComponent>();
+	UDkPlayerInventoryComp* InventoryComponent = OwningCharacterHero->FindComponentByClass<UDkPlayerInventoryComp>();
 	return InventoryComponent;
 }
 

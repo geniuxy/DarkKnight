@@ -7,6 +7,7 @@
 #include "Widgets/Inventory/DkInventoryItemDescriptionMenu.h"
 #include "DkGameMenuCenterAreaInventory.generated.h"
 
+class UDkPlayerInventoryComp;
 class UCanvasPanel;
 class UDkInventoryComponent;
 class UDkInventoryDraggedItem;
@@ -44,7 +45,7 @@ private:
 
 	TWeakObjectPtr<UDkInventoryDraggedItem> DraggedItem;
 	
-	TWeakObjectPtr<UDkInventoryComponent> InventoryComponent;
+	TWeakObjectPtr<UDkPlayerInventoryComp> InventoryComponent;
 	
 	UFUNCTION()
 	void HandleDraggedItemCreated(UDkInventoryDraggedItem* InDraggedItem);

@@ -8,6 +8,7 @@
 #include "Interfaces/LoadingScreenInterface.h"
 #include "DkGamePlayerController.generated.h"
 
+class UDkPlayerInventoryComp;
 class ADkMountBase;
 class UDkAbilitySystemComponent;
 struct FGameplayTag;
@@ -98,7 +99,7 @@ public:
 	/* 仓库 */
 private:
 	void RefreshInventoryComponent();
-	TWeakObjectPtr<UDkInventoryComponent> InventoryComponent;
+	TWeakObjectPtr<UDkPlayerInventoryComp> InventoryComponent;
 	/********/
 
 	/**********************************************************************/

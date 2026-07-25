@@ -11,6 +11,7 @@
 #include "Widgets/Inventory/DkInventoryGridSlot.h"
 
 #include "Components/UniformGridPanel.h"
+#include "Components/InventoryComps/DkPlayerInventoryComp.h"
 #include "FunctionLibrarys/DkCommonFunctionLibrary.h"
 #include "FunctionLibrarys/DkInventoryFunctionLibrary.h"
 #include "FunctionLibrarys/DkUIFunctionLibrary.h"
@@ -40,6 +41,12 @@ void UDkInventoryItemGrid::SetInventoryComp(UDkInventoryComponent* InInventoryCo
 	InventoryComponent->OnExitGameMenuRecoverGridItem.AddUniqueDynamic(
 		this, &ThisClass::HandleDraggedItemRecovered
 	);
+}
+
+void UDkInventoryItemGrid::ClearItems()
+{
+	GridSlots.Reset();
+	UniformGridPanel->ClearChildren();
 }
 
 FDkInventorySlotAvailabilityResult UDkInventoryItemGrid::HasRoomForItem(const FInventoryItemManifest& Manifest)
@@ -144,7 +151,7 @@ void UDkInventoryItemGrid::PopulateGrid(EInventoryItemCategory InCategory)
 		Brush.DrawAs = ESlateBrushDrawType::Image;
 		Brush.ImageSize = FVector2D(100.f);
 		GridSlot->SetItemIcon(Brush);
-		
+
 		GridSlot->SetItemStackNum(ItemBriefInfo.StackCount);
 
 		GridSlot->SetInventoryItem(ItemBriefInfo.InventoryItem);
@@ -307,6 +314,8 @@ void UDkInventoryItemGrid::SwapWithDraggedItem(UDkInventoryItem* ClickedInventor
 	RemoveItemFromGrid(ClickedInventoryItem, GridIndex);
 	AddItemToIndex(TempInventoryItem, ItemDropIndex, TempStackCount, bTempIsStackable);
 	UpdateGridSlots(TempInventoryItem, ItemDropIndex, TempStackCount, bTempIsStackable);
+
+	RequestSwapItem();
 }
 
 void UDkInventoryItemGrid::ConsumeDraggedItemStack(int32 ClickedStackCount, int32 DraggedStackCount, int32 GridIndex)
@@ -469,7 +478,36 @@ void UDkInventoryItemGrid::OnDraggedItemClicked(const FPointerEvent& MouseEvent)
 	UDkInventoryGridSlot* GridSlot = GridSlots[ItemDropIndex];
 	if (!IsValid(GridSlot->GetInventoryItem()))
 	{
+		RequestMoveItem(DraggedItem->GetStackCount());
 		PutDownOnIndex(ItemDropIndex);
+	}
+}
+
+void UDkInventoryItemGrid::RequestMoveItem(int MoveStackCount)
+{
+	if (!IsValid(DraggedItem)) return;
+	if (InventoryComponent.IsValid())
+	{
+		if (UDkPlayerInventoryComp* PlayerInventoryComp = Cast<UDkPlayerInventoryComp>(InventoryComponent.Get()))
+		{
+			PlayerInventoryComp->RequestMoveItem(
+				ItemCategory, DraggedItem->GetPreviousGridIndex(), ItemDropIndex, MoveStackCount
+			);
+		}
+	}
+}
+
+void UDkInventoryItemGrid::RequestSwapItem()
+{
+	if (!IsValid(DraggedItem)) return;
+	if (InventoryComponent.IsValid())
+	{
+		if (UDkPlayerInventoryComp* PlayerInventoryComp = Cast<UDkPlayerInventoryComp>(InventoryComponent.Get()))
+		{
+			PlayerInventoryComp->RequestSwapItems(
+				ItemCategory, DraggedItem->GetPreviousGridIndex(), ItemDropIndex
+			);
+		}
 	}
 }
 
@@ -553,6 +591,7 @@ bool UDkInventoryItemGrid::CursorExitedCanvas(
 void UDkInventoryItemGrid::HighlightSlot(const int32 Index)
 {
 	if (!bMouseWithInCanvas) return;
+	if (!GridSlots.IsValidIndex(Index)) return;
 	UnHighlightSlot(LastHighlightedIndex);
 	GridSlots[Index]->SetOccupiedBrush();
 
@@ -561,6 +600,7 @@ void UDkInventoryItemGrid::HighlightSlot(const int32 Index)
 
 void UDkInventoryItemGrid::UnHighlightSlot(const int32 Index)
 {
+	if (!GridSlots.IsValidIndex(Index)) return;
 	if (GridSlots[Index]->IsAvailable())
 	{
 		GridSlots[Index]->SetUnoccupiedBrush();
@@ -632,12 +672,15 @@ void UDkInventoryItemGrid::OnGridSlotClicked(int GridIndex, const FPointerEvent&
 
 			DraggedItem->UpdateStackCount(ClickedStackCount);
 
+			RequestSwapItem();
+
 			return;
 		}
 
 		//	是否可以合并DraggedItem
 		if (SpaceInClickedSlot >= DraggedStackCount)
 		{
+			RequestMoveItem(DraggedItem->GetStackCount());
 			ConsumeDraggedItemStack(ClickedStackCount, DraggedStackCount, GridIndex);
 			return;
 		}
@@ -651,6 +694,8 @@ void UDkInventoryItemGrid::OnGridSlotClicked(int GridIndex, const FPointerEvent&
 			GridSlot->SetItemStackNum(MaxStackSize);
 
 			DraggedItem->UpdateStackCount(DraggedStackCount - SpaceInClickedSlot);
+
+			RequestMoveItem(SpaceInClickedSlot);
 
 			return;
 		}

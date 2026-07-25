@@ -16,6 +16,7 @@
 #include "Components/DkEnhancedInputComponent.h"
 #include "Components/InventoryComps/DkInventoryComponent.h"
 #include "Components/DkItemComponent.h"
+#include "Components/InventoryComps/DkPlayerInventoryComp.h"
 #include "DarkKnight/DarkKnight.h"
 #include "FunctionLibrarys/DkUIFunctionLibrary.h"
 #include "GAS/DkAbilitySystemComponent.h"
@@ -363,7 +364,7 @@ void ADkGamePlayerController::RefreshInventoryComponent()
 	ADkCharacterHero* OwnerHero = Cast<ADkCharacterHero>(GetPawn());
 	if (!OwnerHero) return;
 
-	InventoryComponent = OwnerHero->FindComponentByClass<UDkInventoryComponent>();
+	InventoryComponent = OwnerHero->FindComponentByClass<UDkPlayerInventoryComp>();
 	UDkInventorySubsystem* InventorySubsystem = UDkInventorySubsystem::Get();
 	checkf(InventorySubsystem, TEXT("InventorySubsystem为空！"));
 	InventorySubsystem->RegisterCachedInventoryComponent(InventoryComponent.Get());

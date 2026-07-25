@@ -5,6 +5,7 @@
 
 #include "DkGameplayTags.h"
 #include "ICommonInputModule.h"
+#include "Components/InventoryComps/DkPlayerInventoryComp.h"
 #include "DkTypes/DkEnums.h"
 #include "FunctionLibrarys/DkInventoryFunctionLibrary.h"
 #include "FunctionLibrarys/DkUIFunctionLibrary.h"
@@ -61,7 +62,7 @@ void UDkWidgetSystemMenuScreen::HandleSelectButtonInventory()
 				UDkWidgetGameMenuScreen* GameMenuScreen = CastChecked<UDkWidgetGameMenuScreen>(PushedWidget);
 				GameMenuScreen->SetVisibleCenterArea(DkGameplayTags::Dk_Widget_GameMenu_Inventory);
 				UDkWidgetInventoryMenu* InventoryMenu = GameMenuScreen->GetInventoryMenu();
-				UDkInventoryComponent* OwnerInventoryComp =
+				UDkPlayerInventoryComp* OwnerInventoryComp =
 					UDkInventoryFunctionLibrary::GetInventoryComponent(GetOwningPlayer());
 				InventoryMenu->SetInventoryComponent(OwnerInventoryComp);
 			}

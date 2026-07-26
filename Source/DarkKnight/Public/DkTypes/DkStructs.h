@@ -202,10 +202,10 @@ struct FDkItemInfo : public FTableRowBase //项目的整体Item表格
 	bool bStaticMesh = true;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	TObjectPtr<UStaticMesh> ItemStaticMesh;
+	TSoftObjectPtr<UStaticMesh> ItemStaticMesh;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	TObjectPtr<USkeletalMesh> ItemSkeletalMesh;
+	TSoftObjectPtr<USkeletalMesh> ItemSkeletalMesh;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TSubclassOf<ADkPickUpActorBase> PickUpActorBPClass;

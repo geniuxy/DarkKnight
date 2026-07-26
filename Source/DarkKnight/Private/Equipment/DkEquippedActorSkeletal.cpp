@@ -8,6 +8,7 @@ ADkEquippedActorSkeletal::ADkEquippedActorSkeletal()
 {
 	EquipmentItemSkeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("EquipmentItemSkeletalMesh"));
 	EquipmentItemSkeletalMesh->SetupAttachment(GetRootComponent());
+	EquipmentItemSkeletalMesh->SetIsReplicated(true);
 }
 
 void ADkEquippedActorSkeletal::SetEquipmentSkeletalMesh(USkeletalMesh* InEquipmentItemMesh) const

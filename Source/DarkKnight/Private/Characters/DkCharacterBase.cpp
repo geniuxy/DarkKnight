@@ -170,18 +170,8 @@ void ADkCharacterBase::ServerSpawnRewardItemActor_Implementation()
 
 		if (IsValid(SpawnActor))
 		{
-			if (RewardItemInfo->bStaticMesh)
-			{
-				CastChecked<ADkPickUpActorStaticMesh>(SpawnActor)->SetPickUpItemInfo(
-					*RewardItemInfo, RewardItemStack
-				);
-			}
-			else
-			{
-				CastChecked<ADkPickUpActorSkeletalMesh>(SpawnActor)->SetPickUpItemInfo(
-					*RewardItemInfo, RewardItemStack
-				);
-			}
+			SpawnActor->Server_SetItemId(RewardItemID);
+			SpawnActor->Server_SetItemStack(RewardItemStack);
 		}
 	}
 }

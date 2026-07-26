@@ -8,6 +8,7 @@ ADkEquippedActorStatic::ADkEquippedActorStatic()
 {
 	EquipmentItemStaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("EquipmentItemStaticMesh"));
 	EquipmentItemStaticMesh->SetupAttachment(GetRootComponent());
+	EquipmentItemStaticMesh->SetIsReplicated(true);
 }
 
 void ADkEquippedActorStatic::SetEquipmentStaticMesh(UStaticMesh* InEquipmentItemMesh) const

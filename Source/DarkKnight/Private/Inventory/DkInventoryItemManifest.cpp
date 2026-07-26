@@ -6,13 +6,12 @@
 #include "Inventory/DkInventoryItem.h"
 #include "Inventory/DkInventoryItemFragment.h"
 #include "PickUp/DkPickUpActorBase.h"
-#include "PickUp/DkPickUpActorSkeletalMesh.h"
-#include "PickUp/DkPickUpActorStaticMesh.h"
 #include "Subsytems/EngineSubsystems/DkInventorySubsystem.h"
 #include "Widgets/Inventory/DkInventoryItemDescriptionMenu.h"
 
 void FInventoryItemManifest::InitializeFragments(const FDkItemInfo& ItemInfo, int32 InItemStack)
 {
+	Fragments.Empty();
 	// ItemGrid (目前项目只考虑1*1格子大小的物品)
 	FItemFragment_Grid GridFragment = FItemFragment_Grid();
 	AddFragment(GridFragment);
@@ -203,8 +202,6 @@ TArray<FItemEntryInfo> FInventoryItemManifest::GetItemEntryInfoList(
 
 		if (bFormatValid)
 		{
-			Debug::Print(FString::Printf(TEXT("词条[%s]格式正确！"), *SingleEntry));
-
 			if (EntryParts.Num() == 2)
 			{
 				EntryInfos.Add(FItemEntryInfo(FName(*EntryID), FCString::Atof(*Value), FCString::Atof(*Value)));
@@ -248,24 +245,12 @@ void FInventoryItemManifest::SpawnPickUpActor(
 {
 	if (!IsValid(PickUpActorClass) || !IsValid(WorldContextObject)) return;
 
-	AActor* SpawnActor =
-		WorldContextObject->GetWorld()->SpawnActor<AActor>(PickUpActorClass, SpawnLocation, SpawnRotation);
+	ADkPickUpActorBase* SpawnActor =
+		WorldContextObject->GetWorld()->SpawnActor<ADkPickUpActorBase>(PickUpActorClass, SpawnLocation, SpawnRotation);
 	if (!IsValid(SpawnActor)) return;
 
-	// 更新Item的Mesh
-	UDkInventorySubsystem* InventorySubsystem = UDkInventorySubsystem::Get();
-	checkf(InventorySubsystem, TEXT("生成RewardItem时，InventorySubsystem为空！"));
-	if (const FDkItemInfo* ItemInfo = InventorySubsystem->GetCachedItemTable().Find(ItemID))
-	{
-		if (ItemInfo->bStaticMesh)
-		{
-			CastChecked<ADkPickUpActorStaticMesh>(SpawnActor)->SetItemStaticMesh(*ItemInfo);
-		}
-		else
-		{
-			CastChecked<ADkPickUpActorSkeletalMesh>(SpawnActor)->SetItemSkeletalMesh(*ItemInfo);
-		}
-	}
+	SpawnActor->Server_SetItemId(ItemID);
+	SpawnActor->Server_SetItemStack(GetStackCount());
 	
 	UDkItemComponent* ItemComponent = SpawnActor->FindComponentByClass<UDkItemComponent>();
 	check(ItemComponent);
@@ -308,6 +293,15 @@ void FInventoryItemManifest::AssimilateInventoryFragments(UDkInventoryCompositeB
 			}
 		}
 	}
+}
+
+int32 FInventoryItemManifest::GetStackCount() const
+{
+	if (const FItemFragment_Stackable* StackableFragment = GetFragmentOfType<FItemFragment_Stackable>())
+	{
+		return StackableFragment->GetStackCount();
+	}
+	return 0;
 }
 
 void FInventoryItemManifest::ClearFragments()

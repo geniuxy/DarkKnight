@@ -331,16 +331,16 @@ ADkEquippedActorBase* FInventoryItemFragment_Equipment::SpawnAttachActor(USkelet
 		AttachMesh->GetWorld()->SpawnActor<ADkEquippedActorBase>(EquipmentInfo->EquippedActorBPClass);
 	if (IsValid(SpawnedActor))
 	{
-		if (EquipmentInfo->bStaticMesh && IsValid(EquipmentInfo->ItemStaticMesh))
+		if (EquipmentInfo->bStaticMesh && EquipmentInfo->ItemStaticMesh.IsValid())
 		{
 			CastChecked<ADkEquippedActorStatic>(SpawnedActor)->SetEquipmentStaticMesh(
-				EquipmentInfo->ItemStaticMesh
+				EquipmentInfo->ItemStaticMesh.LoadSynchronous()
 			);
 		}
-		else if (!EquipmentInfo->bStaticMesh && IsValid(EquipmentInfo->ItemSkeletalMesh))
+		else if (!EquipmentInfo->bStaticMesh && EquipmentInfo->ItemSkeletalMesh.IsValid())
 		{
 			CastChecked<ADkEquippedActorSkeletal>(SpawnedActor)->SetEquipmentSkeletalMesh(
-				EquipmentInfo->ItemSkeletalMesh
+				EquipmentInfo->ItemSkeletalMesh.LoadSynchronous()
 			);
 		}
 		SpawnedActor->SetEquipmentTag(EquipmentInfo->ItemTag);

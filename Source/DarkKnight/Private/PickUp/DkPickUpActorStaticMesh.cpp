@@ -14,6 +14,7 @@ ADkPickUpActorStaticMesh::ADkPickUpActorStaticMesh()
 
 	PickUpItemStaticMesh = CreateDefaultSubobject<UDkHighlightableStaticMesh>(TEXT("PickUpItemStaticMesh"));
 	PickUpItemStaticMesh->SetIsReplicated(true);
+	SetRootComponent(PickUpItemStaticMesh);
 }
 
 void ADkPickUpActorStaticMesh::SetPickUpItemInfo(const FDkItemInfo& PickUpItemInfo, int32 InItemStack)
@@ -27,9 +28,9 @@ void ADkPickUpActorStaticMesh::SetItemStaticMesh(const FDkItemInfo& PickUpItemIn
 {
 	if (PickUpItemInfo.bStaticMesh)
 	{
-		if (IsValid(PickUpItemInfo.ItemStaticMesh))
+		if (PickUpItemInfo.ItemStaticMesh.IsValid())
 		{
-			PickUpItemStaticMesh->SetStaticMesh(PickUpItemInfo.ItemStaticMesh);
+			PickUpItemStaticMesh->SetStaticMesh(PickUpItemInfo.ItemStaticMesh.LoadSynchronous());
 		}
 		else
 		{

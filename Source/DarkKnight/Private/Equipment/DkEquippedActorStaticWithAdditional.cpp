@@ -7,4 +7,5 @@ ADkEquippedActorStaticWithAdditional::ADkEquippedActorStaticWithAdditional()
 {
 	AdditionalMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("AdditionalMesh"));
 	AdditionalMesh->SetupAttachment(EquipmentItemStaticMesh);
+	AdditionalMesh->SetIsReplicated(true);
 }

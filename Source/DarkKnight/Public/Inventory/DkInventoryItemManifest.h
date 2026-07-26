@@ -39,6 +39,8 @@ struct DARKKNIGHT_API FInventoryItemManifest
 
 	void AssimilateInventoryFragments(UDkInventoryCompositeBase* Composite) const;
 
+	int32 GetStackCount() const;
+
 	template <typename T> requires std::derived_from<T, FItemFragment>
 	const T* GetFragmentOfTypeWithTag(const FGameplayTag& FragmentTag) const;
 

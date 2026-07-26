@@ -14,6 +14,7 @@ ADkPickUpActorSkeletalMesh::ADkPickUpActorSkeletalMesh()
 
 	PickUpItemSkeletalMesh = CreateDefaultSubobject<UDkHighlightableSkeletalMesh>(TEXT("PickUpItemSkeletalMesh"));
 	PickUpItemSkeletalMesh->SetIsReplicated(true);
+	SetRootComponent(PickUpItemSkeletalMesh);
 }
 
 void ADkPickUpActorSkeletalMesh::SetPickUpItemInfo(const FDkItemInfo& PickUpItemInfo, int32 InItemStack)
@@ -27,9 +28,9 @@ void ADkPickUpActorSkeletalMesh::SetItemSkeletalMesh(const FDkItemInfo& PickUpIt
 {
 	if (!PickUpItemInfo.bStaticMesh)
 	{
-		if (IsValid(PickUpItemInfo.ItemSkeletalMesh))
+		if (PickUpItemInfo.ItemSkeletalMesh.IsValid())
 		{
-			PickUpItemSkeletalMesh->SetSkeletalMeshAsset(PickUpItemInfo.ItemSkeletalMesh);
+			PickUpItemSkeletalMesh->SetSkeletalMeshAsset(PickUpItemInfo.ItemSkeletalMesh.LoadSynchronous());
 		}
 		else
 		{

@@ -93,7 +93,7 @@ public:
 
 	/* 道具物品的丢弃 */
 	UFUNCTION(Server, Reliable)
-	void ServerDropItem(UDkInventoryDraggedItem* DroppedItem);
+	void ServerDropItem(UDkInventoryItem* Item, EInventoryItemCategory Category, int32 Index, int32 StackCount);
 
 	void SpawnDroppedItem(UDkInventoryItem* Item, int32 DroppedCount);
 

@@ -210,34 +210,35 @@ void UDkInventoryComponent::AddRepSubObj(UObject* SubObj)
 	}
 }
 
-void UDkInventoryComponent::ServerDropItem_Implementation(UDkInventoryDraggedItem* DroppedItem)
+void UDkInventoryComponent::ServerDropItem_Implementation(
+	UDkInventoryItem* Item, EInventoryItemCategory Category, int32 Index, int32 StackCount)
 {
-	if (!DroppedItem || !DroppedItem->GetInventoryItem()) return;
+	if (!Item) return;
 
-	const int32 NewStackCount = DroppedItem->GetInventoryItem()->GetTotalStackCount() - DroppedItem->GetStackCount();
+	const int32 NewStackCount = Item->GetTotalStackCount() - StackCount;
 	if (NewStackCount <= 0)
 	{
-		InventoryList.RemoveEntry(DroppedItem->GetInventoryItem());
+		InventoryList.RemoveEntry(Item);
 	}
 	else
 	{
-		DroppedItem->GetInventoryItem()->SetTotalStackCount(NewStackCount);
+		Item->SetTotalStackCount(NewStackCount);
 	}
 
 	FDkInventorySlotEntry* SlotEntry =
-		InventorySlotArray.FindBySlotIndex(DroppedItem->GetItemCategory(), DroppedItem->GetPreviousGridIndex());
+		InventorySlotArray.FindBySlotIndex(Category, Index);
 	if (SlotEntry->BriefInfo.InventoryItem &&
-		SlotEntry->BriefInfo.InventoryItem->GetItemTag() == DroppedItem->GetItemTag())
+		SlotEntry->BriefInfo.InventoryItem->GetItemTag() == Item->GetItemTag())
 	{
-		if (SlotEntry->BriefInfo.StackCount <= DroppedItem->GetStackCount())
+		if (SlotEntry->BriefInfo.StackCount <= StackCount)
 		{
 			SlotEntry->BriefInfo.InventoryItem = nullptr;
 		}
-		SlotEntry->BriefInfo.StackCount -= DroppedItem->GetStackCount();
+		SlotEntry->BriefInfo.StackCount -= StackCount;
 		InventorySlotArray.MarkItemDirty(*SlotEntry);
 	}
 
-	SpawnDroppedItem(DroppedItem->GetInventoryItem(), DroppedItem->GetStackCount());
+	SpawnDroppedItem(Item, StackCount);
 }
 
 void UDkInventoryComponent::SpawnDroppedItem(UDkInventoryItem* Item, int32 DroppedCount)
@@ -374,9 +375,16 @@ void UDkInventoryComponent::Server_UpdateInventorySlotArray_Implementation(
 	TArray<FDkInventorySlotEntry*> SlotEntries = InventorySlotArray.FindByCategory(InCategory);
 	for (FDkInventorySlotEntry* SlotEntry : SlotEntries)
 	{
-		SlotEntry->BriefInfo.InventoryItem = ItemBriefInfos[SlotEntry->BriefInfo.Index].InventoryItem;
-		SlotEntry->BriefInfo.StackCount = ItemBriefInfos[SlotEntry->BriefInfo.Index].StackCount;
-		InventorySlotArray.MarkItemDirty(*SlotEntry);
+		UDkInventoryItem* ItemInBag = ItemBriefInfos[SlotEntry->BriefInfo.Index].InventoryItem;
+		UDkInventoryItem* ItemInComp = SlotEntry->BriefInfo.InventoryItem;
+		int ItemStackCountInBag = ItemBriefInfos[SlotEntry->BriefInfo.Index].StackCount;
+		int ItemStackCountInComp = SlotEntry->BriefInfo.StackCount;
+		if (ItemStackCountInComp != ItemStackCountInBag || ItemInComp != ItemInBag)
+		{
+			SlotEntry->BriefInfo.InventoryItem = ItemInBag;
+			SlotEntry->BriefInfo.StackCount = ItemStackCountInBag;
+			InventorySlotArray.MarkItemDirty(*SlotEntry);
+		}
 	}
 }
 

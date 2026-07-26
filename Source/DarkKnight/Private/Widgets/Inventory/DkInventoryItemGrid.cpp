@@ -737,7 +737,7 @@ void UDkInventoryItemGrid::OnGridSlotClicked(int GridIndex, const FPointerEvent&
 
 			DraggedItem->UpdateStackCount(ClickedStackCount);
 			DraggedItem->SetPreviousGridIndex(GridIndex);
-			
+		
 			UpdateInventorySlotArray();
 
 			return;
@@ -760,7 +760,7 @@ void UDkInventoryItemGrid::OnGridSlotClicked(int GridIndex, const FPointerEvent&
 			GridSlot->SetItemStackNum(MaxStackSize);
 
 			DraggedItem->UpdateStackCount(DraggedStackCount - SpaceInClickedSlot);
-			
+
 			UpdateInventorySlotArray();
 
 			return;
@@ -857,7 +857,12 @@ void UDkInventoryItemGrid::DropItem()
 	if (!IsValid(DraggedItem)) return;
 	if (!IsValid(DraggedItem->GetInventoryItem())) return;
 
-	InventoryComponent->ServerDropItem(DraggedItem);
+	InventoryComponent->ServerDropItem(
+		DraggedItem->GetInventoryItem(),
+		DraggedItem->GetItemCategory(),
+		DraggedItem->GetPreviousGridIndex(),
+		DraggedItem->GetStackCount()
+	);
 
 	ClearDraggedItem();
 }

@@ -107,7 +107,7 @@ void ADkCharacterBase::BeginPlay()
 	GetNetworkDebugInfo();
 
 	BindGASChangeDelegates(); // 构造函数中调用虚函数不好，此时虚函数表还没构建完成，子类的重写不会被调用。
-	
+
 	ConfigureOverHeadStatsWidget(); // 头顶血条的显示
 
 	FTimerHandle DelayInitCharacterHandle;
@@ -172,11 +172,15 @@ void ADkCharacterBase::ServerSpawnRewardItemActor_Implementation()
 		{
 			if (RewardItemInfo->bStaticMesh)
 			{
-				CastChecked<ADkPickUpActorStaticMesh>(SpawnActor)->SetPickUpItemInfo(RewardItemInfo, RewardItemStack);
+				CastChecked<ADkPickUpActorStaticMesh>(SpawnActor)->SetPickUpItemInfo(
+					*RewardItemInfo, RewardItemStack
+				);
 			}
 			else
 			{
-				CastChecked<ADkPickUpActorSkeletalMesh>(SpawnActor)->SetPickUpItemInfo(RewardItemInfo, RewardItemStack);
+				CastChecked<ADkPickUpActorSkeletalMesh>(SpawnActor)->SetPickUpItemInfo(
+					*RewardItemInfo, RewardItemStack
+				);
 			}
 		}
 	}
@@ -284,7 +288,7 @@ void ADkCharacterBase::BindGASChangeDelegates()
 		AbilitySystemComponent->RegisterGameplayTagEvent(DkGameplayTags::Dk_Stats_Dead).AddUObject(
 			this, &ThisClass::DeadTagUpdated
 		);
-		
+
 		AbilitySystemComponent->RegisterGameplayTagEvent(DkGameplayTags::Dk_Stats_LockingTarget).AddUObject(
 			this, &ThisClass::LockingTargetTagUpdated
 		);

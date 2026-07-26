@@ -14,9 +14,9 @@ class DARKKNIGHT_API ADkPickUpActorSkeletalMesh : public ADkPickUpActorBase
 public:
 	ADkPickUpActorSkeletalMesh();
 
-	virtual void SetPickUpItemInfo(const FDkItemInfo* PickUpItemInfo, int32 InItemStack) override;
+	virtual void SetPickUpItemInfo(const FDkItemInfo& PickUpItemInfo, int32 InItemStack) override;
 
-	void SetItemSkeletalMesh(const FDkItemInfo* PickUpItemInfo);
+	void SetItemSkeletalMesh(const FDkItemInfo& PickUpItemInfo);
 
 protected:
 	/* Actor Components */

@@ -26,7 +26,7 @@ struct DARKKNIGHT_API FInventoryItemManifest
 	GENERATED_BODY()
 
 	/* 初始化Fragments */
-	void InitializeFragments(const FDkItemInfo* ItemInfo, int32 InItemStack);
+	void InitializeFragments(const FDkItemInfo& ItemInfo, int32 InItemStack);
 	static TArray<FItemEntryInfo> GetItemEntryInfoList(int32 InItemID, const FText& InEntry, bool bMainEntry);
 	/********/
 

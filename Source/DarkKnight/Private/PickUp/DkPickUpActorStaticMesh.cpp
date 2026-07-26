@@ -13,22 +13,23 @@ ADkPickUpActorStaticMesh::ADkPickUpActorStaticMesh()
 	PrimaryActorTick.bCanEverTick = false;
 
 	PickUpItemStaticMesh = CreateDefaultSubobject<UDkHighlightableStaticMesh>(TEXT("PickUpItemStaticMesh"));
+	PickUpItemStaticMesh->SetIsReplicated(true);
 }
 
-void ADkPickUpActorStaticMesh::SetPickUpItemInfo(const FDkItemInfo* PickUpItemInfo, int32 InItemStack)
+void ADkPickUpActorStaticMesh::SetPickUpItemInfo(const FDkItemInfo& PickUpItemInfo, int32 InItemStack)
 {
 	Super::SetPickUpItemInfo(PickUpItemInfo, InItemStack);
 
 	SetItemStaticMesh(PickUpItemInfo);
 }
 
-void ADkPickUpActorStaticMesh::SetItemStaticMesh(const FDkItemInfo* PickUpItemInfo)
+void ADkPickUpActorStaticMesh::SetItemStaticMesh(const FDkItemInfo& PickUpItemInfo)
 {
-	if (PickUpItemInfo->bStaticMesh)
+	if (PickUpItemInfo.bStaticMesh)
 	{
-		if (IsValid(PickUpItemInfo->ItemStaticMesh))
+		if (IsValid(PickUpItemInfo.ItemStaticMesh))
 		{
-			PickUpItemStaticMesh->SetStaticMesh(PickUpItemInfo->ItemStaticMesh);
+			PickUpItemStaticMesh->SetStaticMesh(PickUpItemInfo.ItemStaticMesh);
 		}
 		else
 		{

@@ -20,7 +20,7 @@ public:
 
 	void OnPickedUp();
 
-	void InitializeItemComponent(const FDkItemInfo* ItemInfo, int32 InItemStack);
+	void InitializeItemComponent(const FDkItemInfo& ItemInfo, int32 InItemStack);
 
 	void InitItemManifest(FInventoryItemManifest InItemManifest);
 

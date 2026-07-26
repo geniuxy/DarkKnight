@@ -29,11 +29,11 @@ void UDkItemComponent::OnPickedUp()
 	GetOwner()->Destroy();
 }
 
-void UDkItemComponent::InitializeItemComponent(const FDkItemInfo* ItemInfo, int32 InItemStack)
+void UDkItemComponent::InitializeItemComponent(const FDkItemInfo& ItemInfo, int32 InItemStack)
 {
-	ItemManifest.SetItemID(ItemInfo->ItemID);
-	ItemManifest.SetItemCategory(ItemInfo->ItemCategory);
-	ItemManifest.SetItemTag(ItemInfo->ItemTag);
+	ItemManifest.SetItemID(ItemInfo.ItemID);
+	ItemManifest.SetItemCategory(ItemInfo.ItemCategory);
+	ItemManifest.SetItemTag(ItemInfo.ItemTag);
 	ItemManifest.InitializeFragments(ItemInfo, InItemStack);
 }
 

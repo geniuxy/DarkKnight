@@ -11,17 +11,17 @@
 #include "Subsytems/EngineSubsystems/DkInventorySubsystem.h"
 #include "Widgets/Inventory/DkInventoryItemDescriptionMenu.h"
 
-void FInventoryItemManifest::InitializeFragments(const FDkItemInfo* ItemInfo, int32 InItemStack)
+void FInventoryItemManifest::InitializeFragments(const FDkItemInfo& ItemInfo, int32 InItemStack)
 {
 	// ItemGrid (目前项目只考虑1*1格子大小的物品)
 	FItemFragment_Grid GridFragment = FItemFragment_Grid();
 	AddFragment(GridFragment);
 	
 	// ItemName
-	if (!ItemInfo->ItemName.IsEmpty())
+	if (!ItemInfo.ItemName.IsEmpty())
 	{
 		FInventoryItemFragment_Text NewItemTextFragment = FInventoryItemFragment_Text(
-			ItemInfo->ItemName
+			ItemInfo.ItemName
 		);
 		AddFragment(NewItemTextFragment);
 	}
@@ -37,40 +37,40 @@ void FInventoryItemManifest::InitializeFragments(const FDkItemInfo* ItemInfo, in
 	}
 
 	// ItemRequiredLevel
-	if (ItemInfo->ItemRequiredLevel != INDEX_NONE)
+	if (ItemInfo.ItemRequiredLevel != INDEX_NONE)
 	{
 		FInventoryItemFragment_LabeledValue NewItemRequiredLevelFragment = FInventoryItemFragment_LabeledValue(
 			FText::FromString(TEXT("等级要求")),
-			ItemInfo->ItemRequiredLevel,
+			ItemInfo.ItemRequiredLevel,
 			DkGameplayTags::Dk_Inventory_Fragment_RequiredLevel
 		);
 		AddFragment(NewItemRequiredLevelFragment);
 	}
 
 	// ItemDescription
-	if (!ItemInfo->ItemDescription.IsEmpty())
+	if (!ItemInfo.ItemDescription.IsEmpty())
 	{
 		FInventoryItemFragment_Text NewItemDescriptionFragment = FInventoryItemFragment_Text(
-			ItemInfo->ItemDescription, DkGameplayTags::Dk_Inventory_Fragment_ItemDescription
+			ItemInfo.ItemDescription, DkGameplayTags::Dk_Inventory_Fragment_ItemDescription
 		);
 		AddFragment(NewItemDescriptionFragment);
 	}
 
 	// ItemIcon
-	if (IsValid(ItemInfo->ItemIcon))
+	if (IsValid(ItemInfo.ItemIcon))
 	{
 		FInventoryItemFragment_Image NewItemImageFragment = FInventoryItemFragment_Image(
-			ItemInfo->ItemIcon
+			ItemInfo.ItemIcon
 		);
 		AddFragment(NewItemImageFragment);
 	}
 
 	// ItemPrice
-	if (ItemInfo->ItemPrice != INDEX_NONE)
+	if (ItemInfo.ItemPrice != INDEX_NONE)
 	{
 		FInventoryItemFragment_LabeledValue NewItemSellPriceFragment = FInventoryItemFragment_LabeledValue(
 			FText::FromString(TEXT("售价")),
-			ItemInfo->ItemPrice,
+			ItemInfo.ItemPrice,
 			DkGameplayTags::Dk_Inventory_Fragment_SellValue
 		);
 		AddFragment(NewItemSellPriceFragment);
@@ -79,39 +79,39 @@ void FInventoryItemManifest::InitializeFragments(const FDkItemInfo* ItemInfo, in
 	// TODO: ItemWeight
 
 	// Stack
-	if (ItemInfo->MaxStack != INDEX_NONE && InItemStack > 0)
+	if (ItemInfo.MaxStack != INDEX_NONE && InItemStack > 0)
 	{
 		FItemFragment_Stackable NewItemStackableFragment = FItemFragment_Stackable(
-			InItemStack, ItemInfo->MaxStack
+			InItemStack, ItemInfo.MaxStack
 		);
 		AddFragment(NewItemStackableFragment);
 	}
 
 	// PickUpActorBPClass
-	if (IsValid(ItemInfo->PickUpActorBPClass))
+	if (IsValid(ItemInfo.PickUpActorBPClass))
 	{
-		PickUpActorClass = ItemInfo->PickUpActorBPClass;
+		PickUpActorClass = ItemInfo.PickUpActorBPClass;
 	}
 
 	TArray<FItemEntryInfo> MainEntries;
 	TArray<FItemEntryInfo> SubEntries;
 	// 根据MainEntry生成主词条
-	if (!ItemInfo->MainEntry.IsEmpty())
+	if (!ItemInfo.MainEntry.IsEmpty())
 	{
-		MainEntries = GetItemEntryInfoList(ItemInfo->ItemID, ItemInfo->MainEntry, true);
+		MainEntries = GetItemEntryInfoList(ItemInfo.ItemID, ItemInfo.MainEntry, true);
 	}
 
 	// 根据SubEntry生成主词条
-	if (!ItemInfo->SubEntry.IsEmpty())
+	if (!ItemInfo.SubEntry.IsEmpty())
 	{
-		SubEntries = GetItemEntryInfoList(ItemInfo->ItemID, ItemInfo->SubEntry, false);
+		SubEntries = GetItemEntryInfoList(ItemInfo.ItemID, ItemInfo.SubEntry, false);
 	}
 
 	// EquippedActorBPClass
-	if (IsValid(ItemInfo->EquippedActorBPClass) && GetItemCategory() == EInventoryItemCategory::Equipment)
+	if (IsValid(ItemInfo.EquippedActorBPClass) && GetItemCategory() == EInventoryItemCategory::Equipment)
 	{
 		FInventoryItemFragment_Equipment NewItemEquipmentFragment = FInventoryItemFragment_Equipment(
-			ItemInfo->ItemID
+			ItemInfo.ItemID
 		);
 		if (!MainEntries.IsEmpty())
 		{
@@ -259,11 +259,11 @@ void FInventoryItemManifest::SpawnPickUpActor(
 	{
 		if (ItemInfo->bStaticMesh)
 		{
-			CastChecked<ADkPickUpActorStaticMesh>(SpawnActor)->SetItemStaticMesh(ItemInfo);
+			CastChecked<ADkPickUpActorStaticMesh>(SpawnActor)->SetItemStaticMesh(*ItemInfo);
 		}
 		else
 		{
-			CastChecked<ADkPickUpActorSkeletalMesh>(SpawnActor)->SetItemSkeletalMesh(ItemInfo);
+			CastChecked<ADkPickUpActorSkeletalMesh>(SpawnActor)->SetItemSkeletalMesh(*ItemInfo);
 		}
 	}
 	

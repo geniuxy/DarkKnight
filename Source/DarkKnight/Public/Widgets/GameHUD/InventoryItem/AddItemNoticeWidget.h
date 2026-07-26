@@ -7,6 +7,7 @@
 #include "Inventory/DkInventoryItem.h"
 #include "AddItemNoticeWidget.generated.h"
 
+class UDkPlayerInventoryComp;
 class UAddItemNoticeSlot;
 class UVerticalBox;
 class UDkInventoryComponent;
@@ -42,7 +43,7 @@ private:
 	float NoticeDuration = 3.f;
 
 	UPROPERTY()
-	UDkInventoryComponent* OwnerInventoryComp;
+	UDkPlayerInventoryComp* OwnerInventoryComp;
 	
 	UPROPERTY(Transient)
 	TArray<FItemNoticeInfo> CachedItemNoticeList;

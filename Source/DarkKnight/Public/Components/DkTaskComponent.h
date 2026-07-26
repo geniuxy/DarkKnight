@@ -7,6 +7,7 @@
 #include "DkTypes/DkStructs.h"
 #include "DkTaskComponent.generated.h"
 
+class UDkPlayerInventoryComp;
 class ADkCharacterHero;
 class UDkInventoryComponent;
 class ADkPlayerStateBase;
@@ -57,7 +58,7 @@ private:
 	TObjectPtr<ADkCharacterHero> OwnerCharacter;
 
 	UPROPERTY()
-	TObjectPtr<UDkInventoryComponent> OwnerInventoryComp;
+	TObjectPtr<UDkPlayerInventoryComp> OwnerInventoryComp;
 
 	ADkCharacterHero* GetOwnerCharacter();
 	

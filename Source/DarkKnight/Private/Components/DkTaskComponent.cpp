@@ -5,6 +5,7 @@
 
 #include "Characters/DkCharacterHero.h"
 #include "Components/InventoryComps/DkInventoryComponent.h"
+#include "Components/InventoryComps/DkPlayerInventoryComp.h"
 #include "FunctionLibrarys/DkInventoryFunctionLibrary.h"
 #include "FunctionLibrarys/DkTaskFunctionLibrary.h"
 #include "Games/PlayerStates/DkPlayerStateBase.h"
@@ -335,7 +336,7 @@ void UDkTaskComponent::TryGetSubTaskRewards(int InMainTaskId, int InSubTaskId)
 
 void UDkTaskComponent::AddItemToOwnerInventory(int InItemId, int InItemStack)
 {
-	OwnerInventoryComp = UDkInventorySubsystem::Get()->GetCachedInventoryComponent();
+	OwnerInventoryComp = GetOwner()->FindComponentByClass<UDkPlayerInventoryComp>();
 	if (IsValid(OwnerInventoryComp))
 	{
 		if (!UDkInventoryFunctionLibrary::IsItemStackable(InItemId))

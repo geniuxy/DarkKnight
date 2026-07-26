@@ -32,12 +32,6 @@ bool UDkInventorySubsystem::ShouldCreateSubsystem(UObject* Outer) const
 	// return false;
 }
 
-void UDkInventorySubsystem::RegisterCachedInventoryComponent(UDkPlayerInventoryComp* InventoryComponent)
-{
-	check(InventoryComponent);
-	CachedInventoryComponent = InventoryComponent;
-}
-
 void UDkInventorySubsystem::InitializeData()
 {
 	InitializeItemData();

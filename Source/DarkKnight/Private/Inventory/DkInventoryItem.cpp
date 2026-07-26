@@ -54,7 +54,7 @@ void UDkInventoryItem::SetItemManifest(const FDkItemInfo& ItemInfo, int32 InItem
 	Manifest.SetItemID(ItemInfo.ItemID);
 	Manifest.SetItemCategory(ItemInfo.ItemCategory);
 	Manifest.SetItemTag(ItemInfo.ItemTag);
-	Manifest.InitializeFragments(&ItemInfo, InItemStack);
+	Manifest.InitializeFragments(ItemInfo, InItemStack);
 	
 	ItemManifest = FInstancedStruct::Make<FInventoryItemManifest>(Manifest);
 }

@@ -18,7 +18,7 @@ class DARKKNIGHT_API ADkPickUpActorBase : public AActor
 public:
 	ADkPickUpActorBase();
 
-	virtual void SetPickUpItemInfo(const FDkItemInfo* PickUpItemInfo, int32 InItemStack);
+	virtual void SetPickUpItemInfo(const FDkItemInfo& PickUpItemInfo, int32 InItemStack);
 
 protected:
 	virtual void BeginPlay() override;

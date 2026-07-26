@@ -61,25 +61,14 @@ void UDkInventoryComponent::TryAddItem(UDkItemComponent* ItemComponent, bool bNe
 	{
 		// 为背包中已存在的物品添加堆叠数量。我们只想更新堆叠数量，
 		// 而不是创建这种类型的新物品。
-		if (bNeedNotice)
-		{
-			OnAddItemNotice.Broadcast(ItemComponent->GetItemName(), AddItemResult.TotalRoomToFill);
-		}
 		// OnStackChange.Broadcast(AddItemResult); // OnStackChange在Server和Client都会执行，光在Server执行，无法同步到Client
-		Server_AddStacksToItem(ItemComponent, AddItemResult);
+		Server_AddStacksToItem(ItemComponent, AddItemResult, bNeedNotice);
 	}
 	else
 	{
 		int StackCount = AddItemResult.bStackable ? AddItemResult.TotalRoomToFill : 0;
-		if (bNeedNotice)
-		{
-			OnAddItemNotice.Broadcast(
-				ItemComponent->GetItemName(),
-				AddItemResult.bStackable ? StackCount : 1
-			);
-		}
 		// 此物品类型在物品栏中不存在。请创建一个新物品并更新所有相关栏位。
-		Server_AddNewItem(ItemComponent, StackCount, AddItemResult);
+		Server_AddNewItem(ItemComponent, StackCount, AddItemResult, bNeedNotice);
 	}
 }
 
@@ -99,32 +88,21 @@ void UDkInventoryComponent::TryAddItem(UDkInventoryItem* Item, bool bNeedNotice)
 	// 将Item添加到Inventory中
 	if (IsValid(AddItemResult.Item) && AddItemResult.bStackable)
 	{
-		if (bNeedNotice)
-		{
-			OnAddItemNotice.Broadcast(Item->GetItemName(), AddItemResult.TotalRoomToFill);
-		}
 		// 为背包中已存在的物品添加堆叠数量。我们只想更新堆叠数量，
 		// 而不是创建这种类型的新物品。
 		// OnStackChange.Broadcast(AddItemResult); // OnStackChange在Server和Client都会执行，光在Server执行，无法同步到Client
-		Server_AddStacksToItemWithItem(Item, AddItemResult);
+		Server_AddStacksToItemWithItem(Item, AddItemResult, bNeedNotice);
 	}
 	else
 	{
 		int StackCount = AddItemResult.bStackable ? AddItemResult.TotalRoomToFill : 0;
-		if (bNeedNotice)
-		{
-			OnAddItemNotice.Broadcast(
-				Item->GetItemName(),
-				AddItemResult.bStackable ? StackCount : 1
-			);
-		}
 		// 此物品类型在物品栏中不存在。请创建一个新物品并更新所有相关栏位。
-		Server_AddNewItemWithItem(Item, StackCount, AddItemResult);
+		Server_AddNewItemWithItem(Item, StackCount, AddItemResult, bNeedNotice);
 	}
 }
 
 void UDkInventoryComponent::Server_AddNewItem_Implementation(
-	UDkItemComponent* ItemComponent, int32 StackCount, FDkInventorySlotAvailabilityResult Result)
+	UDkItemComponent* ItemComponent, int32 StackCount, FDkInventorySlotAvailabilityResult Result, bool bNeedNotice)
 {
 	// 服务器FastArray添加Item后，回调PostReplicatedAdd来达到OnItemAdded.Broadcast(NewItem)的目的，以更新Client
 	UDkInventoryItem* NewItem = InventoryList.AddEntry(ItemComponent);
@@ -144,10 +122,13 @@ void UDkInventoryComponent::Server_AddNewItem_Implementation(
 	{
 		StackableFragment->SetStackCount(Result.Remainder);
 	}
+
+	int Count = Result.bStackable ? StackCount : 1;
+	Client_ShowItemNotice(ItemComponent->GetItemName(), Count, bNeedNotice);
 }
 
 void UDkInventoryComponent::Server_AddNewItemWithItem_Implementation(
-	UDkInventoryItem* Item, int32 StackCount, FDkInventorySlotAvailabilityResult Result)
+	UDkInventoryItem* Item, int32 StackCount, FDkInventorySlotAvailabilityResult Result, bool bNeedNotice)
 {
 	// 服务器FastArray添加Item后，回调PostReplicatedAdd来达到OnItemAdded.Broadcast(NewItem)的目的，以更新Client
 	UDkInventoryItem* NewItem = InventoryList.AddEntry(Item);
@@ -160,10 +141,13 @@ void UDkInventoryComponent::Server_AddNewItemWithItem_Implementation(
 	{
 		Debug::Print(TEXT("进入背包时，剩余数量不为0，请检查！"));
 	}
+
+	int Count = Result.bStackable ? StackCount : 1;
+	Client_ShowItemNotice(Item->GetItemName(), Count, bNeedNotice);
 }
 
 void UDkInventoryComponent::Server_AddStacksToItem_Implementation(
-	UDkItemComponent* ItemComponent, FDkInventorySlotAvailabilityResult Result)
+	UDkItemComponent* ItemComponent, FDkInventorySlotAvailabilityResult Result, bool bNeedNotice)
 {
 	const FGameplayTag& ItemTag =
 		IsValid(ItemComponent) ? ItemComponent->GetItemManifest().GetItemTag() : FGameplayTag::EmptyTag;
@@ -185,10 +169,12 @@ void UDkInventoryComponent::Server_AddStacksToItem_Implementation(
 	{
 		StackableFragment->SetStackCount(Result.Remainder);
 	}
+
+	Client_ShowItemNotice(ItemComponent->GetItemName(), Result.TotalRoomToFill, bNeedNotice);
 }
 
 void UDkInventoryComponent::Server_AddStacksToItemWithItem_Implementation(
-	UDkInventoryItem* InItem, FDkInventorySlotAvailabilityResult Result)
+	UDkInventoryItem* InItem, FDkInventorySlotAvailabilityResult Result, bool bNeedNotice)
 {
 	const FGameplayTag& ItemTag = IsValid(InItem) ? InItem->GetItemManifest().GetItemTag() : FGameplayTag::EmptyTag;
 	UDkInventoryItem* Item = InventoryList.FindFirstItemByTag(ItemTag);
@@ -202,6 +188,17 @@ void UDkInventoryComponent::Server_AddStacksToItemWithItem_Implementation(
 	{
 		Debug::Print(TEXT("进入背包时，剩余数量不为0，请检查！"));
 		// TODO: 这里应该是没写完的，后续可以补 
+	}
+
+	Client_ShowItemNotice(Item->GetItemName(), Result.TotalRoomToFill, bNeedNotice);
+}
+
+void UDkInventoryComponent::Client_ShowItemNotice_Implementation(
+	const FText& ItemName, int32 Count, bool bNeedNotice)
+{
+	if (bNeedNotice)
+	{
+		OnAddItemNotice.Broadcast(ItemName, Count);
 	}
 }
 

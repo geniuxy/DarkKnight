@@ -9,6 +9,7 @@
 #include "CommonTextBlock.h"
 #include "Components/InventoryComps/DkInventoryComponent.h"
 #include "Components/InventoryComps/DkPlayerInventoryComp.h"
+#include "FunctionLibrarys/DkInventoryFunctionLibrary.h"
 #include "Subsytems/EngineSubsystems/DkInventorySubsystem.h"
 
 FReply UDkInventorySlottedItem::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
@@ -17,7 +18,8 @@ FReply UDkInventorySlottedItem::NativeOnMouseButtonDown(const FGeometry& InGeome
 
 	if (ItemDescriptionMenu.IsValid())
 	{
-		if (UDkPlayerInventoryComp* InventoryComponent = UDkInventorySubsystem::Get()->GetCachedInventoryComponent())
+		if (UDkPlayerInventoryComp* InventoryComponent =
+			UDkInventoryFunctionLibrary::GetInventoryComponent(GetOwningPlayer()))
 		{
 			InventoryComponent->OnItemDescriptionMenuRemoved.Broadcast();
 		}
@@ -38,7 +40,8 @@ void UDkInventorySlottedItem::NativeOnMouseLeave(const FPointerEvent& MouseEvent
 {
 	if (ItemDescriptionMenu.IsValid())
 	{
-		if (UDkPlayerInventoryComp* InventoryComponent = UDkInventorySubsystem::Get()->GetCachedInventoryComponent())
+		if (UDkPlayerInventoryComp* InventoryComponent =
+			UDkInventoryFunctionLibrary::GetInventoryComponent(GetOwningPlayer()))
 		{
 			InventoryComponent->OnItemDescriptionMenuRemoved.Broadcast();
 		}
@@ -122,7 +125,7 @@ void UDkInventorySlottedItem::UpdateStackCount(int32 StackCount)
 void UDkInventorySlottedItem::CreateItemDescriptionMenu()
 {
 	if (!InventoryItem.IsValid()) return;
-	
+
 	if (!ItemDescriptionMenu.IsValid())
 	{
 		ItemDescriptionMenu = CreateWidget<UDkInventoryItemDescriptionMenu>(this, ItemDescriptionMenuClass);
@@ -131,7 +134,8 @@ void UDkInventorySlottedItem::CreateItemDescriptionMenu()
 	// 根据Fragments，同化(渲染)ItemDescription的内容
 	InventoryItem->GetItemManifest().AssimilateInventoryFragments(ItemDescriptionMenu.Get());
 
-	if (UDkPlayerInventoryComp* InventoryComponent = UDkInventorySubsystem::Get()->GetCachedInventoryComponent())
+	if (UDkPlayerInventoryComp* InventoryComponent =
+		UDkInventoryFunctionLibrary::GetInventoryComponent(GetOwningPlayer()))
 	{
 		InventoryComponent->OnItemDescriptionMenuCreated.Broadcast(ItemDescriptionMenu.Get());
 	}

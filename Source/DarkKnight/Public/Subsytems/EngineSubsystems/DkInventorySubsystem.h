@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "DarkKnight/DarkKnight.h"
 #include "DkTypes/DkStructs.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "DkInventorySubsystem.generated.h"
@@ -25,9 +24,6 @@ public:
 	virtual bool ShouldCreateSubsystem(UObject* Outer) const override;
 	//~End USubsystem Function
 
-	UFUNCTION(BlueprintCallable)
-	void RegisterCachedInventoryComponent(UDkPlayerInventoryComp* InventoryComponent);
-
 	void InitializeData();
 
 	void InitializeItemData();
@@ -35,9 +31,6 @@ public:
 	void InitializeEntryData();
 
 private:
-	UPROPERTY(Transient) // 不保存到磁盘，不参与网络复制
-	UDkPlayerInventoryComp* CachedInventoryComponent;
-
 	UPROPERTY(Transient)
 	TMap<int, FDkItemInfo> CachedItemTable;
 
@@ -45,8 +38,6 @@ private:
 	TMap<FName, FDkEntryInfo> CachedEntryTable;
 
 public:
-	LIST_DATA_ACCESSOR(UDkPlayerInventoryComp*, CachedInventoryComponent)
-
 	// 返回TMap的引用比较好，不容易指针悬空
 	FORCEINLINE const TMap<int, FDkItemInfo>& GetCachedItemTable() const { return CachedItemTable; }
 	FORCEINLINE const TMap<FName, FDkEntryInfo>& GetCachedEntryTable() const { return CachedEntryTable; }

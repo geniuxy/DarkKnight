@@ -3,8 +3,9 @@
 
 #include "Widgets/GameHUD/InventoryItem/AddItemNoticeWidget.h"
 
-#include "Components/InventoryComps/DkInventoryComponent.h"
 #include "Components/VerticalBox.h"
+#include "Components/InventoryComps/DkPlayerInventoryComp.h"
+#include "FunctionLibrarys/DkInventoryFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "Subsytems/DkUISubsystem.h"
 #include "Subsytems/EngineSubsystems/DkInventorySubsystem.h"
@@ -14,7 +15,7 @@ void UAddItemNoticeWidget::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
 
-	OwnerInventoryComp = UDkInventorySubsystem::Get()->GetCachedInventoryComponent();
+	OwnerInventoryComp = UDkInventoryFunctionLibrary::GetInventoryComponent(GetOwningPlayer());
 	if (OwnerInventoryComp)
 	{
 		OwnerInventoryComp->OnAddItemNotice.AddDynamic(this, &ThisClass::AddItemNotice);

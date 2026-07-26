@@ -3,10 +3,7 @@
 
 #include "Controllers/DkGamePlayerController.h"
 
-#include "DarkKnightDebugHelper.h"
 #include "DkGameplayTags.h"
-#include "EnhancedInputComponent.h"
-#include "EnhancedInputSubsystems.h"
 #include "Blueprint/UserWidget.h"
 #include "Characters/DkCharacterHero.h"
 #include "Characters/Mounts/DkMountBase.h"
@@ -23,7 +20,6 @@
 #include "Interfaces/HighlightInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "Subsytems/DkUISubsystem.h"
-#include "Subsytems/EngineSubsystems/DkInventorySubsystem.h"
 #include "Widgets/CommonActivatableWidgetContainer.h"
 #include "Widgets/DkWidgetPrimaryLayout.h"
 #include "Widgets/Interact/DkWidgetInteractScreen.h"
@@ -367,9 +363,6 @@ void ADkGamePlayerController::RefreshInventoryComponent()
 	if (!OwnerHero) return;
 
 	InventoryComponent = OwnerHero->FindComponentByClass<UDkPlayerInventoryComp>();
-	UDkInventorySubsystem* InventorySubsystem = UDkInventorySubsystem::Get();
-	checkf(InventorySubsystem, TEXT("InventorySubsystem为空！"));
-	InventorySubsystem->RegisterCachedInventoryComponent(InventoryComponent.Get());
 }
 
 void ADkGamePlayerController::TryStartDialog()

@@ -62,19 +62,26 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void Server_AddNewItem(
-		UDkItemComponent* ItemComponent, int32 StackCount, FDkInventorySlotAvailabilityResult Result
+		UDkItemComponent* ItemComponent, int32 StackCount, FDkInventorySlotAvailabilityResult Result, bool bNeedNotice
 	);
 
 	UFUNCTION(Server, Reliable)
 	void Server_AddNewItemWithItem(
-		UDkInventoryItem* Item, int32 StackCount, FDkInventorySlotAvailabilityResult Result
+		UDkInventoryItem* Item, int32 StackCount, FDkInventorySlotAvailabilityResult Result, bool bNeedNotice
 	);
 
 	UFUNCTION(Server, Reliable)
-	void Server_AddStacksToItem(UDkItemComponent* ItemComponent, FDkInventorySlotAvailabilityResult Result);
+	void Server_AddStacksToItem(
+		UDkItemComponent* ItemComponent, FDkInventorySlotAvailabilityResult Result, bool bNeedNotice
+	);
 
 	UFUNCTION(Server, Reliable)
-	void Server_AddStacksToItemWithItem(UDkInventoryItem* InItem, FDkInventorySlotAvailabilityResult Result);
+	void Server_AddStacksToItemWithItem(
+		UDkInventoryItem* InItem, FDkInventorySlotAvailabilityResult Result, bool bNeedNotice
+	);
+
+	UFUNCTION(Client, Reliable)
+	void Client_ShowItemNotice(const FText& ItemName, int32 Count, bool bNeedNotice);
 
 	void AddRepSubObj(UObject* SubObj);
 

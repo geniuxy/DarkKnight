@@ -15,7 +15,7 @@ ADkPickUpActorBase::ADkPickUpActorBase()
 	ItemComponent = CreateDefaultSubobject<UDkItemComponent>(TEXT("DkItemComponent"));
 }
 
-void ADkPickUpActorBase::SetPickUpItemInfo(const FDkItemInfo* PickUpItemInfo, int32 InItemStack)
+void ADkPickUpActorBase::SetPickUpItemInfo(const FDkItemInfo& PickUpItemInfo, int32 InItemStack)
 {
 	ItemComponent->InitializeItemComponent(PickUpItemInfo, InItemStack);
 }
@@ -36,6 +36,6 @@ void ADkPickUpActorBase::InitCollectionsInfo()
 	if (const FDkItemInfo* CollectionInfo =
 		UDkInventorySubsystem::Get()->GetCachedItemTable().Find(ItemComponent->GetItemId()))
 	{
-		SetPickUpItemInfo(CollectionInfo, StackCount);
+		SetPickUpItemInfo(*CollectionInfo, StackCount);
 	}
 }

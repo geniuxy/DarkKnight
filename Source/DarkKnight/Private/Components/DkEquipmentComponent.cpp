@@ -5,7 +5,7 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "Characters/DkCharacterBase.h"
-#include "Components/InventoryComps/DkInventoryComponent.h"
+#include "Components/InventoryComps/DkPlayerInventoryComp.h"
 #include "Equipment/DkEquippedActorBase.h"
 #include "Equipment/DkEquippedActorStatic.h"
 #include "Equipment/DkEquippedActorStaticWithAdditional.h"
@@ -20,15 +20,6 @@ UDkEquipmentComponent::UDkEquipmentComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 
 	SetIsReplicatedByDefault(true);
-}
-
-void UDkEquipmentComponent::InitializeOwner(APlayerController* PlayerController)
-{
-	if (IsValid(PlayerController))
-	{
-		OwningController = PlayerController;
-		InitInventoryComponent();
-	}
 }
 
 void UDkEquipmentComponent::BeginPlay()
@@ -71,7 +62,12 @@ void UDkEquipmentComponent::OnControllerChanged(APawn* Pawn, AController* OldCon
 
 void UDkEquipmentComponent::InitInventoryComponent()
 {
-	// 初始化InventoryComponent
+	if (!OwningController.IsValid()) return;
+	if (!bIsPreview && !OwningController->HasAuthority()) return;
+	// 预览情况下，本地Client处理PreviewActor的装备/卸装备
+	if (bIsPreview && !OwningController->IsLocalController()) return;
+
+	// 初始化当前玩家控制角色的InventoryComponent
 	InventoryComponent = UDkInventoryFunctionLibrary::GetInventoryComponent(OwningController.Get());
 	if (!InventoryComponent.IsValid()) return;
 	if (!InventoryComponent->OnItemEquipped.IsAlreadyBound(this, &ThisClass::OnItemEquipped))
@@ -97,14 +93,6 @@ void UDkEquipmentComponent::InitOwnerASC()
 void UDkEquipmentComponent::OnItemEquipped(UDkInventoryItem* EquippedItem)
 {
 	if (!IsValid(EquippedItem)) return;
-	if (bIsPreview)
-	{
-		if (!OwningController->IsLocalController()) return; // 预览情况下，本地Client处理PreviewActor的装备/卸装备
-	}
-	else
-	{
-		if (!OwningController->HasAuthority()) return; // 对于PreviewActor,这里OwningCharacter为空，所以用OwningController
-	}
 
 	FInventoryItemManifest& ItemManifest = EquippedItem->GetItemManifestMutable();
 	FInventoryItemFragment_Equipment* EquipmentFragment =
@@ -135,14 +123,6 @@ void UDkEquipmentComponent::OnItemEquipped(UDkInventoryItem* EquippedItem)
 void UDkEquipmentComponent::OnItemUnEquipped(UDkInventoryItem* UnEquippedItem)
 {
 	if (!IsValid(UnEquippedItem)) return;
-	if (bIsPreview)
-	{
-		if (!OwningController->IsLocalController()) return; // 预览情况下，本地Client处理PreviewActor的装备/卸装备
-	}
-	else
-	{
-		if (!OwningController->HasAuthority()) return; // 对于PreviewActor,这里OwningCharacter为空，所以用OwningController
-	}
 
 	FInventoryItemManifest& ItemManifest = UnEquippedItem->GetItemManifestMutable();
 	FInventoryItemFragment_Equipment* EquipmentFragment =
@@ -211,6 +191,24 @@ void UDkEquipmentComponent::RemoveEquippedActor(FInventoryItemFragment_Equipment
 		}
 		EquippedActors.Remove(EquippedActor);
 		EquippedActor->Destroy();
+	}
+}
+
+void UDkEquipmentComponent::SetIsPreview(bool bInIsPreview)
+{
+	bIsPreview = bInIsPreview;
+	if (bIsPreview)
+	{
+		SetIsReplicated(false);
+	}
+}
+
+void UDkEquipmentComponent::InitializeOwner(APlayerController* PlayerController)
+{
+	if (IsValid(PlayerController))
+	{
+		OwningController = PlayerController;
+		InitInventoryComponent();
 	}
 }
 

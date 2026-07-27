@@ -22,6 +22,8 @@ protected:
 	UStaticMeshComponent* EquipmentItemStaticMesh;
 	/*********/
 
+	virtual void UpdateEquipmentItemInfo() override;
+
 public:
 	FORCEINLINE UStaticMeshComponent* GetEquipmentItemStaticMesh() const { return EquipmentItemStaticMesh; }
 };

@@ -3,6 +3,8 @@
 
 #include "Equipment/DkEquippedActorSkeletal.h"
 
+#include "Subsytems/EngineSubsystems/DkInventorySubsystem.h"
+
 
 ADkEquippedActorSkeletal::ADkEquippedActorSkeletal()
 {
@@ -17,3 +19,16 @@ void ADkEquippedActorSkeletal::SetEquipmentSkeletalMesh(USkeletalMesh* InEquipme
 	EquipmentItemSkeletalMesh->SetSkeletalMeshAsset(InEquipmentItemMesh);
 }
 
+void ADkEquippedActorSkeletal::UpdateEquipmentItemInfo()
+{
+	Super::UpdateEquipmentItemInfo();
+
+	TMap<int, FDkItemInfo> ItemTable = UDkInventorySubsystem::Get()->GetCachedItemTable();
+	if (!ItemTable.Contains(ItemId)) return;
+
+	FDkItemInfo EquipmentInfo = ItemTable.FindRef(ItemId);
+	if (!EquipmentInfo.bStaticMesh && EquipmentInfo.ItemSkeletalMesh.IsValid())
+	{
+		SetEquipmentSkeletalMesh(EquipmentInfo.ItemSkeletalMesh.LoadSynchronous());
+	}
+}

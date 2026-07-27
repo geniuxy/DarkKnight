@@ -21,4 +21,6 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	USkeletalMeshComponent* EquipmentItemSkeletalMesh;
 	/*********/
+
+	virtual void UpdateEquipmentItemInfo() override;
 };

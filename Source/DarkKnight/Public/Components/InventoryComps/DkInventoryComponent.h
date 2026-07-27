@@ -138,8 +138,8 @@ public:
 	UFUNCTION(Server, Reliable)
 	void ServerUpdateEquippedItem(UDkInventoryItem* EquippedItem, UDkInventoryItem* UnEquippedItem);
 
-	UFUNCTION(NetMulticast, Reliable)
-	void MulticastUpdateEquippedItem(UDkInventoryItem* EquippedItem, UDkInventoryItem* UnEquippedItem);
+	UFUNCTION(Client, Reliable)
+	void ClientUpdateEquippedItem(UDkInventoryItem* EquippedItem, UDkInventoryItem* UnEquippedItem);
 
 	FItemEquipStatusChanged OnItemEquipped;
 	FItemEquipStatusChanged OnItemUnEquipped;

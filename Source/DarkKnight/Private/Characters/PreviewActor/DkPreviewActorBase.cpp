@@ -4,19 +4,26 @@
 #include "Characters/PreviewActor/DkPreviewActorBase.h"
 
 #include "Components/DkEquipmentComponent.h"
+#include "Components/SceneCaptureComponent2D.h"
 #include "DarkKnight/DarkKnight.h"
 #include "GameFramework/Character.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "PhysicsEngine/PhysicsConstraintComponent.h"
+#include "Subsytems/EngineSubsystems/DkInventorySubsystem.h"
 
 
 ADkPreviewActorBase::ADkPreviewActorBase()
 {
 	PrimaryActorTick.bCanEverTick = false;
 
+	bReplicates = false;
+
 	RootComponent = CreateDefaultSubobject<USceneComponent>("Root");
 
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>("Mesh");
 	Mesh->SetupAttachment(GetRootComponent());
+	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	Mesh->SetLightingChannels(false, true, false); // 预览所用的Mesh光照使用独立的第二个通道，与不受默认的第一通道干扰
 	Mesh->ComponentTags.Add(FName("MainMesh"));
 	
 	BodyArmorMesh = CreateDefaultSubobject<USkeletalMeshComponent>("BodyArmorMesh");
@@ -47,8 +54,14 @@ ADkPreviewActorBase::ADkPreviewActorBase()
 
 void ADkPreviewActorBase::BeginPlay()
 {
+	// PreviewActor原本就在Level里，所以BeginPlay比玩家控制的Player要早
 	Super::BeginPlay();
+
 	DelayedInitialization();
+
+	// CaptureComponent->ShowOnlyActorComponents(this);
+
+	SetActorLocation(FVector(0.f, 0.f, 100000.f));
 }
 
 void ADkPreviewActorBase::DelayedInitializeOwner()
@@ -99,6 +112,8 @@ void ADkPreviewActorBase::DelayedInitializeOwner()
 	}
 
 	EquipmentComponent->InitializeOwner(PlayerController);
+
+	UDkInventorySubsystem::Get()->SetCachedPreviewActor(this);
 }
 
 void ADkPreviewActorBase::DelayedInitialization()
@@ -213,4 +228,25 @@ void ADkPreviewActorBase::InitSecondaryWeaponComponent()
 	SecondaryPhysicsConstraint->SetAngularDriveMode(EAngularDriveMode::TwistAndSwing);
 	SecondaryPhysicsConstraint->SetAngularOrientationDrive(true, true);
 	SecondaryPhysicsConstraint->SetAngularVelocityDriveTwistAndSwing(true, true);
+
+	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
+	SpringArm->SetupAttachment(GetRootComponent());
+
+	CaptureComponent = CreateDefaultSubobject<USceneCaptureComponent2D>("CaptureComponent");
+	CaptureComponent->SetupAttachment(SpringArm);
+	CaptureComponent->bCaptureEveryFrame = false;
+	CaptureComponent->FOVAngle = 30.f;
+}
+
+void ADkPreviewActorBase::SetRenderTarget(UTextureRenderTarget2D* RenderTarget)
+{
+	CaptureComponent->TextureTarget = RenderTarget;
+}
+
+void ADkPreviewActorBase::UpdateRender()
+{
+	if (CaptureComponent)
+	{
+		CaptureComponent->CaptureScene();
+	}
 }

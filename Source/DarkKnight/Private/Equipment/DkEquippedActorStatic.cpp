@@ -3,6 +3,8 @@
 
 #include "Equipment/DkEquippedActorStatic.h"
 
+#include "Subsytems/EngineSubsystems/DkInventorySubsystem.h"
+
 
 ADkEquippedActorStatic::ADkEquippedActorStatic()
 {
@@ -15,5 +17,19 @@ void ADkEquippedActorStatic::SetEquipmentStaticMesh(UStaticMesh* InEquipmentItem
 {
 	if (!IsValid(InEquipmentItemMesh)) return;
 	EquipmentItemStaticMesh->SetStaticMesh(InEquipmentItemMesh);
+}
+
+void ADkEquippedActorStatic::UpdateEquipmentItemInfo()
+{
+	Super::UpdateEquipmentItemInfo();
+	
+	TMap<int, FDkItemInfo> ItemTable = UDkInventorySubsystem::Get()->GetCachedItemTable();
+	if (!ItemTable.Contains(ItemId)) return;
+	
+	FDkItemInfo EquipmentInfo = ItemTable.FindRef(ItemId);
+	if (EquipmentInfo.bStaticMesh && EquipmentInfo.ItemStaticMesh.IsValid())
+	{
+		SetEquipmentStaticMesh( EquipmentInfo.ItemStaticMesh.LoadSynchronous() );
+	}
 }
 

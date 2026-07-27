@@ -8,6 +8,7 @@
 #include "DkEquipmentComponent.generated.h"
 
 
+class UDkPlayerInventoryComp;
 class UGameplayEffect;
 class UDkAbilitySystemComponent;
 struct FInventoryItemManifest;
@@ -25,15 +26,11 @@ class DARKKNIGHT_API UDkEquipmentComponent : public UActorComponent
 public:
 	UDkEquipmentComponent();
 
-	void SetOwningSkeletalMesh(USkeletalMeshComponent* InOwningMesh) { OwningSkeletalMesh = InOwningMesh; }
-	void SetIsPreview(bool bInIsPreview) { bIsPreview = bInIsPreview; }
-	void InitializeOwner(APlayerController* PlayerController);
-
 protected:
 	virtual void BeginPlay() override;
 
 private:
-	TWeakObjectPtr<UDkInventoryComponent> InventoryComponent;
+	TWeakObjectPtr<UDkPlayerInventoryComp> InventoryComponent;
 	TWeakObjectPtr<ADkCharacterBase> OwningCharacter;
 	TWeakObjectPtr<APlayerController> OwningController;
 	TWeakObjectPtr<USkeletalMeshComponent> OwningSkeletalMesh;
@@ -51,17 +48,17 @@ private:
 
 	/* 装备Item */
 	UFUNCTION()
-	void OnItemEquipped(UDkInventoryItem* EquippedItem);
+	void OnItemEquipped(UDkInventoryItem* EquippedItem); // 仅在bIsPreview=true || OwningController->HasAuthority()时执行
 
 	UFUNCTION()
-	void OnItemUnEquipped(UDkInventoryItem* UnEquippedItem);
+	void OnItemUnEquipped(UDkInventoryItem* UnEquippedItem); // 仅在bIsPreview=true || OwningController->HasAuthority()时执行
 
 	ADkEquippedActorBase* SpawnEquippedActor(
 		FInventoryItemFragment_Equipment* EquipmentFragment, USkeletalMeshComponent* AttachMesh
 	);
 
 	ADkEquippedActorBase* FindEquippedActor(const FGameplayTag& EquippedActorTag);
-	
+
 	ADkEquippedActorBase* FindTargetTypeEquippedActor(const FGameplayTag& TargetTypeTag);
 
 	UPROPERTY()
@@ -73,9 +70,16 @@ private:
 	void RemoveEquippedActor(FInventoryItemFragment_Equipment* EquipmentFragment);
 	/********/
 
-	/* 预览装备 */
+	/**********************************************************************/
+	/*                       Preview Actor Setting                        */
+	/**********************************************************************/
+public:
+	void SetOwningSkeletalMesh(USkeletalMeshComponent* InOwningMesh) { OwningSkeletalMesh = InOwningMesh; }
+	void SetIsPreview(bool bInIsPreview);
+	void InitializeOwner(APlayerController* PlayerController);
+
+private:
 	bool bIsPreview = false;
-	/********/
 
 	/**********************************************************************/
 	/*                            Draw Weapon                             */

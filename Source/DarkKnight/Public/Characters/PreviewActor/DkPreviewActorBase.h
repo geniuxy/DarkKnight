@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "DkPreviewActorBase.generated.h"
 
+class USpringArmComponent;
 class UPhysicsConstraintComponent;
 class UDkEquipmentComponent;
 
@@ -69,6 +70,12 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* SecondaryWeaponSheathTarget;
 
+	UPROPERTY(VisibleDefaultsOnly, Category="Render Actor")
+	USpringArmComponent* SpringArm;
+
+	UPROPERTY(VisibleDefaultsOnly, Category="Render Actor")
+	USceneCaptureComponent2D* CaptureComponent;
+
 	/* Init */
 	FTimerHandle TimerForNextTick;
 	void DelayedInitializeOwner();
@@ -77,4 +84,14 @@ private:
 	void InitPrimaryWeaponComponent();
 	void InitSecondaryWeaponComponent();
 	/********/
+
+	/**********************************************************************/
+	/*                            Render Actor                            */
+	/**********************************************************************/
+public:
+	void SetRenderTarget(UTextureRenderTarget2D* RenderTarget);
+	void UpdateRender();
+	
+public:
+	FORCEINLINE USceneCaptureComponent2D* GetCaptureComponent() const { return CaptureComponent; }
 };

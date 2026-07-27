@@ -5,7 +5,10 @@
 
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Characters/PreviewActor/DkPreviewActorBase.h"
-#include "Kismet/GameplayStatics.h"
+#include "Components/Image.h"
+#include "Engine/TextureRenderTarget2D.h"
+#include "Kismet/KismetRenderingLibrary.h"
+#include "Subsytems/EngineSubsystems/DkInventorySubsystem.h"
 
 FReply UDkWidgetCharacterPreview::NativeOnMouseButtonDown(const FGeometry& InGeometry,
                                                           const FPointerEvent& InMouseEvent)
@@ -34,14 +37,15 @@ void UDkWidgetCharacterPreview::NativeOnMouseLeave(const FPointerEvent& InMouseE
 void UDkWidgetCharacterPreview::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
+}
 
-	TArray<AActor*> Actors;
-	UGameplayStatics::GetAllActorsOfClass(this, ADkPreviewActorBase::StaticClass(), Actors);
+void UDkWidgetCharacterPreview::NativeConstruct()
+{
+	Super::NativeConstruct();
 
-	if (Actors.Num() == 0) return;
-
-	ADkPreviewActorBase* PreviewActor = Cast<ADkPreviewActorBase>(Actors[0]);
-	if (!IsValid(PreviewActor)) return;
+	SpawnRenderActor();
+	ConfigureRenderActor();
+	BeginRenderCapture();
 
 	Mesh = PreviewActor->GetMesh();
 }
@@ -57,4 +61,73 @@ void UDkWidgetCharacterPreview::NativeTick(const FGeometry& MyGeometry, float In
 
 	if (!Mesh.IsValid()) return;
 	Mesh->AddRelativeRotation(FRotator(0.f, HorizontalDelta, 0.f));
+
+	if (PreviewActor)
+	{
+		PreviewActor->UpdateRender();
+	}
+}
+
+void UDkWidgetCharacterPreview::BeginDestroy()
+{
+	StopRenderCapture();
+	Super::BeginDestroy();
+}
+
+void UDkWidgetCharacterPreview::SpawnRenderActor()
+{
+	if (!PreviewActorClass) return;
+	if (PreviewActor) return;
+
+	UWorld* World = GetWorld();
+	if (!World) return;
+
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+	PreviewActor = World->SpawnActor<ADkPreviewActorBase>(PreviewActorClass, SpawnParams);
+}
+
+void UDkWidgetCharacterPreview::ConfigureRenderActor()
+{
+	if (!IsValid(PreviewActor)) return;
+	if (!RenderTarget)
+	{
+		RenderTarget = NewObject<UTextureRenderTarget2D>(this);
+		RenderTarget->InitAutoFormat(512, 512);
+		RenderTarget->RenderTargetFormat = ETextureRenderTargetFormat::RTF_RGBA8_SRGB;
+		PreviewActor->SetRenderTarget(RenderTarget);
+	}
+
+	UMaterialInstanceDynamic* DisplayImageDynamicMaterial = DisplayImage->GetDynamicMaterial();
+	if (DisplayImageDynamicMaterial)
+	{
+		DisplayImageDynamicMaterial->SetTextureParameterValue(DisplayImageRenderTargetParamName, RenderTarget);
+	}
+}
+
+void UDkWidgetCharacterPreview::BeginRenderCapture()
+{
+	RenderTickInterval = 1.f / (float)FrameRate;
+	UWorld* World = GetWorld();
+	if (World)
+	{
+		World->GetTimerManager().SetTimer(RenderTimerHandle, this, &ThisClass::UpdateRender, RenderTickInterval, true);
+	}
+}
+
+void UDkWidgetCharacterPreview::UpdateRender()
+{
+	if (PreviewActor)
+	{
+		PreviewActor->UpdateRender();
+	}
+}
+
+void UDkWidgetCharacterPreview::StopRenderCapture()
+{
+	UWorld* World = GetWorld();
+	if (World)
+	{
+		World->GetTimerManager().ClearTimer(RenderTimerHandle);
+	}
 }

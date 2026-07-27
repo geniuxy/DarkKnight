@@ -7,6 +7,7 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "DkInventorySubsystem.generated.h"
 
+class ADkPreviewActorBase;
 class UDkPlayerInventoryComp;
 /**
  * UGameInstanceSubsystem 本质上不适用于网络同步场景，但是Client和Server上都存在，适合存放静态的数据
@@ -37,8 +38,13 @@ private:
 	UPROPERTY(Transient)
 	TMap<FName, FDkEntryInfo> CachedEntryTable;
 
+	UPROPERTY()
+	ADkPreviewActorBase* CachedPreviewActor;
+
 public:
 	// 返回TMap的引用比较好，不容易指针悬空
 	FORCEINLINE const TMap<int, FDkItemInfo>& GetCachedItemTable() const { return CachedItemTable; }
 	FORCEINLINE const TMap<FName, FDkEntryInfo>& GetCachedEntryTable() const { return CachedEntryTable; }
+	FORCEINLINE ADkPreviewActorBase* GetCachedPreviewActor() const { return CachedPreviewActor; }
+	void SetCachedPreviewActor(ADkPreviewActorBase* InPreviewActor) { CachedPreviewActor = InPreviewActor; }
 };

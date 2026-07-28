@@ -41,7 +41,7 @@ private:
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget, AllowPrivateAccess="true"))
 	TObjectPtr<UDkWidgetInventoryMenu> WBP_MerchantInventoryMenu;
 	//***** Bound Widgets *****//
-	
+
 	int CurNpcId = 0;
 	int NextDialogId = 0;
 
@@ -51,4 +51,7 @@ private:
 	UDkNpcDialogComponent* GetNpcDialogComponent();
 
 	void OnBackBoundActionTriggered();
+
+public:
+	FORCEINLINE UDkWidgetInventoryMenu* GetPlayerInventoryMenu() const { return WBP_PlayerInventoryMenu; }
 };

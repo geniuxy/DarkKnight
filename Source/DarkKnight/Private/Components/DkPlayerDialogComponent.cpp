@@ -9,11 +9,12 @@
 #include "Camera/CameraComponent.h"
 #include "Characters/DkCharacterHero.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/InventoryComps/DkPlayerInventoryComp.h"
 #include "FunctionLibrarys/DkUIFunctionLibrary.h"
-#include "Kismet/GameplayStatics.h"
 #include "Subsytems/DkUISubsystem.h"
 #include "Subsytems/EngineSubsystems/DkDataSubsystem.h"
 #include "Widgets/GameMenu/ShopMenu/DkWidgetShopMenuScreen.h"
+#include "Widgets/Inventory/DkWidgetInventoryMenu.h"
 
 UDkPlayerDialogComponent::UDkPlayerDialogComponent()
 {
@@ -142,7 +143,8 @@ void UDkPlayerDialogComponent::BeginPlay()
 	OnDialogBranchEventTriggered.AddUObject(this, &ThisClass::HandleDialogBranchEventTriggered);
 }
 
-void UDkPlayerDialogComponent::HandleDialogBranchEventTriggered(int InNpcId, const FDialogBranchInfo& InDialogBranchInfo)
+void UDkPlayerDialogComponent::HandleDialogBranchEventTriggered(
+	int InNpcId, const FDialogBranchInfo& InDialogBranchInfo)
 {
 	Debug::Print(TEXT("触发的事件为"), InDialogBranchInfo.TriggerEvent.ToString());
 
@@ -167,6 +169,11 @@ void UDkPlayerDialogComponent::HandleOpenShop(int InNpcId, const FDialogBranchIn
 			{
 				UDkWidgetShopMenuScreen* GameMenuScreen = CastChecked<UDkWidgetShopMenuScreen>(PushedWidget);
 				GameMenuScreen->ConfigureShopMenu(InNpcId, InDialogBranchInfo.JumpToContentId);
+				UDkWidgetInventoryMenu* InventoryMenu = GameMenuScreen->GetPlayerInventoryMenu();
+				if (CachedOwner)
+				{
+					InventoryMenu->SetInventoryComponent(CachedOwner->GetInventoryComponent());
+				}
 			}
 		}
 	);

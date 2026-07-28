@@ -20,7 +20,10 @@ void UTaskNoticeWidget::NativeOnInitialized()
 	if (ADkGamePlayerController* OwnerPlayerController = Cast<ADkGamePlayerController>(GetOwningPlayer()))
 	{
 		OwnerPlayerState = OwnerPlayerController->GetPlayerState<ADkPlayerStateBase>();
-		OwnerPlayerState->OnAddTaskNoticeDelegate.AddUObject(this, &ThisClass::AddTaskNotice);
+		if (OwnerPlayerState)
+		{
+			OwnerPlayerState->OnAddTaskNoticeDelegate.AddUObject(this, &ThisClass::AddTaskNotice);
+		}
 	}
 }
 

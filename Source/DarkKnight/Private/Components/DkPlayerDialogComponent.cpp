@@ -129,9 +129,14 @@ void UDkPlayerDialogComponent::BeginPlay()
 	CachedCameraActor->GetCameraComponent()->SetConstraintAspectRatio(false); // 去除电影质感的黑边框
 
 	// 更新对话相关信息，Id=1为玩家自己
-	if (GetOwner() == UGameplayStatics::GetPlayerPawn(this, 0))
+	if (CachedOwner && CachedOwner->IsLocallyControlledByPlayer())
 	{
-		UDkDataSubsystem::Get()->UpdateNpcInfo(1, GetOwner());
+		// 在Client端，GameState的BeginPlay竟然在Character的后面
+		FTimerHandle InitNpcTimeHandle;
+		GetWorld()->GetTimerManager().SetTimer(InitNpcTimeHandle, FTimerDelegate::CreateLambda([this]()
+		{
+			UDkDataSubsystem::Get()->UpdateNpcInfo(1, GetOwner());
+		}), 0.2f, false);
 	}
 
 	OnDialogBranchEventTriggered.AddUObject(this, &ThisClass::HandleDialogBranchEventTriggered);

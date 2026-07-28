@@ -93,7 +93,7 @@ void UDkNpcDialogComponent::UpdateNpcTransform(TMap<int, FDialogNpcDetail> InNpc
 	
 	for (TTuple<int, FDialogNpcDetail> NpcInfo : InNpcInfos)
 	{
-		AActor* CurNpcActor = UDkDataSubsystem::Get()->GetNpcInfo().FindRef(NpcInfo.Key).NpcActor;
+		AActor* CurNpcActor = NpcInfoMap.FindRef(NpcInfo.Key).NpcActor;
 		if (!CurNpcActor)
 		{
 			Debug::Print(FString::Printf(TEXT("没找到对应的Npc Actor, Id为: %d"), NpcInfo.Key));

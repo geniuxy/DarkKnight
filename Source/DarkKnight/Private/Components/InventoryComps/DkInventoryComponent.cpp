@@ -311,6 +311,7 @@ void UDkInventoryComponent::ClientUpdateEquippedItem_Implementation(
 	UDkInventoryItem* EquippedItem, UDkInventoryItem* UnEquippedItem)
 {
 	// 目前主要用来更新Client端的PreviewActor的装备
+	if (OwningCharacter->HasAuthority()) return;
 	if (IsValid(EquippedItem))
 	{
 		OnItemEquipped.Broadcast(EquippedItem);

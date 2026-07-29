@@ -57,6 +57,8 @@ public:
 	ATTRIBUTE_ACCESSORS(UDkAttributeSet, ExecutionChance);
 	ATTRIBUTE_ACCESSORS(UDkAttributeSet, MonsterExperienceAcquisition);
 	ATTRIBUTE_ACCESSORS(UDkAttributeSet, ShopSellingPrice);
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
 	// 用于GameplayEffect的Modifiers相关计算Clamp
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
@@ -67,6 +69,27 @@ public:
 	void RescaleEnergy();
 	
 protected:
+	UPROPERTY(ReplicatedUsing = OnRep_Health)
+	FGameplayAttributeData Health;
+	UPROPERTY(ReplicatedUsing = OnRep_MaxHealth)
+	FGameplayAttributeData MaxHealth;
+	UPROPERTY(ReplicatedUsing = OnRep_Energy)
+	FGameplayAttributeData Energy;
+	UPROPERTY(ReplicatedUsing = OnRep_MaxEnergy)
+	FGameplayAttributeData MaxEnergy;
+	UPROPERTY(ReplicatedUsing = OnRep_AttackDamage)
+	FGameplayAttributeData AttackDamage;
+	UPROPERTY(ReplicatedUsing = OnRep_Armor)
+	FGameplayAttributeData Armor;
+	UPROPERTY(ReplicatedUsing = OnRep_MoveSpeed)
+	FGameplayAttributeData MoveSpeed;
+	UPROPERTY(ReplicatedUsing = OnRep_MoveAcceleration)
+	FGameplayAttributeData MoveAcceleration;
+	UPROPERTY(ReplicatedUsing = OnRep_CarryWeight)
+	FGameplayAttributeData CarryWeight;
+	UPROPERTY(ReplicatedUsing = OnRep_WeightLimit)
+	FGameplayAttributeData WeightLimit;
+	
 	UPROPERTY()
 	FGameplayAttributeData CachedHealthPercent;
 	UPROPERTY()
@@ -75,15 +98,7 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Primary Attribute")
 	FGameplayAttributeData Level;
 	UPROPERTY(BlueprintReadOnly, Category = "Primary Attribute")
-	FGameplayAttributeData Health;
-	UPROPERTY(BlueprintReadOnly, Category = "Primary Attribute")
-	FGameplayAttributeData MaxHealth;
-	UPROPERTY(BlueprintReadOnly, Category = "Primary Attribute")
 	FGameplayAttributeData HealthRecovery;
-	UPROPERTY(BlueprintReadOnly, Category = "Primary Attribute")
-	FGameplayAttributeData AttackDamage;
-	UPROPERTY(BlueprintReadOnly, Category = "Primary Attribute")
-	FGameplayAttributeData Armor;
 	UPROPERTY(BlueprintReadOnly, Category = "Primary Attribute")
 	FGameplayAttributeData SpellPower;
 	UPROPERTY(BlueprintReadOnly, Category = "Primary Attribute")
@@ -92,10 +107,6 @@ protected:
 	FGameplayAttributeData MagicDamage;
 	UPROPERTY(BlueprintReadOnly, Category = "Primary Attribute")
 	FGameplayAttributeData AttackSpeed;
-	UPROPERTY(BlueprintReadOnly, Category = "Primary Attribute")
-	FGameplayAttributeData MoveSpeed;
-	UPROPERTY(BlueprintReadOnly, Category = "Primary Attribute")
-	FGameplayAttributeData MoveAcceleration;
 	UPROPERTY(BlueprintReadOnly, Category = "Primary Attribute")
 	FGameplayAttributeData CritRate;
 	UPROPERTY(BlueprintReadOnly, Category = "Primary Attribute")
@@ -111,10 +122,6 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Primary Attribute")
 	FGameplayAttributeData MaxToxin;
 	UPROPERTY(BlueprintReadOnly, Category = "Primary Attribute")
-	FGameplayAttributeData Energy;
-	UPROPERTY(BlueprintReadOnly, Category = "Primary Attribute")
-	FGameplayAttributeData MaxEnergy;
-	UPROPERTY(BlueprintReadOnly, Category = "Primary Attribute")
 	FGameplayAttributeData EnergyRecovery;
 	UPROPERTY(BlueprintReadOnly, Category = "Primary Attribute")
 	FGameplayAttributeData EnergyRecoveryBonus;
@@ -129,13 +136,39 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Primary Attribute")
 	FGameplayAttributeData MaxBreakingDefenseValue;
 	UPROPERTY(BlueprintReadOnly, Category = "Primary Attribute")
-	FGameplayAttributeData CarryWeight;
-	UPROPERTY(BlueprintReadOnly, Category = "Primary Attribute")
-	FGameplayAttributeData WeightLimit;
-	UPROPERTY(BlueprintReadOnly, Category = "Primary Attribute")
 	FGameplayAttributeData ExecutionChance;
 	UPROPERTY(BlueprintReadOnly, Category = "Primary Attribute")
 	FGameplayAttributeData MonsterExperienceAcquisition;
 	UPROPERTY(BlueprintReadOnly, Category = "Primary Attribute")
 	FGameplayAttributeData ShopSellingPrice;
+
+	UFUNCTION()
+	void OnRep_Health(const FGameplayAttributeData& OldValue);
+
+	UFUNCTION()
+	void OnRep_MaxHealth(const FGameplayAttributeData& OldValue);
+
+	UFUNCTION()
+	void OnRep_Energy(const FGameplayAttributeData& OldValue);
+
+	UFUNCTION()
+	void OnRep_MaxEnergy(const FGameplayAttributeData& OldValue);
+
+	UFUNCTION()
+	void OnRep_AttackDamage(const FGameplayAttributeData& OldValue);
+
+	UFUNCTION()
+	void OnRep_Armor(const FGameplayAttributeData& OldValue);
+
+	UFUNCTION()
+	void OnRep_MoveSpeed(const FGameplayAttributeData& OldValue);
+	
+	UFUNCTION()
+	void OnRep_MoveAcceleration(const FGameplayAttributeData& OldValue);
+
+	UFUNCTION()
+	void OnRep_CarryWeight(const FGameplayAttributeData& OldValue);
+
+	UFUNCTION()
+	void OnRep_WeightLimit(const FGameplayAttributeData& OldValue);
 };

@@ -4,6 +4,23 @@
 #include "GAS/DkAttributeSet.h"
 #include "GameplayEffectExtension.h"
 #include "GAS/DkAbilitySystemComponent.h"
+#include "Net/UnrealNetwork.h"
+
+void UDkAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME_CONDITION_NOTIFY(UDkAttributeSet, Health, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UDkAttributeSet, MaxHealth, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UDkAttributeSet, Energy, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UDkAttributeSet, MaxEnergy, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UDkAttributeSet, AttackDamage, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UDkAttributeSet, Armor, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UDkAttributeSet, MoveSpeed, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UDkAttributeSet, MoveAcceleration, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UDkAttributeSet, CarryWeight, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UDkAttributeSet, WeightLimit, COND_None, REPNOTIFY_Always);
+}
 
 void UDkAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
 {
@@ -60,4 +77,54 @@ void UDkAttributeSet::RescaleEnergy()
 	{
 		SetEnergy(FMath::Clamp(GetMaxEnergy() * GetCachedEnergyPercent(), 0, GetMaxEnergy()));
 	}
+}
+
+void UDkAttributeSet::OnRep_Health(const FGameplayAttributeData& OldValue)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UDkAttributeSet, Health, OldValue);
+}
+
+void UDkAttributeSet::OnRep_MaxHealth(const FGameplayAttributeData& OldValue)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UDkAttributeSet, MaxHealth, OldValue);
+}
+
+void UDkAttributeSet::OnRep_Energy(const FGameplayAttributeData& OldValue)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UDkAttributeSet, Energy, OldValue);
+}
+
+void UDkAttributeSet::OnRep_MaxEnergy(const FGameplayAttributeData& OldValue)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UDkAttributeSet, MaxEnergy, OldValue);
+}
+
+void UDkAttributeSet::OnRep_AttackDamage(const FGameplayAttributeData& OldValue)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UDkAttributeSet, AttackDamage, OldValue);
+}
+
+void UDkAttributeSet::OnRep_Armor(const FGameplayAttributeData& OldValue)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UDkAttributeSet, Armor, OldValue);
+}
+
+void UDkAttributeSet::OnRep_MoveSpeed(const FGameplayAttributeData& OldValue)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UDkAttributeSet, MoveSpeed, OldValue);
+}
+
+void UDkAttributeSet::OnRep_MoveAcceleration(const FGameplayAttributeData& OldValue)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UDkAttributeSet, MoveAcceleration, OldValue);
+}
+
+void UDkAttributeSet::OnRep_CarryWeight(const FGameplayAttributeData& OldValue)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UDkAttributeSet, CarryWeight, OldValue);
+}
+
+void UDkAttributeSet::OnRep_WeightLimit(const FGameplayAttributeData& OldValue)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UDkAttributeSet, WeightLimit, OldValue);
 }

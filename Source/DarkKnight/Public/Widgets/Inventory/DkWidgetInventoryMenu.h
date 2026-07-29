@@ -6,6 +6,8 @@
 #include "Widgets/DkWidgetActivatableBase.h"
 #include "DkWidgetInventoryMenu.generated.h"
 
+class UWeightStatsGauge;
+class UStatsGauge;
 class UDkInventoryCategoryButton;
 class UCommonListView;
 class UDkInventoryComponent;
@@ -43,6 +45,12 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget))
 	TObjectPtr<UDkInventoryItemGrid> InventoryGrid;
+	
+	UPROPERTY(BlueprintReadOnly, meta=(BindWidget))
+	TObjectPtr<UWeightStatsGauge> StatsGauge_Weight;
+
+	UPROPERTY(BlueprintReadOnly, meta=(BindWidget))
+	TObjectPtr<UStatsGauge> StatsGauge_Coins;
 	//***** Bound Widgets *****//
 
 	TWeakObjectPtr<UDkInventoryComponent> InventoryComponent;

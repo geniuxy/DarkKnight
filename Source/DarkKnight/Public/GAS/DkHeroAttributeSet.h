@@ -33,12 +33,14 @@ public:
 	ATTRIBUTE_ACCESSORS(UDkHeroAttributeSet, Gold)
 	ATTRIBUTE_ACCESSORS(UDkHeroAttributeSet, IntelligenceGrowthRate)
 	ATTRIBUTE_ACCESSORS(UDkHeroAttributeSet, StrengthGrowthRate)
+	
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 protected:
-	UPROPERTY(BlueprintReadOnly, Category = "Hero Attribute")
+	UPROPERTY(ReplicatedUsing = OnRep_Intelligence)
 	FGameplayAttributeData Intelligence;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Hero Attribute")
+	UPROPERTY(ReplicatedUsing = OnRep_Strength)
 	FGameplayAttributeData Strength;
 
 	UPROPERTY()
@@ -47,27 +49,57 @@ protected:
 	UPROPERTY()
 	FGameplayAttributeData StrengthGrowthRate;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Hero Attribute")
+	UPROPERTY(ReplicatedUsing = OnRep_Experience)
 	FGameplayAttributeData Experience;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Hero Attribute")
+	UPROPERTY(ReplicatedUsing = OnRep_PrevLevelExperience)
 	FGameplayAttributeData PrevLevelExperience;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Hero Attribute")
+	UPROPERTY(ReplicatedUsing = OnRep_NextLevelExperience)
 	FGameplayAttributeData NextLevelExperience;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Hero Attribute")
+	UPROPERTY(ReplicatedUsing = OnRep_Level)
 	FGameplayAttributeData Level;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Hero Attribute")
+	UPROPERTY(ReplicatedUsing = OnRep_UpgradePoint)
 	FGameplayAttributeData UpgradePoint;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Hero Attribute")
+	UPROPERTY(ReplicatedUsing = OnRep_MaxLevel)
 	FGameplayAttributeData MaxLevel;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Hero Attribute")
+	UPROPERTY(ReplicatedUsing = OnRep_MaxLevelExperience)
 	FGameplayAttributeData MaxLevelExperience;
 	
-	UPROPERTY(BlueprintReadOnly, Category = "Hero Attribute")
+	UPROPERTY(ReplicatedUsing = OnRep_Gold)
 	FGameplayAttributeData Gold;
+
+	UFUNCTION()
+	void OnRep_Intelligence(const FGameplayAttributeData& OldValue);
+
+	UFUNCTION()
+	void OnRep_Strength(const FGameplayAttributeData& OldValue);
+
+	UFUNCTION()
+	void OnRep_Experience(const FGameplayAttributeData& OldValue);
+
+	UFUNCTION()
+	void OnRep_PrevLevelExperience(const FGameplayAttributeData& OldValue);
+
+	UFUNCTION()
+	void OnRep_NextLevelExperience(const FGameplayAttributeData& OldValue);
+
+	UFUNCTION()
+	void OnRep_Level(const FGameplayAttributeData& OldValue);
+
+	UFUNCTION()
+	void OnRep_UpgradePoint(const FGameplayAttributeData& OldValue);
+
+	UFUNCTION()
+	void OnRep_MaxLevel(const FGameplayAttributeData& OldValue);
+
+	UFUNCTION()
+	void OnRep_MaxLevelExperience(const FGameplayAttributeData& OldValue);
+
+	UFUNCTION()
+	void OnRep_Gold(const FGameplayAttributeData& OldValue);
 };

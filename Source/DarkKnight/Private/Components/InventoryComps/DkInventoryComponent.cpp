@@ -327,9 +327,12 @@ void UDkInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	InitializeInventoryComponent();
-
-	InitInventorySlotArray();
+	FTimerHandle InitTimeHandle;
+	GetWorld()->GetTimerManager().SetTimer(InitTimeHandle, FTimerDelegate::CreateLambda([this]()
+	{
+		InitializeInventoryComponent();
+		InitInventorySlotArray();
+	}), 0.2f, false);
 }
 
 void UDkInventoryComponent::InitInventorySlotArray()

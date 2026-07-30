@@ -3,34 +3,78 @@
 
 #include "Components/InventoryComps/DkNpcInventoryComp.h"
 
+#include "AbilitySystemGlobals.h"
+#include "Characters/NPC/DkCharacterMerchant.h"
+#include "DataAssets/PA_MerchantInfoGenerics.h"
+#include "FunctionLibrarys/DkInventoryFunctionLibrary.h"
+#include "GAS/DkAbilitySystemComponent.h"
 
-// Sets default values for this component's properties
 UDkNpcInventoryComp::UDkNpcInventoryComp()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
-
-	// ...
+	PrimaryComponentTick.bCanEverTick = false;
 }
 
-
-// Called when the game starts
-void UDkNpcInventoryComp::BeginPlay()
+void UDkNpcInventoryComp::InitializeInventoryComponent()
 {
-	Super::BeginPlay();
-
-	// ...
-	
+	OwningMerchant = CastChecked<ADkCharacterMerchant>(GetOwner());
+	if (OwningMerchant)
+	{
+		OwnerASC = Cast<UDkAbilitySystemComponent>(
+			UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(OwningMerchant)
+		);
+	}
 }
 
-
-// Called every frame
-void UDkNpcInventoryComp::TickComponent(float DeltaTime, ELevelTick TickType,
-                                        FActorComponentTickFunction* ThisTickFunction)
+void UDkNpcInventoryComp::InitInventorySlotArray()
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	if (!OwningMerchant) return;
+	if (!OwningMerchant->HasAuthority()) return;
 
-	// ...
+	int GlobalIndex = 0;
+	for (const FInventoryItemCategoryInfo& CategoryInfo : CategoryInfoList)
+	{
+		for (int iSlotIndex = 0; iSlotIndex < CategoryInfo.Rows * CategoryInfo.Columns; iSlotIndex++)
+		{
+			FDkInventorySlotEntry& NewEntry = InventorySlotArray.Slots.AddDefaulted_GetRef();
+			NewEntry.Category = CategoryInfo.Category;
+			NewEntry.GlobalIndex = GlobalIndex;
+			NewEntry.BriefInfo = FInventoryItemBriefInfo(iSlotIndex);
+			GlobalIndex++;
+		}
+	}
+
+	InventorySlotArray.MarkArrayDirty();
+
+	AddMerchantShopItems();
 }
 
+void UDkNpcInventoryComp::AddMerchantShopItems()
+{
+	if (!MerchantInfoGenerics) return;
+	for (const FShopItemEntry ShopItemEntry : MerchantInfoGenerics->GetShopItemEntries())
+	{
+		if (UDkInventoryFunctionLibrary::IsItemStackable(ShopItemEntry.ItemID))
+		{
+			UDkInventoryItem* ShopItem = UDkInventoryFunctionLibrary::SpawnInventoryItemById(
+				this, ShopItemEntry.ItemID, ShopItemEntry.Stack
+			);
+			if (IsValid(ShopItem))
+			{
+				TryAddItem(ShopItem);
+			}
+		}
+		else
+		{
+			for (int i = 0; i < ShopItemEntry.Stack; ++i)
+			{
+				UDkInventoryItem* ShopItem = UDkInventoryFunctionLibrary::SpawnInventoryItemById(
+					this, ShopItemEntry.ItemID, 0
+				);
+				if (IsValid(ShopItem))
+				{
+					TryAddItem(ShopItem);
+				}
+			}
+		}
+	}
+}

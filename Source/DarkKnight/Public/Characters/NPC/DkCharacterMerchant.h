@@ -6,6 +6,8 @@
 #include "DkCharacterNPC.h"
 #include "DkCharacterMerchant.generated.h"
 
+class UDkNpcInventoryComp;
+
 UCLASS()
 class DARKKNIGHT_API ADkCharacterMerchant : public ADkCharacterNPC
 {
@@ -16,4 +18,10 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+
+	UPROPERTY(VisibleAnywhere)
+	UDkNpcInventoryComp* MerchantInventoryComp;
+
+public:
+	FORCEINLINE UDkNpcInventoryComp* GetMerchantInventoryComp() const { return MerchantInventoryComp; }
 };

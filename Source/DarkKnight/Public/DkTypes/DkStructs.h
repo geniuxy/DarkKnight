@@ -292,6 +292,18 @@ struct FItemNoticeInfo
 	int ItemCount;
 };
 
+USTRUCT(BlueprintType)
+struct FShopItemEntry // 商店物品信息
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	int ItemID = 0;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	int Stack = 0;
+};
+
 /********/
 
 /* Input Structs */

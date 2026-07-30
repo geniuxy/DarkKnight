@@ -5,6 +5,7 @@
 
 #include "CommonListView.h"
 #include "Components/InventoryComps/DkInventoryComponent.h"
+#include "Widgets/GameHUD/Stats/WeightStatsGauge.h"
 #include "Widgets/Inventory/DkInventoryItemGrid.h"
 #include "Widgets/Inventory/Components/DkInventoryCategoryButton.h"
 
@@ -27,6 +28,12 @@ void UDkWidgetInventoryMenu::ClearGridItems()
 	{
 		InventoryGrid->ClearItems();
 	}
+}
+
+void UDkWidgetInventoryMenu::SetIsMerchantInventoryMenu(bool bIsMerchantInventory)
+{
+	SetWeightStatsGaugeVisibility(!bIsMerchantInventory);
+	bIsMerchantInventoryMenu = bIsMerchantInventory;
 }
 
 void UDkWidgetInventoryMenu::NativeOnInitialized()
@@ -79,4 +86,9 @@ void UDkWidgetInventoryMenu::CategoryButtonPressed(UObject* SelectedUObject)
 			InventoryGrid->PopulateGrid(CategoryData->Info.Category);
 		}
 	}
+}
+
+void UDkWidgetInventoryMenu::SetWeightStatsGaugeVisibility(bool bVisible)
+{
+	StatsGauge_Weight->SetVisibility(bVisible ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Hidden);
 }

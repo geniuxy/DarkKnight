@@ -7,21 +7,28 @@
 #include "DkNpcInventoryComp.generated.h"
 
 
+class ADkCharacterMerchant;
+class UPA_MerchantInfoGenerics;
+
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class DARKKNIGHT_API UDkNpcInventoryComp : public UDkInventoryComponent
 {
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this component's properties
 	UDkNpcInventoryComp();
 
-protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
+	virtual void InitializeInventoryComponent() override;
 
-public:
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
-	                           FActorComponentTickFunction* ThisTickFunction) override;
+	virtual void InitInventorySlotArray() override;
+
+protected:
+	UPROPERTY(EditDefaultsOnly, Category="Merchant Info")
+	UPA_MerchantInfoGenerics* MerchantInfoGenerics;
+
+	UPROPERTY()
+	ADkCharacterMerchant* OwningMerchant;
+
+private:
+	void AddMerchantShopItems();
 };

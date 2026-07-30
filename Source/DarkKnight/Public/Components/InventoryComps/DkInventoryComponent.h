@@ -53,7 +53,7 @@ public:
 
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 
-	void InitializeInventoryComponent();
+	virtual void InitializeInventoryComponent();
 
 	/* 道具物品的添加和删除 */
 	void TryAddItem(UDkItemComponent* ItemComponent, bool bNeedNotice = true);
@@ -158,7 +158,7 @@ protected:
 	/*                     Inventory Item Brief Info                      */
 	/**********************************************************************/
 public:
-	void InitInventorySlotArray();
+	virtual void InitInventorySlotArray();
 	void UpdateInventorySlotArray(const FDkInventorySlotAvailabilityResult& Result);
 
 	void SetInventorySlotArray(

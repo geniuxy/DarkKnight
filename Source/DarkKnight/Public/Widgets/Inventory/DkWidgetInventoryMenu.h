@@ -31,6 +31,8 @@ public:
 
 	void ClearGridItems();
 
+	void SetIsMerchantInventoryMenu(bool bIsMerchantInventory);
+
 protected:
 	//~Begin UUserWidget Function
 	virtual void NativeOnInitialized() override;
@@ -45,7 +47,7 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget))
 	TObjectPtr<UDkInventoryItemGrid> InventoryGrid;
-	
+
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget))
 	TObjectPtr<UWeightStatsGauge> StatsGauge_Weight;
 
@@ -61,4 +63,10 @@ protected:
 private:
 	void InitInventoryCategoryButtons();
 	void CategoryButtonPressed(UObject* SelectedUObject);
+	void SetWeightStatsGaugeVisibility(bool bVisible);
+
+	bool bIsMerchantInventoryMenu = false;
+
+public:
+	FORCEINLINE bool GetIsMerchantInventoryMenu() const { return bIsMerchantInventoryMenu; }
 };

@@ -210,8 +210,8 @@ void UDkInventoryItemGrid::UpdateInventorySlotArray()
 	InventoryComponent->SetInventorySlotArray(ItemCategory, ItemBriefInfos);
 }
 
-void UDkInventoryItemGrid::UpdateGridSlotInfo(const FInventoryItemBriefInfo& ItemBriefInfo, int Index,
-                                              UDkInventoryGridSlot* GridSlot)
+void UDkInventoryItemGrid::UpdateGridSlotInfo(
+	const FInventoryItemBriefInfo& ItemBriefInfo, int Index, UDkInventoryGridSlot* GridSlot)
 {
 	const FInventoryItemFragment_Image* ImageFragment = GetFragment<FInventoryItemFragment_Image>(
 		ItemBriefInfo.InventoryItem, DkGameplayTags::Dk_Inventory_Fragment_Icon

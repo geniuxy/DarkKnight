@@ -6,14 +6,25 @@
 #include "Components/DkNpcDialogComponent.h"
 #include "DarkKnightDebugHelper.h"
 #include "ICommonInputModule.h"
-#include "FunctionLibrarys/DkUIFunctionLibrary.h"
+#include "Characters/NPC/DkCharacterMerchant.h"
+#include "Components/InventoryComps/DkNpcInventoryComp.h"
 #include "Input/CommonUIInputTypes.h"
 #include "Subsytems/EngineSubsystems/DkDataSubsystem.h"
+#include "Widgets/Inventory/DkWidgetInventoryMenu.h"
 
 void UDkWidgetShopMenuScreen::ConfigureShopMenu(int InNpcId, int InDialogId)
 {
+	if (!UDkDataSubsystem::Get()->GetNpcInfo().Contains(InNpcId)) return;
 	CurNpcId = InNpcId;
 	NextDialogId = InDialogId;
+
+	if (ADkCharacterMerchant* Merchant =
+		Cast<ADkCharacterMerchant>(UDkDataSubsystem::Get()->GetNpcInfo().FindRef(InNpcId).NpcActor))
+	{
+		UDkNpcInventoryComp* MerchantInventoryComp = Merchant->GetMerchantInventoryComp();
+		WBP_MerchantInventoryMenu->SetInventoryComponent(MerchantInventoryComp);
+		WBP_MerchantInventoryMenu->SetIsMerchantInventoryMenu(true);
+	}
 }
 
 void UDkWidgetShopMenuScreen::NativeOnInitialized()

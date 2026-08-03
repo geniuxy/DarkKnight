@@ -8,8 +8,8 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "DkInventoryFunctionLibrary.generated.h"
 
+class UDkPlayerInventoryComp;
 class UDkInventoryItem;
-class UDkInventoryComponent;
 /**
  * 
  */

@@ -30,7 +30,6 @@ public:
 	ATTRIBUTE_ACCESSORS(UDkHeroAttributeSet, UpgradePoint)
 	ATTRIBUTE_ACCESSORS(UDkHeroAttributeSet, MaxLevel)
 	ATTRIBUTE_ACCESSORS(UDkHeroAttributeSet, MaxLevelExperience)
-	ATTRIBUTE_ACCESSORS(UDkHeroAttributeSet, Gold)
 	ATTRIBUTE_ACCESSORS(UDkHeroAttributeSet, IntelligenceGrowthRate)
 	ATTRIBUTE_ACCESSORS(UDkHeroAttributeSet, StrengthGrowthRate)
 	
@@ -69,9 +68,6 @@ protected:
 
 	UPROPERTY(ReplicatedUsing = OnRep_MaxLevelExperience)
 	FGameplayAttributeData MaxLevelExperience;
-	
-	UPROPERTY(ReplicatedUsing = OnRep_Gold)
-	FGameplayAttributeData Gold;
 
 	UFUNCTION()
 	void OnRep_Intelligence(const FGameplayAttributeData& OldValue);
@@ -99,7 +95,4 @@ protected:
 
 	UFUNCTION()
 	void OnRep_MaxLevelExperience(const FGameplayAttributeData& OldValue);
-
-	UFUNCTION()
-	void OnRep_Gold(const FGameplayAttributeData& OldValue);
 };

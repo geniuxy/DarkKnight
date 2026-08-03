@@ -8,11 +8,13 @@
 #include "Components/InventoryComps/DkInventoryComponent.h"
 #include "Components/DkItemComponent.h"
 #include "Components/UniformGridPanel.h"
+#include "Components/InventoryComps/DkPlayerInventoryComp.h"
 #include "FunctionLibrarys/DkCommonFunctionLibrary.h"
 #include "FunctionLibrarys/DkInventoryFunctionLibrary.h"
 #include "FunctionLibrarys/DkUIFunctionLibrary.h"
 #include "Inventory/DkInventoryItemFragment.h"
 #include "Inventory/DkInventorySlotAvailabilty.h"
+#include "Subsytems/EngineSubsystems/DkInventorySubsystem.h"
 #include "Widgets/Inventory/DkInventoryDraggedItem.h"
 #include "Widgets/Inventory/DkInventoryGridSlot.h"
 #include "Widgets/Inventory/DkInventoryPopUpMenu.h"
@@ -208,6 +210,14 @@ void UDkInventoryItemGrid::UpdateInventorySlotArray()
 		ItemBriefInfos.Add(ItemBriefInfo);
 	}
 	InventoryComponent->SetInventorySlotArray(ItemCategory, ItemBriefInfos);
+}
+
+void UDkInventoryItemGrid::TryToBuyItem(int GridIndex, int Count)
+{
+	UDkPlayerInventoryComp* OwnerInventoryComp = UDkInventoryFunctionLibrary::GetInventoryComponent(GetOwningPlayer());
+	if (!OwnerInventoryComp) return;
+	int CurMerchantNpcId = UDkInventorySubsystem::Get()->GetCurMerchantNpcId();
+	OwnerInventoryComp->Server_TryToBuyItem(CurMerchantNpcId, ItemCategory, GridIndex, Count);
 }
 
 void UDkInventoryItemGrid::UpdateGridSlotInfo(
@@ -713,7 +723,14 @@ void UDkInventoryItemGrid::OnGridSlotClicked(int GridIndex, const FPointerEvent&
 	{
 		if (!IsValid(DraggedItem))
 		{
-			CreateItemPopUp(GridIndex);
+			if (!GetIsMerchantInventoryGrid())
+			{
+				CreateItemPopUp(GridIndex);
+			}
+			else
+			{
+				TryToBuyItem(GridIndex);
+			}
 		}
 		return;
 	}
@@ -737,7 +754,7 @@ void UDkInventoryItemGrid::OnGridSlotClicked(int GridIndex, const FPointerEvent&
 
 			DraggedItem->UpdateStackCount(ClickedStackCount);
 			DraggedItem->SetPreviousGridIndex(GridIndex);
-		
+
 			UpdateInventorySlotArray();
 
 			return;

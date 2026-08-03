@@ -56,7 +56,7 @@ public:
 	ATTRIBUTE_ACCESSORS(UDkAttributeSet, WeightLimit);
 	ATTRIBUTE_ACCESSORS(UDkAttributeSet, ExecutionChance);
 	ATTRIBUTE_ACCESSORS(UDkAttributeSet, MonsterExperienceAcquisition);
-	ATTRIBUTE_ACCESSORS(UDkAttributeSet, ShopSellingPrice);
+	ATTRIBUTE_ACCESSORS(UDkAttributeSet, Gold)
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
@@ -89,6 +89,8 @@ protected:
 	FGameplayAttributeData CarryWeight;
 	UPROPERTY(ReplicatedUsing = OnRep_WeightLimit)
 	FGameplayAttributeData WeightLimit;
+	UPROPERTY(ReplicatedUsing = OnRep_Gold)
+	FGameplayAttributeData Gold;
 	
 	UPROPERTY()
 	FGameplayAttributeData CachedHealthPercent;
@@ -171,4 +173,7 @@ protected:
 
 	UFUNCTION()
 	void OnRep_WeightLimit(const FGameplayAttributeData& OldValue);
+	
+	UFUNCTION()
+	void OnRep_Gold(const FGameplayAttributeData& OldValue);
 };

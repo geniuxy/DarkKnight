@@ -368,6 +368,9 @@ struct FHeroBaseStats : public FTableRowBase
 
 	UPROPERTY(EditAnywhere)
 	float BaseWeightLimit = 200.f;
+
+	UPROPERTY(EditAnywhere)
+	float BaseGold = 300.f;
 };
 
 /********/

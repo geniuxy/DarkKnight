@@ -10,11 +10,13 @@
 void UWeightStatsGauge::NativeConstruct()
 {
 	UCommonUserWidget::NativeConstruct();
+}
 
-	APawn* OwnerPlayerPawn = GetOwningPlayerPawn();
-	if (!OwnerPlayerPawn) return;
+void UWeightStatsGauge::InitAttributeChangeCallback()
+{
+	if (!StatsOwner) return;
 
-	UAbilitySystemComponent* OwnerASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OwnerPlayerPawn);
+	UAbilitySystemComponent* OwnerASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(StatsOwner);
 	if (OwnerASC)
 	{
 		bool bFound;

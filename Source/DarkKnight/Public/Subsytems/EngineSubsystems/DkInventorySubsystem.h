@@ -7,6 +7,7 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "DkInventorySubsystem.generated.h"
 
+class UDkNpcInventoryComp;
 class ADkPreviewActorBase;
 class UDkPlayerInventoryComp;
 /**
@@ -38,8 +39,11 @@ private:
 	UPROPERTY(Transient)
 	TMap<FName, FDkEntryInfo> CachedEntryTable;
 
-	UPROPERTY()
+	UPROPERTY(Transient)
 	ADkPreviewActorBase* CachedPreviewActor;
+
+	UPROPERTY(Transient)
+	int CachedCurMerchantNpcId;
 
 public:
 	// 返回TMap的引用比较好，不容易指针悬空
@@ -47,4 +51,6 @@ public:
 	FORCEINLINE const TMap<FName, FDkEntryInfo>& GetCachedEntryTable() const { return CachedEntryTable; }
 	FORCEINLINE ADkPreviewActorBase* GetCachedPreviewActor() const { return CachedPreviewActor; }
 	void SetCachedPreviewActor(ADkPreviewActorBase* InPreviewActor) { CachedPreviewActor = InPreviewActor; }
+	FORCEINLINE int GetCurMerchantNpcId() const { return CachedCurMerchantNpcId; }
+	void SetCurMerchantNpcId(int InCurMerchantNpcId) { CachedCurMerchantNpcId = InCurMerchantNpcId; }
 };

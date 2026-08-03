@@ -3,9 +3,9 @@
 
 #include "Subsytems/EngineSubsystems/DkInventorySubsystem.h"
 
-#include "Components/InventoryComps/DkPlayerInventoryComp.h"
 #include "Kismet/DataTableFunctionLibrary.h"
 #include "Settings/DkInventoryDeveloperSettings.h"
+#include "Subsytems/EngineSubsystems/DkDataSubsystem.h"
 
 UDkInventorySubsystem* UDkInventorySubsystem::Get()
 {

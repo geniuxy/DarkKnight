@@ -84,9 +84,21 @@ public:
 	void PopulateGrid(EInventoryItemCategory InCategory);
 
 	void HandleInventorySlotArrayUpdated();
-	
+
 	void UpdateInventorySlotArray();
+
+	/**********************************************************************/
+	/*                              商店相关                               */
+	/**********************************************************************/
+private:
+	void TryToBuyItem(int GridIndex, int Count = 1);
 	
+	bool bIsMerchantInventoryGrid = false;
+
+public:
+	FORCEINLINE bool GetIsMerchantInventoryGrid() const { return bIsMerchantInventoryGrid; }
+	void SetIsMerchantInventoryGrid(bool bIsMerchant) { bIsMerchantInventoryGrid = bIsMerchant; }
+
 	/* 更新GridSlot背景 */
 protected:
 	void UpdateGridSlotInfo(const FInventoryItemBriefInfo& ItemBriefInfo, int Index, UDkInventoryGridSlot* GridSlot);

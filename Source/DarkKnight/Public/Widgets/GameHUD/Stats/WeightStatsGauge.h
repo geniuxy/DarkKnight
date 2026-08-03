@@ -20,6 +20,8 @@ public:
 private:
 	float CachedValue;
 	float CachedMaxValue;
+
+	virtual void InitAttributeChangeCallback() override;
 	
 	void SetWeightValue(float NewVal, float NewMaxVal);
 

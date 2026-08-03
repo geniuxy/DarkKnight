@@ -174,10 +174,7 @@ public:
 
 	TArray<FInventoryItemBriefInfo> GetCategorySlots(EInventoryItemCategory Category) const;
 
-	void TryToRemoveItem(EInventoryItemCategory InCategory, int Index, int Count);
-
-	UFUNCTION(Server, Reliable, WithValidation)
-	void Server_RemoveItem(EInventoryItemCategory InCategory, int Index, int Count);
+	void TryToRemoveItem(EInventoryItemCategory InCategory, int Index, int Count); // 需要确保其发生在服务端上
 
 protected:
 	UPROPERTY(Replicated)

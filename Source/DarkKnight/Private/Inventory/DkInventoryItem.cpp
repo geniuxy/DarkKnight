@@ -22,6 +22,11 @@ bool UDkInventoryItem::IsItemStackable() const
 	return StackableFragment != nullptr;
 }
 
+int UDkInventoryItem::GetItemId() const
+{
+	return GetItemManifest().GetItemID();
+}
+
 FText UDkInventoryItem::GetItemName() const
 {
 	return UDkInventoryFunctionLibrary::GetItemName(GetItemManifest().GetItemID());

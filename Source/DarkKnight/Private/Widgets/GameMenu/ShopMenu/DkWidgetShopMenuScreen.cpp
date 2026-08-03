@@ -8,15 +8,21 @@
 #include "ICommonInputModule.h"
 #include "Characters/NPC/DkCharacterMerchant.h"
 #include "Components/InventoryComps/DkNpcInventoryComp.h"
+#include "Components/InventoryComps/DkPlayerInventoryComp.h"
+#include "FunctionLibrarys/DkInventoryFunctionLibrary.h"
 #include "Input/CommonUIInputTypes.h"
 #include "Subsytems/EngineSubsystems/DkDataSubsystem.h"
+#include "Subsytems/EngineSubsystems/DkInventorySubsystem.h"
 #include "Widgets/Inventory/DkWidgetInventoryMenu.h"
 
 void UDkWidgetShopMenuScreen::ConfigureShopMenu(int InNpcId, int InDialogId)
 {
 	if (!UDkDataSubsystem::Get()->GetNpcInfo().Contains(InNpcId)) return;
-	CurNpcId = InNpcId;
+
 	NextDialogId = InDialogId;
+
+	CurNpcId = InNpcId;
+	UDkInventorySubsystem::Get()->SetCurMerchantNpcId(InNpcId);
 
 	if (ADkCharacterMerchant* Merchant =
 		Cast<ADkCharacterMerchant>(UDkDataSubsystem::Get()->GetNpcInfo().FindRef(InNpcId).NpcActor))
@@ -25,6 +31,8 @@ void UDkWidgetShopMenuScreen::ConfigureShopMenu(int InNpcId, int InDialogId)
 		WBP_MerchantInventoryMenu->SetInventoryComponent(MerchantInventoryComp);
 		WBP_MerchantInventoryMenu->SetIsMerchantInventoryMenu(true);
 	}
+	UDkPlayerInventoryComp* OwnerInventoryComp = UDkInventoryFunctionLibrary::GetInventoryComponent(GetOwningPlayer());
+	WBP_PlayerInventoryMenu->SetInventoryComponent(OwnerInventoryComp);
 }
 
 void UDkWidgetShopMenuScreen::NativeOnInitialized()

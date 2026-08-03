@@ -169,11 +169,6 @@ void UDkPlayerDialogComponent::HandleOpenShop(int InNpcId, const FDialogBranchIn
 			{
 				UDkWidgetShopMenuScreen* GameMenuScreen = CastChecked<UDkWidgetShopMenuScreen>(PushedWidget);
 				GameMenuScreen->ConfigureShopMenu(InNpcId, InDialogBranchInfo.JumpToContentId);
-				UDkWidgetInventoryMenu* InventoryMenu = GameMenuScreen->GetPlayerInventoryMenu();
-				if (CachedOwner)
-				{
-					InventoryMenu->SetInventoryComponent(CachedOwner->GetInventoryComponent());
-				}
 			}
 		}
 	);

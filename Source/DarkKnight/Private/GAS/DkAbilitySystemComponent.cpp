@@ -109,17 +109,19 @@ void UDkAbilitySystemComponent::InitializeBaseAttributes()
 			break;
 		}
 	}
+	if (!BaseStats) return;
 
-	if (BaseStats)
+	SetNumericAttributeBase(UDkAttributeSet::GetMaxHealthAttribute(), BaseStats->BaseMaxHealth);
+	SetNumericAttributeBase(UDkAttributeSet::GetMaxEnergyAttribute(), BaseStats->BaseMaxEnergy);
+	SetNumericAttributeBase(UDkAttributeSet::GetAttackDamageAttribute(), BaseStats->BaseAttackDamage);
+	SetNumericAttributeBase(UDkAttributeSet::GetArmorAttribute(), BaseStats->BaseArmor);
+	SetNumericAttributeBase(UDkAttributeSet::GetMoveSpeedAttribute(), BaseStats->BaseMoveSpeed);
+	SetNumericAttributeBase(UDkAttributeSet::GetMoveAccelerationAttribute(), BaseStats->BaseMoveAcceleration);
+	SetNumericAttributeBase(UDkAttributeSet::GetWeightLimitAttribute(), BaseStats->BaseWeightLimit);
+	SetNumericAttributeBase(UDkAttributeSet::GetGoldAttribute(), BaseStats->BaseGold);
+
+	if (GetAttributeSubobject(UDkHeroAttributeSet::StaticClass()))
 	{
-		SetNumericAttributeBase(UDkAttributeSet::GetMaxHealthAttribute(), BaseStats->BaseMaxHealth);
-		SetNumericAttributeBase(UDkAttributeSet::GetMaxEnergyAttribute(), BaseStats->BaseMaxEnergy);
-		SetNumericAttributeBase(UDkAttributeSet::GetAttackDamageAttribute(), BaseStats->BaseAttackDamage);
-		SetNumericAttributeBase(UDkAttributeSet::GetArmorAttribute(), BaseStats->BaseArmor);
-		SetNumericAttributeBase(UDkAttributeSet::GetMoveSpeedAttribute(), BaseStats->BaseMoveSpeed);
-		SetNumericAttributeBase(UDkAttributeSet::GetMoveAccelerationAttribute(), BaseStats->BaseMoveAcceleration);
-		SetNumericAttributeBase(UDkAttributeSet::GetWeightLimitAttribute(), BaseStats->BaseWeightLimit);
-
 		SetNumericAttributeBase(UDkHeroAttributeSet::GetStrengthAttribute(), BaseStats->Strength);
 		SetNumericAttributeBase(UDkHeroAttributeSet::GetStrengthGrowthRateAttribute(), BaseStats->StrengthGrowthRate);
 		SetNumericAttributeBase(UDkHeroAttributeSet::GetIntelligenceAttribute(), BaseStats->Intelligence);

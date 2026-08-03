@@ -20,6 +20,7 @@ void UDkAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 	DOREPLIFETIME_CONDITION_NOTIFY(UDkAttributeSet, MoveAcceleration, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UDkAttributeSet, CarryWeight, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UDkAttributeSet, WeightLimit, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UDkAttributeSet, Gold, COND_None, REPNOTIFY_Always);
 }
 
 void UDkAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
@@ -127,4 +128,9 @@ void UDkAttributeSet::OnRep_CarryWeight(const FGameplayAttributeData& OldValue)
 void UDkAttributeSet::OnRep_WeightLimit(const FGameplayAttributeData& OldValue)
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UDkAttributeSet, WeightLimit, OldValue);
+}
+
+void UDkAttributeSet::OnRep_Gold(const FGameplayAttributeData& OldValue)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UDkAttributeSet, Gold, OldValue);
 }

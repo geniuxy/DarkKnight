@@ -16,4 +16,10 @@ public:
 	/* 构建背包界面 */
 	void ConstructInventoryMenu();
 	/**************/
+
+	UFUNCTION(Server, Reliable, WithValidation)
+	void Server_TryToBuyItem(int MerchantNpcId, EInventoryItemCategory ItemCategory, int GridIndex, int Count);
+
+	UPROPERTY(EditDefaultsOnly, Category = "GAS")
+	TSubclassOf<UGameplayEffect> GE_ModifyGold;
 };

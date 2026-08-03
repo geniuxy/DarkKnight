@@ -12,12 +12,15 @@
 void UDkWidgetInventoryMenu::SetInventoryComponent(UDkInventoryComponent* InInventoryComp)
 {
 	if (!IsValid(InInventoryComp)) return;
-
+	
 	InventoryComponent = InInventoryComp;
 	if (InventoryGrid)
 	{
 		InventoryGrid->SetInventoryComp(InInventoryComp);
 	}
+
+	StatsGauge_Coins->SetOwner(InInventoryComp->GetOwner());
+	StatsGauge_Weight->SetOwner(InInventoryComp->GetOwner());
 
 	InitInventoryCategoryButtons();
 }
@@ -33,7 +36,9 @@ void UDkWidgetInventoryMenu::ClearGridItems()
 void UDkWidgetInventoryMenu::SetIsMerchantInventoryMenu(bool bIsMerchantInventory)
 {
 	SetWeightStatsGaugeVisibility(!bIsMerchantInventory);
+
 	bIsMerchantInventoryMenu = bIsMerchantInventory;
+	InventoryGrid->SetIsMerchantInventoryGrid(bIsMerchantInventory);
 }
 
 void UDkWidgetInventoryMenu::NativeOnInitialized()

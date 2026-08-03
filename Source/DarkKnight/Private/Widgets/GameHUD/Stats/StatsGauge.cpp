@@ -7,6 +7,7 @@
 #include "AbilitySystemComponent.h"
 #include "CommonLazyImage.h"
 #include "CommonTextBlock.h"
+#include "Characters/DkCharacterBase.h"
 
 void UStatsGauge::NativePreConstruct()
 {
@@ -18,18 +19,29 @@ void UStatsGauge::NativePreConstruct()
 void UStatsGauge::NativeConstruct()
 {
 	Super::NativeConstruct();
+}
 
-	APawn* OwnerPlayerPawn = GetOwningPlayerPawn();
-	if (!OwnerPlayerPawn) return;
+void UStatsGauge::SetOwner(AActor* OwnerCharacter)
+{
+	StatsOwner = OwnerCharacter;
+	
+	InitAttributeChangeCallback();
+}
 
-	UAbilitySystemComponent* OwnerASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OwnerPlayerPawn);
+void UStatsGauge::InitAttributeChangeCallback()
+{
+	if (!StatsOwner) return;
+
+	UAbilitySystemComponent* OwnerASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(StatsOwner);
 	if (OwnerASC)
 	{
 		bool bFound;
 		float AttributeVal = OwnerASC->GetGameplayAttributeValue(Attribute, bFound);
 		SetValue(AttributeVal);
 
-		OwnerASC->GetGameplayAttributeValueChangeDelegate(Attribute).AddUObject(this, &ThisClass::AttributeChanged);
+		OwnerASC->GetGameplayAttributeValueChangeDelegate(Attribute).AddUObject(
+			this, &ThisClass::AttributeChanged
+		);
 	}
 }
 

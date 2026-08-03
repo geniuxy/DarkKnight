@@ -18,7 +18,6 @@ void UDkHeroAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	DOREPLIFETIME_CONDITION_NOTIFY(UDkHeroAttributeSet, UpgradePoint, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UDkHeroAttributeSet, MaxLevel, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UDkHeroAttributeSet, MaxLevelExperience, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UDkHeroAttributeSet, Gold, COND_None, REPNOTIFY_Always);
 }
 
 /*
@@ -67,9 +66,4 @@ void UDkHeroAttributeSet::OnRep_MaxLevel(const FGameplayAttributeData& OldValue)
 void UDkHeroAttributeSet::OnRep_MaxLevelExperience(const FGameplayAttributeData& OldValue)
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UDkHeroAttributeSet, MaxLevelExperience, OldValue);
-}
-
-void UDkHeroAttributeSet::OnRep_Gold(const FGameplayAttributeData& OldValue)
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UDkHeroAttributeSet, Gold, OldValue);
 }

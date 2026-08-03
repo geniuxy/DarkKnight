@@ -5,6 +5,11 @@
 
 void FDkInventorySlotEntry::PreReplicatedRemove(const FFastArraySerializer& InArraySerializer)
 {
+	const FDkInventorySlotArray& Array = static_cast<const FDkInventorySlotArray&>(InArraySerializer);
+	if (UDkInventoryComponent* InventoryComponent = Cast<UDkInventoryComponent>(Array.OwnerComp))
+	{
+		InventoryComponent->OnInventorySlotArrayUpdated.Broadcast();
+	}
 }
 
 void FDkInventorySlotEntry::PostReplicatedAdd(const FFastArraySerializer& InArraySerializer)

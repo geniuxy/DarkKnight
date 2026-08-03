@@ -7,6 +7,7 @@
 #include "CommonUserWidget.h"
 #include "StatsGauge.generated.h"
 
+class ADkCharacterBase;
 struct FOnAttributeChangeData;
 class UCommonTextBlock;
 class UCommonLazyImage;
@@ -21,6 +22,8 @@ class DARKKNIGHT_API UStatsGauge : public UCommonUserWidget
 public:
 	virtual void NativePreConstruct() override;
 	virtual void NativeConstruct() override;
+
+	void SetOwner(AActor* OwnerCharacter);
 
 protected:
 	UPROPERTY(meta=(BindWidget))
@@ -38,7 +41,12 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Visual")
 	FLinearColor IconColor;
 
+	virtual void InitAttributeChangeCallback();
+
 	void SetValue(float NewVal);
 
 	void AttributeChanged(const FOnAttributeChangeData& Data);
+
+	UPROPERTY()
+	AActor* StatsOwner;
 };

@@ -22,6 +22,9 @@ namespace DkGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Stats_LockingTarget, "Dk.Stats.LockingTarget");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Stats_Crosshair_LockTarget, "Dk.Stats.Crosshair.LockTarget");
 
+	// SetByCaller
+	UE_DEFINE_GAMEPLAY_TAG(Dk_SetByCaller_ModifyGold, "Dk.SetByCaller.ModifyGold");
+
 	// Ability Tags
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Ability_Sprint_Tag, "Dk.Ability.Sprint.Tag");
 	UE_DEFINE_GAMEPLAY_TAG(Dk_Ability_LockTarget_Tag, "Dk.Ability.LockTarget.Tag");

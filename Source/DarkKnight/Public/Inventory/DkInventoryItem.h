@@ -12,8 +12,10 @@
 
 /**
  * 背包中Item的数据，所有同种Item(占用不同格子)共用一个UDkInventoryItem
- * 比如，ItemManifest中的StackFragment是可以单独使用的
+ * 但是，ItemManifest中的StackFragment是可以单独使用的
  * 拖拽1个Item时，StackableFragment的StackCount为1；拖拽4个Item时，StackableFragment的StackCount为4
+ * StackableFragment可用于DraggedItem、PickUpItem的Manifest表示数量，但在背包里的时候不用StackableFragment表示数量
+ * StackableFragment一定可以用来表示MaxStackCount
  */
 UCLASS()
 class DARKKNIGHT_API UDkInventoryItem : public UObject
@@ -24,6 +26,7 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual bool IsSupportedForNetworking() const override { return true; }
 	bool IsItemStackable() const;
+	int GetItemId() const;
 	FText GetItemName() const;
 	FGameplayTag GetItemTag() const;
 	EInventoryItemCategory GetItemCategory() const;

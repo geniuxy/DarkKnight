@@ -64,7 +64,7 @@ void UDkPlayerInventoryComp::Server_TryToBuyItem_Implementation(
 		MerchantInventoryComp->GetInventorySlotArray().FindBySlotIndex(ItemCategory, GridIndex);
 	int ItemId = SlotEntry->BriefInfo.InventoryItem->GetItemId();
 
-	MerchantInventoryComp->TryToRemoveItem(ItemCategory, GridIndex, Count);
+	MerchantInventoryComp->RemoveItem(ItemCategory, GridIndex, Count);
 	UDkInventoryItem* ItemToAdd =
 		UDkInventoryFunctionLibrary::SpawnInventoryItemById(this, ItemId, Count);
 	TryAddItem(ItemToAdd);
@@ -81,6 +81,8 @@ void UDkPlayerInventoryComp::Server_TryToBuyItem_Implementation(
 	// 玩家扣钱
 	float NewPlayerGold = OwnerASC->GetNumericAttributeBase(UDkAttributeSet::GetGoldAttribute()) - Price;
 	OwnerASC->SetNumericAttributeBase(UDkAttributeSet::GetGoldAttribute(), NewPlayerGold);
+
+	Client_NotifyToUpdateGrid(MerchantNpcId);
 
 	// TODO:不知道为什么这里用GE和ApplyModToAttribute都不能修改商人的金币
 	// auto ModifyGold = [this](UAbilitySystemComponent* ASC, float Delta)
@@ -127,4 +129,17 @@ bool UDkPlayerInventoryComp::Server_TryToBuyItem_Validate(
 	int MerchantNpcId, EInventoryItemCategory ItemCategory, int GridIndex, int Count)
 {
 	return true;
+}
+
+void UDkPlayerInventoryComp::Client_NotifyToUpdateGrid_Implementation(int MerchantNpcId)
+{
+	// TODO: 不知道为什么有的时候FastArray的变化通知函数不会触发，唉。。。
+	FNpcInfo NpcInfo = UDkDataSubsystem::Get()->GetNpcInfo().FindRef(MerchantNpcId);
+	ADkCharacterMerchant* Merchant = Cast<ADkCharacterMerchant>(NpcInfo.NpcActor);
+	if (!Merchant) return;
+	UDkNpcInventoryComp* MerchantInventoryComp = Merchant->GetMerchantInventoryComp();
+	if (!MerchantInventoryComp) return;
+	MerchantInventoryComp->OnInventorySlotArrayUpdated.Broadcast();
+
+	OnInventorySlotArrayUpdated.Broadcast();
 }

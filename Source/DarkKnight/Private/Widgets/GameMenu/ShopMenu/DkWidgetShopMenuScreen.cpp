@@ -66,14 +66,7 @@ UDkNpcDialogComponent* UDkWidgetShopMenuScreen::GetNpcDialogComponent()
 {
 	if (!IsValid(CachedNpcDialogComponent))
 	{
-		AActor* CurNpcActor = UDkDataSubsystem::Get()->GetNpcInfo().FindRef(CurNpcId).NpcActor;
-		if (!CurNpcActor)
-		{
-			Debug::Print(FString::Printf(TEXT("获取商店对应NpcDialogComp时，没找到对应的Npc Actor, Id为: %d"), CurNpcId));
-			return nullptr;
-		}
-
-		CachedNpcDialogComponent = CurNpcActor->FindComponentByClass<UDkNpcDialogComponent>();
+		CachedNpcDialogComponent = UDkDataSubsystem::Get()->GetCachedNpcDialogComp();
 	}
 
 	return CachedNpcDialogComponent;

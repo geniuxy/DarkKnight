@@ -154,4 +154,3 @@ void UDkNpcDialogComponent::BeginPlay()
 		UDkDataSubsystem::Get()->UpdateNpcInfo(NpcId, GetOwner());
 	}), 0.2f, false);
 }
-

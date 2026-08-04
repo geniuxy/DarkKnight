@@ -19,7 +19,7 @@ public:
 
 	UFUNCTION(Server, Reliable, WithValidation)
 	void Server_TryToBuyItem(int MerchantNpcId, EInventoryItemCategory ItemCategory, int GridIndex, int Count);
-
-	UPROPERTY(EditDefaultsOnly, Category = "GAS")
-	TSubclassOf<UGameplayEffect> GE_ModifyGold;
+	
+	UFUNCTION(Client, Reliable)
+	void Client_NotifyToUpdateGrid(int MerchantNpcId);
 };

@@ -43,6 +43,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FItemEquipStatusChanged, UDkInventor
 
 DECLARE_MULTICAST_DELEGATE(FOnInventorySlotArrayUpdated);
 
+DECLARE_MULTICAST_DELEGATE(FNotifyUpdateInventorySlotArray)
+
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), Blueprintable)
 class DARKKNIGHT_API UDkInventoryComponent : public UActorComponent
 {
@@ -172,10 +174,17 @@ public:
 
 	FOnInventorySlotArrayUpdated OnInventorySlotArrayUpdated;
 
+	FNotifyUpdateInventorySlotArray NotifyUpdateInventorySlotArray;
+
 	TArray<FInventoryItemBriefInfo> GetCategorySlots(EInventoryItemCategory Category) const;
+	
+	void RemoveItem(EInventoryItemCategory InCategory, int Index, int Count); // 需要确保其发生在服务端上
 
-	void TryToRemoveItem(EInventoryItemCategory InCategory, int Index, int Count); // 需要确保其发生在服务端上
+	void TryToRemoveItem(EInventoryItemCategory InCategory, int Index, int Count);
 
+	UFUNCTION(Server, Reliable, WithValidation)
+	void Server_RemoveItem(EInventoryItemCategory InCategory, int Index, int Count);
+	
 protected:
 	UPROPERTY(Replicated)
 	FDkInventorySlotArray InventorySlotArray; // 用于记录背包里的放置情况

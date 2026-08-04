@@ -426,7 +426,7 @@ TArray<FInventoryItemBriefInfo> UDkInventoryComponent::GetCategorySlots(EInvento
 	return Result;
 }
 
-void UDkInventoryComponent::TryToRemoveItem(EInventoryItemCategory InCategory, int Index, int Count)
+void UDkInventoryComponent::RemoveItem(EInventoryItemCategory InCategory, int Index, int Count)
 {
 	FDkInventorySlotEntry* SlotEntry = InventorySlotArray.FindBySlotIndex(InCategory, Index);
 	if (SlotEntry->BriefInfo.StackCount <= Count)
@@ -445,6 +445,21 @@ void UDkInventoryComponent::TryToRemoveItem(EInventoryItemCategory InCategory, i
 	}
 	SlotEntry->BriefInfo.StackCount = FMath::Max(SlotEntry->BriefInfo.StackCount - Count, 0);
 	InventorySlotArray.MarkItemDirty(*SlotEntry);
+}
+
+void UDkInventoryComponent::TryToRemoveItem(EInventoryItemCategory InCategory, int Index, int Count)
+{
+	Server_RemoveItem(InCategory, Index, Count);
+}
+
+void UDkInventoryComponent::Server_RemoveItem_Implementation(EInventoryItemCategory InCategory, int Index, int Count)
+{
+	RemoveItem(InCategory, Index, Count);
+}
+
+bool UDkInventoryComponent::Server_RemoveItem_Validate(EInventoryItemCategory InCategory, int Index, int Count)
+{
+	return true;
 }
 
 bool UDkInventoryComponent::HasCategory(EInventoryItemCategory InCategory)

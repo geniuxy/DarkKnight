@@ -27,7 +27,8 @@ protected:
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 	//~End UUserWidget Function
 
-	TWeakObjectPtr<UDkPlayerInventoryComp> InventoryComponent;
+	UPROPERTY()
+	UDkPlayerInventoryComp* InventoryComponent;
 
 private:
 	//***** Bound Widgets *****//

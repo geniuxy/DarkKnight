@@ -19,6 +19,8 @@
 #include "Widgets/Inventory/DkInventoryGridSlot.h"
 #include "Widgets/Inventory/DkInventoryPopUpMenu.h"
 
+class ADkCharacterMerchant;
+
 FDkInventorySlotAvailabilityResult UDkInventoryItemGrid::HasRoomForItem(const UDkItemComponent* ItemComponent)
 {
 	return HasRoomForItem(ItemComponent->GetItemManifest());
@@ -42,6 +44,9 @@ void UDkInventoryItemGrid::SetInventoryComp(UDkInventoryComponent* InInventoryCo
 	);
 	InventoryComponent->OnInventorySlotArrayUpdated.AddUObject(
 		this, &ThisClass::HandleInventorySlotArrayUpdated
+	);
+	InventoryComponent->NotifyUpdateInventorySlotArray.AddUObject(
+		this, &ThisClass::UpdateInventorySlotArray
 	);
 }
 
@@ -193,7 +198,14 @@ void UDkInventoryItemGrid::HandleInventorySlotArrayUpdated()
 		if (GridSlot->GetStackCount() != ItemBriefInfo->StackCount ||
 			GridSlot->GetInventoryItem() != ItemBriefInfo->InventoryItem)
 		{
-			UpdateGridSlotInfo(*ItemBriefInfo, ItemBriefInfo->Index, GridSlot);
+			if (!IsValid(ItemBriefInfo->InventoryItem))
+			{
+				RemoveItemFromGrid(GridSlot->GetInventoryItem(), ItemBriefInfo->Index);
+			}
+			else
+			{
+				UpdateGridSlotInfo(*ItemBriefInfo, ItemBriefInfo->Index, GridSlot);
+			}
 		}
 	}
 }

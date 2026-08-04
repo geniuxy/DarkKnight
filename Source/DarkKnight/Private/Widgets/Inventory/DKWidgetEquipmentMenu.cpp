@@ -84,7 +84,7 @@ void UDKWidgetEquipmentMenu::PutItemOnEquipSlot(int32 EquipIndex)
 			BroadcastEquippedDelegate(DraggedItem->GetInventoryItem());
 		}
 
-		if (InventoryComponent.IsValid())
+		if (InventoryComponent)
 		{
 			InventoryComponent->TryToRemoveItem(
 				DraggedItem->GetItemCategory(), DraggedItem->GetPreviousGridIndex(), DraggedItem->GetStackCount()
@@ -98,8 +98,10 @@ void UDKWidgetEquipmentMenu::PutItemOnEquipSlot(int32 EquipIndex)
 void UDKWidgetEquipmentMenu::BroadcastEquippedDelegate(
 	UDkInventoryItem* ItemToEquipped, UDkInventoryItem* ItemToUnEquipped) const
 {
-	check(InventoryComponent.IsValid());
-	InventoryComponent->ServerUpdateEquippedItem(ItemToEquipped, ItemToUnEquipped);
+	if (InventoryComponent)
+	{
+		InventoryComponent->ServerUpdateEquippedItem(ItemToEquipped, ItemToUnEquipped);
+	}
 }
 
 void UDKWidgetEquipmentMenu::CalculateHoveredSlot(const FVector2D& CanvasPosition, const FVector2D& MousePosition)
@@ -187,11 +189,13 @@ void UDKWidgetEquipmentMenu::HandleDraggedItemClicked(const FPointerEvent& Mouse
 	// 已有Equipment，则交换俩者的位置
 	UDkInventoryItem* LastInventoryItem = EquippedGridSlots[ItemEquipIndex]->GetInventoryItem();
 	PutItemOnEquipSlot(ItemEquipIndex);
-	if (LastInventoryItem)
+	if (InventoryComponent)
 	{
-		check(InventoryComponent.IsValid());
-		InventoryComponent->TryAddItem(LastInventoryItem, false);
-		InventoryComponent->OnInventorySlotArrayUpdated.Broadcast();
+		if (LastInventoryItem)
+		{
+			InventoryComponent->TryAddItem(LastInventoryItem, false);
+			InventoryComponent->OnInventorySlotArrayUpdated.Broadcast();
+		}
 	}
 }
 
@@ -205,13 +209,15 @@ void UDKWidgetEquipmentMenu::ClearDraggedItem()
 	DraggedItem->UpdateStackCount(0);
 	DraggedItem->SetImageBrush(FSlateNoResource());
 
-	check(InventoryComponent.IsValid());
 	if (IsValid(DraggedItem))
 	{
 		DraggedItem->RemoveFromParent();
 	}
 	DraggedItem = nullptr;
-	InventoryComponent->OnDraggedItemRemoved.Broadcast();
+	if (InventoryComponent)
+	{
+		InventoryComponent->OnDraggedItemRemoved.Broadcast();
+	}
 }
 
 void UDKWidgetEquipmentMenu::DragItem(UDkInventoryItem* ClickedInventoryItem, const int32 GridIndex)
@@ -249,8 +255,10 @@ void UDKWidgetEquipmentMenu::AssignDraggedItem(UDkInventoryItem* InventoryItem)
 	DraggedItem->SetGridDimension(GridFragment->GetGridSize());
 	DraggedItem->SetInventoryItem(InventoryItem);
 	DraggedItem->SetIsStackable(InventoryItem->IsItemStackable());
-	check(InventoryComponent.IsValid());
-	InventoryComponent->OnDraggedItemCreated.Broadcast(DraggedItem);
+	if (InventoryComponent)
+	{
+		InventoryComponent->OnDraggedItemCreated.Broadcast(DraggedItem);
+	}
 	DraggedItem->OnDraggedItemClicked.AddUniqueDynamic(this, &ThisClass::HandleDraggedItemClicked);
 
 	DraggedItem->SetDesiredSizeInViewport(Brush.ImageSize);

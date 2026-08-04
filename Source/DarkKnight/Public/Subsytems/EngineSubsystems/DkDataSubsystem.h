@@ -7,6 +7,7 @@
 #include "Subsystems/EngineSubsystem.h"
 #include "DkDataSubsystem.generated.h"
 
+class UDkNpcDialogComponent;
 /**
  * UEngineSubsystem相比UGameInstanceSubsystem的好处：
  * 1. UEngineSubsystem 没有 World 依赖，CDO 上也能正常访问。
@@ -47,12 +48,18 @@ public:
 
 	void UpdateNpcInfo(int InNpcId, AActor* InNpcActor);
 
+	void SetCurNpcDialogComp(UDkNpcDialogComponent* InNpcDialogComp) { CachedNpcDialogComp = InNpcDialogComp; }
+
 private:
 	UPROPERTY(Transient)
 	TMap<int, FNpcInfo> CachedNpcInfoMap;
 
+	UPROPERTY(Transient)
+	UDkNpcDialogComponent* CachedNpcDialogComp;
+
 public:
 	FORCEINLINE TMap<int, FNpcInfo> GetNpcInfo() const { return CachedNpcInfoMap; }
+	FORCEINLINE UDkNpcDialogComponent* GetCachedNpcDialogComp() const { return CachedNpcDialogComp; }
 
 	/**********************************************************************/
 	/*                                Task                                */

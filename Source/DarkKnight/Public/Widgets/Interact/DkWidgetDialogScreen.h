@@ -59,7 +59,7 @@ private:
 	TObjectPtr<UDkPlayerDialogComponent> OwnerDialogComponent;
 
 	UPROPERTY()
-	TObjectPtr<UDkNpcDialogComponent> NpcDialogComponent; // 当前对话的主Npc的DialogComponent
+	UDkNpcDialogComponent* NpcDialogComponent; // 当前对话的主Npc的DialogComponent
 
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> CachedAudioComponent;

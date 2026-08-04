@@ -26,6 +26,7 @@ void UDkWidgetDialogScreen::BeginDialog(int InStartDialogId, UDkNpcDialogCompone
 	CurDialogId = InStartDialogId;
 	CurDialogContent = GetDialogInfoById(InStartDialogId);
 	NpcDialogComponent = InNpcDialogComponent;
+	UDkDataSubsystem::Get()->SetCurNpcDialogComp(NpcDialogComponent);
 	if (NpcDialogComponent)
 	{
 		NpcDialogComponent->CacheNpcTransform(CurDialogContent.NPCInfos);
@@ -179,6 +180,7 @@ void UDkWidgetDialogScreen::EndDialog()
 		if (NpcDialogComponent)
 		{
 			NpcDialogComponent->ResetNpcTransform();
+			NpcDialogComponent->OnTriggerNextDialog.RemoveAll(this);
 		}
 
 		if (OwnerDialogComponent)

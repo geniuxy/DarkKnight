@@ -81,7 +81,8 @@ struct FDkInventorySlotArray : public FFastArraySerializer
 			Slots, DeltaParams, *this);
 	}
 
-	TWeakObjectPtr<UActorComponent> OwnerComp;
+	UPROPERTY()
+	UActorComponent* OwnerComp;
 };
 
 template<>

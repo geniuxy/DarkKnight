@@ -13,7 +13,6 @@
 #include "Inventory/DkInventoryItemFragment.h"
 #include "Inventory/DkInventorySlotAvailabilty.h"
 #include "Net/UnrealNetwork.h"
-#include "Widgets/Inventory/DkInventoryDraggedItem.h"
 
 UDkInventoryComponent::UDkInventoryComponent() : InventoryList(this), InventorySlotArray(this)
 {
@@ -373,7 +372,6 @@ void UDkInventoryComponent::UpdateInventorySlotArray(const FDkInventorySlotAvail
 		InventorySlotArray.MarkItemDirty(*SlotEntry);
 	}
 
-	Debug::Print("123");
 	// TODO: 这边加一个OnInventoryItemBriefMapUpdated, 并把OnStackChange删掉 （用来实时更新背包的内容）
 	// TODO: 这个更新InventoryItemBriefMap的也可以改成Server端执行
 }
@@ -426,7 +424,12 @@ TArray<FInventoryItemBriefInfo> UDkInventoryComponent::GetCategorySlots(EInvento
 	return Result;
 }
 
-void UDkInventoryComponent::RemoveItem(EInventoryItemCategory InCategory, int Index, int Count)
+void UDkInventoryComponent::TryToRemoveItem(EInventoryItemCategory InCategory, int Index, int Count)
+{
+	Server_RemoveItem(InCategory, Index, Count);
+}
+
+void UDkInventoryComponent::Server_RemoveItem_Implementation(EInventoryItemCategory InCategory, int Index, int Count)
 {
 	FDkInventorySlotEntry* SlotEntry = InventorySlotArray.FindBySlotIndex(InCategory, Index);
 	if (SlotEntry->BriefInfo.StackCount <= Count)
@@ -445,16 +448,6 @@ void UDkInventoryComponent::RemoveItem(EInventoryItemCategory InCategory, int In
 	}
 	SlotEntry->BriefInfo.StackCount = FMath::Max(SlotEntry->BriefInfo.StackCount - Count, 0);
 	InventorySlotArray.MarkItemDirty(*SlotEntry);
-}
-
-void UDkInventoryComponent::TryToRemoveItem(EInventoryItemCategory InCategory, int Index, int Count)
-{
-	Server_RemoveItem(InCategory, Index, Count);
-}
-
-void UDkInventoryComponent::Server_RemoveItem_Implementation(EInventoryItemCategory InCategory, int Index, int Count)
-{
-	RemoveItem(InCategory, Index, Count);
 }
 
 bool UDkInventoryComponent::Server_RemoveItem_Validate(EInventoryItemCategory InCategory, int Index, int Count)

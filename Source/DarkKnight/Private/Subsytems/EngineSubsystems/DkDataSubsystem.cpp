@@ -21,7 +21,6 @@ void UDkDataSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 void UDkDataSubsystem::InitializeData()
 {
 	InitializeDialogContent();
-	InitializeNpcInfo();
 	InitializeTaskInfo();
 	InitializeEnemyTaskInfo();
 	InitializeTaskTrackingInfo();
@@ -42,35 +41,6 @@ void UDkDataSubsystem::InitializeDialogContent()
 			{
 				CachedDialogContentMap.Add(ContentInfo->Id, *ContentInfo);
 			}
-		}
-	}
-}
-
-void UDkDataSubsystem::InitializeNpcInfo()
-{
-	CachedNpcInfoMap.Empty();
-	const UDkDataDeveloperSetting* DataDeveloperSettings = GetDefault<UDkDataDeveloperSetting>();
-	if (UDataTable* NpcInfoDataTable = DataDeveloperSettings->GetNpcInfoDataTable())
-	{
-		for (FName RowName : NpcInfoDataTable->GetRowNames())
-		{
-			FNpcInfo* NpcInfo = NpcInfoDataTable->FindRow<FNpcInfo>(RowName, TEXT("没找到RowName对应的Row"));
-			if (!CachedNpcInfoMap.Contains(NpcInfo->NpcId))
-			{
-				CachedNpcInfoMap.Add(NpcInfo->NpcId, *NpcInfo);
-			}
-		}
-	}
-}
-
-void UDkDataSubsystem::UpdateNpcInfo(int InNpcId, AActor* InNpcActor)
-{
-	for (TTuple<int, FNpcInfo>& NpcInfoPair : CachedNpcInfoMap)
-	{
-		if (NpcInfoPair.Key == InNpcId)
-		{
-			NpcInfoPair.Value.NpcActor = InNpcActor;
-			break;
 		}
 	}
 }

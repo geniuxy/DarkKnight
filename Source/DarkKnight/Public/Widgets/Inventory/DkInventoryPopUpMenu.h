@@ -13,6 +13,8 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FPopUpMenuDrop, int32, Index);
 
 DECLARE_DYNAMIC_DELEGATE_OneParam(FPopUpMenuConsume, int32, Index);
 
+DECLARE_DYNAMIC_DELEGATE_TwoParams(FPopUpMenuSell, int32, SellAmount, int32, Index);
+
 class UCommonTextBlock;
 class USlider;
 class USizeBox;
@@ -33,10 +35,12 @@ public:
 	FPopUpMenuSplit OnSplit;
 	FPopUpMenuDrop OnDrop;
 	FPopUpMenuConsume OnConsume;
+	FPopUpMenuSell OnSell;
 
 	int32 GetSplitAmount() const;
 
 	void CollapseSplitButton() const;
+	void CollapseSellButton() const;
 	void CollapseConsumeButton() const;
 
 	void SetSliderParams(const float Max, const float Value) const;
@@ -67,6 +71,9 @@ private:
 
 	UPROPERTY(meta=(BindWidget))
 	TObjectPtr<UDkUICommonButtonBase> Button_Consume;
+
+	UPROPERTY(meta=(BindWidget))
+	TObjectPtr<UDkUICommonButtonBase> Button_Sell;
 	//***** Bound Widgets *****//
 
 	void SplitButtonClicked();
@@ -76,6 +83,9 @@ private:
 
 	UFUNCTION()
 	void ConsumeButtonClicked();
+
+	UFUNCTION()
+	void SellButtonClicked();
 
 	UFUNCTION()
 	void SliderValueChanged(float Value);

@@ -27,6 +27,11 @@ void UDkInventoryPopUpMenu::CollapseSplitButton() const
 	Text_SplitAmount->SetVisibility(ESlateVisibility::Collapsed);
 }
 
+void UDkInventoryPopUpMenu::CollapseSellButton() const
+{
+	Button_Sell->SetVisibility(ESlateVisibility::Collapsed);
+}
+
 void UDkInventoryPopUpMenu::CollapseConsumeButton() const
 {
 	Button_Consume->SetVisibility(ESlateVisibility::Collapsed);
@@ -54,6 +59,7 @@ void UDkInventoryPopUpMenu::NativeOnInitialized()
 	Button_Split->OnClicked().AddUObject(this, &ThisClass::SplitButtonClicked);
 	Button_Drop->OnClicked().AddUObject(this, &ThisClass::DropButtonClicked);
 	Button_Consume->OnClicked().AddUObject(this, &ThisClass::ConsumeButtonClicked);
+	Button_Sell->OnClicked().AddUObject(this, &ThisClass::SellButtonClicked);
 }
 
 void UDkInventoryPopUpMenu::SplitButtonClicked()
@@ -75,6 +81,18 @@ void UDkInventoryPopUpMenu::DropButtonClicked()
 void UDkInventoryPopUpMenu::ConsumeButtonClicked()
 {
 	if (OnConsume.ExecuteIfBound(GridIndex))
+	{
+		RemoveFromParent();
+	}
+}
+
+void UDkInventoryPopUpMenu::SellButtonClicked()
+{
+	if (Button_Split->IsVisible() && OnSell.ExecuteIfBound(GetSplitAmount(), GridIndex))
+	{
+		RemoveFromParent();
+	}
+	else if (OnSell.ExecuteIfBound(1, GridIndex))
 	{
 		RemoveFromParent();
 	}

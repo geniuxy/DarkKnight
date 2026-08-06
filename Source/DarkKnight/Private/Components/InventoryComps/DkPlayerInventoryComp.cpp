@@ -16,6 +16,7 @@
 #include "Inventory/DkInventoryItemFragment.h"
 #include "Subsytems/DkUISubsystem.h"
 #include "Subsytems/EngineSubsystems/DkDataSubsystem.h"
+#include "Subsytems/GameInstanceSubsystems/DkNpcSubsystem.h"
 #include "Widgets/GameMenu/DkWidgetGameMenuScreen.h"
 #include "Widgets/Inventory/DkWidgetInventoryMenu.h"
 
@@ -46,12 +47,57 @@ void UDkPlayerInventoryComp::ConstructInventoryMenu()
 	);
 }
 
+void UDkPlayerInventoryComp::Server_TryToSellItem_Implementation(
+	int MerchantNpcId, EInventoryItemCategory ItemCategory, int GridIndex, int Count)
+{
+	if (!UDkNpcSubsystem::Get(this)->GetNpcInfo().Contains(MerchantNpcId)) return;
+
+	FNpcInfo NpcInfo = UDkNpcSubsystem::Get(this)->GetNpcInfo().FindRef(MerchantNpcId);
+	ADkCharacterMerchant* Merchant = Cast<ADkCharacterMerchant>(NpcInfo.NpcActor);
+	if (!Merchant) return;
+	UDkNpcInventoryComp* MerchantInventoryComp = Merchant->GetMerchantInventoryComp();
+	if (!MerchantInventoryComp) return;
+	UAbilitySystemComponent* MerchantASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Merchant);
+	if (!MerchantASC) return;
+	if (!OwnerASC.IsValid()) return;
+
+	FDkInventorySlotEntry* SlotEntry = GetInventorySlotArray().FindBySlotIndex(ItemCategory, GridIndex);
+	int ItemId = SlotEntry->BriefInfo.InventoryItem->GetItemId();
+	UDkInventoryItem* ItemToAdd =
+		UDkInventoryFunctionLibrary::SpawnInventoryItemById(this, ItemId, Count);
+	const FInventoryItemFragment_LabeledValue* PriceFragment = GetFragment<FInventoryItemFragment_LabeledValue>(
+		ItemToAdd, DkGameplayTags::Dk_Inventory_Fragment_SellValue
+	);
+	float Price = PriceFragment->GetValue() * Count;
+	float MerchantCurMoney = MerchantASC->GetNumericAttributeBase(UDkAttributeSet::GetGoldAttribute());
+	if (MerchantCurMoney < Price) return;
+	
+	Server_RemoveItem(ItemCategory, GridIndex, Count);
+	MerchantInventoryComp->TryAddItem(ItemToAdd, false);
+
+	// 商人扣钱
+	float NewMerchantGold = MerchantASC->GetNumericAttributeBase(UDkAttributeSet::GetGoldAttribute()) - Price;
+	MerchantASC->SetNumericAttributeBase(UDkAttributeSet::GetGoldAttribute(), NewMerchantGold);
+	
+	// 玩家加钱
+	float NewPlayerGold = OwnerASC->GetNumericAttributeBase(UDkAttributeSet::GetGoldAttribute()) + Price;
+	OwnerASC->SetNumericAttributeBase(UDkAttributeSet::GetGoldAttribute(), NewPlayerGold);
+
+	Client_NotifyToUpdateGrid(MerchantNpcId);
+}
+
+bool UDkPlayerInventoryComp::Server_TryToSellItem_Validate(
+	int MerchantNpcId, EInventoryItemCategory ItemCategory, int GridIndex, int Count)
+{
+	return true;
+}
+
 void UDkPlayerInventoryComp::Server_TryToBuyItem_Implementation(
 	int MerchantNpcId, EInventoryItemCategory ItemCategory, int GridIndex, int Count)
 {
-	if (!UDkDataSubsystem::Get()->GetNpcInfo().Contains(MerchantNpcId)) return;
+	if (!UDkNpcSubsystem::Get(this)->GetNpcInfo().Contains(MerchantNpcId)) return;
 
-	FNpcInfo NpcInfo = UDkDataSubsystem::Get()->GetNpcInfo().FindRef(MerchantNpcId);
+	FNpcInfo NpcInfo = UDkNpcSubsystem::Get(this)->GetNpcInfo().FindRef(MerchantNpcId);
 	ADkCharacterMerchant* Merchant = Cast<ADkCharacterMerchant>(NpcInfo.NpcActor);
 	if (!Merchant) return;
 	UDkNpcInventoryComp* MerchantInventoryComp = Merchant->GetMerchantInventoryComp();
@@ -63,16 +109,17 @@ void UDkPlayerInventoryComp::Server_TryToBuyItem_Implementation(
 	FDkInventorySlotEntry* SlotEntry =
 		MerchantInventoryComp->GetInventorySlotArray().FindBySlotIndex(ItemCategory, GridIndex);
 	int ItemId = SlotEntry->BriefInfo.InventoryItem->GetItemId();
-
-	MerchantInventoryComp->RemoveItem(ItemCategory, GridIndex, Count);
 	UDkInventoryItem* ItemToAdd =
 		UDkInventoryFunctionLibrary::SpawnInventoryItemById(this, ItemId, Count);
-	TryAddItem(ItemToAdd);
-
 	const FInventoryItemFragment_LabeledValue* PriceFragment = GetFragment<FInventoryItemFragment_LabeledValue>(
 		ItemToAdd, DkGameplayTags::Dk_Inventory_Fragment_SellValue
 	);
 	float Price = PriceFragment->GetValue() * Count;
+	float PlayerCurMoney = OwnerASC->GetNumericAttributeBase(UDkAttributeSet::GetGoldAttribute());
+	if (PlayerCurMoney < Price) return;
+	
+	MerchantInventoryComp->Server_RemoveItem(ItemCategory, GridIndex, Count);
+	TryAddItem(ItemToAdd, false);
 
 	// 商人加钱
 	float NewMerchantGold = MerchantASC->GetNumericAttributeBase(UDkAttributeSet::GetGoldAttribute()) + Price;
@@ -134,7 +181,7 @@ bool UDkPlayerInventoryComp::Server_TryToBuyItem_Validate(
 void UDkPlayerInventoryComp::Client_NotifyToUpdateGrid_Implementation(int MerchantNpcId)
 {
 	// TODO: 不知道为什么有的时候FastArray的变化通知函数不会触发，唉。。。
-	FNpcInfo NpcInfo = UDkDataSubsystem::Get()->GetNpcInfo().FindRef(MerchantNpcId);
+	FNpcInfo NpcInfo = UDkNpcSubsystem::Get(this)->GetNpcInfo().FindRef(MerchantNpcId);
 	ADkCharacterMerchant* Merchant = Cast<ADkCharacterMerchant>(NpcInfo.NpcActor);
 	if (!Merchant) return;
 	UDkNpcInventoryComp* MerchantInventoryComp = Merchant->GetMerchantInventoryComp();

@@ -19,6 +19,9 @@ public:
 
 	UFUNCTION(Server, Reliable, WithValidation)
 	void Server_TryToBuyItem(int MerchantNpcId, EInventoryItemCategory ItemCategory, int GridIndex, int Count);
+
+	UFUNCTION(Server, Reliable, WithValidation)
+	void Server_TryToSellItem(int MerchantNpcId, EInventoryItemCategory ItemCategory, int GridIndex, int Count);
 	
 	UFUNCTION(Client, Reliable)
 	void Client_NotifyToUpdateGrid(int MerchantNpcId);

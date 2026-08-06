@@ -232,6 +232,14 @@ void UDkInventoryItemGrid::TryToBuyItem(int GridIndex, int Count)
 	OwnerInventoryComp->Server_TryToBuyItem(CurMerchantNpcId, ItemCategory, GridIndex, Count);
 }
 
+void UDkInventoryItemGrid::TryToSellItem(int GridIndex, int Count)
+{
+	UDkPlayerInventoryComp* OwnerInventoryComp = UDkInventoryFunctionLibrary::GetInventoryComponent(GetOwningPlayer());
+	if (!OwnerInventoryComp) return;
+	int CurMerchantNpcId = UDkInventorySubsystem::Get()->GetCurMerchantNpcId();
+	OwnerInventoryComp->Server_TryToSellItem(CurMerchantNpcId, ItemCategory, GridIndex, Count);
+}
+
 void UDkInventoryItemGrid::UpdateGridSlotInfo(
 	const FInventoryItemBriefInfo& ItemBriefInfo, int Index, UDkInventoryGridSlot* GridSlot)
 {
@@ -837,6 +845,15 @@ void UDkInventoryItemGrid::CreateItemPopUp(const int32 GridIndex)
 		PopUpMenu->CollapseSplitButton();
 	}
 
+	if (!GetIsShopping())
+	{
+		PopUpMenu->CollapseSellButton();
+	}
+	else
+	{
+		PopUpMenu->OnSell.BindDynamic(this, &ThisClass::OnPopUpMenuSell);
+	}
+
 	PopUpMenu->OnDrop.BindDynamic(this, &ThisClass::OnPopUpMenuDrop);
 
 	if (RightClickedItem->GetItemManifest().GetItemCategory() == EInventoryItemCategory::Consumable)
@@ -870,6 +887,11 @@ void UDkInventoryItemGrid::OnPopUpMenuSplit(int32 SplitAmount, int32 Index)
 
 	AssignDraggedItem(RightClickedItem, UpperLeftIndex, UpperLeftIndex);
 	DraggedItem->UpdateStackCount(SplitAmount);
+}
+
+void UDkInventoryItemGrid::OnPopUpMenuSell(int32 SellAmount, int32 Index)
+{
+	TryToSellItem(Index, SellAmount);
 }
 
 void UDkInventoryItemGrid::OnPopUpMenuDrop(int32 Index)

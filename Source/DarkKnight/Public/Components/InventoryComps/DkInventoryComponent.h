@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "Interfaces/LoadingScreenInterface.h"
 #include "Inventory/DkInventoryCategoryItems.h"
 #include "Inventory/DkInventoryFastArray.h"
 #include "DkInventoryComponent.generated.h"
@@ -177,14 +176,12 @@ public:
 	FNotifyUpdateInventorySlotArray NotifyUpdateInventorySlotArray;
 
 	TArray<FInventoryItemBriefInfo> GetCategorySlots(EInventoryItemCategory Category) const;
-	
-	void RemoveItem(EInventoryItemCategory InCategory, int Index, int Count); // 需要确保其发生在服务端上
 
-	void TryToRemoveItem(EInventoryItemCategory InCategory, int Index, int Count);
+	void TryToRemoveItem(EInventoryItemCategory InCategory, int Index, int Count); // 需要确保其发生在服务端上
 
 	UFUNCTION(Server, Reliable, WithValidation)
 	void Server_RemoveItem(EInventoryItemCategory InCategory, int Index, int Count);
-	
+
 protected:
 	UPROPERTY(Replicated)
 	FDkInventorySlotArray InventorySlotArray; // 用于记录背包里的放置情况

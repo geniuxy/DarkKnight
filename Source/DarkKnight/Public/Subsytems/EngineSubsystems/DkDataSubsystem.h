@@ -27,6 +27,7 @@ public:
 	//~End USubsystem Function
 
 	void InitializeData();
+
 	/**********************************************************************/
 	/*                              Dialog                                */
 	/**********************************************************************/
@@ -39,27 +40,6 @@ private:
 
 public:
 	FORCEINLINE TMap<int, FDialogContent> GetDialogContentInfo() const { return CachedDialogContentMap; }
-
-	/**********************************************************************/
-	/*                                Npc                                 */
-	/**********************************************************************/
-public:
-	void InitializeNpcInfo();
-
-	void UpdateNpcInfo(int InNpcId, AActor* InNpcActor);
-
-	void SetCurNpcDialogComp(UDkNpcDialogComponent* InNpcDialogComp) { CachedNpcDialogComp = InNpcDialogComp; }
-
-private:
-	UPROPERTY(Transient)
-	TMap<int, FNpcInfo> CachedNpcInfoMap;
-
-	UPROPERTY(Transient)
-	UDkNpcDialogComponent* CachedNpcDialogComp;
-
-public:
-	FORCEINLINE TMap<int, FNpcInfo> GetNpcInfo() const { return CachedNpcInfoMap; }
-	FORCEINLINE UDkNpcDialogComponent* GetCachedNpcDialogComp() const { return CachedNpcDialogComp; }
 
 	/**********************************************************************/
 	/*                                Task                                */

@@ -17,6 +17,7 @@
 #include "Games/PlayerStates/DkPlayerStateBase.h"
 #include "Kismet/GameplayStatics.h"
 #include "Subsytems/EngineSubsystems/DkDataSubsystem.h"
+#include "Subsytems/GameInstanceSubsystems/DkNpcSubsystem.h"
 #include "Widgets/Components/Buttons/DkUICommonButtonImage.h"
 #include "Widgets/Components/Buttons/Dialog/DkUIDialogSelectionButton.h"
 
@@ -26,7 +27,7 @@ void UDkWidgetDialogScreen::BeginDialog(int InStartDialogId, UDkNpcDialogCompone
 	CurDialogId = InStartDialogId;
 	CurDialogContent = GetDialogInfoById(InStartDialogId);
 	NpcDialogComponent = InNpcDialogComponent;
-	UDkDataSubsystem::Get()->SetCurNpcDialogComp(NpcDialogComponent);
+	UDkNpcSubsystem::Get(this)->SetCurNpcDialogComp(NpcDialogComponent);
 	if (NpcDialogComponent)
 	{
 		NpcDialogComponent->CacheNpcTransform(CurDialogContent.NPCInfos);

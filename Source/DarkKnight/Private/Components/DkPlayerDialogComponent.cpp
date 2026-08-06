@@ -13,6 +13,7 @@
 #include "FunctionLibrarys/DkUIFunctionLibrary.h"
 #include "Subsytems/DkUISubsystem.h"
 #include "Subsytems/EngineSubsystems/DkDataSubsystem.h"
+#include "Subsytems/GameInstanceSubsystems/DkNpcSubsystem.h"
 #include "Widgets/GameMenu/ShopMenu/DkWidgetShopMenuScreen.h"
 #include "Widgets/Inventory/DkWidgetInventoryMenu.h"
 
@@ -36,7 +37,7 @@ void UDkPlayerDialogComponent::AddDialogTag(FGameplayTag InTag)
 void UDkPlayerDialogComponent::UpdateCameraFocus(
 	int CameraFocusNpcId, EDialogCameraType CameraType, const FTransform& CustomCameraTransform)
 {
-	TMap<int, FNpcInfo> NpcInfoMap = UDkDataSubsystem::Get()->GetNpcInfo();
+	TMap<int, FNpcInfo> NpcInfoMap = UDkNpcSubsystem::Get(this)->GetNpcInfo();
 	if (NpcInfoMap.IsEmpty()) return;
 
 	if (!NpcInfoMap.Contains(CameraFocusNpcId)) // CameraFocusNpcId为0的时候，用来还原摄像头
@@ -136,7 +137,7 @@ void UDkPlayerDialogComponent::BeginPlay()
 		FTimerHandle InitNpcTimeHandle;
 		GetWorld()->GetTimerManager().SetTimer(InitNpcTimeHandle, FTimerDelegate::CreateLambda([this]()
 		{
-			UDkDataSubsystem::Get()->UpdateNpcInfo(1, GetOwner());
+			UDkNpcSubsystem::Get(this)->UpdateNpcInfo(1, GetOwner());
 		}), 0.2f, false);
 	}
 

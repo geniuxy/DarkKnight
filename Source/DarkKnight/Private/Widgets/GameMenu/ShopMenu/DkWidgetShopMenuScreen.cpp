@@ -4,7 +4,6 @@
 #include "Widgets/GameMenu/ShopMenu/DkWidgetShopMenuScreen.h"
 
 #include "Components/DkNpcDialogComponent.h"
-#include "DarkKnightDebugHelper.h"
 #include "ICommonInputModule.h"
 #include "Characters/NPC/DkCharacterMerchant.h"
 #include "Components/InventoryComps/DkNpcInventoryComp.h"
@@ -13,11 +12,12 @@
 #include "Input/CommonUIInputTypes.h"
 #include "Subsytems/EngineSubsystems/DkDataSubsystem.h"
 #include "Subsytems/EngineSubsystems/DkInventorySubsystem.h"
+#include "Subsytems/GameInstanceSubsystems/DkNpcSubsystem.h"
 #include "Widgets/Inventory/DkWidgetInventoryMenu.h"
 
 void UDkWidgetShopMenuScreen::ConfigureShopMenu(int InNpcId, int InDialogId)
 {
-	if (!UDkDataSubsystem::Get()->GetNpcInfo().Contains(InNpcId)) return;
+	if (!UDkNpcSubsystem::Get(this)->GetNpcInfo().Contains(InNpcId)) return;
 
 	NextDialogId = InDialogId;
 
@@ -25,7 +25,7 @@ void UDkWidgetShopMenuScreen::ConfigureShopMenu(int InNpcId, int InDialogId)
 	UDkInventorySubsystem::Get()->SetCurMerchantNpcId(InNpcId);
 
 	if (ADkCharacterMerchant* Merchant =
-		Cast<ADkCharacterMerchant>(UDkDataSubsystem::Get()->GetNpcInfo().FindRef(InNpcId).NpcActor))
+		Cast<ADkCharacterMerchant>(UDkNpcSubsystem::Get(this)->GetNpcInfo().FindRef(InNpcId).NpcActor))
 	{
 		UDkNpcInventoryComp* MerchantInventoryComp = Merchant->GetMerchantInventoryComp();
 		WBP_MerchantInventoryMenu->SetInventoryComponent(MerchantInventoryComp);
@@ -33,6 +33,7 @@ void UDkWidgetShopMenuScreen::ConfigureShopMenu(int InNpcId, int InDialogId)
 	}
 	UDkPlayerInventoryComp* OwnerInventoryComp = UDkInventoryFunctionLibrary::GetInventoryComponent(GetOwningPlayer());
 	WBP_PlayerInventoryMenu->SetInventoryComponent(OwnerInventoryComp);
+	WBP_PlayerInventoryMenu->SetIsShopping(true);
 }
 
 void UDkWidgetShopMenuScreen::NativeOnInitialized()
@@ -66,7 +67,7 @@ UDkNpcDialogComponent* UDkWidgetShopMenuScreen::GetNpcDialogComponent()
 {
 	if (!IsValid(CachedNpcDialogComponent))
 	{
-		CachedNpcDialogComponent = UDkDataSubsystem::Get()->GetCachedNpcDialogComp();
+		CachedNpcDialogComponent = UDkNpcSubsystem::Get(this)->GetCachedNpcDialogComp();
 	}
 
 	return CachedNpcDialogComponent;

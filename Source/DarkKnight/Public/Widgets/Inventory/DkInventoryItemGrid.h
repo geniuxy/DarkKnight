@@ -92,12 +92,16 @@ public:
 	/**********************************************************************/
 private:
 	void TryToBuyItem(int GridIndex, int Count = 1);
+	void TryToSellItem(int GridIndex, int Count = 1);
 	
 	bool bIsMerchantInventoryGrid = false;
+	bool bIsShopping = false;
 
 public:
 	FORCEINLINE bool GetIsMerchantInventoryGrid() const { return bIsMerchantInventoryGrid; }
 	void SetIsMerchantInventoryGrid(bool bIsMerchant) { bIsMerchantInventoryGrid = bIsMerchant; }
+	FORCEINLINE bool GetIsShopping() const { return bIsShopping; }
+	void SetIsShopping(bool bInIsShopping) { bIsShopping = bInIsShopping; }
 
 	/* 更新GridSlot背景 */
 protected:
@@ -217,6 +221,10 @@ protected:
 	void HandlePopUpMenuSplit(int32 SplitAmount, int32 Index);
 
 	virtual void OnPopUpMenuSplit(int32 SplitAmount, int32 Index);
+
+	// 售卖Item
+	UFUNCTION()
+	void OnPopUpMenuSell(int32 SellAmount, int32 Index);
 
 	// 丢弃Item
 	UFUNCTION()

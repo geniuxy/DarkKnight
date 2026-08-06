@@ -32,6 +32,7 @@ public:
 	void ClearGridItems();
 
 	void SetIsMerchantInventoryMenu(bool bIsMerchantInventory);
+	void SetIsShopping(bool bInIsShopping);
 
 protected:
 	//~Begin UUserWidget Function
@@ -66,6 +67,7 @@ private:
 	void SetWeightStatsGaugeVisibility(bool bVisible);
 
 	bool bIsMerchantInventoryMenu = false;
+	bool bIsShopping = false;
 
 public:
 	FORCEINLINE bool GetIsMerchantInventoryMenu() const { return bIsMerchantInventoryMenu; }

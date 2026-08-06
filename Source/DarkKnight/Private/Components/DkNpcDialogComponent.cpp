@@ -9,7 +9,7 @@
 #include "FunctionLibrarys/DkUIFunctionLibrary.h"
 #include "GameFramework/Character.h"
 #include "Subsytems/DkUISubsystem.h"
-#include "Subsytems/EngineSubsystems/DkDataSubsystem.h"
+#include "Subsytems/GameInstanceSubsystems/DkNpcSubsystem.h"
 #include "Widgets/DkWidgetActivatableBase.h"
 #include "Widgets/Interact/DkWidgetDialogScreen.h"
 
@@ -57,7 +57,7 @@ void UDkNpcDialogComponent::CacheNpcTransform(TMap<int, FDialogNpcDetail> InNpcI
 {
 	for (TTuple<int, FDialogNpcDetail> NpcInfo : InNpcInfos)
 	{
-		AActor* CurNpcActor = UDkDataSubsystem::Get()->GetNpcInfo().FindRef(NpcInfo.Key).NpcActor;
+		AActor* CurNpcActor = UDkNpcSubsystem::Get(this)->GetNpcInfo().FindRef(NpcInfo.Key).NpcActor;
 		if (!CurNpcActor)
 		{
 			Debug::Print(FString::Printf(TEXT("存初始位置时，没找到对应的Npc Actor, Id为: %d"), NpcInfo.Key));
@@ -72,7 +72,7 @@ void UDkNpcDialogComponent::CacheNpcTransform(TMap<int, FDialogNpcDetail> InNpcI
 
 void UDkNpcDialogComponent::UpdateNpcTransform(TMap<int, FDialogNpcDetail> InNpcInfos)
 {
-	TMap<int, FNpcInfo> NpcInfoMap = UDkDataSubsystem::Get()->GetNpcInfo();
+	TMap<int, FNpcInfo> NpcInfoMap = UDkNpcSubsystem::Get(this)->GetNpcInfo();
 	AActor* MainNpcActor = NpcInfoMap.FindRef(NpcId).NpcActor;
 	if (!MainNpcActor)
 	{
@@ -133,7 +133,7 @@ void UDkNpcDialogComponent::ResetNpcTransform()
 {
 	for (TTuple<int, FTransform> Pair : CachedNpcTransforms)
 	{
-		AActor* CurNpcActor = UDkDataSubsystem::Get()->GetNpcInfo().FindRef(Pair.Key).NpcActor;
+		AActor* CurNpcActor = UDkNpcSubsystem::Get(this)->GetNpcInfo().FindRef(Pair.Key).NpcActor;
 		if (!CurNpcActor)
 		{
 			Debug::Print(FString::Printf(TEXT("重置位置时，没找到对应的Npc Actor, Id为: %d"), Pair.Key));
@@ -151,6 +151,6 @@ void UDkNpcDialogComponent::BeginPlay()
 	FTimerHandle InitNpcTimeHandle;
 	GetWorld()->GetTimerManager().SetTimer(InitNpcTimeHandle, FTimerDelegate::CreateLambda([this]()
 	{
-		UDkDataSubsystem::Get()->UpdateNpcInfo(NpcId, GetOwner());
+		UDkNpcSubsystem::Get(this)->UpdateNpcInfo(NpcId, GetOwner());
 	}), 0.2f, false);
 }

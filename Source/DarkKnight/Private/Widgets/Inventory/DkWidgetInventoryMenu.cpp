@@ -41,6 +41,12 @@ void UDkWidgetInventoryMenu::SetIsMerchantInventoryMenu(bool bIsMerchantInventor
 	InventoryGrid->SetIsMerchantInventoryGrid(bIsMerchantInventory);
 }
 
+void UDkWidgetInventoryMenu::SetIsShopping(bool bInIsShopping)
+{
+	bIsShopping = bInIsShopping;
+	InventoryGrid->SetIsShopping(bInIsShopping);
+}
+
 void UDkWidgetInventoryMenu::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();

@@ -4,6 +4,7 @@
 #include "Components/DkEquipmentComponent.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
+#include "DarkKnightDebugHelper.h"
 #include "Characters/DkCharacterBase.h"
 #include "Components/InventoryComps/DkPlayerInventoryComp.h"
 #include "Equipment/DkEquippedActorBase.h"
@@ -97,26 +98,35 @@ void UDkEquipmentComponent::OnItemEquipped(UDkInventoryItem* EquippedItem)
 	FInventoryItemManifest& ItemManifest = EquippedItem->GetItemManifestMutable();
 	FInventoryItemFragment_Equipment* EquipmentFragment =
 		ItemManifest.GetFragmentOfTypeMutable<FInventoryItemFragment_Equipment>();
-	if (!EquipmentFragment) return;
-	// Tips: 这里PreviewActor和主角是共用一个UDkInventoryItem的，需要修改对另一者没有影响
-
-	if (!bIsPreview && OwnerASC.IsValid()) // 预览时不需要调整属性等操作
+	if (EquipmentFragment)
 	{
-		EquipmentFragment->OnEquip(OwnerASC.Get());
+		// Tips: 这里PreviewActor和主角是共用一个UDkInventoryItem的，需要修改对另一者没有影响
+
+		if (!bIsPreview && OwnerASC.IsValid()) // 预览时不需要调整属性等操作
+		{
+			EquipmentFragment->OnEquip(OwnerASC.Get());
+		}
+
+		if (OwningSkeletalMesh.IsValid())
+		{
+			ADkEquippedActorBase* SpawnedEquippedActor =
+				SpawnEquippedActor(EquipmentFragment, OwningSkeletalMesh.Get());
+			if (SpawnedEquippedActor)
+			{
+				if (bIsPreview) // 如果是多个Client且为Preview，自己管自己的PreviewActor，其对应的SpawnedEquippedActor不为复制
+				{
+					SpawnedEquippedActor->SetReplicates(false);
+				}
+				EquippedActors.Add(SpawnedEquippedActor);
+			}
+		}
 	}
 
-	if (OwningSkeletalMesh.IsValid())
+	if (EquippedItem->GetItemManifest().GetItemCategory() == EInventoryItemCategory::Consumable)
 	{
-		ADkEquippedActorBase* SpawnedEquippedActor =
-			SpawnEquippedActor(EquipmentFragment, OwningSkeletalMesh.Get());
-		if (SpawnedEquippedActor)
-		{
-			if (bIsPreview) // 如果是多个Client且为Preview，自己管自己的PreviewActor，其对应的SpawnedEquippedActor不为复制
-			{
-				SpawnedEquippedActor->SetReplicates(false);
-			}
-			EquippedActors.Add(SpawnedEquippedActor);
-		}
+		if (bIsPreview) return;
+
+		Debug::Print(TEXT("我装备了消耗品"));
 	}
 }
 
@@ -127,14 +137,22 @@ void UDkEquipmentComponent::OnItemUnEquipped(UDkInventoryItem* UnEquippedItem)
 	FInventoryItemManifest& ItemManifest = UnEquippedItem->GetItemManifestMutable();
 	FInventoryItemFragment_Equipment* EquipmentFragment =
 		ItemManifest.GetFragmentOfTypeMutable<FInventoryItemFragment_Equipment>();
-	if (!EquipmentFragment) return;
-
-	if (!bIsPreview && OwnerASC.IsValid()) // 预览时不需要调整属性等操作
+	if (EquipmentFragment)
 	{
-		EquipmentFragment->OnUnEquip(OwnerASC.Get());
+		if (!bIsPreview && OwnerASC.IsValid()) // 预览时不需要调整属性等操作
+		{
+			EquipmentFragment->OnUnEquip(OwnerASC.Get());
+		}
+
+		RemoveEquippedActor(EquipmentFragment);
 	}
 
-	RemoveEquippedActor(EquipmentFragment);
+	if (UnEquippedItem->GetItemManifest().GetItemCategory() == EInventoryItemCategory::Consumable)
+	{
+		if (bIsPreview) return;
+
+		Debug::Print(TEXT("我取下了消耗品"));
+	}
 }
 
 ADkEquippedActorBase* UDkEquipmentComponent::SpawnEquippedActor(

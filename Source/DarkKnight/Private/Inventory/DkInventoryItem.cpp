@@ -42,6 +42,11 @@ EInventoryItemCategory UDkInventoryItem::GetItemCategory() const
 	return UDkInventoryFunctionLibrary::GetItemCategory(GetItemManifest().GetItemID());
 }
 
+int UDkInventoryItem::GetItemStackCount() const
+{
+	return GetItemManifest().GetStackCount();
+}
+
 bool UDkInventoryItem::DoesItemTagMatch(const FGameplayTag& ItemTag) const
 {
 	return GetItemManifest().GetItemTag().MatchesTagExact(ItemTag);

@@ -33,6 +33,8 @@ void UDkInventoryEquipmentGridSlot::UpdateEquipmentInfo(UDkInventoryItem* InItem
 	if (!IsValid(InItem)) return;
 	EquipmentSlot->SetInventoryItem(InItem);
 	EquipmentSlot->SetEquipmentIcon();
+	EquipmentSlot->SetStackCount(InItem->GetItemStackCount());
+	EquipmentSlot->SetItemStackNum(InItem->GetItemStackCount());
 }
 
 void UDkInventoryEquipmentGridSlot::SetUnoccupiedBrush()

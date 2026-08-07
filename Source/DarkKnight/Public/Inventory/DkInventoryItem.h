@@ -30,6 +30,7 @@ public:
 	FText GetItemName() const;
 	FGameplayTag GetItemTag() const;
 	EInventoryItemCategory GetItemCategory() const;
+	int GetItemStackCount() const;
 	bool DoesItemTagMatch(const FGameplayTag& ItemTag) const;
 
 	void SetItemManifest(const FInventoryItemManifest& Manifest);

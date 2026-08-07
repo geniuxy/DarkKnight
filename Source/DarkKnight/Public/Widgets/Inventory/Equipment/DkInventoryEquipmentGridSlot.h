@@ -59,7 +59,7 @@ protected:
 	TSoftObjectPtr<UTexture2D> EquipmentBgIcon;
 
 private:
-	UPROPERTY(EditAnywhere, Category = "Inventory", meta = (Categories = "Dk.Item.Equipment"))
+	UPROPERTY(EditAnywhere, Category = "Inventory", meta = (Categories = "Dk.Item"))
 	FGameplayTag EquipmentTypeTag;
 
 public:

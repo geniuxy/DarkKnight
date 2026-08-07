@@ -272,8 +272,9 @@ void UDKWidgetEquipmentMenu::AssignDraggedItem(
 
 	DraggedItem->SetPreviousGridIndex(PreviousGridIndex);
 	DraggedItem->SetIsPreviousEquipped(true);
-	// 默认装备的Count为1且不可叠加
-	DraggedItem->UpdateStackCount(0);
+	DraggedItem->UpdateStackCount(
+		InventoryItem->IsItemStackable() ? EquippedGridSlots[GridIndex]->GetEquipmentSlot()->GetStackCount() : 0
+	);
 }
 
 void UDKWidgetEquipmentMenu::RemoveItemFromGrid(UDkInventoryItem* InventoryItem, const int32 GridIndex)
@@ -283,6 +284,7 @@ void UDKWidgetEquipmentMenu::RemoveItemFromGrid(UDkInventoryItem* InventoryItem,
 	EquippedGridSlots[GridIndex]->GetEquipmentSlot()->SetUnoccupiedBrush();
 	EquippedGridSlots[GridIndex]->GetEquipmentSlot()->SetIsAvailable(true);
 	EquippedGridSlots[GridIndex]->GetEquipmentSlot()->SetStackCount(0);
+	EquippedGridSlots[GridIndex]->GetEquipmentSlot()->SetItemStackNum(0);
 	EquippedGridSlots[GridIndex]->SetDefaultBackGroundIcon();
 }
 

@@ -18,6 +18,8 @@ class UDkInventoryItem;
 class ADkCharacterBase;
 class UDkInventoryComponent;
 
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnQuickConsume, int /* Index */)
+
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class DARKKNIGHT_API UDkEquipmentComponent : public UActorComponent
 {
@@ -69,6 +71,15 @@ private:
 
 	void RemoveEquippedActor(FInventoryItemFragment_Equipment* EquipmentFragment);
 	/********/
+
+	/**********************************************************************/
+	/*                           道具物品的使用                             */
+	/**********************************************************************/
+public:
+	UFUNCTION(Server, Reliable)
+	void ServerQuickConsumeItem(UDkInventoryItem* Item, int Index);
+
+	FOnQuickConsume OnQuickConsumeDelegate;
 
 	/**********************************************************************/
 	/*                       Preview Actor Setting                        */

@@ -8,6 +8,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "DkInventoryFunctionLibrary.generated.h"
 
+class UDkEquipmentComponent;
 class UDkPlayerInventoryComp;
 class UDkInventoryItem;
 /**
@@ -27,6 +28,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="Inventory Function Library")
 	static UDkPlayerInventoryComp* GetInventoryComponent(const APlayerController* PlayerController);
+
+	UFUNCTION(BlueprintCallable, Category="Inventory Function Library")
+	static UDkEquipmentComponent* GetEquipmentComponent(const APlayerController* PlayerController);
 	
 	template <typename T, typename FuncT>
 	static void ForEach2D(

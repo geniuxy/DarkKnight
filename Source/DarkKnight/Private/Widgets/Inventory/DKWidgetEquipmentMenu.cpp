@@ -3,13 +3,16 @@
 
 #include "Widgets/Inventory/DKWidgetEquipmentMenu.h"
 
+#include "AbilitySystemGlobals.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Blueprint/WidgetTree.h"
 #include "Components/CanvasPanel.h"
+#include "Components/DkEquipmentComponent.h"
 #include "Components/InventoryComps/DkPlayerInventoryComp.h"
 #include "FunctionLibrarys/DkCommonFunctionLibrary.h"
 #include "FunctionLibrarys/DkInventoryFunctionLibrary.h"
 #include "FunctionLibrarys/DkUIFunctionLibrary.h"
+#include "GAS/DkAbilitySystemComponent.h"
 #include "Inventory/DkInventoryItem.h"
 #include "Inventory/DkInventoryItemFragment.h"
 #include "Widgets/Inventory/DkInventoryDraggedItem.h"
@@ -41,6 +44,13 @@ void UDKWidgetEquipmentMenu::NativeOnInitialized()
 	InventoryComponent->OnDraggedItemRemoved.AddUniqueDynamic(this, &ThisClass::HandleDraggedItemRemoved);
 	InventoryComponent->OnExitGameMenuRecoverEquippedItem.AddUniqueDynamic(
 		this, &ThisClass::HandleDraggedItemRecovered
+	);
+
+	EquipmentComponent = UDkInventoryFunctionLibrary::GetEquipmentComponent(GetOwningPlayer());
+	EquipmentComponent->OnQuickConsumeDelegate.AddUObject(this, &ThisClass::HandleQuickConsumeUsed);
+
+	OwnerASC = Cast<UDkAbilitySystemComponent>(
+		UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(GetOwningPlayerPawn())
 	);
 }
 
@@ -101,6 +111,19 @@ void UDKWidgetEquipmentMenu::BroadcastEquippedDelegate(
 	if (InventoryComponent)
 	{
 		InventoryComponent->ServerUpdateEquippedItem(ItemToEquipped, ItemToUnEquipped);
+	}
+}
+
+void UDKWidgetEquipmentMenu::HandleQuickConsumeUsed(int Index)
+{
+	UDkInventoryItem* QuickConsumeItem = EquippedGridSlots[Index]->GetInventoryItem();
+
+	// TODO: 判断能不能消耗一个 + 消耗一个数目 
+
+	if (FInventoryItemFragment_Consumable* ConsumableFragment =
+		QuickConsumeItem->GetItemManifestMutable().GetFragmentOfTypeMutable<FInventoryItemFragment_Consumable>())
+	{
+		ConsumableFragment->OnConsume(OwnerASC);
 	}
 }
 

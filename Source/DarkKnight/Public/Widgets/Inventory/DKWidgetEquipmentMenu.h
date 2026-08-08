@@ -8,6 +8,8 @@
 
 #define NUM_OF_COLUMNS 6
 
+class UDkAbilitySystemComponent;
+class UDkEquipmentComponent;
 class UDkPlayerInventoryComp;
 class UDkInventoryItem;
 class UDkInventoryEquipmentGridSlot;
@@ -30,6 +32,12 @@ protected:
 	UPROPERTY()
 	UDkPlayerInventoryComp* InventoryComponent;
 
+	UPROPERTY()
+	UDkEquipmentComponent* EquipmentComponent;
+	
+	UPROPERTY()
+	UDkAbilitySystemComponent* OwnerASC;
+
 private:
 	//***** Bound Widgets *****//
 	UPROPERTY(meta = (BindWidget))
@@ -44,6 +52,8 @@ private:
 	void BroadcastEquippedDelegate(
 		UDkInventoryItem* ItemToEquipped, UDkInventoryItem* ItemToUnEquipped = nullptr
 	) const;
+
+	void HandleQuickConsumeUsed(int Index);
 	/********/
 
 	/* 鼠标Hover装备网格，改变其样式 */

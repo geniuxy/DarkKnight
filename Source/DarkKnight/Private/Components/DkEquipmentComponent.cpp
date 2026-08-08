@@ -212,6 +212,13 @@ void UDkEquipmentComponent::RemoveEquippedActor(FInventoryItemFragment_Equipment
 	}
 }
 
+void UDkEquipmentComponent::ServerQuickConsumeItem_Implementation(UDkInventoryItem* Item, int Index)
+{
+	if (!OwnerASC.IsValid()) return;
+
+	OnQuickConsumeDelegate.Broadcast(Index);
+}
+
 void UDkEquipmentComponent::SetIsPreview(bool bInIsPreview)
 {
 	bIsPreview = bInIsPreview;

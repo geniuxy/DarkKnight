@@ -5,6 +5,7 @@
 
 #include "DkGameplayTags.h"
 #include "Characters/DkCharacterHero.h"
+#include "Components/DkEquipmentComponent.h"
 #include "Components/InventoryComps/DkInventoryComponent.h"
 #include "Components/InventoryComps/DkPlayerInventoryComp.h"
 #include "Inventory/DkInventoryItem.h"
@@ -29,6 +30,16 @@ UDkPlayerInventoryComp* UDkInventoryFunctionLibrary::GetInventoryComponent(const
 
 	UDkPlayerInventoryComp* InventoryComponent = OwningCharacterHero->FindComponentByClass<UDkPlayerInventoryComp>();
 	return InventoryComponent;
+}
+
+UDkEquipmentComponent* UDkInventoryFunctionLibrary::GetEquipmentComponent(const APlayerController* PlayerController)
+{
+	if (!IsValid(PlayerController)) return nullptr;
+	ADkCharacterHero* OwningCharacterHero = Cast<ADkCharacterHero>(PlayerController->GetPawn());
+	if (!OwningCharacterHero) return nullptr;
+
+	UDkEquipmentComponent* EquipmentComponent = OwningCharacterHero->FindComponentByClass<UDkEquipmentComponent>();
+	return EquipmentComponent;
 }
 
 FGameplayTag UDkInventoryFunctionLibrary::GetMainEntryTagByIndex(int32 InIndex)

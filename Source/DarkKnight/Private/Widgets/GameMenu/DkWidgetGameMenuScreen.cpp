@@ -10,6 +10,7 @@
 #include "FunctionLibrarys/DkUIFunctionLibrary.h"
 #include "Input/CommonUIInputTypes.h"
 #include "Subsytems/DkUISubsystem.h"
+#include "Widgets/GameMenu/CenterAreas/DkGameMenuCenterAreaCraft.h"
 #include "Widgets/GameMenu/CenterAreas/DkGameMenuCenterAreaInventory.h"
 #include "Widgets/GameMenu/CenterAreas/DkGameMenuCenterAreaTask.h"
 #include "Widgets/Inventory/DkInventoryDraggedItem.h"
@@ -70,6 +71,10 @@ UDkWidgetActivatableBase* UDkWidgetGameMenuScreen::GetActivatableCenterAreaWidge
 	if (InTag.MatchesTagExact(DkGameplayTags::Dk_Widget_GameMenu_Map))
 	{
 		return CenterArea_Map;
+	}
+	if (InTag.MatchesTagExact(DkGameplayTags::Dk_Widget_GameMenu_Craft))
+	{
+		return CenterArea_Craft;
 	}
 	return nullptr;
 }

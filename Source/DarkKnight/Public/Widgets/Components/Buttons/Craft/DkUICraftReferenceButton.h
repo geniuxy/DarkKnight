@@ -7,6 +7,8 @@
 #include "Blueprint/IUserObjectListEntry.h"
 #include "DkUICraftReferenceButton.generated.h"
 
+class UDkCraftListData;
+class UCommonListView;
 class UBorder;
 class UCommonTextBlock;
 class UCommonLazyImage;
@@ -45,4 +47,16 @@ private:
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget, AllowPrivateAccess="true"))
 	UCommonTextBlock* CraftMessageText;
 	//***** Bound Widgets *****//
+
+	UPROPERTY(EditAnywhere, Category="Message Color")
+	FLinearColor NotReadyMessageColor = FLinearColor(0.4f,0.4f,0.4f,1.f);
+	
+	UPROPERTY(EditAnywhere, Category="Message Color")
+	FLinearColor ReadyMessageColor = FLinearColor(1.f,1.f, 1.f,1.f);
+
+	UPROPERTY()
+	UCommonListView* OwnerListView;
+
+	UPROPERTY()
+	UDkCraftListData* CraftListData;
 };

@@ -32,6 +32,20 @@ void UDkUICraftReferenceButton::NativeOnListItemObjectSet(UObject* ListItemObjec
 	OwnerListView = Cast<UCommonListView>(GetOwningListView());
 }
 
+void UDkUICraftReferenceButton::NativeOnItemSelectionChanged(bool bIsSelected)
+{
+	IUserObjectListEntry::NativeOnItemSelectionChanged(bIsSelected);
+
+	HoverBorder->SetVisibility(bIsSelected ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
+}
+
+void UDkUICraftReferenceButton::NativeOnEntryReleased()
+{
+	IUserObjectListEntry::NativeOnEntryReleased();
+
+	HoverBorder->SetVisibility(ESlateVisibility::Hidden);
+}
+
 void UDkUICraftReferenceButton::NativeOnClicked()
 {
 	Super::NativeOnClicked();

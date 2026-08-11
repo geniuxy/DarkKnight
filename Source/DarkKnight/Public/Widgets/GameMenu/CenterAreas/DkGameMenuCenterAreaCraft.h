@@ -15,6 +15,11 @@ class DARKKNIGHT_API UDkGameMenuCenterAreaCraft : public UDkWidgetActivatableBas
 {
 	GENERATED_BODY()
 
+protected:
+	//~Begin UUserWidget Function
+	virtual void NativeOnInitialized() override;
+	//~End UUserWidget Function
+
 private:
 	//***** Bound Widgets *****//
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget, AllowPrivateAccess="true"))

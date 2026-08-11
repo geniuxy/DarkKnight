@@ -23,6 +23,8 @@ class DARKKNIGHT_API UDkUICraftReferenceButton : public UCommonButtonBase, publi
 public:
 	//~Begin IUserObjectListEntry Interface
 	virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
+	virtual void NativeOnItemSelectionChanged(bool bIsSelected) override;
+	virtual void NativeOnEntryReleased() override;
 	//~End IUserObjectListEntry Interface
 
 protected:
@@ -36,7 +38,7 @@ private:
 	UCommonLazyImage* BackgroundImg;
 
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget, AllowPrivateAccess="true"))
-	UBorder* BorderImg;
+	UCommonLazyImage* HoverBorder;
 
 	UPROPERTY(BlueprintReadOnly, meta=(BindWidget, AllowPrivateAccess="true"))
 	UCommonLazyImage* CraftItemIcon;

@@ -134,7 +134,7 @@ void UDkWidgetOptionScreen::OnResetBoundActionTriggered()
 
 				if (DataToReset->TryResetBackToDefaultValue())
 				{
-					Debug::Print(DataToReset->GetDataDisplayName().ToString() + TEXT("被重置了！"));
+					// Debug::Print(DataToReset->GetDataDisplayName().ToString() + TEXT("被重置了！"));
 				}
 				else
 				{

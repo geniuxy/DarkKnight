@@ -37,7 +37,7 @@ void UDkUIListDataObjectString::SwitchToPreviousOption()
 	{
 		DataDynamicSetter->SetValueFromString(CurrentStringValue);
 
-		Debug::Print(TEXT("DataDynamicSetter已使用. 最新可从Getter中得到的值为: ") + DataDynamicGetter->GetValueAsString());
+		// Debug::Print(TEXT("DataDynamicSetter已使用. 最新可从Getter中得到的值为: ") + DataDynamicGetter->GetValueAsString());
 	}
 
 	NotifyListDataModified(this);
@@ -68,7 +68,7 @@ void UDkUIListDataObjectString::SwitchToNextOption()
 	{
 		DataDynamicSetter->SetValueFromString(CurrentStringValue);
 
-		Debug::Print(TEXT("DataDynamicSetter已使用. 最新可从Getter中得到的值为: ") + DataDynamicGetter->GetValueAsString());
+		// Debug::Print(TEXT("DataDynamicSetter已使用. 最新可从Getter中得到的值为: ") + DataDynamicGetter->GetValueAsString());
 	}
 
 	NotifyListDataModified(this);
@@ -92,12 +92,12 @@ void UDkUIListDataObjectString::OnRotatorInitiatedValueChanged(const FText& InNe
 		{
 			DataDynamicSetter->SetValueFromString(CurrentStringValue);
 
-			Debug::Print(
-				TEXT("手柄修改了设置选项 ") +
-				GetDataDisplayName().ToString() +
-				TEXT(" ，DataDynamicSetter已使用. 最新可从Getter中得到的值为: ") +
-				DataDynamicGetter->GetValueAsString()
-			);
+			// Debug::Print(
+			// 	TEXT("手柄修改了设置选项 ") +
+			// 	GetDataDisplayName().ToString() +
+			// 	TEXT(" ，DataDynamicSetter已使用. 最新可从Getter中得到的值为: ") +
+			// 	DataDynamicGetter->GetValueAsString()
+			// );
 		}
 
 		NotifyListDataModified(this);
@@ -148,10 +148,10 @@ bool UDkUIListDataObjectString::TryResetBackToDefaultValue()
 		{
 			DataDynamicSetter->SetValueFromString(CurrentStringValue);
 
-			Debug::Print(
-				TEXT("重置为默认值，DataDynamicSetter已使用. 最新可从Getter中得到的值为: ") +
-				DataDynamicGetter->GetValueAsString()
-			);
+			// Debug::Print(
+			// 	TEXT("重置为默认值，DataDynamicSetter已使用. 最新可从Getter中得到的值为: ") +
+			// 	DataDynamicGetter->GetValueAsString()
+			// );
 		}
 
 		NotifyListDataModified(this, EOptionsListDataModifyReason::ResetToDefault);

@@ -1,11 +1,14 @@
-﻿#include "Inventory/DkInventoryItemFragment.h"
+#include "Inventory/DkInventoryItemFragment.h"
 
+#include "AbilitySystemComponent.h"
 #include "DarkKnightDebugHelper.h"
 #include "DkTypes/DkStructs.h"
 #include "Equipment/DkEquippedActorBase.h"
 #include "Equipment/DkEquippedActorSkeletal.h"
 #include "Equipment/DkEquippedActorStatic.h"
 #include "FunctionLibrarys/DkInventoryFunctionLibrary.h"
+#include "GameFramework/Actor.h"
+#include "GameplayEffect.h"
 #include "Subsytems/EngineSubsystems/DkInventorySubsystem.h"
 #include "Widgets/Inventory/Composites/DkInventoryLeaf.h"
 #include "Widgets/Inventory/Composites/DkInventoryLeafImage.h"
@@ -123,6 +126,55 @@ FText FInventoryItemFragment_Entry::GetFormattedText() const
 	return FText::Format(Description, Args);
 }
 
+FActiveGameplayEffectHandle FInventoryItemFragment_Entry::ApplyEntryEffect(UAbilitySystemComponent* InASC) const
+{
+	if (!IsValid(InASC))
+	{
+		return FActiveGameplayEffectHandle();
+	}
+
+	// 只有服务端能改属性：客户端自己施加会绕过服务器校验，并且和属性复制打架
+	const AActor* OwnerActor = InASC->GetOwner();
+	if (!OwnerActor || !OwnerActor->HasAuthority())
+	{
+		return FActiveGameplayEffectHandle();
+	}
+
+	// GE 类不存放在Fragment里，而是用词条Tag去 DT_EntryEffectInfo 查。
+	// 这样「哪个词条配哪个GE」只有一处配置，重复配/漏配由 InitializeEntryEffectData 在开局报出来
+	const UDkInventorySubsystem* InventorySubsystem = UDkInventorySubsystem::Get();
+	const TSubclassOf<UGameplayEffect> EntryGameplayEffectClass =
+		InventorySubsystem ? InventorySubsystem->FindEntryEffectClass(GameplayEffectTag) : nullptr;
+
+	if (!IsValid(EntryGameplayEffectClass))
+	{
+		// 数据没配全属于内容错误，需要让作者看见，所以直接报出来而不是静默跳过
+		Debug::Print(FString::Printf(
+			TEXT("词条Tag[%s]在DT_EntryEffectInfo里找不到对应的GameplayEffect，效果无法生效！"),
+			GameplayEffectTag.IsValid() ? *GameplayEffectTag.ToString() : TEXT("(空)")
+		));
+		return FActiveGameplayEffectHandle();
+	}
+
+	FGameplayEffectContextHandle ContextHandle = InASC->MakeEffectContext();
+	FGameplayEffectSpecHandle SpecHandle = InASC->MakeOutgoingSpec(
+		EntryGameplayEffectClass, 1.f, ContextHandle
+	);
+	if (!SpecHandle.IsValid())
+	{
+		return FActiveGameplayEffectHandle();
+	}
+
+	// 关键一步：把「随机出来的数值」通过 SetByCaller 交给 GE。
+	// GE 里对应的 Modifier Magnitude 必须选 SetByCaller 并填同一个 Tag。
+	if (GameplayEffectTag.IsValid())
+	{
+		SpecHandle.Data->SetSetByCallerMagnitude(GameplayEffectTag, Value);
+	}
+
+	return InASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+}
+
 void FInventoryItemFragment_Consumable::OnConsume(UAbilitySystemComponent* InASC)
 {
 	for (auto& Entry : ConsumableEntries)
@@ -191,11 +243,12 @@ void FInventoryItemFragment_Consumable::UpdateConsumableEntries(TArray<FItemEntr
 		}
 		FEntryFragment_Consumable NewItemEntryFragment = FEntryFragment_Consumable(
 			EntryInfo.Description,
-			EntryInfo.GameplayEffectClass,
 			EntryStrInfo.MinValue,
 			EntryInfo.bPercent,
 			EntryFragmentTag
 		);
+		// 把 GE 的 SetByCaller 键一起带进 Fragment，施加效果时要用
+		NewItemEntryFragment.SetGameplayEffectTag(EntryInfo.GameplayEffectTag);
 		if (EntryStrInfo.MaxValue >= EntryStrInfo.MinValue)
 		{
 			NewItemEntryFragment.SetMaxValue(EntryStrInfo.MaxValue);
@@ -206,17 +259,54 @@ void FInventoryItemFragment_Consumable::UpdateConsumableEntries(TArray<FItemEntr
 
 void FEntryFragment_Consumable::OnConsume(UAbilitySystemComponent* InASC)
 {
-	Debug::Print(FString::Printf(TEXT("消耗品类Item已被使用！量为: %f"), GetValue()));
+	// 消耗品是 Instant 类效果：施加一次即结束，不需要保存句柄再去移除
+	ApplyEntryEffect(InASC);
+}
+
+void FEntryFragment_Equipment::Manifest()
+{
+	FInventoryItemFragment_Entry::Manifest();
+
+	// 句柄是「这个实例此刻是否生效」的运行时状态。
+	// Manifest() 代表该 Fragment 被复制到了一个全新的 Item 上（丢弃、交易、重新掉落），
+	// 必须从干净状态开始，否则新物品会继承旧句柄：既不会重新施加效果，将来也无法正确移除
+	ActiveEffectHandle = FActiveGameplayEffectHandle();
 }
 
 void FEntryFragment_Equipment::OnEquip(UAbilitySystemComponent* InASC)
 {
-	Debug::Print(FString::Printf(TEXT("装备！！值为: %f"), GetValue()));
+	// 幂等：重复装备同一件物品时不要在同一词条上叠两层效果
+	if (ActiveEffectHandle.IsValid())
+	{
+		return;
+	}
+
+	ActiveEffectHandle = ApplyEntryEffect(InASC);
 }
 
 void FEntryFragment_Equipment::OnUnEquip(UAbilitySystemComponent* InASC)
 {
-	Debug::Print(FString::Printf(TEXT("卸甲！！值为: %f"), GetValue()));
+	if (!ActiveEffectHandle.IsValid())
+	{
+		return;
+	}
+
+	// 句柄自己记录了它属于哪个 ASC。优先用它，避免传入的 ASC 和施加时的不是同一个（换 Controller、复活等）
+	UAbilitySystemComponent* TargetASC = ActiveEffectHandle.GetOwningAbilitySystemComponent();
+	if (!IsValid(TargetASC))
+	{
+		TargetASC = InASC;
+	}
+
+	if (IsValid(TargetASC))
+	{
+		if (const AActor* OwnerActor = TargetASC->GetOwner(); OwnerActor && OwnerActor->HasAuthority())
+		{
+			TargetASC->RemoveActiveGameplayEffect(ActiveEffectHandle);
+		}
+	}
+
+	ActiveEffectHandle = FActiveGameplayEffectHandle();
 }
 
 void FInventoryItemFragment_Equipment::OnEquip(UAbilitySystemComponent* InASC)
@@ -226,11 +316,10 @@ void FInventoryItemFragment_Equipment::OnEquip(UAbilitySystemComponent* InASC)
 	for (auto& Entry : EquipEntries)
 	{
 		auto& EntryRef = Entry.GetMutable();
-		EntryRef.OnEquip(InASC);
 
-		// TODO: 可以把OnEquip的返回变成FActiveGameplayEffectHandle(词条效果)/FGameplayAbilitySpecHandle(能力效果)
-		// 然后FInventoryItemFragment_Equipment增加变量TArray<FActiveGameplayEffectHandle/FGameplayAbilitySpecHandle>
-		// 就可以在OnUnEquip的时候从ASC中接触这些效果、能力
+		// 句柄由每个词条自己保存（而不是在这里统一收集成一个数组）：
+		// 词条与句柄一一对应，卸装备时各自移除自己施加的效果；将来要同时管 GE 和 GA 两种句柄也不用改这里的结构
+		EntryRef.OnEquip(InASC);
 	}
 }
 
@@ -259,6 +348,10 @@ void FInventoryItemFragment_Equipment::Assimilate(UDkInventoryCompositeBase* Com
 void FInventoryItemFragment_Equipment::Manifest()
 {
 	FInventoryItemFragment::Manifest();
+
+	// 复制到新 Item 上时装备状态必须归零。
+	// 否则「穿着装备时被丢弃」会产出一件 bEquipped=true 的新物品，它再被装备时会在上面直接 return，词条永远不会生效
+	bEquipped = false;
 
 	for (auto& Entry : EquipEntries)
 	{
@@ -304,11 +397,12 @@ void FInventoryItemFragment_Equipment::UpdateEquipEntries(TArray<FItemEntryInfo>
 		}
 		FEntryFragment_Equipment NewItemEntryFragment = FEntryFragment_Equipment(
 			EntryInfo.Description,
-			EntryInfo.GameplayEffectClass,
 			EntryStrInfo.MinValue,
 			EntryInfo.bPercent,
 			EntryFragmentTag
 		);
+		// 把 GE 的 SetByCaller 键一起带进 Fragment，施加效果时要用
+		NewItemEntryFragment.SetGameplayEffectTag(EntryInfo.GameplayEffectTag);
 		if (EntryStrInfo.MaxValue >= EntryStrInfo.MinValue)
 		{
 			NewItemEntryFragment.SetMaxValue(EntryStrInfo.MaxValue);

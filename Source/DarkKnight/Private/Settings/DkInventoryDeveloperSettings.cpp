@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Settings/DkInventoryDeveloperSettings.h"
@@ -19,4 +19,13 @@ UDataTable* UDkInventoryDeveloperSettings::GetEntryTable() const
 		CachedEntryTable = EntryTable.LoadSynchronous();
 	}
 	return CachedEntryTable.Get();
+}
+
+UDataTable* UDkInventoryDeveloperSettings::GetEntryEffectTable() const
+{
+	if (!CachedEntryEffectTable.IsValid() && !EntryEffectTable.IsNull())
+	{
+		CachedEntryEffectTable = EntryEffectTable.LoadSynchronous();
+	}
+	return CachedEntryEffectTable.Get();
 }

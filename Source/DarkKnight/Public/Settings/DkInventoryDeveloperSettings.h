@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -21,9 +21,15 @@ public:
 	UPROPERTY(Config, EditAnywhere, Category = "Item Entry Tables")
 	TSoftObjectPtr<UDataTable> EntryTable;
 
+	// 词条Tag → GameplayEffect 的映射表（行结构 FDkGameplayEffectInfo）。
+	// 词条要施加哪个GE只在这里配置一处，DT_DkEntryList 与 Fragment 都不再各自存一份GE类
+	UPROPERTY(Config, EditAnywhere, Category = "Item Entry Tables")
+	TSoftObjectPtr<UDataTable> EntryEffectTable;
+
 	// 获取加载后的 DataTable
 	UDataTable* GetItemDataTable() const;
 	UDataTable* GetEntryTable() const;
+	UDataTable* GetEntryEffectTable() const;
 
 private:
 	UPROPERTY(Transient)
@@ -31,4 +37,7 @@ private:
     
 	UPROPERTY(Transient)
 	mutable TWeakObjectPtr<UDataTable> CachedEntryTable;
+
+	UPROPERTY(Transient)
+	mutable TWeakObjectPtr<UDataTable> CachedEntryEffectTable;
 };

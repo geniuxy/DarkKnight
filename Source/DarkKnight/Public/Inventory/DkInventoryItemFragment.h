@@ -1,6 +1,7 @@
-﻿#pragma once
+#pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayEffectTypes.h"
 #include "GameplayTagContainer.h"
 #include "DarkKnight/DarkKnight.h"
 #include "DkGameplayTags.h"
@@ -268,14 +269,12 @@ struct FInventoryItemFragment_Entry : public FInventoryItemFragment // 用于词
 
 	FInventoryItemFragment_Entry(
 		const FText& InText,
-		const TSubclassOf<UGameplayEffect>& InGameplayEffectClass,
 		float InValue,
 		bool bInPercent = false,
 		FGameplayTag InFragmentTag = DkGameplayTags::Dk_Inventory_Fragment_Entry)
 	{
 		FragmentTag = InFragmentTag;
 		Description = InText;
-		EntryGameplayEffectClass = InGameplayEffectClass;
 		Min = InValue;
 		Max = InValue;
 		bPercent = bInPercent;
@@ -283,7 +282,6 @@ struct FInventoryItemFragment_Entry : public FInventoryItemFragment // 用于词
 
 	FInventoryItemFragment_Entry(
 		const FText& InText,
-		const TSubclassOf<UGameplayEffect>& InGameplayEffectClass,
 		float InMaxValue,
 		float InMinValue,
 		bool bInPercent = false,
@@ -291,7 +289,6 @@ struct FInventoryItemFragment_Entry : public FInventoryItemFragment // 用于词
 	{
 		FragmentTag = InFragmentTag;
 		Description = InText;
-		EntryGameplayEffectClass = InGameplayEffectClass;
 		Min = InMinValue;
 		Max = InMaxValue;
 		bPercent = bInPercent;
@@ -304,6 +301,16 @@ struct FInventoryItemFragment_Entry : public FInventoryItemFragment // 用于词
 	void SetMinValue(float InValue) { Min = InValue; }
 	void SetMaxValue(float InValue) { Max = InValue; }
 	void SetIsPercent(bool bInPercent) { bPercent = bInPercent; }
+
+	/**
+	 * 让该词条真正生效：把随机出来的 Value 以 GameplayEffectTag 为 SetByCaller 键喂进 GE，再应用到 ASC。
+	 *
+	 * 约定：
+	 *  - 只在服务端生效（属性变化交给 GAS 复制给客户端，客户端本地施加会产生对不上的预测值）；
+	 *  - 返回 GE 的句柄，调用方自行保存，卸下/结束时用它精确移除；
+	 *  - Instant 类 GE 返回的是无效句柄（本来就无需移除），属正常情况。
+	 */
+	FActiveGameplayEffectHandle ApplyEntryEffect(UAbilitySystemComponent* InASC) const;
 
 	// 第一次出现的时候，该Fragment会随机数值。但是，之后装备或者丢弃，都会保持原有数值
 	bool bRandomizeOnManifest{true};
@@ -330,8 +337,15 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Inventory")
 	int32 MaxFractionalDigits{1};
 
-	UPROPERTY(EditAnywhere, Category = "Inventory")
-	TSubclassOf<UGameplayEffect> EntryGameplayEffectClass;
+	// 该词条对应GE的键，两处用途：
+	//  1) 到 DT_EntryEffectInfo（FDkGameplayEffectInfo）里查出要施加哪个 GameplayEffect；
+	//  2) 作为 SetByCaller 键，把下面随机出的 Value 喂给 GE（GE 的 Modifier Magnitude 选 SetByCaller 并填同一个 Tag）
+	// 因此它必须和 DT_EntryEffectInfo 里那一行的 GameplayEffectTag 完全一致；GE类不在这里存，只存这份表里的Tag
+	UPROPERTY(EditAnywhere, Category = "Inventory", meta = (Categories = "Dk.Item.Entry"))
+	FGameplayTag GameplayEffectTag;
+
+public:
+	LIST_DATA_ACCESSOR(FGameplayTag, GameplayEffectTag)
 };
 
 /*
@@ -353,22 +367,20 @@ struct FEntryFragment_Consumable : public FInventoryItemFragment_Entry // 用于
 
 	FEntryFragment_Consumable(
 		const FText& InText,
-		const TSubclassOf<UGameplayEffect>& InGameplayEffectClass,
 		float InValue,
 		bool bInPercent = false,
 		FGameplayTag InFragmentTag = DkGameplayTags::Dk_Inventory_Fragment_Entry)
-		: FInventoryItemFragment_Entry(InText, InGameplayEffectClass, InValue, bInPercent, InFragmentTag)
+		: FInventoryItemFragment_Entry(InText, InValue, bInPercent, InFragmentTag)
 	{
 	}
 
 	FEntryFragment_Consumable(
 		const FText& InText,
-		const TSubclassOf<UGameplayEffect>& InGameplayEffectClass,
 		float InMaxValue,
 		float InMinValue,
 		bool bInPercent = false,
 		FGameplayTag InFragmentTag = DkGameplayTags::Dk_Inventory_Fragment_Entry)
-		: FInventoryItemFragment_Entry(InText, InGameplayEffectClass, InMaxValue, InMinValue, bInPercent, InFragmentTag)
+		: FInventoryItemFragment_Entry(InText, InMaxValue, InMinValue, bInPercent, InFragmentTag)
 	{
 	}
 
@@ -421,27 +433,32 @@ struct FEntryFragment_Equipment : public FInventoryItemFragment_Entry // 用于�
 
 	FEntryFragment_Equipment(
 		const FText& InText,
-		const TSubclassOf<UGameplayEffect>& InGameplayEffectClass,
 		float InValue,
 		bool bInPercent = false,
 		FGameplayTag InFragmentTag = DkGameplayTags::Dk_Inventory_Fragment_Entry)
-		: FInventoryItemFragment_Entry(InText, InGameplayEffectClass, InValue, bInPercent, InFragmentTag)
+		: FInventoryItemFragment_Entry(InText, InValue, bInPercent, InFragmentTag)
 	{
 	}
 
 	FEntryFragment_Equipment(
 		const FText& InText,
-		const TSubclassOf<UGameplayEffect>& InGameplayEffectClass,
 		float InMaxValue,
 		float InMinValue,
 		bool bInPercent = false,
 		FGameplayTag InFragmentTag = DkGameplayTags::Dk_Inventory_Fragment_Entry)
-		: FInventoryItemFragment_Entry(InText, InGameplayEffectClass, InMaxValue, InMinValue, bInPercent, InFragmentTag)
+		: FInventoryItemFragment_Entry(InText, InMaxValue, InMinValue, bInPercent, InFragmentTag)
 	{
 	}
 
+	virtual void Manifest() override;
 	void OnEquip(UAbilitySystemComponent* InASC);
 	void OnUnEquip(UAbilitySystemComponent* InASC);
+
+private:
+	// 运行时状态：该词条当前施加在该 ASC 上的 GE 句柄。
+	// Transient → 不参与存档/网络复制：客户端既不需要、也不应该拿到服务端的 ActiveEffect 句柄
+	UPROPERTY(Transient)
+	FActiveGameplayEffectHandle ActiveEffectHandle;
 };
 
 USTRUCT(BlueprintType)

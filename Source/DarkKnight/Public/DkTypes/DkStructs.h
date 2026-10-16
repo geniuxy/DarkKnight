@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "GameplayAbilitySpec.h"
 #include "InputAction.h"
 #include "DkTypes/DkEnums.h"
@@ -102,17 +102,19 @@ struct FInventorySpaceQueryResult
 	int32 UpperLeftIndex = INDEX_NONE;
 };
 
+/*
+ * 词条Tag → GameplayEffect 的映射表（DT_EntryEffectInfo）。
+ * 词条生效的时候，Fragment 通过自己持有的 GameplayEffectTag 到这里取对应的 Effect，再施加给角色
+ */
 USTRUCT(BlueprintType)
-struct FDkGameplayEffectInfo : public FTableRowBase // TODO:词条生效的时候，Fragment通过对应的属性Tag获取对应的Effect，然后施加给角色
+struct FDkGameplayEffectInfo : public FTableRowBase
 {
 	GENERATED_BODY()
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	int GameplayEffectID;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (Categories = "Dk.Item.Entry"))
 	FGameplayTag GameplayEffectTag;
 
+	// 实际施加的 GameplayEffect 类
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TSubclassOf<UGameplayEffect> Attribute;
 
@@ -130,9 +132,6 @@ struct FDkEntryInfo : public FTableRowBase
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (Categories = "Dk.Item.Entry"))
 	FGameplayTag GameplayEffectTag;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	TSubclassOf<UGameplayEffect> GameplayEffectClass;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	bool bPercent = false;

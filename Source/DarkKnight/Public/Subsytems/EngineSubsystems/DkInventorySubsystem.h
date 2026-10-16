@@ -1,12 +1,14 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "DkTypes/DkStructs.h"
+#include "GameplayTagContainer.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "DkInventorySubsystem.generated.h"
 
+class UGameplayEffect;
 class UDkNpcInventoryComp;
 class ADkPreviewActorBase;
 class UDkPlayerInventoryComp;
@@ -32,12 +34,21 @@ public:
 
 	void InitializeEntryData();
 
+	// 词条Tag → GameplayEffect 的映射（来自 DT_EntryEffectInfo）
+	void InitializeEntryEffectData();
+
+	/** 按词条Tag取对应的GameplayEffect；没配到返回nullptr */
+	TSubclassOf<UGameplayEffect> FindEntryEffectClass(const FGameplayTag& EntryTag) const;
+
 private:
 	UPROPERTY(Transient)
 	TMap<int, FDkItemInfo> CachedItemTable;
 
 	UPROPERTY(Transient)
 	TMap<FName, FDkEntryInfo> CachedEntryTable;
+
+	UPROPERTY(Transient)
+	TMap<FGameplayTag, TSubclassOf<UGameplayEffect>> CachedEntryEffectTable;
 
 	UPROPERTY(Transient)
 	ADkPreviewActorBase* CachedPreviewActor;
